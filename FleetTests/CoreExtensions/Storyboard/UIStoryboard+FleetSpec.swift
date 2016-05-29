@@ -16,7 +16,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
         turtleStoryboard = UIStoryboard.init(name: "TurtlesStoryboard", bundle: nil)
     }
     
-    func testBindingViewControllerToIdentifierSameStoryboard() {
+    func test_bindingViewControllerToIdentifier_whenSameStoryboard_returnsBoundViewController() {
         let mockBoxedTurtleViewController = MockBoxedTurtleViewController()
         turtleStoryboard.bindViewController(mockBoxedTurtleViewController, toIdentifier: "BoxTurtleViewController")
         
@@ -24,7 +24,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
         expect(boxedTurtleViewController).to(beIdenticalTo(mockBoxedTurtleViewController))
     }
     
-    func testBindingViewControllerToIdentifierReferenceToAnotherStoryboard() {
+    func test_bindingViewControllerToIdentifierReferenceToAnotherStoryboard() {
         let mockCrabViewController = MockCrabViewController()
         turtleStoryboard.bindViewController(mockCrabViewController, toIdentifier: "CrabViewController", forReferencedStoryboardWithName: "CrabStoryboard")
         
@@ -38,7 +38,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
         expect(testNavigationController.topViewController).to(beIdenticalTo(mockCrabViewController))
     }
     
-    func testBindingViewControllerToInitialViewControllerOfReferenceToAnotherStoryboard() {
+    func test_bindingViewControllerToInitialViewControllerOfReferenceToAnotherStoryboard() {
         let mockPuppyListViewController = MockPuppyListViewController()
         
         turtleStoryboard.bindViewController(mockPuppyListViewController, asInitialViewControllerForReferencedStoryboardWithName: "PuppyStoryboard")
