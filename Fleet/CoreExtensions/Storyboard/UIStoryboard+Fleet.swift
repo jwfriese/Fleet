@@ -17,10 +17,6 @@ extension UIStoryboard {
             static var token: dispatch_once_t = 0
         }
         
-        if self !== UIStoryboard.self {
-            return
-        }
-        
         dispatch_once(&Static.token) {
             swizzleInit()
             swizzleViewControllerInstantiationMethod()
@@ -86,7 +82,6 @@ extension UIStoryboard {
     class func swizzlePrivateStoryboardReferenceViewControllerInstantiationMethod() {
         let originalSelector = Selector("instantiateViewControllerReferencedByPlaceholderWithIdentifier:")
         let swizzledSelector = #selector(UIStoryboard.fleet_instantiateViewControllerReferencedByPlaceholderWithIdentifier(_:))
-        
         
         let originalMethod = class_getInstanceMethod(self, originalSelector)
         let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
