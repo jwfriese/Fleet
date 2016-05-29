@@ -5,27 +5,30 @@ internal final class StoryboardInstanceBinding {
     
     private var storyboardName: String
     private var externalStoryboardReferenceMap: [String : AnyObject]?
+    private var nibNameMap: [String : String]?
     
-    init(fromStoryboardName storyboardName: String, externalStoryboardReferenceMap: [String : AnyObject]?) {
+    init(fromStoryboardName storyboardName: String, externalStoryboardReferenceMap: [String : AnyObject]?,
+                            nibNameMap: [String : String]?) {
         self.storyboardName = storyboardName
         self.externalStoryboardReferenceMap = externalStoryboardReferenceMap
+        self.nibNameMap = nibNameMap
     }
     
     func viewControllerForIdentifier(identifier: String) -> UIViewController? {
         return binding[identifier]
     }
-//    
-//    func boundInitialViewControllerForStoryboardWithName(storyboardName: String) -> UIViewController? {
-//        return binding[storyboardName]
-//    }
     
-    func bindViewController(viewController: UIViewController, toIdentifier identifier: String) -> Bool {
+    func bindViewController(viewController: UIViewController, toIdentifier identifier: String) throws {
+        if nibNameMap?[identifier] == nil {
+            throw FLTStoryboardBindingError.InvalidViewControllerIdentifier
+        }
+        
         binding[identifier] = viewController
-        return true
     }
     
-    func bindViewController(viewController: UIViewController, toIdentifier identifier: String, forReferencedStoryboardWithName name: String) -> Bool {
+    func bindViewController(viewController: UIViewController, toIdentifier identifier: String, forReferencedStoryboardWithName name: String) throws {
         
+        var referenceExists = false
         if let externalStoryboardReferenceMap = externalStoryboardReferenceMap {
             for (nextIdentifier, reference) in externalStoryboardReferenceMap {
                 if let reference = reference as? [String : AnyObject] {
@@ -33,6 +36,7 @@ internal final class StoryboardInstanceBinding {
                         if let referencedStoryboardName = reference["UIReferencedStoryboardName"] as? String {
                             if viewControllerIdentifier == identifier && referencedStoryboardName == name {
                                 binding[nextIdentifier] = viewController
+                                referenceExists = true
                             }
                         }
                     }
@@ -40,10 +44,14 @@ internal final class StoryboardInstanceBinding {
             }
         }
         
-        return true
+        if !referenceExists {
+            throw FLTStoryboardBindingError.InvalidExternalStoryboardReference
+        }
     }
     
-    func bindViewController(viewController: UIViewController, asInitialViewControllerForReferencedStoryboardWithName name: String) -> Bool {
+    func bindViewController(viewController: UIViewController, asInitialViewControllerForReferencedStoryboardWithName name: String) throws {
+        
+        var referenceExists = false
         if let externalStoryboardReferenceMap = externalStoryboardReferenceMap {
             for (nextIdentifier, reference) in externalStoryboardReferenceMap {
                 if let reference = reference as? [String : AnyObject] {
@@ -52,6 +60,7 @@ internal final class StoryboardInstanceBinding {
                             let specificViewControllerIdentifier = reference["UIReferencedControllerIdentifier"] as? String
                             if specificViewControllerIdentifier == nil {
                                 binding[nextIdentifier] = viewController
+                                referenceExists = true
                             }
                         }
                     }
@@ -59,14 +68,12 @@ internal final class StoryboardInstanceBinding {
             }
         }
         
-        return true
+        if !referenceExists {
+            throw FLTStoryboardBindingError.InvalidExternalStoryboardReference
+        }
     }
     
     func clear() {
         binding.removeAll()
-    }
-    
-    private func combinedIdentifierFromViewControllerIdentifier(identifier: String, storyboardName: String) -> String {
-        return identifier + ":" + storyboardName
     }
 }

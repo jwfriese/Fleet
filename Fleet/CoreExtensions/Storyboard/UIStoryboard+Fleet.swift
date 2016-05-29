@@ -3,29 +3,29 @@ import UIKit
 private var storyboardInstanceBindingMap = [String : StoryboardInstanceBinding]()
 
 extension UIStoryboard {
-    public func bindViewController(viewController: UIViewController, toIdentifier identifier: String) {
+    public func bindViewController(viewController: UIViewController, toIdentifier identifier: String) throws {
         if let storyboardName = self.valueForKey("name") as? String {
             if let storyboardInstanceBinding = storyboardInstanceBindingMap[storyboardName] {
-                storyboardInstanceBinding.bindViewController(viewController, toIdentifier: identifier)
+                try storyboardInstanceBinding.bindViewController(viewController, toIdentifier: identifier)
             }
         }
     }
     
-    public func bindViewController(viewController: UIViewController, toIdentifier identifier: String, forReferencedStoryboardWithName referencedStoryboardName: String) {
+    public func bindViewController(viewController: UIViewController, toIdentifier identifier: String, forReferencedStoryboardWithName referencedStoryboardName: String) throws {
         
         if let storyboardName = self.valueForKey("name") as? String {
             if let storyboardInstanceBinding = storyboardInstanceBindingMap[storyboardName] {
-                storyboardInstanceBinding.bindViewController(viewController, toIdentifier: identifier,
-                                                             forReferencedStoryboardWithName: referencedStoryboardName)
+                try storyboardInstanceBinding.bindViewController(viewController, toIdentifier: identifier,
+                                                                 forReferencedStoryboardWithName: referencedStoryboardName)
             }
         }
     }
     
-    public func bindViewController(viewController: UIViewController, asInitialViewControllerForReferencedStoryboardWithName referencedStoryboardName: String) {
+    public func bindViewController(viewController: UIViewController, asInitialViewControllerForReferencedStoryboardWithName referencedStoryboardName: String) throws {
         
         if let storyboardName = self.valueForKey("name") as? String {
             if let storyboardInstanceBinding = storyboardInstanceBindingMap[storyboardName] {
-                storyboardInstanceBinding.bindViewController(viewController, asInitialViewControllerForReferencedStoryboardWithName: referencedStoryboardName)
+                try storyboardInstanceBinding.bindViewController(viewController, asInitialViewControllerForReferencedStoryboardWithName: referencedStoryboardName)
             }
         }
     }
@@ -60,13 +60,13 @@ extension UIStoryboard {
     
     func fleet_initWithBundle(bundle: NSBundle?,
                               storyboardFileName: String,
-                              identifierToNibNameMap: AnyObject,
+                              identifierToNibNameMap: [String : String]?,
                               identifierToExternalStoryboardReferenceMap: AnyObject?,
                               designatedEntryPointIdentifier: AnyObject) -> UIStoryboard {
         let instance = self.fleet_initWithBundle(bundle, storyboardFileName: storyboardFileName, identifierToNibNameMap: identifierToNibNameMap, identifierToExternalStoryboardReferenceMap: identifierToExternalStoryboardReferenceMap, designatedEntryPointIdentifier: designatedEntryPointIdentifier)
         
         let storyboardName = self.valueForKey("name") as! String
-        storyboardInstanceBindingMap[storyboardName] = StoryboardInstanceBinding(fromStoryboardName: storyboardName, externalStoryboardReferenceMap: identifierToExternalStoryboardReferenceMap as? [String : AnyObject])
+        storyboardInstanceBindingMap[storyboardName] = StoryboardInstanceBinding(fromStoryboardName: storyboardName, externalStoryboardReferenceMap: identifierToExternalStoryboardReferenceMap as? [String : AnyObject], nibNameMap: identifierToNibNameMap)
         
         return instance
     }

@@ -23,6 +23,7 @@
 		7B0D3B6E1CFB50F00096DBC2 /* PuppyStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B0D3B6D1CFB50F00096DBC2 /* PuppyStoryboard.storyboard */; };
 		7B0D3B701CFB51070096DBC2 /* PuppyListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B6F1CFB51070096DBC2 /* PuppyListViewController.swift */; };
 		7B0D3B711CFB5F5C0096DBC2 /* ButtonTapTestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BA90AD91CC3F0C60040B031 /* ButtonTapTestViewController.xib */; };
+		7B0D3B751CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B741CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift */; };
 		7BA90AB71CC130990040B031 /* Fleet.h in Headers */ = {isa = PBXBuildFile; fileRef = 7BA90AB61CC130990040B031 /* Fleet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7BA90AC01CC3B6B80040B031 /* UIButton+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90ABF1CC3B6B80040B031 /* UIButton+Fleet.swift */; };
 		7BA90ACA1CC3B8950040B031 /* Fleet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BA90AB31CC130980040B031 /* Fleet.framework */; };
@@ -68,6 +69,7 @@
 		7B0D3B691CFB37B50096DBC2 /* TestNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestNavigationController.swift; sourceTree = "<group>"; };
 		7B0D3B6D1CFB50F00096DBC2 /* PuppyStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = PuppyStoryboard.storyboard; sourceTree = "<group>"; };
 		7B0D3B6F1CFB51070096DBC2 /* PuppyListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PuppyListViewController.swift; sourceTree = "<group>"; };
+		7B0D3B741CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FLTStoryboardBindingError.swift; sourceTree = "<group>"; };
 		7BA90AB31CC130980040B031 /* Fleet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Fleet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BA90AB61CC130990040B031 /* Fleet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Fleet.h; sourceTree = "<group>"; };
 		7BA90AB81CC130990040B031 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -135,6 +137,7 @@
 			children = (
 				7B0D3B3A1CFA76200096DBC2 /* UIStoryboard+Fleet.swift */,
 				7B0D3B3E1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift */,
+				7B0D3B741CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift */,
 			);
 			path = Storyboard;
 			sourceTree = "<group>";
@@ -413,6 +416,7 @@
 			files = (
 				7BA90AC01CC3B6B80040B031 /* UIButton+Fleet.swift in Sources */,
 				7B0D3B3F1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift in Sources */,
+				7B0D3B751CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift in Sources */,
 				7B0D3B3B1CFA76200096DBC2 /* UIStoryboard+Fleet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
