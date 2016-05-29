@@ -84,10 +84,10 @@
             </objects>
             <point key="canvasLocation" x="542" y="-7"/>
         </scene>
-        <!--Turtle Menu View Controller-->
+        <!--Animal List View Controller-->
         <scene sceneID="gIc-fV-N2X">
             <objects>
-                <viewController storyboardIdentifier="TurtleMenuViewController" id="kr1-g9-ioz" customClass="TurtleMenuViewController" customModule="FleetTestApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="TurtleMenuViewController" id="kr1-g9-ioz" customClass="AnimalListViewController" customModule="FleetTestApp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="hsV-oW-N0J"/>
                         <viewControllerLayoutGuide type="bottom" id="CZK-db-uJw"/>
@@ -97,45 +97,67 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="S9G-IJ-tbd">
-                                <rect key="frame" x="265" y="164" width="70" height="30"/>
+                                <rect key="frame" x="265" y="120" width="70" height="30"/>
                                 <state key="normal" title="Box Turtle"/>
                                 <connections>
                                     <action selector="goToBoxTurtle" destination="kr1-g9-ioz" eventType="touchUpInside" id="rkf-dg-ySO"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nUc-bw-ld4">
-                                <rect key="frame" x="251" y="266" width="99" height="30"/>
+                                <rect key="frame" x="251" y="186" width="99" height="30"/>
                                 <state key="normal" title="Spotted Turtle"/>
                                 <connections>
                                     <action selector="goToSpottedTurtle" destination="kr1-g9-ioz" eventType="touchUpInside" id="2bZ-bW-BuQ"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="g4Z-Qd-G7i">
-                                <rect key="frame" x="283" y="368" width="34" height="30"/>
+                                <rect key="frame" x="283" y="252" width="34" height="30"/>
                                 <state key="normal" title="Crab"/>
                                 <connections>
                                     <action selector="goToCrab" destination="kr1-g9-ioz" eventType="touchUpInside" id="jIA-dY-7y4"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ROB-Ac-9ZK" userLabel="Crab 2 Button">
+                                <rect key="frame" x="277" y="318" width="46" height="30"/>
+                                <state key="normal" title="Crab 2"/>
+                                <connections>
+                                    <action selector="goToCrab2" destination="kr1-g9-ioz" eventType="touchUpInside" id="rEi-84-lkO"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RhY-4G-fqL">
+                                <rect key="frame" x="278" y="384" width="44" height="30"/>
+                                <state key="normal" title="Puppy"/>
+                                <connections>
+                                    <action selector="goToPuppy" destination="kr1-g9-ioz" eventType="touchUpInside" id="S4I-fT-rSm"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="RhY-4G-fqL" firstAttribute="top" secondItem="ROB-Ac-9ZK" secondAttribute="bottom" constant="36" id="Kdo-Wp-Ywh"/>
                             <constraint firstItem="g4Z-Qd-G7i" firstAttribute="centerX" secondItem="nUc-bw-ld4" secondAttribute="centerX" id="Kfu-6X-lBm"/>
                             <constraint firstItem="S9G-IJ-tbd" firstAttribute="centerX" secondItem="iNi-QD-GN6" secondAttribute="centerX" id="N0B-3d-KfM"/>
                             <constraint firstItem="nUc-bw-ld4" firstAttribute="centerX" secondItem="S9G-IJ-tbd" secondAttribute="centerX" id="SWm-k3-3A7"/>
-                            <constraint firstItem="g4Z-Qd-G7i" firstAttribute="top" secondItem="nUc-bw-ld4" secondAttribute="bottom" constant="72" id="cww-u0-jV7"/>
-                            <constraint firstItem="nUc-bw-ld4" firstAttribute="top" secondItem="S9G-IJ-tbd" secondAttribute="bottom" constant="72" id="iTk-Je-W92"/>
+                            <constraint firstItem="ROB-Ac-9ZK" firstAttribute="centerX" secondItem="g4Z-Qd-G7i" secondAttribute="centerX" id="ccH-r8-Krc"/>
+                            <constraint firstItem="g4Z-Qd-G7i" firstAttribute="top" secondItem="nUc-bw-ld4" secondAttribute="bottom" constant="36" id="cww-u0-jV7"/>
+                            <constraint firstItem="ROB-Ac-9ZK" firstAttribute="top" secondItem="g4Z-Qd-G7i" secondAttribute="bottom" constant="36" id="fZ0-0k-pss"/>
+                            <constraint firstItem="nUc-bw-ld4" firstAttribute="top" secondItem="S9G-IJ-tbd" secondAttribute="bottom" constant="36" id="iTk-Je-W92"/>
+                            <constraint firstItem="RhY-4G-fqL" firstAttribute="centerX" secondItem="ROB-Ac-9ZK" secondAttribute="centerX" id="kEp-H9-1y7"/>
                             <constraint firstItem="S9G-IJ-tbd" firstAttribute="top" secondItem="hsV-oW-N0J" secondAttribute="bottom" constant="100" id="rbd-7A-cIo"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="D9W-XF-ucf"/>
                     <connections>
                         <outlet property="boxTurtleButton" destination="S9G-IJ-tbd" id="O6E-7w-zRo"/>
+                        <outlet property="crab2Button" destination="ROB-Ac-9ZK" id="9GC-OG-GdJ"/>
                         <outlet property="crabButton" destination="g4Z-Qd-G7i" id="mD9-mM-MJ0"/>
+                        <outlet property="puppyButton" destination="RhY-4G-fqL" id="fYX-6q-Ufd"/>
                         <outlet property="spottedTurtleButton" destination="nUc-bw-ld4" id="7XQ-29-5xU"/>
                         <segue destination="gcW-ev-w5z" kind="show" identifier="ShowCrab" id="onh-0v-mY0"/>
                         <segue destination="MI9-bx-whb" kind="show" identifier="ShowSpottedTurtle" id="KAV-jV-fPs"/>
                         <segue destination="cmp-ko-Xwn" kind="show" identifier="ShowBoxTurtle" id="Eeu-Xm-fAQ"/>
+                        <segue destination="fVV-aN-iXJ" kind="show" identifier="ShowPuppy" id="saU-Vp-UrA"/>
+                        <segue destination="s4q-fa-MbE" kind="show" identifier="ShowCrab2" id="sW3-CO-zdD"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aCO-Da-d0Z" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -143,12 +165,28 @@
             <point key="canvasLocation" x="-126" y="-517"/>
         </scene>
         <!--CrabViewController-->
+        <scene sceneID="O1e-yw-Azf">
+            <objects>
+                <viewControllerPlaceholder storyboardName="CrabStoryboard" referencedIdentifier="CrabViewController" id="s4q-fa-MbE" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Di8-w5-wtg" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-634.5" y="-147"/>
+        </scene>
+        <!--CrabViewController-->
         <scene sceneID="J64-BJ-1hn">
             <objects>
                 <viewControllerPlaceholder storyboardName="CrabStoryboard" referencedIdentifier="CrabViewController" id="gcW-ev-w5z" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="TR2-ZH-adV" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-146.5" y="-65"/>
+            <point key="canvasLocation" x="-314.5" y="-57"/>
+        </scene>
+        <!--PuppyStoryboard-->
+        <scene sceneID="qkh-zT-0ge">
+            <objects>
+                <viewControllerPlaceholder storyboardName="PuppyStoryboard" id="fVV-aN-iXJ" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ZCb-Xe-WkL" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="35.5" y="-57"/>
         </scene>
     </scenes>
     <resources>

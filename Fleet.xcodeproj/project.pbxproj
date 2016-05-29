@@ -7,12 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7B0D3B2B1CFA73930096DBC2 /* TurtlesStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B0D3B2A1CFA73930096DBC2 /* TurtlesStoryboard.storyboard */; };
-		7B0D3B2D1CFA73AF0096DBC2 /* BoxTurtleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B2C1CFA73AF0096DBC2 /* BoxTurtleViewController.swift */; };
-		7B0D3B2F1CFA73FC0096DBC2 /* CrabStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B0D3B2E1CFA73FC0096DBC2 /* CrabStoryboard.storyboard */; };
-		7B0D3B311CFA74070096DBC2 /* CrabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B301CFA74070096DBC2 /* CrabViewController.swift */; };
-		7B0D3B331CFA74870096DBC2 /* SpottedTurtleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B321CFA74870096DBC2 /* SpottedTurtleViewController.swift */; };
-		7B0D3B351CFA74B80096DBC2 /* TurtleMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B341CFA74B80096DBC2 /* TurtleMenuViewController.swift */; };
 		7B0D3B381CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B371CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift */; };
 		7B0D3B3B1CFA76200096DBC2 /* UIStoryboard+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B3A1CFA76200096DBC2 /* UIStoryboard+Fleet.swift */; };
 		7B0D3B3F1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B3E1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift */; };
@@ -20,18 +14,20 @@
 		7B0D3B521CFB29B40096DBC2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B0D3B501CFB29B40096DBC2 /* LaunchScreen.storyboard */; };
 		7B0D3B5F1CFB2C210096DBC2 /* TurtlesStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B0D3B2A1CFA73930096DBC2 /* TurtlesStoryboard.storyboard */; };
 		7B0D3B601CFB2C270096DBC2 /* CrabStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B0D3B2E1CFA73FC0096DBC2 /* CrabStoryboard.storyboard */; };
-		7B0D3B621CFB2E120096DBC2 /* TurtleMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B341CFA74B80096DBC2 /* TurtleMenuViewController.swift */; };
+		7B0D3B621CFB2E120096DBC2 /* AnimalListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B341CFA74B80096DBC2 /* AnimalListViewController.swift */; };
 		7B0D3B631CFB2E120096DBC2 /* BoxTurtleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B2C1CFA73AF0096DBC2 /* BoxTurtleViewController.swift */; };
 		7B0D3B641CFB2E120096DBC2 /* SpottedTurtleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B321CFA74870096DBC2 /* SpottedTurtleViewController.swift */; };
 		7B0D3B651CFB2E230096DBC2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B471CFB29B40096DBC2 /* AppDelegate.swift */; };
 		7B0D3B661CFB2E280096DBC2 /* CrabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B301CFA74070096DBC2 /* CrabViewController.swift */; };
 		7B0D3B6A1CFB37B50096DBC2 /* TestNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B691CFB37B50096DBC2 /* TestNavigationController.swift */; };
+		7B0D3B6E1CFB50F00096DBC2 /* PuppyStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B0D3B6D1CFB50F00096DBC2 /* PuppyStoryboard.storyboard */; };
+		7B0D3B701CFB51070096DBC2 /* PuppyListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B6F1CFB51070096DBC2 /* PuppyListViewController.swift */; };
+		7B0D3B711CFB5F5C0096DBC2 /* ButtonTapTestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BA90AD91CC3F0C60040B031 /* ButtonTapTestViewController.xib */; };
 		7BA90AB71CC130990040B031 /* Fleet.h in Headers */ = {isa = PBXBuildFile; fileRef = 7BA90AB61CC130990040B031 /* Fleet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7BA90AC01CC3B6B80040B031 /* UIButton+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90ABF1CC3B6B80040B031 /* UIButton+Fleet.swift */; };
 		7BA90ACA1CC3B8950040B031 /* Fleet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BA90AB31CC130980040B031 /* Fleet.framework */; };
 		7BA90AD21CC3EF420040B031 /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BA90AD11CC3EF420040B031 /* Nimble.framework */; };
 		7BA90AD41CC3EF6F0040B031 /* UIButton+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90AD31CC3EF6F0040B031 /* UIButton+FleetSpec.swift */; };
-		7BA90ADA1CC3F0C60040B031 /* ButtonTapTestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BA90AD91CC3F0C60040B031 /* ButtonTapTestViewController.xib */; };
 		7BA90ADC1CC3F0E00040B031 /* ButtonTapTestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90ADB1CC3F0E00040B031 /* ButtonTapTestViewController.swift */; };
 		7BA90ADF1CC3F6C50040B031 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90ADE1CC3F6C50040B031 /* File.swift */; };
 /* End PBXBuildFile section */
@@ -59,7 +55,7 @@
 		7B0D3B2E1CFA73FC0096DBC2 /* CrabStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CrabStoryboard.storyboard; sourceTree = "<group>"; };
 		7B0D3B301CFA74070096DBC2 /* CrabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrabViewController.swift; sourceTree = "<group>"; };
 		7B0D3B321CFA74870096DBC2 /* SpottedTurtleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpottedTurtleViewController.swift; sourceTree = "<group>"; };
-		7B0D3B341CFA74B80096DBC2 /* TurtleMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TurtleMenuViewController.swift; sourceTree = "<group>"; };
+		7B0D3B341CFA74B80096DBC2 /* AnimalListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnimalListViewController.swift; sourceTree = "<group>"; };
 		7B0D3B371CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIStoryboard+FleetSpec.swift"; sourceTree = "<group>"; };
 		7B0D3B3A1CFA76200096DBC2 /* UIStoryboard+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIStoryboard+Fleet.swift"; sourceTree = "<group>"; };
 		7B0D3B3E1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryboardInstanceBinding.swift; sourceTree = "<group>"; };
@@ -70,6 +66,8 @@
 		7B0D3B591CFB2B860096DBC2 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = FleetTestApp/Info.plist; sourceTree = SOURCE_ROOT; };
 		7B0D3B671CFB2F030096DBC2 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7B0D3B691CFB37B50096DBC2 /* TestNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestNavigationController.swift; sourceTree = "<group>"; };
+		7B0D3B6D1CFB50F00096DBC2 /* PuppyStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = PuppyStoryboard.storyboard; sourceTree = "<group>"; };
+		7B0D3B6F1CFB51070096DBC2 /* PuppyListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PuppyListViewController.swift; sourceTree = "<group>"; };
 		7BA90AB31CC130980040B031 /* Fleet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Fleet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BA90AB61CC130990040B031 /* Fleet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Fleet.h; sourceTree = "<group>"; };
 		7BA90AB81CC130990040B031 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -113,11 +111,13 @@
 			isa = PBXGroup;
 			children = (
 				7B0D3B2A1CFA73930096DBC2 /* TurtlesStoryboard.storyboard */,
-				7B0D3B341CFA74B80096DBC2 /* TurtleMenuViewController.swift */,
+				7B0D3B341CFA74B80096DBC2 /* AnimalListViewController.swift */,
 				7B0D3B2C1CFA73AF0096DBC2 /* BoxTurtleViewController.swift */,
 				7B0D3B321CFA74870096DBC2 /* SpottedTurtleViewController.swift */,
 				7B0D3B2E1CFA73FC0096DBC2 /* CrabStoryboard.storyboard */,
 				7B0D3B301CFA74070096DBC2 /* CrabViewController.swift */,
+				7B0D3B6D1CFB50F00096DBC2 /* PuppyStoryboard.storyboard */,
+				7B0D3B6F1CFB51070096DBC2 /* PuppyListViewController.swift */,
 			);
 			path = Storyboards;
 			sourceTree = "<group>";
@@ -313,8 +313,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				7BA90ACC1CC3B8950040B031 /* PBXTargetDependency */,
 				7B0D3B581CFB2B270096DBC2 /* PBXTargetDependency */,
+				7BA90ACC1CC3B8950040B031 /* PBXTargetDependency */,
 			);
 			name = FleetTests;
 			productName = FleetTests;
@@ -368,6 +368,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B0D3B6E1CFB50F00096DBC2 /* PuppyStoryboard.storyboard in Resources */,
 				7B0D3B601CFB2C270096DBC2 /* CrabStoryboard.storyboard in Resources */,
 				7B0D3B5F1CFB2C210096DBC2 /* TurtlesStoryboard.storyboard in Resources */,
 				7B0D3B521CFB29B40096DBC2 /* LaunchScreen.storyboard in Resources */,
@@ -386,9 +387,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7B0D3B2F1CFA73FC0096DBC2 /* CrabStoryboard.storyboard in Resources */,
-				7BA90ADA1CC3F0C60040B031 /* ButtonTapTestViewController.xib in Resources */,
-				7B0D3B2B1CFA73930096DBC2 /* TurtlesStoryboard.storyboard in Resources */,
+				7B0D3B711CFB5F5C0096DBC2 /* ButtonTapTestViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -401,8 +400,9 @@
 			files = (
 				7B0D3B661CFB2E280096DBC2 /* CrabViewController.swift in Sources */,
 				7B0D3B651CFB2E230096DBC2 /* AppDelegate.swift in Sources */,
-				7B0D3B621CFB2E120096DBC2 /* TurtleMenuViewController.swift in Sources */,
+				7B0D3B621CFB2E120096DBC2 /* AnimalListViewController.swift in Sources */,
 				7B0D3B631CFB2E120096DBC2 /* BoxTurtleViewController.swift in Sources */,
+				7B0D3B701CFB51070096DBC2 /* PuppyListViewController.swift in Sources */,
 				7B0D3B641CFB2E120096DBC2 /* SpottedTurtleViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -421,15 +421,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7B0D3B2D1CFA73AF0096DBC2 /* BoxTurtleViewController.swift in Sources */,
 				7BA90ADC1CC3F0E00040B031 /* ButtonTapTestViewController.swift in Sources */,
 				7BA90ADF1CC3F6C50040B031 /* File.swift in Sources */,
 				7BA90AD41CC3EF6F0040B031 /* UIButton+FleetSpec.swift in Sources */,
 				7B0D3B381CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift in Sources */,
 				7B0D3B6A1CFB37B50096DBC2 /* TestNavigationController.swift in Sources */,
-				7B0D3B331CFA74870096DBC2 /* SpottedTurtleViewController.swift in Sources */,
-				7B0D3B351CFA74B80096DBC2 /* TurtleMenuViewController.swift in Sources */,
-				7B0D3B311CFA74070096DBC2 /* CrabViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -475,6 +471,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ENABLE_TESTABILITY = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = $SRCROOT/FleetTestApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -614,6 +611,7 @@
 		7BA90ACE1CC3B8950040B031 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -631,6 +629,7 @@
 		7BA90ACF1CC3B8950040B031 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -654,6 +653,7 @@
 				7B0D3B561CFB29B40096DBC2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		7BA90AAD1CC130980040B031 /* Build configuration list for PBXProject "Fleet" */ = {
 			isa = XCConfigurationList;
