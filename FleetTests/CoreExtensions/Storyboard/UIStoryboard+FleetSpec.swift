@@ -6,7 +6,7 @@ import Nimble
 class UIStoryboard_FleetSpec: XCTestCase {
     var turtleStoryboard: UIStoryboard!
     
-    class MockBoxedTurtleViewController: BoxTurtleViewController { }
+    class MockBoxTurtleViewController: BoxTurtleViewController { }
     class MockCrabViewController: CrabViewController { }
     class MockPuppyListViewController: PuppyListViewController { }
     
@@ -17,11 +17,11 @@ class UIStoryboard_FleetSpec: XCTestCase {
     }
     
     func test_bindingViewControllerToIdentifier_whenSameStoryboard_returnsBoundViewController() {
-        let mockBoxedTurtleViewController = MockBoxedTurtleViewController()
-        try! turtleStoryboard.bindViewController(mockBoxedTurtleViewController, toIdentifier: "BoxTurtleViewController")
+        let mockBoxTurtleViewController = MockBoxTurtleViewController()
+        try! turtleStoryboard.bindViewController(mockBoxTurtleViewController, toIdentifier: "BoxTurtleViewController")
         
         let boxedTurtleViewController = turtleStoryboard.instantiateViewControllerWithIdentifier("BoxTurtleViewController")
-        expect(boxedTurtleViewController).to(beIdenticalTo(mockBoxedTurtleViewController))
+        expect(boxedTurtleViewController).to(beIdenticalTo(mockBoxTurtleViewController))
     }
     
     func test_bindingViewController_whenInvalidIdentifier_throwsError() {
@@ -93,5 +93,21 @@ class UIStoryboard_FleetSpec: XCTestCase {
         if !pass {
             fail("Expected to throw InvalidExternalStoryboardReference error")
         }
+    }
+    
+    func test_multipleStoryboardSupport() {
+        let turtleStoryboardTwo = UIStoryboard.init(name: "TurtlesStoryboard", bundle: nil)
+        
+        let mockBoxTurtleViewControllerBlue = MockBoxTurtleViewController()
+        try! turtleStoryboard.bindViewController(mockBoxTurtleViewControllerBlue, toIdentifier: "BoxTurtleViewController")
+        
+        let mockBoxTurtleViewControllerGreen = MockBoxTurtleViewController()
+        try! turtleStoryboardTwo.bindViewController(mockBoxTurtleViewControllerGreen, toIdentifier: "BoxTurtleViewController")
+        
+        let blueBoxTurtleViewController = turtleStoryboard.instantiateViewControllerWithIdentifier("BoxTurtleViewController")
+        expect(blueBoxTurtleViewController).to(beIdenticalTo(mockBoxTurtleViewControllerBlue))
+        
+        let greenBoxTurtleViewController = turtleStoryboardTwo.instantiateViewControllerWithIdentifier("BoxTurtleViewController")
+        expect(greenBoxTurtleViewController).to(beIdenticalTo(mockBoxTurtleViewControllerGreen))
     }
 }
