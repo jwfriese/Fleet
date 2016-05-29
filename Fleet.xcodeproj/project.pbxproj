@@ -7,6 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7B0D3B2B1CFA73930096DBC2 /* TurtlesStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B0D3B2A1CFA73930096DBC2 /* TurtlesStoryboard.storyboard */; };
+		7B0D3B2D1CFA73AF0096DBC2 /* BoxTurtleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B2C1CFA73AF0096DBC2 /* BoxTurtleViewController.swift */; };
+		7B0D3B2F1CFA73FC0096DBC2 /* CrabStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B0D3B2E1CFA73FC0096DBC2 /* CrabStoryboard.storyboard */; };
+		7B0D3B311CFA74070096DBC2 /* CrabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B301CFA74070096DBC2 /* CrabViewController.swift */; };
+		7B0D3B331CFA74870096DBC2 /* SpottedTurtleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B321CFA74870096DBC2 /* SpottedTurtleViewController.swift */; };
+		7B0D3B351CFA74B80096DBC2 /* TurtleMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B341CFA74B80096DBC2 /* TurtleMenuViewController.swift */; };
+		7B0D3B381CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B371CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift */; };
+		7B0D3B3B1CFA76200096DBC2 /* UIStoryboard+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B3A1CFA76200096DBC2 /* UIStoryboard+Fleet.swift */; };
+		7B0D3B3F1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B3E1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift */; };
+		7B0D3B4F1CFB29B40096DBC2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7B0D3B4E1CFB29B40096DBC2 /* Assets.xcassets */; };
+		7B0D3B521CFB29B40096DBC2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B0D3B501CFB29B40096DBC2 /* LaunchScreen.storyboard */; };
+		7B0D3B5F1CFB2C210096DBC2 /* TurtlesStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B0D3B2A1CFA73930096DBC2 /* TurtlesStoryboard.storyboard */; };
+		7B0D3B601CFB2C270096DBC2 /* CrabStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B0D3B2E1CFA73FC0096DBC2 /* CrabStoryboard.storyboard */; };
+		7B0D3B621CFB2E120096DBC2 /* TurtleMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B341CFA74B80096DBC2 /* TurtleMenuViewController.swift */; };
+		7B0D3B631CFB2E120096DBC2 /* BoxTurtleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B2C1CFA73AF0096DBC2 /* BoxTurtleViewController.swift */; };
+		7B0D3B641CFB2E120096DBC2 /* SpottedTurtleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B321CFA74870096DBC2 /* SpottedTurtleViewController.swift */; };
+		7B0D3B651CFB2E230096DBC2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B471CFB29B40096DBC2 /* AppDelegate.swift */; };
+		7B0D3B661CFB2E280096DBC2 /* CrabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B301CFA74070096DBC2 /* CrabViewController.swift */; };
+		7B0D3B6A1CFB37B50096DBC2 /* TestNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B691CFB37B50096DBC2 /* TestNavigationController.swift */; };
 		7BA90AB71CC130990040B031 /* Fleet.h in Headers */ = {isa = PBXBuildFile; fileRef = 7BA90AB61CC130990040B031 /* Fleet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7BA90AC01CC3B6B80040B031 /* UIButton+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90ABF1CC3B6B80040B031 /* UIButton+Fleet.swift */; };
 		7BA90ACA1CC3B8950040B031 /* Fleet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BA90AB31CC130980040B031 /* Fleet.framework */; };
@@ -18,6 +37,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		7B0D3B571CFB2B270096DBC2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7BA90AAA1CC130980040B031 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7B0D3B441CFB29B40096DBC2;
+			remoteInfo = FleetTestApp;
+		};
 		7BA90ACB1CC3B8950040B031 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7BA90AAA1CC130980040B031 /* Project object */;
@@ -28,12 +54,27 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7B0D3B2A1CFA73930096DBC2 /* TurtlesStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = TurtlesStoryboard.storyboard; sourceTree = "<group>"; };
+		7B0D3B2C1CFA73AF0096DBC2 /* BoxTurtleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoxTurtleViewController.swift; sourceTree = "<group>"; };
+		7B0D3B2E1CFA73FC0096DBC2 /* CrabStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CrabStoryboard.storyboard; sourceTree = "<group>"; };
+		7B0D3B301CFA74070096DBC2 /* CrabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrabViewController.swift; sourceTree = "<group>"; };
+		7B0D3B321CFA74870096DBC2 /* SpottedTurtleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpottedTurtleViewController.swift; sourceTree = "<group>"; };
+		7B0D3B341CFA74B80096DBC2 /* TurtleMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TurtleMenuViewController.swift; sourceTree = "<group>"; };
+		7B0D3B371CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIStoryboard+FleetSpec.swift"; sourceTree = "<group>"; };
+		7B0D3B3A1CFA76200096DBC2 /* UIStoryboard+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIStoryboard+Fleet.swift"; sourceTree = "<group>"; };
+		7B0D3B3E1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryboardInstanceBinding.swift; sourceTree = "<group>"; };
+		7B0D3B451CFB29B40096DBC2 /* FleetTestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FleetTestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7B0D3B471CFB29B40096DBC2 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		7B0D3B4E1CFB29B40096DBC2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		7B0D3B511CFB29B40096DBC2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		7B0D3B591CFB2B860096DBC2 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = FleetTestApp/Info.plist; sourceTree = SOURCE_ROOT; };
+		7B0D3B671CFB2F030096DBC2 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7B0D3B691CFB37B50096DBC2 /* TestNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestNavigationController.swift; sourceTree = "<group>"; };
 		7BA90AB31CC130980040B031 /* Fleet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Fleet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BA90AB61CC130990040B031 /* Fleet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Fleet.h; sourceTree = "<group>"; };
 		7BA90AB81CC130990040B031 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7BA90ABF1CC3B6B80040B031 /* UIButton+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIButton+Fleet.swift"; sourceTree = "<group>"; };
 		7BA90AC51CC3B8950040B031 /* FleetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FleetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		7BA90AC91CC3B8950040B031 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7BA90AD11CC3EF420040B031 /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = "Externals/Nimble/build/Debug-iphoneos/Nimble.framework"; sourceTree = "<group>"; };
 		7BA90AD31CC3EF6F0040B031 /* UIButton+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIButton+FleetSpec.swift"; sourceTree = "<group>"; };
 		7BA90AD91CC3F0C60040B031 /* ButtonTapTestViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ButtonTapTestViewController.xib; sourceTree = "<group>"; };
@@ -42,6 +83,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		7B0D3B421CFB29B40096DBC2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7BA90AAF1CC130980040B031 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -61,11 +109,54 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7B0D3B291CFA73710096DBC2 /* Storyboards */ = {
+			isa = PBXGroup;
+			children = (
+				7B0D3B2A1CFA73930096DBC2 /* TurtlesStoryboard.storyboard */,
+				7B0D3B341CFA74B80096DBC2 /* TurtleMenuViewController.swift */,
+				7B0D3B2C1CFA73AF0096DBC2 /* BoxTurtleViewController.swift */,
+				7B0D3B321CFA74870096DBC2 /* SpottedTurtleViewController.swift */,
+				7B0D3B2E1CFA73FC0096DBC2 /* CrabStoryboard.storyboard */,
+				7B0D3B301CFA74070096DBC2 /* CrabViewController.swift */,
+			);
+			path = Storyboards;
+			sourceTree = "<group>";
+		};
+		7B0D3B361CFA76170096DBC2 /* Storyboard */ = {
+			isa = PBXGroup;
+			children = (
+				7B0D3B371CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift */,
+			);
+			path = Storyboard;
+			sourceTree = "<group>";
+		};
+		7B0D3B391CFA76200096DBC2 /* Storyboard */ = {
+			isa = PBXGroup;
+			children = (
+				7B0D3B3A1CFA76200096DBC2 /* UIStoryboard+Fleet.swift */,
+				7B0D3B3E1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift */,
+			);
+			path = Storyboard;
+			sourceTree = "<group>";
+		};
+		7B0D3B461CFB29B40096DBC2 /* FleetTestApp */ = {
+			isa = PBXGroup;
+			children = (
+				7B0D3B591CFB2B860096DBC2 /* Info.plist */,
+				7B0D3B471CFB29B40096DBC2 /* AppDelegate.swift */,
+				7B0D3B4E1CFB29B40096DBC2 /* Assets.xcassets */,
+				7B0D3B501CFB29B40096DBC2 /* LaunchScreen.storyboard */,
+				7B0D3B291CFA73710096DBC2 /* Storyboards */,
+			);
+			path = FleetTestApp;
+			sourceTree = "<group>";
+		};
 		7BA90AA91CC130980040B031 = {
 			isa = PBXGroup;
 			children = (
 				7BA90AD51CC3F0320040B031 /* Frameworks */,
 				7BA90AB51CC130980040B031 /* Fleet */,
+				7B0D3B461CFB29B40096DBC2 /* FleetTestApp */,
 				7BA90AC61CC3B8950040B031 /* FleetTests */,
 				7BA90AB41CC130980040B031 /* Products */,
 			);
@@ -76,6 +167,7 @@
 			children = (
 				7BA90AB31CC130980040B031 /* Fleet.framework */,
 				7BA90AC51CC3B8950040B031 /* FleetTests.xctest */,
+				7B0D3B451CFB29B40096DBC2 /* FleetTestApp.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -93,6 +185,7 @@
 		7BA90ABE1CC3B5E30040B031 /* CoreExtensions */ = {
 			isa = PBXGroup;
 			children = (
+				7B0D3B391CFA76200096DBC2 /* Storyboard */,
 				7BA90ABF1CC3B6B80040B031 /* UIButton+Fleet.swift */,
 			);
 			path = CoreExtensions;
@@ -101,10 +194,10 @@
 		7BA90AC61CC3B8950040B031 /* FleetTests */ = {
 			isa = PBXGroup;
 			children = (
+				7B0D3B671CFB2F030096DBC2 /* Info.plist */,
 				7BA90ADD1CC3F6B50040B031 /* Helpers */,
-				7BA90AD61CC3F07B0040B031 /* SupportingViews */,
+				7BA90AD61CC3F07B0040B031 /* SupportingResources */,
 				7BA90AD01CC3E82B0040B031 /* CoreExtensions */,
-				7BA90AC91CC3B8950040B031 /* Info.plist */,
 			);
 			path = FleetTests;
 			sourceTree = "<group>";
@@ -112,6 +205,7 @@
 		7BA90AD01CC3E82B0040B031 /* CoreExtensions */ = {
 			isa = PBXGroup;
 			children = (
+				7B0D3B361CFA76170096DBC2 /* Storyboard */,
 				7BA90AD31CC3EF6F0040B031 /* UIButton+FleetSpec.swift */,
 			);
 			path = CoreExtensions;
@@ -125,12 +219,12 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		7BA90AD61CC3F07B0040B031 /* SupportingViews */ = {
+		7BA90AD61CC3F07B0040B031 /* SupportingResources */ = {
 			isa = PBXGroup;
 			children = (
 				7BA90AD71CC3F09C0040B031 /* CoreExtensions */,
 			);
-			path = SupportingViews;
+			path = SupportingResources;
 			sourceTree = "<group>";
 		};
 		7BA90AD71CC3F09C0040B031 /* CoreExtensions */ = {
@@ -153,6 +247,7 @@
 		7BA90ADD1CC3F6B50040B031 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				7B0D3B691CFB37B50096DBC2 /* TestNavigationController.swift */,
 				7BA90ADE1CC3F6C50040B031 /* File.swift */,
 			);
 			path = Helpers;
@@ -172,6 +267,23 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		7B0D3B441CFB29B40096DBC2 /* FleetTestApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7B0D3B541CFB29B40096DBC2 /* Build configuration list for PBXNativeTarget "FleetTestApp" */;
+			buildPhases = (
+				7B0D3B411CFB29B40096DBC2 /* Sources */,
+				7B0D3B421CFB29B40096DBC2 /* Frameworks */,
+				7B0D3B431CFB29B40096DBC2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FleetTestApp;
+			productName = FleetTestApp;
+			productReference = 7B0D3B451CFB29B40096DBC2 /* FleetTestApp.app */;
+			productType = "com.apple.product-type.application";
+		};
 		7BA90AB21CC130980040B031 /* Fleet */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7BA90ABB1CC130990040B031 /* Build configuration list for PBXNativeTarget "Fleet" */;
@@ -202,6 +314,7 @@
 			);
 			dependencies = (
 				7BA90ACC1CC3B8950040B031 /* PBXTargetDependency */,
+				7B0D3B581CFB2B270096DBC2 /* PBXTargetDependency */,
 			);
 			name = FleetTests;
 			productName = FleetTests;
@@ -218,11 +331,15 @@
 				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = jwfriese;
 				TargetAttributes = {
+					7B0D3B441CFB29B40096DBC2 = {
+						CreatedOnToolsVersion = 7.3.1;
+					};
 					7BA90AB21CC130980040B031 = {
 						CreatedOnToolsVersion = 7.3;
 					};
 					7BA90AC41CC3B8950040B031 = {
 						CreatedOnToolsVersion = 7.3;
+						TestTargetID = 7B0D3B441CFB29B40096DBC2;
 					};
 				};
 			};
@@ -232,6 +349,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 7BA90AA91CC130980040B031;
 			productRefGroup = 7BA90AB41CC130980040B031 /* Products */;
@@ -240,11 +358,23 @@
 			targets = (
 				7BA90AB21CC130980040B031 /* Fleet */,
 				7BA90AC41CC3B8950040B031 /* FleetTests */,
+				7B0D3B441CFB29B40096DBC2 /* FleetTestApp */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		7B0D3B431CFB29B40096DBC2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7B0D3B601CFB2C270096DBC2 /* CrabStoryboard.storyboard in Resources */,
+				7B0D3B5F1CFB2C210096DBC2 /* TurtlesStoryboard.storyboard in Resources */,
+				7B0D3B521CFB29B40096DBC2 /* LaunchScreen.storyboard in Resources */,
+				7B0D3B4F1CFB29B40096DBC2 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7BA90AB11CC130980040B031 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -256,18 +386,34 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B0D3B2F1CFA73FC0096DBC2 /* CrabStoryboard.storyboard in Resources */,
 				7BA90ADA1CC3F0C60040B031 /* ButtonTapTestViewController.xib in Resources */,
+				7B0D3B2B1CFA73930096DBC2 /* TurtlesStoryboard.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		7B0D3B411CFB29B40096DBC2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7B0D3B661CFB2E280096DBC2 /* CrabViewController.swift in Sources */,
+				7B0D3B651CFB2E230096DBC2 /* AppDelegate.swift in Sources */,
+				7B0D3B621CFB2E120096DBC2 /* TurtleMenuViewController.swift in Sources */,
+				7B0D3B631CFB2E120096DBC2 /* BoxTurtleViewController.swift in Sources */,
+				7B0D3B641CFB2E120096DBC2 /* SpottedTurtleViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7BA90AAE1CC130980040B031 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				7BA90AC01CC3B6B80040B031 /* UIButton+Fleet.swift in Sources */,
+				7B0D3B3F1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift in Sources */,
+				7B0D3B3B1CFA76200096DBC2 /* UIStoryboard+Fleet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -275,15 +421,26 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B0D3B2D1CFA73AF0096DBC2 /* BoxTurtleViewController.swift in Sources */,
 				7BA90ADC1CC3F0E00040B031 /* ButtonTapTestViewController.swift in Sources */,
 				7BA90ADF1CC3F6C50040B031 /* File.swift in Sources */,
 				7BA90AD41CC3EF6F0040B031 /* UIButton+FleetSpec.swift in Sources */,
+				7B0D3B381CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift in Sources */,
+				7B0D3B6A1CFB37B50096DBC2 /* TestNavigationController.swift in Sources */,
+				7B0D3B331CFA74870096DBC2 /* SpottedTurtleViewController.swift in Sources */,
+				7B0D3B351CFA74B80096DBC2 /* TurtleMenuViewController.swift in Sources */,
+				7B0D3B311CFA74070096DBC2 /* CrabViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		7B0D3B581CFB2B270096DBC2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7B0D3B441CFB29B40096DBC2 /* FleetTestApp */;
+			targetProxy = 7B0D3B571CFB2B270096DBC2 /* PBXContainerItemProxy */;
+		};
 		7BA90ACC1CC3B8950040B031 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 7BA90AB21CC130980040B031 /* Fleet */;
@@ -291,7 +448,41 @@
 		};
 /* End PBXTargetDependency section */
 
+/* Begin PBXVariantGroup section */
+		7B0D3B501CFB29B40096DBC2 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7B0D3B511CFB29B40096DBC2 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
+		7B0D3B551CFB29B40096DBC2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = $SRCROOT/FleetTestApp/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.FleetTestApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		7B0D3B561CFB29B40096DBC2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INFOPLIST_FILE = $SRCROOT/FleetTestApp/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.FleetTestApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		7BA90AB91CC130990040B031 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -433,6 +624,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.FleetTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FleetTestApp.app/FleetTestApp";
 			};
 			name = Debug;
 		};
@@ -448,12 +640,21 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.FleetTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FleetTestApp.app/FleetTestApp";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		7B0D3B541CFB29B40096DBC2 /* Build configuration list for PBXNativeTarget "FleetTestApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7B0D3B551CFB29B40096DBC2 /* Debug */,
+				7B0D3B561CFB29B40096DBC2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		7BA90AAD1CC130980040B031 /* Build configuration list for PBXProject "Fleet" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
