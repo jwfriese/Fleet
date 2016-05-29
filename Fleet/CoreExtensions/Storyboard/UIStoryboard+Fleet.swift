@@ -48,7 +48,7 @@ extension UIStoryboard {
     func fleet_initWithBundle(bundle: NSBundle?,
                               storyboardFileName: String,
                               identifierToNibNameMap: AnyObject,
-                              identifierToExternalStoryboardReferenceMap: AnyObject,
+                              identifierToExternalStoryboardReferenceMap: AnyObject?,
                               designatedEntryPointIdentifier:AnyObject) -> UIStoryboard {
         let instance = self.fleet_initWithBundle(bundle, storyboardFileName: storyboardFileName, identifierToNibNameMap: identifierToNibNameMap, identifierToExternalStoryboardReferenceMap: identifierToExternalStoryboardReferenceMap, designatedEntryPointIdentifier: designatedEntryPointIdentifier)
         
