@@ -34,9 +34,13 @@ public extension UIViewController {
         }
     }
     
-    func fleet_presentViewController(viewController: UIViewController, animated: Bool, completion: () -> ()) {
+    func fleet_presentViewController(viewController: UIViewController, animated: Bool, completion: (() -> ())?) {
         self.fleet_property_presentedViewController = viewController
         viewController.fleet_property_presentingViewController = self
+        
+        if let completion = completion {
+            completion()
+        }
     }
     
     private class func swizzleDismiss() {

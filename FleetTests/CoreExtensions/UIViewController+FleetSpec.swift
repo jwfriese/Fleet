@@ -27,4 +27,18 @@ class UIViewController_FleetSpec: XCTestCase {
         expect(bottom.presentedViewController).to(beNil())
         expect(top.presentingViewController).to(beNil())
     }
+    
+    func test_presentViewController_immediatelyExecutesTheGivenCompletionHandler() {
+        let bottom = UIViewController()
+        let top = UIViewController()
+        
+        var didFireCompletionHandler = false
+        let completionHanlder = {
+            didFireCompletionHandler = true
+        }
+        
+        bottom.presentViewController(top, animated: true, completion: completionHanlder)
+        
+        expect(didFireCompletionHandler).to(beTrue())
+    }
 }
