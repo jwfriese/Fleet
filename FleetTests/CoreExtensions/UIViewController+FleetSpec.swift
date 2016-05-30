@@ -16,4 +16,15 @@ class UIViewController_FleetSpec: XCTestCase {
         expect(bottom.presentedViewController).to(beIdenticalTo(top))
         expect(top.presentingViewController).to(beIdenticalTo(bottom))
     }
+    
+    func test_dismissViewController_immediatelyDismissesThePresentedViewController() {
+        let bottom = UIViewController()
+        let top = UIViewController()
+        
+        bottom.presentViewController(top, animated: true, completion: nil)
+        
+        bottom.dismissViewControllerAnimated(true, completion: nil)
+        expect(bottom.presentedViewController).to(beNil())
+        expect(top.presentingViewController).to(beNil())
+    }
 }
