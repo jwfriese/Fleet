@@ -33,11 +33,27 @@ class UIViewController_FleetSpec: XCTestCase {
         let top = UIViewController()
         
         var didFireCompletionHandler = false
-        let completionHanlder = {
+        let completionHandler = {
             didFireCompletionHandler = true
         }
         
-        bottom.presentViewController(top, animated: true, completion: completionHanlder)
+        bottom.presentViewController(top, animated: true, completion: completionHandler)
+        
+        expect(didFireCompletionHandler).to(beTrue())
+    }
+    
+    func test_dismissViewController_immediatelyExecutesTheGivenCompletionHandler() {
+        let bottom = UIViewController()
+        let top = UIViewController()
+        
+        bottom.presentViewController(top, animated: true, completion: nil)
+        
+        var didFireCompletionHandler = false
+        let completionHandler = {
+            didFireCompletionHandler = true
+        }
+        
+        bottom.dismissViewControllerAnimated(true, completion: completionHandler)
         
         expect(didFireCompletionHandler).to(beTrue())
     }
