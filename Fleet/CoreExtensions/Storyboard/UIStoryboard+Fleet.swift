@@ -9,7 +9,7 @@ extension UIStoryboard {
         get {
             return objc_getAssociatedObject(self, &storyboardBindingIdentifierAssociationKey) as? String
         }
-        set(newValue) {
+        set {
             objc_setAssociatedObject(self, &storyboardBindingIdentifierAssociationKey,
                                      newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
         }
