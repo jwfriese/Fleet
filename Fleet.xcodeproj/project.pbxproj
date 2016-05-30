@@ -24,6 +24,8 @@
 		7B0D3B701CFB51070096DBC2 /* PuppyListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B6F1CFB51070096DBC2 /* PuppyListViewController.swift */; };
 		7B0D3B711CFB5F5C0096DBC2 /* ButtonTapTestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BA90AD91CC3F0C60040B031 /* ButtonTapTestViewController.xib */; };
 		7B0D3B751CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B741CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift */; };
+		7B0D3B791CFC7CEB0096DBC2 /* UIViewController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B781CFC7CEB0096DBC2 /* UIViewController+Fleet.swift */; };
+		7B0D3B7B1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B7A1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift */; };
 		7BA90AB71CC130990040B031 /* Fleet.h in Headers */ = {isa = PBXBuildFile; fileRef = 7BA90AB61CC130990040B031 /* Fleet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7BA90AC01CC3B6B80040B031 /* UIButton+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90ABF1CC3B6B80040B031 /* UIButton+Fleet.swift */; };
 		7BA90ACA1CC3B8950040B031 /* Fleet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BA90AB31CC130980040B031 /* Fleet.framework */; };
@@ -70,6 +72,8 @@
 		7B0D3B6D1CFB50F00096DBC2 /* PuppyStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = PuppyStoryboard.storyboard; sourceTree = "<group>"; };
 		7B0D3B6F1CFB51070096DBC2 /* PuppyListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PuppyListViewController.swift; sourceTree = "<group>"; };
 		7B0D3B741CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FLTStoryboardBindingError.swift; sourceTree = "<group>"; };
+		7B0D3B781CFC7CEB0096DBC2 /* UIViewController+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Fleet.swift"; sourceTree = "<group>"; };
+		7B0D3B7A1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+FleetSpec.swift"; sourceTree = "<group>"; };
 		7BA90AB31CC130980040B031 /* Fleet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Fleet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BA90AB61CC130990040B031 /* Fleet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Fleet.h; sourceTree = "<group>"; };
 		7BA90AB81CC130990040B031 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -190,6 +194,7 @@
 			children = (
 				7B0D3B391CFA76200096DBC2 /* Storyboard */,
 				7BA90ABF1CC3B6B80040B031 /* UIButton+Fleet.swift */,
+				7B0D3B781CFC7CEB0096DBC2 /* UIViewController+Fleet.swift */,
 			);
 			path = CoreExtensions;
 			sourceTree = "<group>";
@@ -210,6 +215,7 @@
 			children = (
 				7B0D3B361CFA76170096DBC2 /* Storyboard */,
 				7BA90AD31CC3EF6F0040B031 /* UIButton+FleetSpec.swift */,
+				7B0D3B7A1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift */,
 			);
 			path = CoreExtensions;
 			sourceTree = "<group>";
@@ -416,6 +422,7 @@
 			files = (
 				7BA90AC01CC3B6B80040B031 /* UIButton+Fleet.swift in Sources */,
 				7B0D3B3F1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift in Sources */,
+				7B0D3B791CFC7CEB0096DBC2 /* UIViewController+Fleet.swift in Sources */,
 				7B0D3B751CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift in Sources */,
 				7B0D3B3B1CFA76200096DBC2 /* UIStoryboard+Fleet.swift in Sources */,
 			);
@@ -427,6 +434,7 @@
 			files = (
 				7BA90ADC1CC3F0E00040B031 /* ButtonTapTestViewController.swift in Sources */,
 				7BA90ADF1CC3F6C50040B031 /* File.swift in Sources */,
+				7B0D3B7B1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift in Sources */,
 				7BA90AD41CC3EF6F0040B031 /* UIButton+FleetSpec.swift in Sources */,
 				7B0D3B381CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift in Sources */,
 				7B0D3B6A1CFB37B50096DBC2 /* TestNavigationController.swift in Sources */,
