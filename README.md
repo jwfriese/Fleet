@@ -3,6 +3,10 @@ Fleet is a UIKit-focused testing framework intended for use on iOS projects writ
 
 ## Installation
 
+#### Cocoapods
+Include Fleet in your `Podfile`:
+`pod 'Fleet'`
+
 #### Carthage
 Include Fleet in your `Cartfile`:
 `github "jwfriese/Fleet"`
