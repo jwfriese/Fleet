@@ -1,6 +1,14 @@
 # Fleet
 Fleet is a UIKit-focused testing framework intended for use on iOS projects written in Swift.
 
+## Installation
+
+#### Carthage
+Include Fleet in your `Cartfile`:
+`github "jwfriese/Fleet"`
+
+For further reference see [Carthage's documentation](https://github.com/Carthage/Carthage/blob/master/README.md).
+
 ## Features
 Fleet extends UIKit classes in order to make it easier to test your code's interactions with UIKit. Following are summaries of the major features for each extended class. The [Documentation folder](./Documentation) contains more information about these features, as well as sample code showing you how they are intended to be used. 
 
