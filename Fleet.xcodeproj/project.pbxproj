@@ -12,7 +12,7 @@
 		7B0D3B3F1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B3E1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift */; };
 		7B0D3B4F1CFB29B40096DBC2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7B0D3B4E1CFB29B40096DBC2 /* Assets.xcassets */; };
 		7B0D3B521CFB29B40096DBC2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B0D3B501CFB29B40096DBC2 /* LaunchScreen.storyboard */; };
-		7B0D3B5F1CFB2C210096DBC2 /* TurtlesStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B0D3B2A1CFA73930096DBC2 /* TurtlesStoryboard.storyboard */; };
+		7B0D3B5F1CFB2C210096DBC2 /* TurtlesAndFriendsStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B0D3B2A1CFA73930096DBC2 /* TurtlesAndFriendsStoryboard.storyboard */; };
 		7B0D3B601CFB2C270096DBC2 /* CrabStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B0D3B2E1CFA73FC0096DBC2 /* CrabStoryboard.storyboard */; };
 		7B0D3B621CFB2E120096DBC2 /* AnimalListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B341CFA74B80096DBC2 /* AnimalListViewController.swift */; };
 		7B0D3B631CFB2E120096DBC2 /* BoxTurtleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B2C1CFA73AF0096DBC2 /* BoxTurtleViewController.swift */; };
@@ -26,6 +26,8 @@
 		7B0D3B751CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B741CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift */; };
 		7B0D3B791CFC7CEB0096DBC2 /* UIViewController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B781CFC7CEB0096DBC2 /* UIViewController+Fleet.swift */; };
 		7B0D3B7B1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B7A1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift */; };
+		7B675E7D1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E7C1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift */; };
+		7B675E821D0C5372002E6B45 /* UIBarButtonItem+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E811D0C5372002E6B45 /* UIBarButtonItem+Fleet.swift */; };
 		7BA90AB71CC130990040B031 /* Fleet.h in Headers */ = {isa = PBXBuildFile; fileRef = 7BA90AB61CC130990040B031 /* Fleet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7BA90AC01CC3B6B80040B031 /* UIButton+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90ABF1CC3B6B80040B031 /* UIButton+Fleet.swift */; };
 		7BA90ACA1CC3B8950040B031 /* Fleet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BA90AB31CC130980040B031 /* Fleet.framework */; };
@@ -53,7 +55,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		7B0D3B2A1CFA73930096DBC2 /* TurtlesStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = TurtlesStoryboard.storyboard; sourceTree = "<group>"; };
+		7B0D3B2A1CFA73930096DBC2 /* TurtlesAndFriendsStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = TurtlesAndFriendsStoryboard.storyboard; sourceTree = "<group>"; };
 		7B0D3B2C1CFA73AF0096DBC2 /* BoxTurtleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoxTurtleViewController.swift; sourceTree = "<group>"; };
 		7B0D3B2E1CFA73FC0096DBC2 /* CrabStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CrabStoryboard.storyboard; sourceTree = "<group>"; };
 		7B0D3B301CFA74070096DBC2 /* CrabViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrabViewController.swift; sourceTree = "<group>"; };
@@ -74,6 +76,8 @@
 		7B0D3B741CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FLTStoryboardBindingError.swift; sourceTree = "<group>"; };
 		7B0D3B781CFC7CEB0096DBC2 /* UIViewController+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Fleet.swift"; sourceTree = "<group>"; };
 		7B0D3B7A1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+FleetSpec.swift"; sourceTree = "<group>"; };
+		7B675E7C1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIBarButtonItem+FleetSpec.swift"; sourceTree = "<group>"; };
+		7B675E811D0C5372002E6B45 /* UIBarButtonItem+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIBarButtonItem+Fleet.swift"; sourceTree = "<group>"; };
 		7BA90AB31CC130980040B031 /* Fleet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Fleet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BA90AB61CC130990040B031 /* Fleet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Fleet.h; sourceTree = "<group>"; };
 		7BA90AB81CC130990040B031 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -116,7 +120,7 @@
 		7B0D3B291CFA73710096DBC2 /* Storyboards */ = {
 			isa = PBXGroup;
 			children = (
-				7B0D3B2A1CFA73930096DBC2 /* TurtlesStoryboard.storyboard */,
+				7B0D3B2A1CFA73930096DBC2 /* TurtlesAndFriendsStoryboard.storyboard */,
 				7B0D3B341CFA74B80096DBC2 /* AnimalListViewController.swift */,
 				7B0D3B2C1CFA73AF0096DBC2 /* BoxTurtleViewController.swift */,
 				7B0D3B321CFA74870096DBC2 /* SpottedTurtleViewController.swift */,
@@ -195,6 +199,7 @@
 				7B0D3B391CFA76200096DBC2 /* Storyboard */,
 				7BA90ABF1CC3B6B80040B031 /* UIButton+Fleet.swift */,
 				7B0D3B781CFC7CEB0096DBC2 /* UIViewController+Fleet.swift */,
+				7B675E811D0C5372002E6B45 /* UIBarButtonItem+Fleet.swift */,
 			);
 			path = CoreExtensions;
 			sourceTree = "<group>";
@@ -216,6 +221,7 @@
 				7B0D3B361CFA76170096DBC2 /* Storyboard */,
 				7BA90AD31CC3EF6F0040B031 /* UIButton+FleetSpec.swift */,
 				7B0D3B7A1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift */,
+				7B675E7C1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift */,
 			);
 			path = CoreExtensions;
 			sourceTree = "<group>";
@@ -379,7 +385,7 @@
 			files = (
 				7B0D3B6E1CFB50F00096DBC2 /* PuppyStoryboard.storyboard in Resources */,
 				7B0D3B601CFB2C270096DBC2 /* CrabStoryboard.storyboard in Resources */,
-				7B0D3B5F1CFB2C210096DBC2 /* TurtlesStoryboard.storyboard in Resources */,
+				7B0D3B5F1CFB2C210096DBC2 /* TurtlesAndFriendsStoryboard.storyboard in Resources */,
 				7B0D3B521CFB29B40096DBC2 /* LaunchScreen.storyboard in Resources */,
 				7B0D3B4F1CFB29B40096DBC2 /* Assets.xcassets in Resources */,
 			);
@@ -425,6 +431,7 @@
 				7B0D3B791CFC7CEB0096DBC2 /* UIViewController+Fleet.swift in Sources */,
 				7B0D3B751CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift in Sources */,
 				7B0D3B3B1CFA76200096DBC2 /* UIStoryboard+Fleet.swift in Sources */,
+				7B675E821D0C5372002E6B45 /* UIBarButtonItem+Fleet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -438,6 +445,7 @@
 				7BA90AD41CC3EF6F0040B031 /* UIButton+FleetSpec.swift in Sources */,
 				7B0D3B381CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift in Sources */,
 				7B0D3B6A1CFB37B50096DBC2 /* TestNavigationController.swift in Sources */,
+				7B675E7D1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
