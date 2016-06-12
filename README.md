@@ -20,4 +20,4 @@ Fleet extends UIKit classes in order to make it easier to test your code's inter
 - [UIViewController](./Documentation/UIViewController.md) - Allows specs to test view controller presentation and dismissal without waiting for the UI run-loop.
 - [UIButton](./Documentation/UIButton.md) - Provides convenience methods for interacting with buttons in test.
 - [UIBarButtonItem](./Documentation/UIBarButtonItem.md) - Provides convenience methods similar to those provided for UIButton.
-
+- [UIAlertController](./Documentation/UIAlertController.md) - Allows specs to simply tap on alert actions in order to test their behavior
