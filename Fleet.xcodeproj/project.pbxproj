@@ -35,6 +35,10 @@
 		7B675E961D0DAF94002E6B45 /* ScreenSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E951D0DAF94002E6B45 /* ScreenSpec.swift */; };
 		7B675E9A1D0DC367002E6B45 /* VisualTreeWalker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E991D0DC367002E6B45 /* VisualTreeWalker.swift */; };
 		7B675E9C1D0DC398002E6B45 /* VisualTreeWalkerSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E9B1D0DC398002E6B45 /* VisualTreeWalkerSpec.swift */; };
+		7B675E9E1D0DCA1D002E6B45 /* UIAlertController+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E9D1D0DCA1D002E6B45 /* UIAlertController+FleetSpec.swift */; };
+		7B675EA01D0DCA38002E6B45 /* UIAlertController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E9F1D0DCA38002E6B45 /* UIAlertController+Fleet.swift */; };
+		7B675EA21D0DD64D002E6B45 /* UIAlertAction+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675EA11D0DD64D002E6B45 /* UIAlertAction+Fleet.swift */; };
+		7B675EA41D0DD660002E6B45 /* UIAlertAction+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675EA31D0DD660002E6B45 /* UIAlertAction+FleetSpec.swift */; };
 		7BA90AB71CC130990040B031 /* Fleet.h in Headers */ = {isa = PBXBuildFile; fileRef = 7BA90AB61CC130990040B031 /* Fleet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7BA90AC01CC3B6B80040B031 /* UIButton+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90ABF1CC3B6B80040B031 /* UIButton+Fleet.swift */; };
 		7BA90ACA1CC3B8950040B031 /* Fleet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BA90AB31CC130980040B031 /* Fleet.framework */; };
@@ -92,6 +96,10 @@
 		7B675E951D0DAF94002E6B45 /* ScreenSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenSpec.swift; sourceTree = "<group>"; };
 		7B675E991D0DC367002E6B45 /* VisualTreeWalker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisualTreeWalker.swift; sourceTree = "<group>"; };
 		7B675E9B1D0DC398002E6B45 /* VisualTreeWalkerSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisualTreeWalkerSpec.swift; sourceTree = "<group>"; };
+		7B675E9D1D0DCA1D002E6B45 /* UIAlertController+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertController+FleetSpec.swift"; sourceTree = "<group>"; };
+		7B675E9F1D0DCA38002E6B45 /* UIAlertController+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Fleet.swift"; sourceTree = "<group>"; };
+		7B675EA11D0DD64D002E6B45 /* UIAlertAction+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertAction+Fleet.swift"; sourceTree = "<group>"; };
+		7B675EA31D0DD660002E6B45 /* UIAlertAction+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertAction+FleetSpec.swift"; sourceTree = "<group>"; };
 		7BA90AB31CC130980040B031 /* Fleet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Fleet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BA90AB61CC130990040B031 /* Fleet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Fleet.h; sourceTree = "<group>"; };
 		7BA90AB81CC130990040B031 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -244,6 +252,8 @@
 				7BA90ABF1CC3B6B80040B031 /* UIButton+Fleet.swift */,
 				7B0D3B781CFC7CEB0096DBC2 /* UIViewController+Fleet.swift */,
 				7B675E811D0C5372002E6B45 /* UIBarButtonItem+Fleet.swift */,
+				7B675E9F1D0DCA38002E6B45 /* UIAlertController+Fleet.swift */,
+				7B675EA11D0DD64D002E6B45 /* UIAlertAction+Fleet.swift */,
 			);
 			path = CoreExtensions;
 			sourceTree = "<group>";
@@ -267,6 +277,8 @@
 				7BA90AD31CC3EF6F0040B031 /* UIButton+FleetSpec.swift */,
 				7B0D3B7A1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift */,
 				7B675E7C1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift */,
+				7B675E9D1D0DCA1D002E6B45 /* UIAlertController+FleetSpec.swift */,
+				7B675EA31D0DD660002E6B45 /* UIAlertAction+FleetSpec.swift */,
 			);
 			path = CoreExtensions;
 			sourceTree = "<group>";
@@ -480,6 +492,8 @@
 				7B0D3B751CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift in Sources */,
 				7B675E901D0DA644002E6B45 /* Screen.swift in Sources */,
 				7B675E891D0C5AFB002E6B45 /* Logger.swift in Sources */,
+				7B675EA21D0DD64D002E6B45 /* UIAlertAction+Fleet.swift in Sources */,
+				7B675EA01D0DCA38002E6B45 /* UIAlertController+Fleet.swift in Sources */,
 				7B0D3B3B1CFA76200096DBC2 /* UIStoryboard+Fleet.swift in Sources */,
 				7B675E821D0C5372002E6B45 /* UIBarButtonItem+Fleet.swift in Sources */,
 			);
@@ -489,8 +503,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B675EA41D0DD660002E6B45 /* UIAlertAction+FleetSpec.swift in Sources */,
 				7BA90ADC1CC3F0E00040B031 /* ButtonTapTestViewController.swift in Sources */,
 				7BA90ADF1CC3F6C50040B031 /* File.swift in Sources */,
+				7B675E9E1D0DCA1D002E6B45 /* UIAlertController+FleetSpec.swift in Sources */,
 				7B0D3B7B1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift in Sources */,
 				7BA90AD41CC3EF6F0040B031 /* UIButton+FleetSpec.swift in Sources */,
 				7B0D3B381CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift in Sources */,
