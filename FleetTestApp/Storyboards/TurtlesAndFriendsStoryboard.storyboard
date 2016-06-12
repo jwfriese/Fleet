@@ -4,6 +4,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Box Turtle View Controller-->
@@ -84,27 +85,72 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SPOTTED TURTLE" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gjE-Jh-3kv">
-                                <rect key="frame" x="229" y="44" width="143" height="21"/>
+                                <rect key="frame" x="229" y="88" width="143" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="spotted_turtle" translatesAutoresizingMaskIntoConstraints="NO" id="WJx-3p-MeX">
-                                <rect key="frame" x="236" y="137" width="128" height="128"/>
+                                <rect key="frame" x="236" y="181" width="128" height="128"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="128" id="2Mb-ZX-rd0"/>
                                     <constraint firstAttribute="width" secondItem="WJx-3p-MeX" secondAttribute="height" multiplier="1:1" id="Jmp-Av-DbK"/>
                                 </constraints>
                             </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Juu-UN-Bni" userLabel="Spotted Turtle Alert 1">
+                                <rect key="frame" x="227" y="357" width="146" height="30"/>
+                                <state key="normal" title="Spotted Turtle Alert 1"/>
+                                <connections>
+                                    <action selector="showAlertWithAlertStyle" destination="MI9-bx-whb" eventType="touchUpInside" id="DPc-ZL-dzQ"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dNa-xj-NYG" userLabel="Spotted Turtle Alert 2">
+                                <rect key="frame" x="226" y="423" width="148" height="30"/>
+                                <state key="normal" title="Spotted Turtle Alert 2"/>
+                                <connections>
+                                    <action selector="showAlertWithActionSheetStyle" destination="MI9-bx-whb" eventType="touchUpInside" id="mvi-CV-DZ3"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="W0L-HE-O3K">
+                                <rect key="frame" x="300" y="501" width="0.0" height="0.0"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="gjE-Jh-3kv" firstAttribute="centerX" secondItem="Kvb-oo-Qox" secondAttribute="centerX" id="0H5-rI-rFD"/>
+                            <constraint firstItem="dNa-xj-NYG" firstAttribute="top" secondItem="Juu-UN-Bni" secondAttribute="bottom" constant="36" id="2kK-av-UdZ"/>
+                            <constraint firstItem="W0L-HE-O3K" firstAttribute="top" secondItem="Juu-UN-Bni" secondAttribute="bottom" constant="48" id="7jV-fb-cAi"/>
+                            <constraint firstItem="dNa-xj-NYG" firstAttribute="centerX" secondItem="Kvb-oo-Qox" secondAttribute="centerX" id="7tr-dd-Wx2"/>
+                            <constraint firstItem="W0L-HE-O3K" firstAttribute="centerX" secondItem="Kvb-oo-Qox" secondAttribute="centerX" id="IIp-ig-htG"/>
+                            <constraint firstItem="Juu-UN-Bni" firstAttribute="centerX" secondItem="Kvb-oo-Qox" secondAttribute="centerX" id="Sy8-jn-89K"/>
                             <constraint firstItem="WJx-3p-MeX" firstAttribute="top" secondItem="gjE-Jh-3kv" secondAttribute="bottom" constant="72" id="VpM-CO-zPE"/>
+                            <constraint firstItem="Juu-UN-Bni" firstAttribute="top" secondItem="WJx-3p-MeX" secondAttribute="bottom" constant="48" id="WSs-Wz-cIs"/>
+                            <constraint firstItem="dNa-xj-NYG" firstAttribute="top" secondItem="W0L-HE-O3K" secondAttribute="bottom" constant="-12" id="Xmm-Pq-v2L"/>
+                            <constraint firstItem="dNa-xj-NYG" firstAttribute="top" secondItem="WJx-3p-MeX" secondAttribute="bottom" constant="48" id="bro-e5-XYl"/>
+                            <constraint firstItem="Juu-UN-Bni" firstAttribute="leading" secondItem="Kvb-oo-Qox" secondAttribute="leadingMargin" constant="36" id="dY7-aY-mSX"/>
                             <constraint firstItem="gjE-Jh-3kv" firstAttribute="top" secondItem="m01-DW-SMw" secondAttribute="bottom" constant="24" id="f9P-xz-tMW"/>
                             <constraint firstItem="WJx-3p-MeX" firstAttribute="centerX" secondItem="gjE-Jh-3kv" secondAttribute="centerX" id="oHk-hm-WgB"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="dNa-xj-NYG" secondAttribute="trailing" constant="36" id="wPc-Iq-xHM"/>
+                            <constraint firstItem="W0L-HE-O3K" firstAttribute="top" secondItem="dNa-xj-NYG" secondAttribute="bottom" constant="48" id="zhy-2Z-osJ"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="dY7-aY-mSX"/>
+                                <exclude reference="Xmm-Pq-v2L"/>
+                                <exclude reference="bro-e5-XYl"/>
+                                <exclude reference="wPc-Iq-xHM"/>
+                                <exclude reference="7jV-fb-cAi"/>
+                            </mask>
+                        </variation>
                     </view>
+                    <connections>
+                        <outlet property="alertButtonOne" destination="Juu-UN-Bni" id="Fk9-0Y-sOb"/>
+                        <outlet property="alertButtonTwo" destination="dNa-xj-NYG" id="395-06-G2g"/>
+                        <outlet property="informationalLabel" destination="W0L-HE-O3K" id="tne-ii-ZWZ"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkV-0a-GXv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

@@ -29,6 +29,12 @@
 		7B675E7D1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E7C1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift */; };
 		7B675E821D0C5372002E6B45 /* UIBarButtonItem+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E811D0C5372002E6B45 /* UIBarButtonItem+Fleet.swift */; };
 		7B675E891D0C5AFB002E6B45 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E881D0C5AFB002E6B45 /* Logger.swift */; };
+		7B675E8E1D0DA614002E6B45 /* FLTScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E8D1D0DA614002E6B45 /* FLTScreen.swift */; };
+		7B675E901D0DA644002E6B45 /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E8F1D0DA644002E6B45 /* Screen.swift */; };
+		7B675E941D0DA7EA002E6B45 /* Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E931D0DA7EA002E6B45 /* Fleet.swift */; };
+		7B675E961D0DAF94002E6B45 /* ScreenSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E951D0DAF94002E6B45 /* ScreenSpec.swift */; };
+		7B675E9A1D0DC367002E6B45 /* VisualTreeWalker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E991D0DC367002E6B45 /* VisualTreeWalker.swift */; };
+		7B675E9C1D0DC398002E6B45 /* VisualTreeWalkerSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E9B1D0DC398002E6B45 /* VisualTreeWalkerSpec.swift */; };
 		7BA90AB71CC130990040B031 /* Fleet.h in Headers */ = {isa = PBXBuildFile; fileRef = 7BA90AB61CC130990040B031 /* Fleet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7BA90AC01CC3B6B80040B031 /* UIButton+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90ABF1CC3B6B80040B031 /* UIButton+Fleet.swift */; };
 		7BA90ACA1CC3B8950040B031 /* Fleet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BA90AB31CC130980040B031 /* Fleet.framework */; };
@@ -80,6 +86,12 @@
 		7B675E7C1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIBarButtonItem+FleetSpec.swift"; sourceTree = "<group>"; };
 		7B675E811D0C5372002E6B45 /* UIBarButtonItem+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIBarButtonItem+Fleet.swift"; sourceTree = "<group>"; };
 		7B675E881D0C5AFB002E6B45 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		7B675E8D1D0DA614002E6B45 /* FLTScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FLTScreen.swift; sourceTree = "<group>"; };
+		7B675E8F1D0DA644002E6B45 /* Screen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Screen.swift; sourceTree = "<group>"; };
+		7B675E931D0DA7EA002E6B45 /* Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Fleet.swift; sourceTree = "<group>"; };
+		7B675E951D0DAF94002E6B45 /* ScreenSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenSpec.swift; sourceTree = "<group>"; };
+		7B675E991D0DC367002E6B45 /* VisualTreeWalker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisualTreeWalker.swift; sourceTree = "<group>"; };
+		7B675E9B1D0DC398002E6B45 /* VisualTreeWalkerSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisualTreeWalkerSpec.swift; sourceTree = "<group>"; };
 		7BA90AB31CC130980040B031 /* Fleet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Fleet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BA90AB61CC130990040B031 /* Fleet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Fleet.h; sourceTree = "<group>"; };
 		7BA90AB81CC130990040B031 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -172,6 +184,25 @@
 			path = Logging;
 			sourceTree = "<group>";
 		};
+		7B675E8B1D0DA5B5002E6B45 /* CurrentScreen */ = {
+			isa = PBXGroup;
+			children = (
+				7B675E991D0DC367002E6B45 /* VisualTreeWalker.swift */,
+				7B675E8D1D0DA614002E6B45 /* FLTScreen.swift */,
+				7B675E8F1D0DA644002E6B45 /* Screen.swift */,
+			);
+			path = CurrentScreen;
+			sourceTree = "<group>";
+		};
+		7B675E8C1D0DA5D5002E6B45 /* CurrentScreen */ = {
+			isa = PBXGroup;
+			children = (
+				7B675E951D0DAF94002E6B45 /* ScreenSpec.swift */,
+				7B675E9B1D0DC398002E6B45 /* VisualTreeWalkerSpec.swift */,
+			);
+			path = CurrentScreen;
+			sourceTree = "<group>";
+		};
 		7BA90AA91CC130980040B031 = {
 			isa = PBXGroup;
 			children = (
@@ -196,6 +227,8 @@
 		7BA90AB51CC130980040B031 /* Fleet */ = {
 			isa = PBXGroup;
 			children = (
+				7B675E931D0DA7EA002E6B45 /* Fleet.swift */,
+				7B675E8B1D0DA5B5002E6B45 /* CurrentScreen */,
 				7B675E871D0C5AEE002E6B45 /* Logging */,
 				7BA90ABE1CC3B5E30040B031 /* CoreExtensions */,
 				7BA90AB61CC130990040B031 /* Fleet.h */,
@@ -221,6 +254,7 @@
 				7B0D3B671CFB2F030096DBC2 /* Info.plist */,
 				7BA90ADD1CC3F6B50040B031 /* Helpers */,
 				7BA90AD61CC3F07B0040B031 /* SupportingResources */,
+				7B675E8C1D0DA5D5002E6B45 /* CurrentScreen */,
 				7BA90AD01CC3E82B0040B031 /* CoreExtensions */,
 			);
 			path = FleetTests;
@@ -437,10 +471,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B675E9A1D0DC367002E6B45 /* VisualTreeWalker.swift in Sources */,
+				7B675E8E1D0DA614002E6B45 /* FLTScreen.swift in Sources */,
 				7BA90AC01CC3B6B80040B031 /* UIButton+Fleet.swift in Sources */,
+				7B675E941D0DA7EA002E6B45 /* Fleet.swift in Sources */,
 				7B0D3B3F1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift in Sources */,
 				7B0D3B791CFC7CEB0096DBC2 /* UIViewController+Fleet.swift in Sources */,
 				7B0D3B751CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift in Sources */,
+				7B675E901D0DA644002E6B45 /* Screen.swift in Sources */,
 				7B675E891D0C5AFB002E6B45 /* Logger.swift in Sources */,
 				7B0D3B3B1CFA76200096DBC2 /* UIStoryboard+Fleet.swift in Sources */,
 				7B675E821D0C5372002E6B45 /* UIBarButtonItem+Fleet.swift in Sources */,
@@ -456,7 +494,9 @@
 				7B0D3B7B1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift in Sources */,
 				7BA90AD41CC3EF6F0040B031 /* UIButton+FleetSpec.swift in Sources */,
 				7B0D3B381CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift in Sources */,
+				7B675E9C1D0DC398002E6B45 /* VisualTreeWalkerSpec.swift in Sources */,
 				7B0D3B6A1CFB37B50096DBC2 /* TestNavigationController.swift in Sources */,
+				7B675E961D0DAF94002E6B45 /* ScreenSpec.swift in Sources */,
 				7B675E7D1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
