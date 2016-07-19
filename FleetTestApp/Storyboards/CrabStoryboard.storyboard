@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
@@ -26,15 +26,71 @@
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="purple_crab" translatesAutoresizingMaskIntoConstraints="NO" id="zPe-Um-zpX">
                                 <rect key="frame" x="155" y="137" width="291" height="127"/>
                             </imageView>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aES-qC-pad" userLabel="Allow Text Editing Switch">
+                                <rect key="frame" x="369" y="329" width="51" height="31"/>
+                            </switch>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Allow Text Editing" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P3Q-wP-gUP" userLabel="Allow Text Editing Label">
+                                <rect key="frame" x="155" y="334" width="135" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enabled Text Field" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Bwg-Tx-Zla" userLabel="Enabled Text Field Label">
+                                <rect key="frame" x="155" y="382" width="140" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="4hc-Oo-qHg" userLabel="Enabled Text Field">
+                                <rect key="frame" x="155" y="405" width="291" height="30"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="XsQ-lI-ODm" id="hMT-d5-Rhu"/>
+                                </connections>
+                            </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Disabled Text Field" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ilw-Df-ORa" userLabel="Disabled Text Field Label">
+                                <rect key="frame" x="155" y="473" width="145" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="xb4-NL-gic">
+                                <rect key="frame" x="155" y="496" width="291" height="30"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                                <connections>
+                                    <outlet property="delegate" destination="XsQ-lI-ODm" id="zrR-aY-8io"/>
+                                </connections>
+                            </textField>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="xb4-NL-gic" firstAttribute="top" secondItem="Ilw-Df-ORa" secondAttribute="bottom" constant="2" id="5ra-76-yqG"/>
                             <constraint firstItem="zPe-Um-zpX" firstAttribute="centerX" secondItem="gHI-Nv-syD" secondAttribute="centerX" id="B0h-UC-bns"/>
+                            <constraint firstItem="4hc-Oo-qHg" firstAttribute="top" secondItem="Bwg-Tx-Zla" secondAttribute="bottom" constant="2" id="EGD-0s-vQN"/>
+                            <constraint firstItem="xb4-NL-gic" firstAttribute="leading" secondItem="Ilw-Df-ORa" secondAttribute="leading" id="HFK-ej-DRh"/>
                             <constraint firstItem="zPe-Um-zpX" firstAttribute="top" secondItem="gHI-Nv-syD" secondAttribute="bottom" constant="72" id="WI5-aH-aXJ"/>
+                            <constraint firstItem="Ilw-Df-ORa" firstAttribute="leading" secondItem="Bwg-Tx-Zla" secondAttribute="leading" id="Whk-40-GGt"/>
                             <constraint firstItem="gHI-Nv-syD" firstAttribute="centerX" secondItem="YFH-ou-mb9" secondAttribute="centerX" id="Wry-Jn-nYI"/>
+                            <constraint firstItem="Bwg-Tx-Zla" firstAttribute="leading" secondItem="4hc-Oo-qHg" secondAttribute="leading" id="YDe-Bh-WE0"/>
                             <constraint firstItem="gHI-Nv-syD" firstAttribute="top" secondItem="pyD-4I-NEV" secondAttribute="bottom" constant="24" id="cB9-tD-Fnr"/>
+                            <constraint firstItem="4hc-Oo-qHg" firstAttribute="trailing" secondItem="zPe-Um-zpX" secondAttribute="trailing" id="g7c-XC-Wa0"/>
+                            <constraint firstItem="P3Q-wP-gUP" firstAttribute="leading" secondItem="zPe-Um-zpX" secondAttribute="leading" id="gcS-RT-eJ5"/>
+                            <constraint firstItem="xb4-NL-gic" firstAttribute="trailing" secondItem="4hc-Oo-qHg" secondAttribute="trailing" id="omY-pd-xPV"/>
+                            <constraint firstItem="Ilw-Df-ORa" firstAttribute="top" secondItem="4hc-Oo-qHg" secondAttribute="bottom" constant="38" id="pVh-Vp-PXt"/>
+                            <constraint firstItem="aES-qC-pad" firstAttribute="leading" secondItem="P3Q-wP-gUP" secondAttribute="trailing" constant="79" id="qG7-we-YUt"/>
+                            <constraint firstItem="4hc-Oo-qHg" firstAttribute="leading" secondItem="P3Q-wP-gUP" secondAttribute="leading" id="rWR-Nd-Drz"/>
+                            <constraint firstItem="aES-qC-pad" firstAttribute="centerY" secondItem="P3Q-wP-gUP" secondAttribute="centerY" id="tSs-aP-bhE"/>
+                            <constraint firstItem="Bwg-Tx-Zla" firstAttribute="top" secondItem="P3Q-wP-gUP" secondAttribute="bottom" constant="27" id="ue8-9Y-zfR"/>
+                            <constraint firstItem="P3Q-wP-gUP" firstAttribute="top" secondItem="zPe-Um-zpX" secondAttribute="bottom" constant="70" id="yXz-zl-VCe"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="allowTextEditingSwitch" destination="aES-qC-pad" id="Den-oL-SGO"/>
+                        <outlet property="disabledTextField" destination="xb4-NL-gic" id="peg-RW-bzn"/>
+                        <outlet property="enabledTextField" destination="4hc-Oo-qHg" id="DVW-Wh-5gn"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="48Y-w7-Y2U" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
