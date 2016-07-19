@@ -39,6 +39,7 @@ extension UITextField {
         if let delegate = delegate {
             _ = delegate.textFieldShouldBeginEditing?(self)
             _ = delegate.textFieldDidBeginEditing?(self)
+            self.sendActionsForControlEvents(.EditingDidBegin)
         }
     }
     
@@ -51,6 +52,7 @@ extension UITextField {
         if let delegate = delegate {
             _ = delegate.textFieldShouldEndEditing?(self)
             _ = delegate.textFieldDidEndEditing?(self)
+            self.sendActionsForControlEvents(.EditingDidEnd)
         }
         
         isFocused = false
@@ -58,13 +60,7 @@ extension UITextField {
     
     public func enterText(text: String) throws {
         try self.enter()
-        
-        if let delegate = delegate {
-            for (index, char) in text.characters.enumerate() {
-                _ = delegate.textField?(self, shouldChangeCharactersInRange: NSRange.init(location: index, length: 1), replacementString: String(char))
-            }
-        }
-        
+        self.typeText(text)
         self.leave()
     }
     
@@ -77,6 +73,7 @@ extension UITextField {
         if let delegate = delegate {
             for (index, char) in text.characters.enumerate() {
                 _ = delegate.textField?(self, shouldChangeCharactersInRange: NSRange.init(location: index, length: 1), replacementString: String(char))
+                self.sendActionsForControlEvents(.EditingChanged)
             }
         }
     }
@@ -90,6 +87,7 @@ extension UITextField {
         if let delegate = delegate {
             let length = text.characters.count
             _ = delegate.textField?(self, shouldChangeCharactersInRange: NSRange.init(location: 0, length: length), replacementString: text)
+            self.sendActionsForControlEvents(.EditingChanged)
         }
     }
 }
