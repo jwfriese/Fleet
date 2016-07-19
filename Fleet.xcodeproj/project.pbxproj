@@ -46,8 +46,8 @@
 		7BA90AD41CC3EF6F0040B031 /* UIButton+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90AD31CC3EF6F0040B031 /* UIButton+FleetSpec.swift */; };
 		7BA90ADC1CC3F0E00040B031 /* ButtonTapTestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90ADB1CC3F0E00040B031 /* ButtonTapTestViewController.swift */; };
 		7BA90ADF1CC3F6C50040B031 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90ADE1CC3F6C50040B031 /* File.swift */; };
+		7BAC789F1D3E6C96000F86E4 /* UITextField+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBFCD2E1D3DAE6C00C3EF0F /* UITextField+FleetSpec.swift */; };
 		7BBFCD2D1D3DA82500C3EF0F /* UITextField+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBFCD2C1D3DA82500C3EF0F /* UITextField+Fleet.swift */; };
-		7BBFCD2F1D3DAE6C00C3EF0F /* UITextField+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBFCD2E1D3DAE6C00C3EF0F /* UITextField+FleetSpec.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -513,7 +513,7 @@
 				7B675EA41D0DD660002E6B45 /* UIAlertAction+FleetSpec.swift in Sources */,
 				7BA90ADC1CC3F0E00040B031 /* ButtonTapTestViewController.swift in Sources */,
 				7BA90ADF1CC3F6C50040B031 /* File.swift in Sources */,
-				7BBFCD2F1D3DAE6C00C3EF0F /* UITextField+FleetSpec.swift in Sources */,
+				7BAC789F1D3E6C96000F86E4 /* UITextField+FleetSpec.swift in Sources */,
 				7B675E9E1D0DCA1D002E6B45 /* UIAlertController+FleetSpec.swift in Sources */,
 				7B0D3B7B1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift in Sources */,
 				7BA90AD41CC3EF6F0040B031 /* UIButton+FleetSpec.swift in Sources */,

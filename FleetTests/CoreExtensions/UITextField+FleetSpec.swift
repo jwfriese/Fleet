@@ -60,6 +60,15 @@ class UITextField_FleetSpec: XCTestCase {
         expect(self.delegate.didCallDidBeginEditing).to(beTrue())
     }
     
+    func test_enter_whenAlreadyEntered_doesNothing() {
+        try! textField.enter()
+        delegate.resetState()
+        
+        try! textField.enter()
+        expect(self.delegate.didCallShouldBeginEditing).to(beFalse())
+        expect(self.delegate.didCallDidBeginEditing).to(beFalse())
+    }
+    
     func test_enter_whenDisabled_throwsError() {
         textField.enabled = false
         expect { try self.textField.enter() }.to(throwError(FLTTextFieldError.DisabledTextFieldError))
@@ -75,6 +84,7 @@ class UITextField_FleetSpec: XCTestCase {
     }
     
     func test_leave_beforeHavingEnteredTextField_doesNothing() {
+        textField.leave()
         expect(self.delegate.didCallShouldEndEditing).to(beFalse())
         expect(self.delegate.didCallDidEndEditing).to(beFalse())
     }

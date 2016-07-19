@@ -28,6 +28,7 @@ extension UITextField {
     public func enter() throws {
         if isFocused != nil && isFocused! {
             Logger.logWarning("Attempting to enter a UITextField that was already entered")
+            return
         }
         
         if !enabled {
@@ -44,6 +45,7 @@ extension UITextField {
     public func leave() {
         if isFocused == nil || !isFocused! {
             Logger.logWarning("Attempting to leave a UITextField that was never entered")
+            return
         }
         
         if let delegate = delegate {
