@@ -47,6 +47,7 @@
 		7BA90ADC1CC3F0E00040B031 /* ButtonTapTestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90ADB1CC3F0E00040B031 /* ButtonTapTestViewController.swift */; };
 		7BA90ADF1CC3F6C50040B031 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90ADE1CC3F6C50040B031 /* File.swift */; };
 		7BAC789F1D3E6C96000F86E4 /* UITextField+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBFCD2E1D3DAE6C00C3EF0F /* UITextField+FleetSpec.swift */; };
+		7BAC78AF1D4A438E000F86E4 /* BoxTurtlePageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78AE1D4A438E000F86E4 /* BoxTurtlePageTests.swift */; };
 		7BBFCD2D1D3DA82500C3EF0F /* UITextField+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBFCD2C1D3DA82500C3EF0F /* UITextField+Fleet.swift */; };
 /* End PBXBuildFile section */
 
@@ -64,6 +65,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 7BA90AB21CC130980040B031;
 			remoteInfo = Fleet;
+		};
+		7BAC78A91D4A432A000F86E4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7BA90AAA1CC130980040B031 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7B0D3B441CFB29B40096DBC2;
+			remoteInfo = FleetTestApp;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -112,6 +120,9 @@
 		7BA90AD91CC3F0C60040B031 /* ButtonTapTestViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ButtonTapTestViewController.xib; sourceTree = "<group>"; };
 		7BA90ADB1CC3F0E00040B031 /* ButtonTapTestViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonTapTestViewController.swift; sourceTree = "<group>"; };
 		7BA90ADE1CC3F6C50040B031 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		7BAC78A41D4A432A000F86E4 /* FleetUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FleetUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7BAC78A81D4A432A000F86E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7BAC78AE1D4A438E000F86E4 /* BoxTurtlePageTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoxTurtlePageTests.swift; sourceTree = "<group>"; };
 		7BBFCD2C1D3DA82500C3EF0F /* UITextField+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+Fleet.swift"; sourceTree = "<group>"; };
 		7BBFCD2E1D3DAE6C00C3EF0F /* UITextField+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+FleetSpec.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -137,6 +148,13 @@
 			files = (
 				7BA90AD21CC3EF420040B031 /* Nimble.framework in Frameworks */,
 				7BA90ACA1CC3B8950040B031 /* Fleet.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7BAC78A11D4A432A000F86E4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -218,6 +236,7 @@
 		7BA90AA91CC130980040B031 = {
 			isa = PBXGroup;
 			children = (
+				7BAC78A51D4A432A000F86E4 /* FleetUITests */,
 				7BA90AD51CC3F0320040B031 /* Frameworks */,
 				7BA90AB51CC130980040B031 /* Fleet */,
 				7B0D3B461CFB29B40096DBC2 /* FleetTestApp */,
@@ -232,6 +251,7 @@
 				7BA90AB31CC130980040B031 /* Fleet.framework */,
 				7BA90AC51CC3B8950040B031 /* FleetTests.xctest */,
 				7B0D3B451CFB29B40096DBC2 /* FleetTestApp.app */,
+				7BAC78A41D4A432A000F86E4 /* FleetUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -331,6 +351,15 @@
 			path = Helpers;
 			sourceTree = "<group>";
 		};
+		7BAC78A51D4A432A000F86E4 /* FleetUITests */ = {
+			isa = PBXGroup;
+			children = (
+				7BAC78A81D4A432A000F86E4 /* Info.plist */,
+				7BAC78AE1D4A438E000F86E4 /* BoxTurtlePageTests.swift */,
+			);
+			path = FleetUITests;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -399,6 +428,24 @@
 			productReference = 7BA90AC51CC3B8950040B031 /* FleetTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		7BAC78A31D4A432A000F86E4 /* FleetUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7BAC78AB1D4A432A000F86E4 /* Build configuration list for PBXNativeTarget "FleetUITests" */;
+			buildPhases = (
+				7BAC78A01D4A432A000F86E4 /* Sources */,
+				7BAC78A11D4A432A000F86E4 /* Frameworks */,
+				7BAC78A21D4A432A000F86E4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7BAC78AA1D4A432A000F86E4 /* PBXTargetDependency */,
+			);
+			name = FleetUITests;
+			productName = FleetUITests;
+			productReference = 7BAC78A41D4A432A000F86E4 /* FleetUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -419,6 +466,10 @@
 						CreatedOnToolsVersion = 7.3;
 						TestTargetID = 7B0D3B441CFB29B40096DBC2;
 					};
+					7BAC78A31D4A432A000F86E4 = {
+						CreatedOnToolsVersion = 7.3.1;
+						TestTargetID = 7B0D3B441CFB29B40096DBC2;
+					};
 				};
 			};
 			buildConfigurationList = 7BA90AAD1CC130980040B031 /* Build configuration list for PBXProject "Fleet" */;
@@ -437,6 +488,7 @@
 				7BA90AB21CC130980040B031 /* Fleet */,
 				7BA90AC41CC3B8950040B031 /* FleetTests */,
 				7B0D3B441CFB29B40096DBC2 /* FleetTestApp */,
+				7BAC78A31D4A432A000F86E4 /* FleetUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -466,6 +518,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B0D3B711CFB5F5C0096DBC2 /* ButtonTapTestViewController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7BAC78A21D4A432A000F86E4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -525,6 +584,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		7BAC78A01D4A432A000F86E4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7BAC78AF1D4A438E000F86E4 /* BoxTurtlePageTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -537,6 +604,11 @@
 			isa = PBXTargetDependency;
 			target = 7BA90AB21CC130980040B031 /* Fleet */;
 			targetProxy = 7BA90ACB1CC3B8950040B031 /* PBXContainerItemProxy */;
+		};
+		7BAC78AA1D4A432A000F86E4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7B0D3B441CFB29B40096DBC2 /* FleetTestApp */;
+			targetProxy = 7BAC78A91D4A432A000F86E4 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -739,6 +811,31 @@
 			};
 			name = Release;
 		};
+		7BAC78AC1D4A432A000F86E4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				INFOPLIST_FILE = FleetUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.FleetUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TEST_TARGET_NAME = FleetTestApp;
+			};
+			name = Debug;
+		};
+		7BAC78AD1D4A432A000F86E4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				INFOPLIST_FILE = FleetUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.FleetUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = FleetTestApp;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -777,6 +874,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		7BAC78AB1D4A432A000F86E4 /* Build configuration list for PBXNativeTarget "FleetUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7BAC78AC1D4A432A000F86E4 /* Debug */,
+				7BAC78AD1D4A432A000F86E4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
