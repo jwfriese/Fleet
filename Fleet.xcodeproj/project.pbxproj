@@ -51,6 +51,13 @@
 		7BAC78D11D4B00B6000F86E4 /* FleetUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 7BAC78D01D4B00B6000F86E4 /* FleetUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7BAC78D81D4B00FB000F86E4 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78D71D4B00FB000F86E4 /* User.swift */; };
 		7BAC78DE1D4CDEC2000F86E4 /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BAC78DD1D4CDEC2000F86E4 /* Nimble.framework */; };
+		7BAC78E11D4CE508000F86E4 /* UserAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78E01D4CE508000F86E4 /* UserAction.swift */; };
+		7BAC78E31D4CE575000F86E4 /* TapButtonAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78E21D4CE575000F86E4 /* TapButtonAction.swift */; };
+		7BAC78E71D4CEB0E000F86E4 /* FLTUserActionResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78E61D4CEB0E000F86E4 /* FLTUserActionResult.swift */; };
+		7BAC78EC1D4CECAB000F86E4 /* TapButtonActionSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78EB1D4CECAB000F86E4 /* TapButtonActionSpec.swift */; };
+		7BAC78EE1D4CEE40000F86E4 /* FleetUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78ED1D4CEE40000F86E4 /* FleetUI.swift */; };
+		7BAC78F41D4CF097000F86E4 /* Reporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78F31D4CF097000F86E4 /* Reporter.swift */; };
+		7BAC78F71D4CF129000F86E4 /* FakeReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78F61D4CF129000F86E4 /* FakeReporter.swift */; };
 		7BBFCD2D1D3DA82500C3EF0F /* UITextField+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBFCD2C1D3DA82500C3EF0F /* UITextField+Fleet.swift */; };
 /* End PBXBuildFile section */
 
@@ -139,6 +146,13 @@
 		7BAC78D71D4B00FB000F86E4 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		7BAC78DB1D4CDEAB000F86E4 /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = "Externals/Nimble/build/Debug-iphoneos/Nimble.framework"; sourceTree = "<group>"; };
 		7BAC78DD1D4CDEC2000F86E4 /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = "Externals/Nimble/build/Debug-iphoneos/Nimble.framework"; sourceTree = "<group>"; };
+		7BAC78E01D4CE508000F86E4 /* UserAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserAction.swift; sourceTree = "<group>"; };
+		7BAC78E21D4CE575000F86E4 /* TapButtonAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TapButtonAction.swift; sourceTree = "<group>"; };
+		7BAC78E61D4CEB0E000F86E4 /* FLTUserActionResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FLTUserActionResult.swift; sourceTree = "<group>"; };
+		7BAC78EB1D4CECAB000F86E4 /* TapButtonActionSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TapButtonActionSpec.swift; sourceTree = "<group>"; };
+		7BAC78ED1D4CEE40000F86E4 /* FleetUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FleetUI.swift; sourceTree = "<group>"; };
+		7BAC78F31D4CF097000F86E4 /* Reporter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reporter.swift; sourceTree = "<group>"; };
+		7BAC78F61D4CF129000F86E4 /* FakeReporter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FakeReporter.swift; sourceTree = "<group>"; };
 		7BBFCD2C1D3DA82500C3EF0F /* UITextField+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+Fleet.swift"; sourceTree = "<group>"; };
 		7BBFCD2E1D3DAE6C00C3EF0F /* UITextField+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+FleetSpec.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -382,6 +396,8 @@
 		7BAC78A51D4A432A000F86E4 /* FleetUITests */ = {
 			isa = PBXGroup;
 			children = (
+				7BAC78F51D4CF117000F86E4 /* Fakes */,
+				7BAC78E81D4CEC0C000F86E4 /* User */,
 				7BAC78A81D4A432A000F86E4 /* Info.plist */,
 				7BAC78AE1D4A438E000F86E4 /* BoxTurtlePageTests.swift */,
 			);
@@ -391,6 +407,8 @@
 		7BAC78CF1D4B00B6000F86E4 /* FleetUI */ = {
 			isa = PBXGroup;
 			children = (
+				7BAC78ED1D4CEE40000F86E4 /* FleetUI.swift */,
+				7BAC78F21D4CF097000F86E4 /* Reporting */,
 				7BAC78D61D4B00FB000F86E4 /* User */,
 				7BAC78D01D4B00B6000F86E4 /* FleetUI.h */,
 				7BAC78D21D4B00B6000F86E4 /* Info.plist */,
@@ -401,9 +419,52 @@
 		7BAC78D61D4B00FB000F86E4 /* User */ = {
 			isa = PBXGroup;
 			children = (
+				7BAC78DF1D4CE4E6000F86E4 /* Actions */,
 				7BAC78D71D4B00FB000F86E4 /* User.swift */,
 			);
 			path = User;
+			sourceTree = "<group>";
+		};
+		7BAC78DF1D4CE4E6000F86E4 /* Actions */ = {
+			isa = PBXGroup;
+			children = (
+				7BAC78E61D4CEB0E000F86E4 /* FLTUserActionResult.swift */,
+				7BAC78E01D4CE508000F86E4 /* UserAction.swift */,
+				7BAC78E21D4CE575000F86E4 /* TapButtonAction.swift */,
+			);
+			path = Actions;
+			sourceTree = "<group>";
+		};
+		7BAC78E81D4CEC0C000F86E4 /* User */ = {
+			isa = PBXGroup;
+			children = (
+				7BAC78E91D4CEC20000F86E4 /* Actions */,
+			);
+			path = User;
+			sourceTree = "<group>";
+		};
+		7BAC78E91D4CEC20000F86E4 /* Actions */ = {
+			isa = PBXGroup;
+			children = (
+				7BAC78EB1D4CECAB000F86E4 /* TapButtonActionSpec.swift */,
+			);
+			path = Actions;
+			sourceTree = "<group>";
+		};
+		7BAC78F21D4CF097000F86E4 /* Reporting */ = {
+			isa = PBXGroup;
+			children = (
+				7BAC78F31D4CF097000F86E4 /* Reporter.swift */,
+			);
+			path = Reporting;
+			sourceTree = "<group>";
+		};
+		7BAC78F51D4CF117000F86E4 /* Fakes */ = {
+			isa = PBXGroup;
+			children = (
+				7BAC78F61D4CF129000F86E4 /* FakeReporter.swift */,
+			);
+			path = Fakes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -673,6 +734,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				7BAC78AF1D4A438E000F86E4 /* BoxTurtlePageTests.swift in Sources */,
+				7BAC78EC1D4CECAB000F86E4 /* TapButtonActionSpec.swift in Sources */,
+				7BAC78F71D4CF129000F86E4 /* FakeReporter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -680,6 +743,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7BAC78E11D4CE508000F86E4 /* UserAction.swift in Sources */,
+				7BAC78E31D4CE575000F86E4 /* TapButtonAction.swift in Sources */,
+				7BAC78E71D4CEB0E000F86E4 /* FLTUserActionResult.swift in Sources */,
+				7BAC78EE1D4CEE40000F86E4 /* FleetUI.swift in Sources */,
+				7BAC78F41D4CF097000F86E4 /* Reporter.swift in Sources */,
 				7BAC78D81D4B00FB000F86E4 /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

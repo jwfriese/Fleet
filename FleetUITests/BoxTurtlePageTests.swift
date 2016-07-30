@@ -10,7 +10,7 @@ class BoxTurtlePageTests: XCTestCase {
 
         continueAfterFailure = false
         let app = XCUIApplication()
-        user = User(xcApp: app)
+        user = FleetUI.createUser(app, testCase: self)
         app.launch()
     }
 
