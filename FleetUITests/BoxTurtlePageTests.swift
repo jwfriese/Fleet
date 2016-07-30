@@ -14,11 +14,9 @@ class BoxTurtlePageTests: XCTestCase {
     }
 
     func testMakeThatTurtleDance() {
-        let app = XCUIApplication()
         user.tapButtonWithText("Box Turtle")
         user.tapButtonWithText("DANCE")
-        XCTAssertTrue(app.staticTexts["BOX TURTLE DANCE PARTY"].exists)
-        XCTAssertFalse(app.staticTexts["BOX TURTLE FRANCE PARTY?"].exists)
+        XCTAssertTrue(user.canSeeText("BOX TURTLE DANCE PARTY"))
+        XCTAssertFalse(user.canSeeText("BOX TURTLE FRANCE PARTY?"))
     }
-
 }

@@ -10,4 +10,8 @@ public class User {
     public func tapButtonWithText(text: String) {
         app.buttons[text].tap()
     }
+
+    public func canSeeText(text: String) -> Bool {
+        return app.staticTexts[text].exists
+    }
 }
