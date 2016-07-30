@@ -50,6 +50,7 @@
 		7BAC78AF1D4A438E000F86E4 /* BoxTurtlePageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78AE1D4A438E000F86E4 /* BoxTurtlePageTests.swift */; };
 		7BAC78D11D4B00B6000F86E4 /* FleetUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 7BAC78D01D4B00B6000F86E4 /* FleetUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7BAC78D81D4B00FB000F86E4 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78D71D4B00FB000F86E4 /* User.swift */; };
+		7BAC78DE1D4CDEC2000F86E4 /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BAC78DD1D4CDEC2000F86E4 /* Nimble.framework */; };
 		7BBFCD2D1D3DA82500C3EF0F /* UITextField+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBFCD2C1D3DA82500C3EF0F /* UITextField+Fleet.swift */; };
 /* End PBXBuildFile section */
 
@@ -136,6 +137,8 @@
 		7BAC78D01D4B00B6000F86E4 /* FleetUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FleetUI.h; sourceTree = "<group>"; };
 		7BAC78D21D4B00B6000F86E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7BAC78D71D4B00FB000F86E4 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		7BAC78DB1D4CDEAB000F86E4 /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = "Externals/Nimble/build/Debug-iphoneos/Nimble.framework"; sourceTree = "<group>"; };
+		7BAC78DD1D4CDEC2000F86E4 /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = "Externals/Nimble/build/Debug-iphoneos/Nimble.framework"; sourceTree = "<group>"; };
 		7BBFCD2C1D3DA82500C3EF0F /* UITextField+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+Fleet.swift"; sourceTree = "<group>"; };
 		7BBFCD2E1D3DAE6C00C3EF0F /* UITextField+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+FleetSpec.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -168,6 +171,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7BAC78DE1D4CDEC2000F86E4 /* Nimble.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -334,6 +338,8 @@
 		7BA90AD51CC3F0320040B031 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				7BAC78DD1D4CDEC2000F86E4 /* Nimble.framework */,
+				7BAC78DB1D4CDEAB000F86E4 /* Nimble.framework */,
 				7BA90AD11CC3EF420040B031 /* Nimble.framework */,
 			);
 			name = Frameworks;
@@ -910,6 +916,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Externals/Nimble/build/Debug-iphoneos",
+				);
 				INFOPLIST_FILE = FleetUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.FleetUITests;
@@ -923,6 +933,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Externals/Nimble/build/Debug-iphoneos",
+				);
 				INFOPLIST_FILE = FleetUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.FleetUITests;

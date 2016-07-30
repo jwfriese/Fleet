@@ -1,5 +1,6 @@
 import XCTest
 import FleetUI
+import Nimble
 
 class BoxTurtlePageTests: XCTestCase {
     var user: User!
@@ -16,7 +17,7 @@ class BoxTurtlePageTests: XCTestCase {
     func testMakeThatTurtleDance() {
         user.tapButtonWithText("Box Turtle")
         user.tapButtonWithText("DANCE")
-        XCTAssertTrue(user.canSeeText("BOX TURTLE DANCE PARTY"))
-        XCTAssertFalse(user.canSeeText("BOX TURTLE FRANCE PARTY?"))
+        expect(self.user.canSeeText("BOX TURTLE DANCE PARTY")).to(beTrue())
+        expect(self.user.canSeeText("BOX TURTLE FRANCE PARTY?")).to(beFalse())
     }
 }
