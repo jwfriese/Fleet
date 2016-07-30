@@ -47,6 +47,17 @@
 		7BA90ADC1CC3F0E00040B031 /* ButtonTapTestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90ADB1CC3F0E00040B031 /* ButtonTapTestViewController.swift */; };
 		7BA90ADF1CC3F6C50040B031 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90ADE1CC3F6C50040B031 /* File.swift */; };
 		7BAC789F1D3E6C96000F86E4 /* UITextField+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBFCD2E1D3DAE6C00C3EF0F /* UITextField+FleetSpec.swift */; };
+		7BAC78AF1D4A438E000F86E4 /* BoxTurtlePageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78AE1D4A438E000F86E4 /* BoxTurtlePageTests.swift */; };
+		7BAC78D11D4B00B6000F86E4 /* FleetUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 7BAC78D01D4B00B6000F86E4 /* FleetUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7BAC78D81D4B00FB000F86E4 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78D71D4B00FB000F86E4 /* User.swift */; };
+		7BAC78DE1D4CDEC2000F86E4 /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BAC78DD1D4CDEC2000F86E4 /* Nimble.framework */; };
+		7BAC78E11D4CE508000F86E4 /* UserAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78E01D4CE508000F86E4 /* UserAction.swift */; };
+		7BAC78E31D4CE575000F86E4 /* TapButtonAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78E21D4CE575000F86E4 /* TapButtonAction.swift */; };
+		7BAC78E71D4CEB0E000F86E4 /* FLTUserActionResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78E61D4CEB0E000F86E4 /* FLTUserActionResult.swift */; };
+		7BAC78EC1D4CECAB000F86E4 /* TapButtonActionSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78EB1D4CECAB000F86E4 /* TapButtonActionSpec.swift */; };
+		7BAC78EE1D4CEE40000F86E4 /* FleetUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78ED1D4CEE40000F86E4 /* FleetUI.swift */; };
+		7BAC78F41D4CF097000F86E4 /* Reporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78F31D4CF097000F86E4 /* Reporter.swift */; };
+		7BAC78F71D4CF129000F86E4 /* FakeReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78F61D4CF129000F86E4 /* FakeReporter.swift */; };
 		7BBFCD2D1D3DA82500C3EF0F /* UITextField+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBFCD2C1D3DA82500C3EF0F /* UITextField+Fleet.swift */; };
 /* End PBXBuildFile section */
 
@@ -64,6 +75,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = 7BA90AB21CC130980040B031;
 			remoteInfo = Fleet;
+		};
+		7BAC78A91D4A432A000F86E4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7BA90AAA1CC130980040B031 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7B0D3B441CFB29B40096DBC2;
+			remoteInfo = FleetTestApp;
+		};
+		7BAC78D91D4B01D6000F86E4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7BA90AAA1CC130980040B031 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7BAC78CD1D4B00B6000F86E4;
+			remoteInfo = FleetUI;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -112,6 +137,22 @@
 		7BA90AD91CC3F0C60040B031 /* ButtonTapTestViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ButtonTapTestViewController.xib; sourceTree = "<group>"; };
 		7BA90ADB1CC3F0E00040B031 /* ButtonTapTestViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonTapTestViewController.swift; sourceTree = "<group>"; };
 		7BA90ADE1CC3F6C50040B031 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		7BAC78A41D4A432A000F86E4 /* FleetUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FleetUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7BAC78A81D4A432A000F86E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7BAC78AE1D4A438E000F86E4 /* BoxTurtlePageTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoxTurtlePageTests.swift; sourceTree = "<group>"; };
+		7BAC78CE1D4B00B6000F86E4 /* FleetUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FleetUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7BAC78D01D4B00B6000F86E4 /* FleetUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FleetUI.h; sourceTree = "<group>"; };
+		7BAC78D21D4B00B6000F86E4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7BAC78D71D4B00FB000F86E4 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		7BAC78DB1D4CDEAB000F86E4 /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = "Externals/Nimble/build/Debug-iphoneos/Nimble.framework"; sourceTree = "<group>"; };
+		7BAC78DD1D4CDEC2000F86E4 /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = "Externals/Nimble/build/Debug-iphoneos/Nimble.framework"; sourceTree = "<group>"; };
+		7BAC78E01D4CE508000F86E4 /* UserAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserAction.swift; sourceTree = "<group>"; };
+		7BAC78E21D4CE575000F86E4 /* TapButtonAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TapButtonAction.swift; sourceTree = "<group>"; };
+		7BAC78E61D4CEB0E000F86E4 /* FLTUserActionResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FLTUserActionResult.swift; sourceTree = "<group>"; };
+		7BAC78EB1D4CECAB000F86E4 /* TapButtonActionSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TapButtonActionSpec.swift; sourceTree = "<group>"; };
+		7BAC78ED1D4CEE40000F86E4 /* FleetUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FleetUI.swift; sourceTree = "<group>"; };
+		7BAC78F31D4CF097000F86E4 /* Reporter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reporter.swift; sourceTree = "<group>"; };
+		7BAC78F61D4CF129000F86E4 /* FakeReporter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FakeReporter.swift; sourceTree = "<group>"; };
 		7BBFCD2C1D3DA82500C3EF0F /* UITextField+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+Fleet.swift"; sourceTree = "<group>"; };
 		7BBFCD2E1D3DAE6C00C3EF0F /* UITextField+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+FleetSpec.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -137,6 +178,21 @@
 			files = (
 				7BA90AD21CC3EF420040B031 /* Nimble.framework in Frameworks */,
 				7BA90ACA1CC3B8950040B031 /* Fleet.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7BAC78A11D4A432A000F86E4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7BAC78DE1D4CDEC2000F86E4 /* Nimble.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7BAC78CA1D4B00B6000F86E4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -218,6 +274,8 @@
 		7BA90AA91CC130980040B031 = {
 			isa = PBXGroup;
 			children = (
+				7BAC78A51D4A432A000F86E4 /* FleetUITests */,
+				7BAC78CF1D4B00B6000F86E4 /* FleetUI */,
 				7BA90AD51CC3F0320040B031 /* Frameworks */,
 				7BA90AB51CC130980040B031 /* Fleet */,
 				7B0D3B461CFB29B40096DBC2 /* FleetTestApp */,
@@ -232,6 +290,8 @@
 				7BA90AB31CC130980040B031 /* Fleet.framework */,
 				7BA90AC51CC3B8950040B031 /* FleetTests.xctest */,
 				7B0D3B451CFB29B40096DBC2 /* FleetTestApp.app */,
+				7BAC78A41D4A432A000F86E4 /* FleetUITests.xctest */,
+				7BAC78CE1D4B00B6000F86E4 /* FleetUI.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -292,6 +352,8 @@
 		7BA90AD51CC3F0320040B031 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				7BAC78DD1D4CDEC2000F86E4 /* Nimble.framework */,
+				7BAC78DB1D4CDEAB000F86E4 /* Nimble.framework */,
 				7BA90AD11CC3EF420040B031 /* Nimble.framework */,
 			);
 			name = Frameworks;
@@ -331,6 +393,80 @@
 			path = Helpers;
 			sourceTree = "<group>";
 		};
+		7BAC78A51D4A432A000F86E4 /* FleetUITests */ = {
+			isa = PBXGroup;
+			children = (
+				7BAC78F51D4CF117000F86E4 /* Fakes */,
+				7BAC78E81D4CEC0C000F86E4 /* User */,
+				7BAC78A81D4A432A000F86E4 /* Info.plist */,
+				7BAC78AE1D4A438E000F86E4 /* BoxTurtlePageTests.swift */,
+			);
+			path = FleetUITests;
+			sourceTree = "<group>";
+		};
+		7BAC78CF1D4B00B6000F86E4 /* FleetUI */ = {
+			isa = PBXGroup;
+			children = (
+				7BAC78ED1D4CEE40000F86E4 /* FleetUI.swift */,
+				7BAC78F21D4CF097000F86E4 /* Reporting */,
+				7BAC78D61D4B00FB000F86E4 /* User */,
+				7BAC78D01D4B00B6000F86E4 /* FleetUI.h */,
+				7BAC78D21D4B00B6000F86E4 /* Info.plist */,
+			);
+			path = FleetUI;
+			sourceTree = "<group>";
+		};
+		7BAC78D61D4B00FB000F86E4 /* User */ = {
+			isa = PBXGroup;
+			children = (
+				7BAC78DF1D4CE4E6000F86E4 /* Actions */,
+				7BAC78D71D4B00FB000F86E4 /* User.swift */,
+			);
+			path = User;
+			sourceTree = "<group>";
+		};
+		7BAC78DF1D4CE4E6000F86E4 /* Actions */ = {
+			isa = PBXGroup;
+			children = (
+				7BAC78E61D4CEB0E000F86E4 /* FLTUserActionResult.swift */,
+				7BAC78E01D4CE508000F86E4 /* UserAction.swift */,
+				7BAC78E21D4CE575000F86E4 /* TapButtonAction.swift */,
+			);
+			path = Actions;
+			sourceTree = "<group>";
+		};
+		7BAC78E81D4CEC0C000F86E4 /* User */ = {
+			isa = PBXGroup;
+			children = (
+				7BAC78E91D4CEC20000F86E4 /* Actions */,
+			);
+			path = User;
+			sourceTree = "<group>";
+		};
+		7BAC78E91D4CEC20000F86E4 /* Actions */ = {
+			isa = PBXGroup;
+			children = (
+				7BAC78EB1D4CECAB000F86E4 /* TapButtonActionSpec.swift */,
+			);
+			path = Actions;
+			sourceTree = "<group>";
+		};
+		7BAC78F21D4CF097000F86E4 /* Reporting */ = {
+			isa = PBXGroup;
+			children = (
+				7BAC78F31D4CF097000F86E4 /* Reporter.swift */,
+			);
+			path = Reporting;
+			sourceTree = "<group>";
+		};
+		7BAC78F51D4CF117000F86E4 /* Fakes */ = {
+			isa = PBXGroup;
+			children = (
+				7BAC78F61D4CF129000F86E4 /* FakeReporter.swift */,
+			);
+			path = Fakes;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -339,6 +475,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				7BA90AB71CC130990040B031 /* Fleet.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7BAC78CB1D4B00B6000F86E4 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7BAC78D11D4B00B6000F86E4 /* FleetUI.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -399,6 +543,43 @@
 			productReference = 7BA90AC51CC3B8950040B031 /* FleetTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		7BAC78A31D4A432A000F86E4 /* FleetUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7BAC78AB1D4A432A000F86E4 /* Build configuration list for PBXNativeTarget "FleetUITests" */;
+			buildPhases = (
+				7BAC78A01D4A432A000F86E4 /* Sources */,
+				7BAC78A11D4A432A000F86E4 /* Frameworks */,
+				7BAC78A21D4A432A000F86E4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7BAC78DA1D4B01D6000F86E4 /* PBXTargetDependency */,
+				7BAC78AA1D4A432A000F86E4 /* PBXTargetDependency */,
+			);
+			name = FleetUITests;
+			productName = FleetUITests;
+			productReference = 7BAC78A41D4A432A000F86E4 /* FleetUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		7BAC78CD1D4B00B6000F86E4 /* FleetUI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7BAC78D31D4B00B6000F86E4 /* Build configuration list for PBXNativeTarget "FleetUI" */;
+			buildPhases = (
+				7BAC78C91D4B00B6000F86E4 /* Sources */,
+				7BAC78CA1D4B00B6000F86E4 /* Frameworks */,
+				7BAC78CB1D4B00B6000F86E4 /* Headers */,
+				7BAC78CC1D4B00B6000F86E4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FleetUI;
+			productName = FleetUI;
+			productReference = 7BAC78CE1D4B00B6000F86E4 /* FleetUI.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -419,6 +600,13 @@
 						CreatedOnToolsVersion = 7.3;
 						TestTargetID = 7B0D3B441CFB29B40096DBC2;
 					};
+					7BAC78A31D4A432A000F86E4 = {
+						CreatedOnToolsVersion = 7.3.1;
+						TestTargetID = 7B0D3B441CFB29B40096DBC2;
+					};
+					7BAC78CD1D4B00B6000F86E4 = {
+						CreatedOnToolsVersion = 7.3.1;
+					};
 				};
 			};
 			buildConfigurationList = 7BA90AAD1CC130980040B031 /* Build configuration list for PBXProject "Fleet" */;
@@ -435,8 +623,10 @@
 			projectRoot = "";
 			targets = (
 				7BA90AB21CC130980040B031 /* Fleet */,
+				7BAC78CD1D4B00B6000F86E4 /* FleetUI */,
 				7BA90AC41CC3B8950040B031 /* FleetTests */,
 				7B0D3B441CFB29B40096DBC2 /* FleetTestApp */,
+				7BAC78A31D4A432A000F86E4 /* FleetUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -466,6 +656,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B0D3B711CFB5F5C0096DBC2 /* ButtonTapTestViewController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7BAC78A21D4A432A000F86E4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7BAC78CC1D4B00B6000F86E4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -525,6 +729,29 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		7BAC78A01D4A432A000F86E4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7BAC78AF1D4A438E000F86E4 /* BoxTurtlePageTests.swift in Sources */,
+				7BAC78EC1D4CECAB000F86E4 /* TapButtonActionSpec.swift in Sources */,
+				7BAC78F71D4CF129000F86E4 /* FakeReporter.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7BAC78C91D4B00B6000F86E4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7BAC78E11D4CE508000F86E4 /* UserAction.swift in Sources */,
+				7BAC78E31D4CE575000F86E4 /* TapButtonAction.swift in Sources */,
+				7BAC78E71D4CEB0E000F86E4 /* FLTUserActionResult.swift in Sources */,
+				7BAC78EE1D4CEE40000F86E4 /* FleetUI.swift in Sources */,
+				7BAC78F41D4CF097000F86E4 /* Reporter.swift in Sources */,
+				7BAC78D81D4B00FB000F86E4 /* User.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -537,6 +764,16 @@
 			isa = PBXTargetDependency;
 			target = 7BA90AB21CC130980040B031 /* Fleet */;
 			targetProxy = 7BA90ACB1CC3B8950040B031 /* PBXContainerItemProxy */;
+		};
+		7BAC78AA1D4A432A000F86E4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7B0D3B441CFB29B40096DBC2 /* FleetTestApp */;
+			targetProxy = 7BAC78A91D4A432A000F86E4 /* PBXContainerItemProxy */;
+		};
+		7BAC78DA1D4B01D6000F86E4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7BAC78CD1D4B00B6000F86E4 /* FleetUI */;
+			targetProxy = 7BAC78D91D4B01D6000F86E4 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -675,10 +912,12 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = "";
 				INFOPLIST_FILE = Fleet/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.Fleet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -694,10 +933,12 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = "";
 				INFOPLIST_FILE = Fleet/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.Fleet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -739,6 +980,91 @@
 			};
 			name = Release;
 		};
+		7BAC78AC1D4A432A000F86E4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Externals/Nimble/build/Debug-iphoneos",
+				);
+				INFOPLIST_FILE = FleetUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.FleetUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TEST_TARGET_NAME = FleetTestApp;
+			};
+			name = Debug;
+		};
+		7BAC78AD1D4A432A000F86E4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Externals/Nimble/build/Debug-iphoneos",
+				);
+				INFOPLIST_FILE = FleetUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.FleetUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = FleetTestApp;
+			};
+			name = Release;
+		};
+		7BAC78D41D4B00B6000F86E4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				INFOPLIST_FILE = FleetUI/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"-weak_framework",
+					XCTest,
+					"-weak-lswiftXCTest",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.FleetUI;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		7BAC78D51D4B00B6000F86E4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				INFOPLIST_FILE = FleetUI/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"-weak_framework",
+					XCTest,
+					"-weak-lswiftXCTest",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.FleetUI;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -777,6 +1103,23 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		7BAC78AB1D4A432A000F86E4 /* Build configuration list for PBXNativeTarget "FleetUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7BAC78AC1D4A432A000F86E4 /* Debug */,
+				7BAC78AD1D4A432A000F86E4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7BAC78D31D4B00B6000F86E4 /* Build configuration list for PBXNativeTarget "FleetUI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7BAC78D41D4B00B6000F86E4 /* Debug */,
+				7BAC78D51D4B00B6000F86E4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
