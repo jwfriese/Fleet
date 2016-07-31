@@ -13,6 +13,7 @@ public extension UIViewController {
         dispatch_once(&Static.token) {
             swizzlePresent()
             swizzleDismiss()
+            swizzleShow()
             swizzlePresentedViewControllerProperty()
             swizzlePresentingViewControllerProperty()
         }
@@ -35,6 +36,8 @@ public extension UIViewController {
         if let completion = completion {
             completion()
         }
+        
+        fleet_presentViewController(viewController, animated: animated, completion: nil)
     }
     
     private class func swizzleDismiss() {
@@ -56,8 +59,27 @@ public extension UIViewController {
         if let completion = completion {
             completion()
         }
+        
+        fleet_dismissViewControllerAnimated(animated, completion: nil)
     }
     
+    private class func swizzleShow() {
+        let originalSelector = #selector(UIViewController.showViewController(_:sender:))
+        let swizzledSelector = #selector(UIViewController.fleet_showViewController(_:sender:))
+        
+        let originalMethod = class_getInstanceMethod(self, originalSelector)
+        let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
+        
+        method_exchangeImplementations(originalMethod, swizzledMethod)
+    }
+    
+    func fleet_showViewController(viewController: UIViewController, sender: AnyObject?) {
+        self.fleet_property_presentedViewController = viewController
+        viewController.fleet_property_presentingViewController = self
+        
+        fleet_showViewController(viewController, sender: sender)
+    }
+
     private class func swizzlePresentedViewControllerProperty() {
         let originalSelector = Selector("presentedViewController")
         let swizzledSelector = #selector(UIViewController.fleet_presentedViewController)

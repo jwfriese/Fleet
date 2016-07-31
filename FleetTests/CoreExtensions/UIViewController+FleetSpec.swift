@@ -57,4 +57,14 @@ class UIViewController_FleetSpec: XCTestCase {
         
         expect(didFireCompletionHandler).to(beTrue())
     }
+    
+    func test_showViewController_immediatelyPresentsTheViewController() {
+        let bottom = UIViewController()
+        let top = UIViewController()
+        
+        bottom.showViewController(top, sender: nil)
+        
+        expect(bottom.presentedViewController).to(beIdenticalTo(top))
+        expect(top.presentingViewController).to(beIdenticalTo(bottom))
+    }
 }
