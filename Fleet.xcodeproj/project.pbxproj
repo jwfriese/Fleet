@@ -318,8 +318,8 @@
 		7BA90AB51CC130980040B031 /* Fleet */ = {
 			isa = PBXGroup;
 			children = (
-				7B9458171D4E470C00F16A64 /* Script */,
 				7B675E931D0DA7EA002E6B45 /* Fleet.swift */,
+				7B9458171D4E470C00F16A64 /* Script */,
 				7B675E8B1D0DA5B5002E6B45 /* CurrentScreen */,
 				7B675E871D0C5AEE002E6B45 /* Logging */,
 				7BA90ABE1CC3B5E30040B031 /* CoreExtensions */,
