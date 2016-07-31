@@ -42,6 +42,7 @@
 		7B9458101D4D7DFA00F16A64 /* StoryboardDeserializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B94580F1D4D7DFA00F16A64 /* StoryboardDeserializer.swift */; };
 		7B9458121D4D7ED100F16A64 /* StoryboardReferenceMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9458111D4D7ED100F16A64 /* StoryboardReferenceMap.swift */; };
 		7B9458141D4D7F0300F16A64 /* StoryboardDeserializerSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B9458131D4D7F0300F16A64 /* StoryboardDeserializerSpec.swift */; };
+		7B94581A1D4E4AF200F16A64 /* copy_storyboard_info_files.sh in Resources */ = {isa = PBXBuildFile; fileRef = 7B9458181D4E474B00F16A64 /* copy_storyboard_info_files.sh */; };
 		7BA90AB71CC130990040B031 /* Fleet.h in Headers */ = {isa = PBXBuildFile; fileRef = 7BA90AB61CC130990040B031 /* Fleet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7BA90AC01CC3B6B80040B031 /* UIButton+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90ABF1CC3B6B80040B031 /* UIButton+Fleet.swift */; };
 		7BA90ACA1CC3B8950040B031 /* Fleet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BA90AB31CC130980040B031 /* Fleet.framework */; };
@@ -133,6 +134,7 @@
 		7B94580F1D4D7DFA00F16A64 /* StoryboardDeserializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryboardDeserializer.swift; sourceTree = "<group>"; };
 		7B9458111D4D7ED100F16A64 /* StoryboardReferenceMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryboardReferenceMap.swift; sourceTree = "<group>"; };
 		7B9458131D4D7F0300F16A64 /* StoryboardDeserializerSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryboardDeserializerSpec.swift; sourceTree = "<group>"; };
+		7B9458181D4E474B00F16A64 /* copy_storyboard_info_files.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = copy_storyboard_info_files.sh; sourceTree = "<group>"; };
 		7BA90AB31CC130980040B031 /* Fleet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Fleet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BA90AB61CC130990040B031 /* Fleet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Fleet.h; sourceTree = "<group>"; };
 		7BA90AB81CC130990040B031 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -280,6 +282,14 @@
 			path = CurrentScreen;
 			sourceTree = "<group>";
 		};
+		7B9458171D4E470C00F16A64 /* Script */ = {
+			isa = PBXGroup;
+			children = (
+				7B9458181D4E474B00F16A64 /* copy_storyboard_info_files.sh */,
+			);
+			path = Script;
+			sourceTree = "<group>";
+		};
 		7BA90AA91CC130980040B031 = {
 			isa = PBXGroup;
 			children = (
@@ -308,6 +318,7 @@
 		7BA90AB51CC130980040B031 /* Fleet */ = {
 			isa = PBXGroup;
 			children = (
+				7B9458171D4E470C00F16A64 /* Script */,
 				7B675E931D0DA7EA002E6B45 /* Fleet.swift */,
 				7B675E8B1D0DA5B5002E6B45 /* CurrentScreen */,
 				7B675E871D0C5AEE002E6B45 /* Logging */,
@@ -540,6 +551,7 @@
 				7BA90AC11CC3B8950040B031 /* Sources */,
 				7BA90AC21CC3B8950040B031 /* Frameworks */,
 				7BA90AC31CC3B8950040B031 /* Resources */,
+				7B9458191D4E49ED00F16A64 /* Storyboard script */,
 			);
 			buildRules = (
 			);
@@ -657,6 +669,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B94581A1D4E4AF200F16A64 /* copy_storyboard_info_files.sh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -683,6 +696,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		7B9458191D4E49ED00F16A64 /* Storyboard script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Storyboard script";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = /Users/jwfriese/workspace/Fleet/Fleet/Script/copy_storyboard_info_files.sh;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		7B0D3B411CFB29B40096DBC2 /* Sources */ = {
