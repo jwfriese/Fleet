@@ -13,7 +13,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        turtlesAndFriendsStoryboard = UIStoryboard.init(name: "TurtlesAndFriendsStoryboard", bundle: nil)
+        turtlesAndFriendsStoryboard = UIStoryboard(name: "TurtlesAndFriendsStoryboard", bundle: nil)
     }
     
     func test_bindingViewControllerToIdentifier_whenSameStoryboard_returnsBoundViewController() {
@@ -96,7 +96,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
     }
     
     func test_multipleStoryboardSupport() {
-        let turtleStoryboardTwo = UIStoryboard.init(name: "TurtlesAndFriendsStoryboard", bundle: nil)
+        let turtleStoryboardTwo = UIStoryboard(name: "TurtlesAndFriendsStoryboard", bundle: nil)
         
         let mockBoxTurtleViewControllerBlue = MockBoxTurtleViewController()
         try! turtlesAndFriendsStoryboard.bindViewController(mockBoxTurtleViewControllerBlue, toIdentifier: "BoxTurtleViewController")
