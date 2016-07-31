@@ -1,8 +1,13 @@
 import Foundation
 
 class StoryboardDeserializer {
-    func deserializeStoryboardWithName(name: String, fromBundle bundle: NSBundle) throws -> StoryboardReferenceMap {
-        let storyboardPath = bundle.bundlePath + "/\(name).storyboardc/Info.plist"
+    func deserializeStoryboardWithName(name: String) throws -> StoryboardReferenceMap {
+        guard let testBundle = Fleet.currentTestBundle else {
+            let userInfo = ["error" : "Could not find test bundle to load"]
+            throw NSError(domain: "Fleet Storyboard Read Error", code: NSFileNoSuchFileError, userInfo: userInfo)
+        }
+        
+        let storyboardPath = testBundle.bundlePath + "/StoryboardInfo/\(name)/Info.plist"
         if !NSFileManager.defaultManager().fileExistsAtPath(storyboardPath) {
             let userInfo = ["error" : "Could not load storyboard at \(storyboardPath)"]
             throw NSError(domain: "Fleet Storyboard Read Error", code: NSFileNoSuchFileError, userInfo: userInfo)

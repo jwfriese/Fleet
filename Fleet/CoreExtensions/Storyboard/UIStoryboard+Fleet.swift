@@ -1,3 +1,4 @@
+import Foundation
 import UIKit
 import ObjectiveC
 
@@ -26,7 +27,7 @@ extension UIStoryboard {
         if let storyboardBindingIdentifier = storyboardBindingIdentifier {
             if storyboardInstanceBindingMap[storyboardBindingIdentifier] == nil {
                 let deserializer = StoryboardDeserializer()
-                let storyboardReference = try deserializer.deserializeStoryboardWithName(storyboardName, fromBundle: NSBundle.mainBundle())
+                let storyboardReference = try deserializer.deserializeStoryboardWithName(storyboardName)
                 storyboardInstanceBindingMap[storyboardBindingIdentifier] = StoryboardInstanceBinding(fromStoryboardName: storyboardName, storyboardReferenceMap: storyboardReference)
             }
         }
