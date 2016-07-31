@@ -66,34 +66,9 @@ extension UIStoryboard {
         }
         
         dispatch_once(&Static.token) {
-            swizzleInit()
             swizzleViewControllerInstantiationMethod()
             swizzlePrivateStoryboardReferenceViewControllerInstantiationMethod()
         }
-    }
-    
-    class func swizzleInit() {
-        let originalSelector = Selector("initWithBundle:storyboardFileName:identifierToNibNameMap:identifierToExternalStoryboardReferenceMap:designatedEntryPointIdentifier:")
-        let swizzledSelector = #selector(UIStoryboard.fleet_initWithBundle(_:storyboardFileName:identifierToNibNameMap:identifierToExternalStoryboardReferenceMap:designatedEntryPointIdentifier:))
-        
-        let originalMethod = class_getInstanceMethod(self, originalSelector)
-        let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
-        
-        method_exchangeImplementations(originalMethod, swizzledMethod)
-    }
-    
-    func fleet_initWithBundle(bundle: NSBundle?,
-                              storyboardFileName: String,
-                              identifierToNibNameMap: [String : String]?,
-                              identifierToExternalStoryboardReferenceMap: AnyObject?,
-                              designatedEntryPointIdentifier: AnyObject) -> UIStoryboard {
-        let instance = self.fleet_initWithBundle(bundle, storyboardFileName: storyboardFileName, identifierToNibNameMap: identifierToNibNameMap, identifierToExternalStoryboardReferenceMap: identifierToExternalStoryboardReferenceMap, designatedEntryPointIdentifier: designatedEntryPointIdentifier)
-        
-        
-//        storyboardBindingIdentifier = storyboardName + "_" + NSUUID().UUIDString
-//        storyboardInstanceBindingMap[storyboardBindingIdentifier!] = StoryboardInstanceBinding(fromStoryboardName: storyboardName, externalStoryboardReferenceMap: identifierToExternalStoryboardReferenceMap as? [String : AnyObject], nibNameMap: identifierToNibNameMap)
-        
-        return instance
     }
 
     class func swizzleViewControllerInstantiationMethod() {
