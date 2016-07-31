@@ -4,14 +4,11 @@ internal final class StoryboardInstanceBinding {
     private var binding = [String : UIViewController]()
     
     private var storyboardName: String
-    private var externalStoryboardReferenceMap: [String : AnyObject]?
-    private var nibNameMap: [String : String]?
+    private var storyboardReferenceMap: StoryboardReferenceMap?
     
-    init(fromStoryboardName storyboardName: String, externalStoryboardReferenceMap: [String : AnyObject]?,
-                            nibNameMap: [String : String]?) {
+    init(fromStoryboardName storyboardName: String, storyboardReferenceMap: StoryboardReferenceMap?) {
         self.storyboardName = storyboardName
-        self.externalStoryboardReferenceMap = externalStoryboardReferenceMap
-        self.nibNameMap = nibNameMap
+        self.storyboardReferenceMap = storyboardReferenceMap
     }
     
     func viewControllerForIdentifier(identifier: String) -> UIViewController? {
@@ -19,7 +16,11 @@ internal final class StoryboardInstanceBinding {
     }
     
     func bindViewController(viewController: UIViewController, toIdentifier identifier: String) throws {
-        if nibNameMap?[identifier] == nil {
+        if let storyboardReferenceMap = storyboardReferenceMap {
+            if !storyboardReferenceMap.viewControllerIdentifiers.contains(identifier) {
+                throw FLTStoryboardBindingError.InvalidViewControllerIdentifier
+            }
+        } else {
             throw FLTStoryboardBindingError.InvalidViewControllerIdentifier
         }
         
@@ -29,17 +30,12 @@ internal final class StoryboardInstanceBinding {
     func bindViewController(viewController: UIViewController, toIdentifier identifier: String, forReferencedStoryboardWithName name: String) throws {
         
         var referenceExists = false
-        if let externalStoryboardReferenceMap = externalStoryboardReferenceMap {
-            for (nextIdentifier, reference) in externalStoryboardReferenceMap {
-                if let reference = reference as? [String : AnyObject] {
-                    if let viewControllerIdentifier = reference["UIReferencedControllerIdentifier"] as? String {
-                        if let referencedStoryboardName = reference["UIReferencedStoryboardName"] as? String {
-                            if viewControllerIdentifier == identifier && referencedStoryboardName == name {
-                                binding[nextIdentifier] = viewController
-                                referenceExists = true
-                            }
-                        }
-                    }
+        if let storyboardReferenceMap = storyboardReferenceMap {
+            for externalReference in storyboardReferenceMap.externalReferences {
+                if externalReference.externalViewControllerIdentifier == identifier &&
+                    externalReference.externalStoryboardName == name {
+                    binding[externalReference.connectedViewControllerIdentifier] = viewController
+                    referenceExists = true
                 }
             }
         }
@@ -50,19 +46,13 @@ internal final class StoryboardInstanceBinding {
     }
     
     func bindViewController(viewController: UIViewController, asInitialViewControllerForReferencedStoryboardWithName name: String) throws {
-        
         var referenceExists = false
-        if let externalStoryboardReferenceMap = externalStoryboardReferenceMap {
-            for (nextIdentifier, reference) in externalStoryboardReferenceMap {
-                if let reference = reference as? [String : AnyObject] {
-                    if let referencedStoryboardName = reference["UIReferencedStoryboardName"] as? String {
-                        if referencedStoryboardName == name {
-                            let specificViewControllerIdentifier = reference["UIReferencedControllerIdentifier"] as? String
-                            if specificViewControllerIdentifier == nil {
-                                binding[nextIdentifier] = viewController
-                                referenceExists = true
-                            }
-                        }
+        if let storyboardReferenceMap = storyboardReferenceMap {
+            for externalReference in storyboardReferenceMap.externalReferences {
+                if externalReference.externalStoryboardName == name {
+                    if externalReference.externalViewControllerIdentifier == "" {
+                        binding[externalReference.connectedViewControllerIdentifier] = viewController
+                        referenceExists = true
                     }
                 }
             }

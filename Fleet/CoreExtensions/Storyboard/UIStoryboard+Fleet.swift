@@ -1,3 +1,4 @@
+import Foundation
 import UIKit
 import ObjectiveC
 
@@ -17,7 +18,23 @@ extension UIStoryboard {
 }
 
 extension UIStoryboard {
+    private func initializeStoryboardBindings() throws {
+        let storyboardName = self.valueForKey("name") as! String
+        if storyboardBindingIdentifier == nil {
+            storyboardBindingIdentifier = storyboardName + "_" + NSUUID().UUIDString
+        }
+        
+        if let storyboardBindingIdentifier = storyboardBindingIdentifier {
+            if storyboardInstanceBindingMap[storyboardBindingIdentifier] == nil {
+                let deserializer = StoryboardDeserializer()
+                let storyboardReference = try deserializer.deserializeStoryboardWithName(storyboardName)
+                storyboardInstanceBindingMap[storyboardBindingIdentifier] = StoryboardInstanceBinding(fromStoryboardName: storyboardName, storyboardReferenceMap: storyboardReference)
+            }
+        }
+    }
+    
     public func bindViewController(viewController: UIViewController, toIdentifier identifier: String) throws {
+        try initializeStoryboardBindings()
         if let storyboardBindingIdentifier = storyboardBindingIdentifier {
             if let storyboardInstanceBinding = storyboardInstanceBindingMap[storyboardBindingIdentifier] {
                 try storyboardInstanceBinding.bindViewController(viewController, toIdentifier: identifier)
@@ -26,7 +43,7 @@ extension UIStoryboard {
     }
     
     public func bindViewController(viewController: UIViewController, toIdentifier identifier: String, forReferencedStoryboardWithName referencedStoryboardName: String) throws {
-        
+        try initializeStoryboardBindings()
         if let storyboardBindingIdentifier = storyboardBindingIdentifier {
             if let storyboardInstanceBinding = storyboardInstanceBindingMap[storyboardBindingIdentifier] {
                 try storyboardInstanceBinding.bindViewController(viewController, toIdentifier: identifier,
@@ -36,7 +53,7 @@ extension UIStoryboard {
     }
     
     public func bindViewController(viewController: UIViewController, asInitialViewControllerForReferencedStoryboardWithName referencedStoryboardName: String) throws {
-        
+        try initializeStoryboardBindings()
         if let storyboardBindingIdentifier = storyboardBindingIdentifier {
             if let storyboardInstanceBinding = storyboardInstanceBindingMap[storyboardBindingIdentifier] {
                 try storyboardInstanceBinding.bindViewController(viewController, asInitialViewControllerForReferencedStoryboardWithName: referencedStoryboardName)
@@ -50,34 +67,9 @@ extension UIStoryboard {
         }
         
         dispatch_once(&Static.token) {
-            swizzleInit()
             swizzleViewControllerInstantiationMethod()
             swizzlePrivateStoryboardReferenceViewControllerInstantiationMethod()
         }
-    }
-    
-    class func swizzleInit() {
-        let originalSelector = Selector("initWithBundle:storyboardFileName:identifierToNibNameMap:identifierToExternalStoryboardReferenceMap:designatedEntryPointIdentifier:")
-        let swizzledSelector = #selector(UIStoryboard.fleet_initWithBundle(_:storyboardFileName:identifierToNibNameMap:identifierToExternalStoryboardReferenceMap:designatedEntryPointIdentifier:))
-        
-        let originalMethod = class_getInstanceMethod(self, originalSelector)
-        let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
-        
-        method_exchangeImplementations(originalMethod, swizzledMethod)
-    }
-    
-    func fleet_initWithBundle(bundle: NSBundle?,
-                              storyboardFileName: String,
-                              identifierToNibNameMap: [String : String]?,
-                              identifierToExternalStoryboardReferenceMap: AnyObject?,
-                              designatedEntryPointIdentifier: AnyObject) -> UIStoryboard {
-        let instance = self.fleet_initWithBundle(bundle, storyboardFileName: storyboardFileName, identifierToNibNameMap: identifierToNibNameMap, identifierToExternalStoryboardReferenceMap: identifierToExternalStoryboardReferenceMap, designatedEntryPointIdentifier: designatedEntryPointIdentifier)
-        
-        let storyboardName = self.valueForKey("name") as! String
-        storyboardBindingIdentifier = storyboardName + "_" + NSUUID().UUIDString
-        storyboardInstanceBindingMap[storyboardBindingIdentifier!] = StoryboardInstanceBinding(fromStoryboardName: storyboardName, externalStoryboardReferenceMap: identifierToExternalStoryboardReferenceMap as? [String : AnyObject], nibNameMap: identifierToNibNameMap)
-        
-        return instance
     }
 
     class func swizzleViewControllerInstantiationMethod() {
