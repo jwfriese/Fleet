@@ -14,33 +14,30 @@ class StoryboardDeserializer {
         }
         
         var reference = StoryboardReferenceMap()
-        let storyboardInfoDictionary = NSDictionary(contentsOfFile: storyboardPath)
-        if let storyboardInfoDictionary = storyboardInfoDictionary {
-            if let nibNameDictionary = storyboardInfoDictionary["UIViewControllerIdentifiersToNibNames"] as? [String : String] {
-                reference.viewControllerIdentifiers = nibNameDictionary.map() { (key, value) in
-                    return key
+        guard let storyboardInfoDictionary = NSDictionary(contentsOfFile: storyboardPath) else { return reference }
+        if let nibNameDictionary = storyboardInfoDictionary["UIViewControllerIdentifiersToNibNames"] as? [String : String] {
+            reference.viewControllerIdentifiers = nibNameDictionary.map() { (key, value) in
+                return key
+            }
+        }
+        
+        let externalReferencesKey = "UIViewControllerIdentifiersToExternalStoryboardReferences"
+        guard let externalReferences = storyboardInfoDictionary[externalReferencesKey] as? [String : AnyObject] else { return reference }
+        
+        for identifier in externalReferences.keys {
+            var newRef = ExternalReferenceDefinition()
+            if let referenceDictionary = externalReferences[identifier] as? [String : String] {
+                newRef.connectedViewControllerIdentifier = identifier
+                if let externalStoryboardName = referenceDictionary["UIReferencedStoryboardName"] {
+                    newRef.externalStoryboardName = externalStoryboardName
+                }
+                
+                if let externalViewControllerIdentifier = referenceDictionary["UIReferencedControllerIdentifier"] {
+                    newRef.externalViewControllerIdentifier = externalViewControllerIdentifier
                 }
             }
             
-            let externalReferencesKey = "UIViewControllerIdentifiersToExternalStoryboardReferences"
-            let externalReferences = storyboardInfoDictionary[externalReferencesKey]
-            if let externalReferences = externalReferences as? [String : AnyObject] {
-                for identifier in externalReferences.keys {
-                    var newRef = ExternalReferenceDefinition()
-                    if let referenceDictionary = externalReferences[identifier] as? [String : String] {
-                        newRef.connectedViewControllerIdentifier = identifier
-                        if let externalStoryboardName = referenceDictionary["UIReferencedStoryboardName"] {
-                            newRef.externalStoryboardName = externalStoryboardName
-                        }
-                        
-                        if let externalViewControllerIdentifier = referenceDictionary["UIReferencedControllerIdentifier"] {
-                            newRef.externalViewControllerIdentifier = externalViewControllerIdentifier
-                        }
-                    }
-                    
-                    reference.externalReferences.append(newRef)
-                }
-            }
+            reference.externalReferences.append(newRef)
         }
         
         return reference
