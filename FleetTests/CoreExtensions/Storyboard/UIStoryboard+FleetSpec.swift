@@ -25,29 +25,31 @@ class UIStoryboard_FleetSpec: XCTestCase {
     }
     
     func test_bindingViewController_whenInvalidIdentifier_throwsError() {
-        var pass = false
+        var threwError = false
         let whateverViewController = UIViewController()
         do {
             try turtlesAndFriendsStoryboard.bindViewController(whateverViewController, toIdentifier: "WhateverViewController")
-        } catch FLTStoryboardBindingError.InvalidViewControllerIdentifier {
-            pass = true
+        } catch FLTStoryboardBindingError.InvalidViewControllerIdentifier(let message) {
+            threwError = true
+            expect(message).to(equal("Could not find identifier WhateverViewController on storyboard with name TurtlesAndFriendsStoryboard"))
         } catch { }
         
-        if !pass {
+        if !threwError {
             fail("Expected to throw InvalidViewControllerIdentifier error")
         }
     }
     
     func test_bindingViewController_whenIdentifierExistsOnlyOnStoryboardRef_throwsError() {
-        var pass = false
+        var threwError = false
         let whateverViewController = UIViewController()
         do {
             try turtlesAndFriendsStoryboard.bindViewController(whateverViewController, toIdentifier: "CrabViewController")
-        } catch FLTStoryboardBindingError.InvalidViewControllerIdentifier {
-            pass = true
+        } catch FLTStoryboardBindingError.InvalidViewControllerIdentifier(let message) {
+            threwError = true
+            expect(message).to(equal("Could not find identifier CrabViewController on storyboard with name TurtlesAndFriendsStoryboard, but found this identifier on an external storyboard reference. Use UIStoryboard.bindViewController(_:toIdentifier:forReferencedStoryboardWithName:) to bind to external references"))
         } catch { }
         
-        if !pass {
+        if !threwError {
             fail("Expected to throw InvalidViewControllerIdentifier error")
         }
     }
@@ -67,15 +69,16 @@ class UIStoryboard_FleetSpec: XCTestCase {
     }
     
     func test_bindingViewControllerToIdentifierReferenceToAnotherStoryboard_whenInvalidIdentifier_throwsError() {
-        var pass = false
+        var threwError = false
         let whateverViewController = UIViewController()
         do {
             try turtlesAndFriendsStoryboard.bindViewController(whateverViewController, toIdentifier: "WhateverViewController", forReferencedStoryboardWithName: "CrabStoryboard")
-        } catch FLTStoryboardBindingError.InvalidExternalStoryboardReference {
-            pass = true
+        } catch FLTStoryboardBindingError.InvalidExternalStoryboardReference(let message) {
+            threwError = true
+            expect(message).to(equal("Could not find identifier WhateverViewController (external storyboard reference: CrabStoryboard) on storyboard TurtlesAndFriendsStoryboard"))
         } catch { }
         
-        if !pass {
+        if !threwError {
             fail("Expected to throw InvalidExternalStoryboardReference error")
         }
     }

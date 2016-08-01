@@ -18,7 +18,13 @@ internal final class StoryboardInstanceBinding {
     func bindViewController(viewController: UIViewController, toIdentifier identifier: String) throws {
         if let storyboardReferenceMap = storyboardReferenceMap {
             if !storyboardReferenceMap.viewControllerIdentifiers.contains(identifier) {
-                let message = "Could not find identifier \(identifier) on storyboard with name \(storyboardName)"
+                var message = ""
+                if storyboardReferenceMap.hasExternalReferenceForIdentifier(identifier) {
+                    message = "Could not find identifier \(identifier) on storyboard with name \(storyboardName), but found this identifier on an external storyboard reference. Use UIStoryboard.bindViewController(_:toIdentifier:forReferencedStoryboardWithName:) to bind to external references"
+                } else {
+                    message = "Could not find identifier \(identifier) on storyboard with name \(storyboardName)"
+                }
+                
                 throw FLTStoryboardBindingError.InvalidViewControllerIdentifier(message)
             }
         } else {
