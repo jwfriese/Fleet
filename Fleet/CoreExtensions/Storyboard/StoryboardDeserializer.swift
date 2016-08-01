@@ -8,13 +8,12 @@ class StoryboardDeserializer {
         }
         
         let storyboardPath = testBundle.bundlePath + "/StoryboardInfo/\(name)/Info.plist"
-        if !NSFileManager.defaultManager().fileExistsAtPath(storyboardPath) {
-            let message = "Could not load storyboard at \(storyboardPath)"
+        guard NSFileManager.defaultManager().fileExistsAtPath(storyboardPath) else {
+            let message = "Failed to build storyboard reference map for storyboard with name \(name). Either this storyboard does not exist or Fleet is not set up for storyboard binding. Check the documentation to ensure that you have set up Fleet correctly for storyboard testing"
             throw FLTStoryboardBindingError.InternalInconsistency(message)
         }
         
         var reference = StoryboardReferenceMap()
-        
         let storyboardInfoDictionary = NSDictionary(contentsOfFile: storyboardPath)
         if let storyboardInfoDictionary = storyboardInfoDictionary {
             if let nibNameDictionary = storyboardInfoDictionary["UIViewControllerIdentifiersToNibNames"] as? [String : String] {
