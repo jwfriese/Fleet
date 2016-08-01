@@ -18,10 +18,11 @@ internal final class StoryboardInstanceBinding {
     func bindViewController(viewController: UIViewController, toIdentifier identifier: String) throws {
         if let storyboardReferenceMap = storyboardReferenceMap {
             if !storyboardReferenceMap.viewControllerIdentifiers.contains(identifier) {
-                throw FLTStoryboardBindingError.InvalidViewControllerIdentifier
+                let message = "Could not find identifier \(identifier) on storyboard with name \(storyboardName)"
+                throw FLTStoryboardBindingError.InvalidViewControllerIdentifier(message)
             }
         } else {
-            throw FLTStoryboardBindingError.InvalidViewControllerIdentifier
+            throw FLTStoryboardBindingError.InternalInconsistency("Failed to build storyboard reference map. Check the documentation to ensure that you have set up Fleet correctly for storyboard testing")
         }
         
         binding[identifier] = viewController
@@ -41,7 +42,7 @@ internal final class StoryboardInstanceBinding {
         }
         
         if !referenceExists {
-            throw FLTStoryboardBindingError.InvalidExternalStoryboardReference
+            throw FLTStoryboardBindingError.InvalidExternalStoryboardReference("Could not find identifier \(identifier) (external storyboard reference: \(name)) on storyboard \(storyboardName)")
         }
     }
     
@@ -59,7 +60,7 @@ internal final class StoryboardInstanceBinding {
         }
         
         if !referenceExists {
-            throw FLTStoryboardBindingError.InvalidExternalStoryboardReference
+            throw FLTStoryboardBindingError.InvalidExternalStoryboardReference("Could not find reference to an external storyboard with name \(name) on storyboard \(storyboardName)")
         }
     }
     

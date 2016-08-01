@@ -38,6 +38,20 @@ class UIStoryboard_FleetSpec: XCTestCase {
         }
     }
     
+    func test_bindingViewController_whenIdentifierExistsOnlyOnStoryboardRef_throwsError() {
+        var pass = false
+        let whateverViewController = UIViewController()
+        do {
+            try turtlesAndFriendsStoryboard.bindViewController(whateverViewController, toIdentifier: "CrabViewController")
+        } catch FLTStoryboardBindingError.InvalidViewControllerIdentifier {
+            pass = true
+        } catch { }
+        
+        if !pass {
+            fail("Expected to throw InvalidViewControllerIdentifier error")
+        }
+    }
+    
     func test_bindingViewControllerToIdentifierReferenceToAnotherStoryboard() {
         let mockCrabViewController = MockCrabViewController()
         try! turtlesAndFriendsStoryboard.bindViewController(mockCrabViewController, toIdentifier: "CrabViewController", forReferencedStoryboardWithName: "CrabStoryboard")

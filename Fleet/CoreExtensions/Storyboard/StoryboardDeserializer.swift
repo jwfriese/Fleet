@@ -3,14 +3,14 @@ import Foundation
 class StoryboardDeserializer {
     func deserializeStoryboardWithName(name: String) throws -> StoryboardReferenceMap {
         guard let testBundle = Fleet.currentTestBundle else {
-            let userInfo = ["error" : "Could not find test bundle to load"]
-            throw NSError(domain: "Fleet Storyboard Read Error", code: NSFileNoSuchFileError, userInfo: userInfo)
+            let message = "Could not find test bundle to load storyboard with name \(name)"
+            throw FLTStoryboardBindingError.InternalInconsistency(message)
         }
         
         let storyboardPath = testBundle.bundlePath + "/StoryboardInfo/\(name)/Info.plist"
         if !NSFileManager.defaultManager().fileExistsAtPath(storyboardPath) {
-            let userInfo = ["error" : "Could not load storyboard at \(storyboardPath)"]
-            throw NSError(domain: "Fleet Storyboard Read Error", code: NSFileNoSuchFileError, userInfo: userInfo)
+            let message = "Could not load storyboard at \(storyboardPath)"
+            throw FLTStoryboardBindingError.InternalInconsistency(message)
         }
         
         var reference = StoryboardReferenceMap()
