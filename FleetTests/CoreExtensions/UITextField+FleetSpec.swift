@@ -10,6 +10,14 @@ class TestTextFieldDelegate: NSObject {
     var textChanges: [String] = []
 }
 
+class TestTextFieldTarget: NSObject {
+    var didCallDo: Bool = false
+    
+    func doFunc() {
+        didCallDo = true
+    }
+}
+
 extension TestTextFieldDelegate: UITextFieldDelegate {
     func resetState() {
         didCallShouldBeginEditing = false
@@ -74,6 +82,19 @@ class UITextField_FleetSpec: XCTestCase {
         expect { try self.textField.enter() }.to(throwError(FLTTextFieldError.DisabledTextFieldError))
     }
     
+    
+    func test_enter_whenNoDelegate_stillSendsEditingDidBeginEvent() {
+        textField.delegate = nil
+        let testTarget = TestTextFieldTarget()
+        textField.addTarget(testTarget,
+                            action: #selector(TestTextFieldTarget.doFunc),
+                            forControlEvents: .EditingDidBegin
+        )
+        
+        try! textField.enter()
+        expect(testTarget.didCallDo).to(beTrue())
+    }
+    
     func test_leave_leavesTheEnteredTextField() {
         try! textField.enter()
         delegate.resetState()
@@ -87,6 +108,19 @@ class UITextField_FleetSpec: XCTestCase {
         textField.leave()
         expect(self.delegate.didCallShouldEndEditing).to(beFalse())
         expect(self.delegate.didCallDidEndEditing).to(beFalse())
+    }
+    
+    func test_leave_whenNoDelegate_stillSendsEditingDidEndEvent() {
+        textField.delegate = nil
+        try! textField.enter()
+        let testTarget = TestTextFieldTarget()
+        textField.addTarget(testTarget,
+                            action: #selector(TestTextFieldTarget.doFunc),
+                            forControlEvents: .EditingDidEnd
+        )
+        
+        textField.leave()
+        expect(testTarget.didCallDo).to(beTrue())
     }
     
     func test_enterText_entersTextFieldTypesTextAndLeavesTextField() {
@@ -117,6 +151,26 @@ class UITextField_FleetSpec: XCTestCase {
         expect(self.delegate.textChanges).to(equal([]))
     }
     
+    func test_typeText_whenNoDelegate_stillSendsEditingChangedEvent() {
+        textField.delegate = nil
+        try! textField.enter()
+        let testTarget = TestTextFieldTarget()
+        textField.addTarget(testTarget,
+                            action: #selector(TestTextFieldTarget.doFunc),
+                            forControlEvents: .EditingChanged
+        )
+        
+        textField.typeText("turtle")
+        expect(testTarget.didCallDo).to(beTrue())
+    }
+    
+    func test_typeText_whenNoDelegate_stillUpdatesText() {
+        textField.delegate = nil
+        try! textField.enter()
+        textField.typeText("turtle")
+        expect(self.textField.text).to(equal("turtle"))
+    }
+    
     func test_pasteText_typesTextIntoTextFieldAllAtOnce() {
         try! textField.enter()
         delegate.resetState()
@@ -128,5 +182,25 @@ class UITextField_FleetSpec: XCTestCase {
     func test_pasteText_whenNeverEnteredTextField_doesNothing() {
         textField.pasteText("turtle")
         expect(self.delegate.textChanges).to(equal([]))
+    }
+    
+    func test_pasteText_whenNoDelegate_stillSendsEditingChangedEvent() {
+        textField.delegate = nil
+        try! textField.enter()
+        let testTarget = TestTextFieldTarget()
+        textField.addTarget(testTarget,
+                            action: #selector(TestTextFieldTarget.doFunc),
+                            forControlEvents: .EditingChanged
+        )
+        
+        textField.pasteText("turtle")
+        expect(testTarget.didCallDo).to(beTrue())
+    }
+    
+    func test_pasteText_whenNoDelegate_stillUpdatesText() {
+        textField.delegate = nil
+        try! textField.enter()
+        textField.pasteText("turtle")
+        expect(self.textField.text).to(equal("turtle"))
     }
 }

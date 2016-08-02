@@ -39,8 +39,9 @@ extension UITextField {
         if let delegate = delegate {
             _ = delegate.textFieldShouldBeginEditing?(self)
             _ = delegate.textFieldDidBeginEditing?(self)
-            self.sendActionsForControlEvents(.EditingDidBegin)
         }
+        
+        self.sendActionsForControlEvents(.EditingDidBegin)
     }
     
     public func leave() {
@@ -52,9 +53,9 @@ extension UITextField {
         if let delegate = delegate {
             _ = delegate.textFieldShouldEndEditing?(self)
             _ = delegate.textFieldDidEndEditing?(self)
-            self.sendActionsForControlEvents(.EditingDidEnd)
         }
         
+        self.sendActionsForControlEvents(.EditingDidEnd)
         isFocused = false
     }
     
@@ -75,6 +76,12 @@ extension UITextField {
                 _ = delegate.textField?(self, shouldChangeCharactersInRange: NSRange.init(location: index, length: 1), replacementString: String(char))
                 self.sendActionsForControlEvents(.EditingChanged)
             }
+        } else {
+            self.text = ""
+            for (_, char) in text.characters.enumerate() {
+                self.text?.append(char)
+                self.sendActionsForControlEvents(.EditingChanged)
+            }
         }
     }
     
@@ -87,7 +94,11 @@ extension UITextField {
         if let delegate = delegate {
             let length = text.characters.count
             _ = delegate.textField?(self, shouldChangeCharactersInRange: NSRange.init(location: 0, length: length), replacementString: text)
-            self.sendActionsForControlEvents(.EditingChanged)
+        } else {
+            self.text = text
         }
+        
+        self.sendActionsForControlEvents(.EditingChanged)
+
     }
 }
