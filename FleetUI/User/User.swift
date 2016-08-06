@@ -26,8 +26,8 @@ public class User {
         }
     }
 
-    private func doAction(action: UserAction) {
-        var actionResult: UserActionResult?
+    private func doAction(action: Action) {
+        var actionResult: ActionResult?
 
         do {
             try actionResult = action.perform(app)

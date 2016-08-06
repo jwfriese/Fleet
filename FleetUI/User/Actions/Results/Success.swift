@@ -1,4 +1,4 @@
-class Success: UserActionResult {
+class Success: ActionResult {
     var succeeded: Bool {
         get {
             return true

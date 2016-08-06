@@ -1,4 +1,4 @@
-class Error: UserActionResult {
+class Error: ActionResult {
     var errorMessage: String!
 
     init(_ error: String) {

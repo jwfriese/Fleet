@@ -1,13 +1,13 @@
 import XCTest
 
-class TapButtonAction: UserAction {
+class TapButtonAction: Action {
     private var text: String!
 
     init(text: String) {
         self.text = text
     }
 
-    func perform(app: XCUIApplication) throws -> UserActionResult {
+    func perform(app: XCUIApplication) throws -> ActionResult {
         let buttonExists = app.buttons[text].exists
         if buttonExists {
             app.buttons[text].tap()

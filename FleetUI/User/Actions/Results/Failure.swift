@@ -1,4 +1,4 @@
-class Failure: UserActionResult {
+class Failure: ActionResult {
     var message: String!
 
     init(_ message: String) {
