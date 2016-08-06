@@ -15,8 +15,8 @@ public class User {
         doAction(TapButtonAction(text: text))
     }
 
-    public func canSeeText(text: String) -> Bool {
-        return app.staticTexts[text].exists
+    public func findText(text: String) {
+        doAction(FindTextAction(text))
     }
 
     private func doAction(action: UserAction) {
