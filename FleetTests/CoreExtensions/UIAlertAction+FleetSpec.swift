@@ -9,11 +9,11 @@ class UIAlertAction_FleetSpec: XCTestCase {
         let alertAction = UIAlertAction(title: "title", style: .Default) { action in
             didFireHandler = true
         }
-        
+
         if let handler = alertAction.handler {
             handler(alertAction)
         }
-        
+
         expect(didFireHandler).to(beTrue())
     }
 }

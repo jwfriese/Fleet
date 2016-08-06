@@ -14,7 +14,7 @@ extension UITextField {
             if let newValue = newValue {
                 isFocusedValue = NSNumber(bool: newValue)
             }
-            
+
             objc_setAssociatedObject(self, &isFocusedAssociatedKey, isFocusedValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
         }
     }
@@ -80,7 +80,7 @@ extension UITextField {
 
         - Parameter text:   The text to type into the field
 
-        - Throws: `FLTTextFieldError.DisabledTextFieldError` if the 
+        - Throws: `FLTTextFieldError.DisabledTextFieldError` if the
             text field is disabled.
     */
     public func enterText(text: String) throws {
@@ -91,7 +91,7 @@ extension UITextField {
 
     /**
         Types the given text into the text field, firing the .EditingChanged
-        event once for each character, as would happen had a real user 
+        event once for each character, as would happen had a real user
         typed the text into the field.
 
         If the text field has no delegate, the text is still entered into the

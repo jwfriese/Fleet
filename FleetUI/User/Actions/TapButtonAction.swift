@@ -2,11 +2,11 @@ import XCTest
 
 class TapButtonAction: UserAction {
     private var text: String!
-    
+
     init(text: String) {
         self.text = text
     }
-    
+
     func perform(app: XCUIApplication) throws -> FLTUserActionResult {
         let buttonExists = app.buttons[text].exists
         if buttonExists {

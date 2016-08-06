@@ -7,14 +7,14 @@ extension Screen: FLTScreen {
             while viewController.presentedViewController != nil {
                 viewController = viewController.presentedViewController!
             }
-            
+
             return viewController
         }
-        
+
         Logger.logWarning("Unable to locate test application's root view controller. Make sure there is a key window even in test runs.")
         return nil
     }
-    
+
     var presentedAlert: UIAlertController? {
         get {
             return topmostPresentedViewController as? UIAlertController

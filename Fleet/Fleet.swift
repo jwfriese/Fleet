@@ -4,11 +4,11 @@ public class Fleet {
     public static func getCurrentScreen() -> FLTScreen? {
         return Screen()
     }
-    
+
     public static func swapWindowRootViewController(viewController: UIViewController) {
         UIApplication.sharedApplication().keyWindow?.rootViewController = viewController
     }
-    
+
     /**
      Note: The original file this func was taken from can be found in the Quick
      project (https://github.com/Quick/Quick)
@@ -20,5 +20,5 @@ public class Fleet {
             }
             .first
     }
-    
+
 }

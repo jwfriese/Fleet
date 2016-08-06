@@ -4,7 +4,7 @@ import Nimble
 
 class BoxTurtlePageTests: XCTestCase {
     var user: User!
-    
+
     override func setUp() {
         super.setUp()
 

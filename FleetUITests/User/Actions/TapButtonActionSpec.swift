@@ -5,7 +5,7 @@ import Nimble
 class TapButtonActionSpec: XCTestCase {
     var user: User!
     var reporter: FakeReporter!
-    
+
     override func setUp() {
         super.setUp()
         continueAfterFailure = false

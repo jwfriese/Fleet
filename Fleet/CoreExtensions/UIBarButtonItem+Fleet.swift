@@ -2,7 +2,7 @@ import UIKit
 
 public extension UIBarButtonItem {
     /**
-        Mimic a user tap on the bar button, firing any associated events. 
+        Mimic a user tap on the bar button, firing any associated events.
     */
     public func tap() {
         if enabled {

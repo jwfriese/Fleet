@@ -119,10 +119,10 @@ extension UIStoryboard {
     class func swizzleViewControllerInstantiationMethod() {
         let originalSelector = #selector(UIStoryboard.instantiateViewControllerWithIdentifier(_:))
         let swizzledSelector = #selector(UIStoryboard.fleet_instantiateViewControllerWithIdentifier(_:))
-        
+
         let originalMethod = class_getInstanceMethod(self, originalSelector)
         let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
-        
+
         method_exchangeImplementations(originalMethod, swizzledMethod)
     }
 
