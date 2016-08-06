@@ -2,7 +2,7 @@ import XCTest
 import Nimble
 @testable import FleetUI
 
-class FindTextActionSpec: XCTestCase {
+class CanSeeTextExpectationSpec: XCTestCase {
     var user: User!
     var reporter: FakeReporter!
 
@@ -16,7 +16,7 @@ class FindTextActionSpec: XCTestCase {
     }
 
     func test_findText_whenNoTextExists_reportsError() {
-        user.findText("KITTENS THO")
-        expect(self.reporter.lastReportedMessage).to(equal("User could not find text \"KITTENS THO\": It does not seem to exist"))
+        user.expectsTo(findText("KITTENS THO"))
+        expect(self.reporter.lastReportedMessage).to(equal("User expected to find text \"KITTENS THO\", but it does not seem to exist"))
     }
 }

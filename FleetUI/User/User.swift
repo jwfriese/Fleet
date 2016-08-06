@@ -15,8 +15,15 @@ public class User {
         doAction(TapButtonAction(text: text))
     }
 
-    public func findText(text: String) {
-        doAction(FindTextAction(text))
+    public func expectsTo(expectation: Expectation) {
+        let expectationResult = expectation.validate(app)
+        switch expectationResult {
+        case .Satisfied:
+            return
+        case .Rejected:
+            let failureMessage = "User expected to \(expectation.description), but \(expectationResult.description)"
+            reporter.reportError(failureMessage, testCase: testCase)
+        }
     }
 
     private func doAction(action: UserAction) {

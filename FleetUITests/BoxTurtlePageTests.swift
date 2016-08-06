@@ -17,6 +17,6 @@ class BoxTurtlePageTests: XCTestCase {
     func testMakeThatTurtleDance() {
         user.tapButtonWithText("Box Turtle")
         user.tapButtonWithText("DANCE")
-        user.findText("BOX TURTLE DANCE PARTY")
+        user.expectsTo(findText("BOX TURTLE DANCE PARTY"))
     }
 }
