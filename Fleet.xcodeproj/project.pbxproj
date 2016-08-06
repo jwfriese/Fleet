@@ -27,6 +27,13 @@
 		7B0D3B791CFC7CEB0096DBC2 /* UIViewController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B781CFC7CEB0096DBC2 /* UIViewController+Fleet.swift */; };
 		7B0D3B7B1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B7A1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift */; };
 		7B43F3A01D50CDCE000B1A30 /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B43F39D1D50CAFA000B1A30 /* Nimble.framework */; };
+		7B43F3A41D5622E7000B1A30 /* UserActionResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B43F3A31D5622E7000B1A30 /* UserActionResult.swift */; };
+		7B43F3A61D562302000B1A30 /* Success.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B43F3A51D562302000B1A30 /* Success.swift */; };
+		7B43F3A81D562318000B1A30 /* Failure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B43F3A71D562318000B1A30 /* Failure.swift */; };
+		7B43F3AA1D56231E000B1A30 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B43F3A91D56231E000B1A30 /* Error.swift */; };
+		7B43F3AC1D5623BD000B1A30 /* SuccessSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B43F3AB1D5623BD000B1A30 /* SuccessSpec.swift */; };
+		7B43F3AE1D56240D000B1A30 /* FailureSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B43F3AD1D56240D000B1A30 /* FailureSpec.swift */; };
+		7B43F3B01D56245A000B1A30 /* ErrorSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B43F3AF1D56245A000B1A30 /* ErrorSpec.swift */; };
 		7B675E7D1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E7C1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift */; };
 		7B675E821D0C5372002E6B45 /* UIBarButtonItem+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E811D0C5372002E6B45 /* UIBarButtonItem+Fleet.swift */; };
 		7B675E891D0C5AFB002E6B45 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E881D0C5AFB002E6B45 /* Logger.swift */; };
@@ -57,7 +64,6 @@
 		7BAC78D81D4B00FB000F86E4 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78D71D4B00FB000F86E4 /* User.swift */; };
 		7BAC78E11D4CE508000F86E4 /* UserAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78E01D4CE508000F86E4 /* UserAction.swift */; };
 		7BAC78E31D4CE575000F86E4 /* TapButtonAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78E21D4CE575000F86E4 /* TapButtonAction.swift */; };
-		7BAC78E71D4CEB0E000F86E4 /* UserActionResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78E61D4CEB0E000F86E4 /* UserActionResult.swift */; };
 		7BAC78EC1D4CECAB000F86E4 /* TapButtonActionSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78EB1D4CECAB000F86E4 /* TapButtonActionSpec.swift */; };
 		7BAC78EE1D4CEE40000F86E4 /* FleetUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78ED1D4CEE40000F86E4 /* FleetUI.swift */; };
 		7BAC78F41D4CF097000F86E4 /* Reporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78F31D4CF097000F86E4 /* Reporter.swift */; };
@@ -119,6 +125,13 @@
 		7B0D3B781CFC7CEB0096DBC2 /* UIViewController+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Fleet.swift"; sourceTree = "<group>"; };
 		7B0D3B7A1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+FleetSpec.swift"; sourceTree = "<group>"; };
 		7B43F39D1D50CAFA000B1A30 /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = "Externals/Nimble/build/Debug-iphoneos/Nimble.framework"; sourceTree = "<group>"; };
+		7B43F3A31D5622E7000B1A30 /* UserActionResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserActionResult.swift; sourceTree = "<group>"; };
+		7B43F3A51D562302000B1A30 /* Success.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Success.swift; sourceTree = "<group>"; };
+		7B43F3A71D562318000B1A30 /* Failure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Failure.swift; sourceTree = "<group>"; };
+		7B43F3A91D56231E000B1A30 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+		7B43F3AB1D5623BD000B1A30 /* SuccessSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuccessSpec.swift; sourceTree = "<group>"; };
+		7B43F3AD1D56240D000B1A30 /* FailureSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FailureSpec.swift; sourceTree = "<group>"; };
+		7B43F3AF1D56245A000B1A30 /* ErrorSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorSpec.swift; sourceTree = "<group>"; };
 		7B675E7C1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIBarButtonItem+FleetSpec.swift"; sourceTree = "<group>"; };
 		7B675E811D0C5372002E6B45 /* UIBarButtonItem+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIBarButtonItem+Fleet.swift"; sourceTree = "<group>"; };
 		7B675E881D0C5AFB002E6B45 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
@@ -155,7 +168,6 @@
 		7BAC78D71D4B00FB000F86E4 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		7BAC78E01D4CE508000F86E4 /* UserAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserAction.swift; sourceTree = "<group>"; };
 		7BAC78E21D4CE575000F86E4 /* TapButtonAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TapButtonAction.swift; sourceTree = "<group>"; };
-		7BAC78E61D4CEB0E000F86E4 /* UserActionResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserActionResult.swift; sourceTree = "<group>"; };
 		7BAC78EB1D4CECAB000F86E4 /* TapButtonActionSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TapButtonActionSpec.swift; sourceTree = "<group>"; };
 		7BAC78ED1D4CEE40000F86E4 /* FleetUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FleetUI.swift; sourceTree = "<group>"; };
 		7BAC78F31D4CF097000F86E4 /* Reporter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reporter.swift; sourceTree = "<group>"; };
@@ -252,6 +264,27 @@
 				7B0D3B291CFA73710096DBC2 /* Storyboards */,
 			);
 			path = FleetTestApp;
+			sourceTree = "<group>";
+		};
+		7B43F3A11D562295000B1A30 /* Results */ = {
+			isa = PBXGroup;
+			children = (
+				7B43F3A31D5622E7000B1A30 /* UserActionResult.swift */,
+				7B43F3A51D562302000B1A30 /* Success.swift */,
+				7B43F3A71D562318000B1A30 /* Failure.swift */,
+				7B43F3A91D56231E000B1A30 /* Error.swift */,
+			);
+			path = Results;
+			sourceTree = "<group>";
+		};
+		7B43F3A21D5622AE000B1A30 /* Results */ = {
+			isa = PBXGroup;
+			children = (
+				7B43F3AB1D5623BD000B1A30 /* SuccessSpec.swift */,
+				7B43F3AD1D56240D000B1A30 /* FailureSpec.swift */,
+				7B43F3AF1D56245A000B1A30 /* ErrorSpec.swift */,
+			);
+			path = Results;
 			sourceTree = "<group>";
 		};
 		7B675E871D0C5AEE002E6B45 /* Logging */ = {
@@ -446,7 +479,7 @@
 		7BAC78DF1D4CE4E6000F86E4 /* Actions */ = {
 			isa = PBXGroup;
 			children = (
-				7BAC78E61D4CEB0E000F86E4 /* UserActionResult.swift */,
+				7B43F3A11D562295000B1A30 /* Results */,
 				7BAC78E01D4CE508000F86E4 /* UserAction.swift */,
 				7BAC78E21D4CE575000F86E4 /* TapButtonAction.swift */,
 			);
@@ -464,6 +497,7 @@
 		7BAC78E91D4CEC20000F86E4 /* Actions */ = {
 			isa = PBXGroup;
 			children = (
+				7B43F3A21D5622AE000B1A30 /* Results */,
 				7BAC78EB1D4CECAB000F86E4 /* TapButtonActionSpec.swift */,
 			);
 			path = Actions;
@@ -773,7 +807,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B43F3AC1D5623BD000B1A30 /* SuccessSpec.swift in Sources */,
+				7B43F3B01D56245A000B1A30 /* ErrorSpec.swift in Sources */,
 				7BAC78AF1D4A438E000F86E4 /* BoxTurtlePageTests.swift in Sources */,
+				7B43F3AE1D56240D000B1A30 /* FailureSpec.swift in Sources */,
 				7BAC78EC1D4CECAB000F86E4 /* TapButtonActionSpec.swift in Sources */,
 				7BAC78F71D4CF129000F86E4 /* FakeReporter.swift in Sources */,
 			);
@@ -783,11 +820,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B43F3A81D562318000B1A30 /* Failure.swift in Sources */,
 				7BAC78E11D4CE508000F86E4 /* UserAction.swift in Sources */,
 				7BAC78E31D4CE575000F86E4 /* TapButtonAction.swift in Sources */,
-				7BAC78E71D4CEB0E000F86E4 /* UserActionResult.swift in Sources */,
 				7BAC78EE1D4CEE40000F86E4 /* FleetUI.swift in Sources */,
+				7B43F3A41D5622E7000B1A30 /* UserActionResult.swift in Sources */,
+				7B43F3A61D562302000B1A30 /* Success.swift in Sources */,
 				7BAC78F41D4CF097000F86E4 /* Reporter.swift in Sources */,
+				7B43F3AA1D56231E000B1A30 /* Error.swift in Sources */,
 				7BAC78D81D4B00FB000F86E4 /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

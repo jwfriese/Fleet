@@ -11,9 +11,9 @@ class TapButtonAction: UserAction {
         let buttonExists = app.buttons[text].exists
         if buttonExists {
             app.buttons[text].tap()
-            return .Success
+            return Success()
         } else {
-            return .Failure("User could not find button with text \"\(text)\": It does not seem to exist")
+            return Failure("User could not find button with text \"\(text)\": It does not seem to exist")
         }
     }
 }

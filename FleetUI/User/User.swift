@@ -20,21 +20,21 @@ public class User {
     }
 
     private func doAction(action: UserAction) {
-        var actionResult: UserActionResult = .Success
+        var actionResult: UserActionResult?
 
         do {
             try actionResult = action.perform(app)
         } catch {
-            actionResult = .Error(error)
+            actionResult = Error("\(error)")
         }
 
-        switch actionResult {
-        case .Success:
+        guard let finalResult = actionResult else {
+            reporter.reportError("Fleet fatal error: No user action result", testCase: testCase)
             return
-        case .Failure:
-            reporter.reportError(actionResult.resultDescription(), testCase: testCase)
-        case .Error:
-            reporter.reportError(actionResult.resultDescription(), testCase: testCase)
+        }
+
+        if !finalResult.succeeded {
+            reporter.reportError(finalResult.resultDescription, testCase: testCase)
         }
     }
 }
