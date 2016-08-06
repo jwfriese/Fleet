@@ -15,26 +15,33 @@ public class User {
         doAction(TapButtonAction(text: text))
     }
 
-    public func canSeeText(text: String) -> Bool {
-        return app.staticTexts[text].exists
+    public func expectsTo(expectation: Expectation) {
+        let expectationResult = expectation.validate(app)
+        switch expectationResult {
+        case .Satisfied:
+            return
+        case .Rejected:
+            let failureMessage = "User expected to \(expectation.description), but \(expectationResult.description)"
+            reporter.reportError(failureMessage, testCase: testCase)
+        }
     }
 
-    private func doAction(action: UserAction) {
-        var actionResult: FLTUserActionResult = .Success
+    private func doAction(action: Action) {
+        var actionResult: ActionResult?
 
         do {
             try actionResult = action.perform(app)
         } catch {
-            actionResult = .Error(error)
+            actionResult = Error("\(error)")
         }
 
-        switch actionResult {
-        case .Success:
+        guard let finalResult = actionResult else {
+            reporter.reportError("Fleet fatal error: No user action result", testCase: testCase)
             return
-        case .Failure:
-            reporter.reportError(actionResult.resultDescription(), testCase: testCase)
-        case .Error:
-            reporter.reportError(actionResult.resultDescription(), testCase: testCase)
+        }
+
+        if !finalResult.succeeded {
+            reporter.reportError(finalResult.resultDescription, testCase: testCase)
         }
     }
 }

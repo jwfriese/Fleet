@@ -1,19 +1,19 @@
 import XCTest
 
-class TapButtonAction: UserAction {
+class TapButtonAction: Action {
     private var text: String!
 
     init(text: String) {
         self.text = text
     }
 
-    func perform(app: XCUIApplication) throws -> FLTUserActionResult {
+    func perform(app: XCUIApplication) throws -> ActionResult {
         let buttonExists = app.buttons[text].exists
         if buttonExists {
             app.buttons[text].tap()
-            return .Success
+            return Success()
         } else {
-            return .Failure("User could not find button with text \"\(text)\": It does not seem to exist")
+            return Failure("User could not find button with text \"\(text)\": It does not seem to exist")
         }
     }
 }

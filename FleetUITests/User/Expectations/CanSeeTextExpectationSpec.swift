@@ -2,7 +2,7 @@ import XCTest
 import Nimble
 @testable import FleetUI
 
-class TapButtonActionSpec: XCTestCase {
+class CanSeeTextExpectationSpec: XCTestCase {
     var user: User!
     var reporter: FakeReporter!
 
@@ -15,8 +15,8 @@ class TapButtonActionSpec: XCTestCase {
         app.launch()
     }
 
-    func test_tapButtonWithText_whenNoMatchingButtonExists_reportsError() {
-        user.tapButtonWithText("KITTENS THO")
-        expect(self.reporter.lastReportedMessage).to(equal("User could not find button with text \"KITTENS THO\": It does not seem to exist"))
+    func test_findText_whenNoTextExists_reportsError() {
+        user.expectsTo(findText("KITTENS THO"))
+        expect(self.reporter.lastReportedMessage).to(equal("User expected to find text \"KITTENS THO\", but it does not seem to exist"))
     }
 }
