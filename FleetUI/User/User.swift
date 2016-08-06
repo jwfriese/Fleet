@@ -20,7 +20,7 @@ public class User {
     }
 
     private func doAction(action: UserAction) {
-        var actionResult: FLTUserActionResult = .Success
+        var actionResult: UserActionResult = .Success
 
         do {
             try actionResult = action.perform(app)

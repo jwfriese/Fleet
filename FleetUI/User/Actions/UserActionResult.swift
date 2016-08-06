@@ -1,4 +1,4 @@
-enum FLTUserActionResult {
+enum UserActionResult {
     case Success
     case Failure(String)
     case Error(ErrorType)

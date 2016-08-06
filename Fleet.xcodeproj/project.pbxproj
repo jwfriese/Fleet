@@ -57,7 +57,7 @@
 		7BAC78D81D4B00FB000F86E4 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78D71D4B00FB000F86E4 /* User.swift */; };
 		7BAC78E11D4CE508000F86E4 /* UserAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78E01D4CE508000F86E4 /* UserAction.swift */; };
 		7BAC78E31D4CE575000F86E4 /* TapButtonAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78E21D4CE575000F86E4 /* TapButtonAction.swift */; };
-		7BAC78E71D4CEB0E000F86E4 /* FLTUserActionResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78E61D4CEB0E000F86E4 /* FLTUserActionResult.swift */; };
+		7BAC78E71D4CEB0E000F86E4 /* UserActionResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78E61D4CEB0E000F86E4 /* UserActionResult.swift */; };
 		7BAC78EC1D4CECAB000F86E4 /* TapButtonActionSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78EB1D4CECAB000F86E4 /* TapButtonActionSpec.swift */; };
 		7BAC78EE1D4CEE40000F86E4 /* FleetUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78ED1D4CEE40000F86E4 /* FleetUI.swift */; };
 		7BAC78F41D4CF097000F86E4 /* Reporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAC78F31D4CF097000F86E4 /* Reporter.swift */; };
@@ -155,7 +155,7 @@
 		7BAC78D71D4B00FB000F86E4 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		7BAC78E01D4CE508000F86E4 /* UserAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserAction.swift; sourceTree = "<group>"; };
 		7BAC78E21D4CE575000F86E4 /* TapButtonAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TapButtonAction.swift; sourceTree = "<group>"; };
-		7BAC78E61D4CEB0E000F86E4 /* FLTUserActionResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FLTUserActionResult.swift; sourceTree = "<group>"; };
+		7BAC78E61D4CEB0E000F86E4 /* UserActionResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserActionResult.swift; sourceTree = "<group>"; };
 		7BAC78EB1D4CECAB000F86E4 /* TapButtonActionSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TapButtonActionSpec.swift; sourceTree = "<group>"; };
 		7BAC78ED1D4CEE40000F86E4 /* FleetUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FleetUI.swift; sourceTree = "<group>"; };
 		7BAC78F31D4CF097000F86E4 /* Reporter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reporter.swift; sourceTree = "<group>"; };
@@ -446,7 +446,7 @@
 		7BAC78DF1D4CE4E6000F86E4 /* Actions */ = {
 			isa = PBXGroup;
 			children = (
-				7BAC78E61D4CEB0E000F86E4 /* FLTUserActionResult.swift */,
+				7BAC78E61D4CEB0E000F86E4 /* UserActionResult.swift */,
 				7BAC78E01D4CE508000F86E4 /* UserAction.swift */,
 				7BAC78E21D4CE575000F86E4 /* TapButtonAction.swift */,
 			);
@@ -785,7 +785,7 @@
 			files = (
 				7BAC78E11D4CE508000F86E4 /* UserAction.swift in Sources */,
 				7BAC78E31D4CE575000F86E4 /* TapButtonAction.swift in Sources */,
-				7BAC78E71D4CEB0E000F86E4 /* FLTUserActionResult.swift in Sources */,
+				7BAC78E71D4CEB0E000F86E4 /* UserActionResult.swift in Sources */,
 				7BAC78EE1D4CEE40000F86E4 /* FleetUI.swift in Sources */,
 				7BAC78F41D4CF097000F86E4 /* Reporter.swift in Sources */,
 				7BAC78D81D4B00FB000F86E4 /* User.swift in Sources */,

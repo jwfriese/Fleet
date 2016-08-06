@@ -7,7 +7,7 @@ class TapButtonAction: UserAction {
         self.text = text
     }
 
-    func perform(app: XCUIApplication) throws -> FLTUserActionResult {
+    func perform(app: XCUIApplication) throws -> UserActionResult {
         let buttonExists = app.buttons[text].exists
         if buttonExists {
             app.buttons[text].tap()
