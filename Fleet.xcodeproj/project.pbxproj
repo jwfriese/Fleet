@@ -20,12 +20,17 @@
 		7B0D3B651CFB2E230096DBC2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B471CFB29B40096DBC2 /* AppDelegate.swift */; };
 		7B0D3B661CFB2E280096DBC2 /* CrabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B301CFA74070096DBC2 /* CrabViewController.swift */; };
 		7B0D3B6A1CFB37B50096DBC2 /* TestNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B691CFB37B50096DBC2 /* TestNavigationController.swift */; };
-		7B0D3B6E1CFB50F00096DBC2 /* PuppyStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B0D3B6D1CFB50F00096DBC2 /* PuppyStoryboard.storyboard */; };
-		7B0D3B701CFB51070096DBC2 /* PuppyListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B6F1CFB51070096DBC2 /* PuppyListViewController.swift */; };
 		7B0D3B711CFB5F5C0096DBC2 /* ButtonTapTestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BA90AD91CC3F0C60040B031 /* ButtonTapTestViewController.xib */; };
 		7B0D3B751CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B741CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift */; };
 		7B0D3B791CFC7CEB0096DBC2 /* UIViewController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B781CFC7CEB0096DBC2 /* UIViewController+Fleet.swift */; };
 		7B0D3B7B1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B7A1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift */; };
+		7B3AD1FB1D5A1AD700CA2897 /* Wait.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3AD1FA1D5A1AD700CA2897 /* Wait.swift */; };
+		7B3AD2051D5A1C8A00CA2897 /* WaitResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3AD2041D5A1C8A00CA2897 /* WaitResult.swift */; };
+		7B3AD2071D5B61E800CA2897 /* WaitPromise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3AD2061D5B61E800CA2897 /* WaitPromise.swift */; };
+		7B3AD2091D5BC12B00CA2897 /* UserWaitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3AD2081D5BC12B00CA2897 /* UserWaitTests.swift */; };
+		7B3AD20D1D5BC4F500CA2897 /* PuppyStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B3AD20B1D5BC4F500CA2897 /* PuppyStoryboard.storyboard */; };
+		7B3AD20E1D5BC4F500CA2897 /* PuppyListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3AD20C1D5BC4F500CA2897 /* PuppyListViewController.swift */; };
+		7B3AD2101D5BC51100CA2897 /* CorgiViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3AD20F1D5BC51100CA2897 /* CorgiViewController.swift */; };
 		7B43F3A01D50CDCE000B1A30 /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B43F39D1D50CAFA000B1A30 /* Nimble.framework */; };
 		7B43F3A61D562302000B1A30 /* Success.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B43F3A51D562302000B1A30 /* Success.swift */; };
 		7B43F3A81D562318000B1A30 /* Failure.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B43F3A71D562318000B1A30 /* Failure.swift */; };
@@ -124,11 +129,16 @@
 		7B0D3B591CFB2B860096DBC2 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = FleetTestApp/Info.plist; sourceTree = SOURCE_ROOT; };
 		7B0D3B671CFB2F030096DBC2 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7B0D3B691CFB37B50096DBC2 /* TestNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestNavigationController.swift; sourceTree = "<group>"; };
-		7B0D3B6D1CFB50F00096DBC2 /* PuppyStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = PuppyStoryboard.storyboard; sourceTree = "<group>"; };
-		7B0D3B6F1CFB51070096DBC2 /* PuppyListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PuppyListViewController.swift; sourceTree = "<group>"; };
 		7B0D3B741CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FLTStoryboardBindingError.swift; sourceTree = "<group>"; };
 		7B0D3B781CFC7CEB0096DBC2 /* UIViewController+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Fleet.swift"; sourceTree = "<group>"; };
 		7B0D3B7A1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+FleetSpec.swift"; sourceTree = "<group>"; };
+		7B3AD1FA1D5A1AD700CA2897 /* Wait.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Wait.swift; sourceTree = "<group>"; };
+		7B3AD2041D5A1C8A00CA2897 /* WaitResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaitResult.swift; sourceTree = "<group>"; };
+		7B3AD2061D5B61E800CA2897 /* WaitPromise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WaitPromise.swift; sourceTree = "<group>"; };
+		7B3AD2081D5BC12B00CA2897 /* UserWaitTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserWaitTests.swift; sourceTree = "<group>"; };
+		7B3AD20B1D5BC4F500CA2897 /* PuppyStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = PuppyStoryboard.storyboard; sourceTree = "<group>"; };
+		7B3AD20C1D5BC4F500CA2897 /* PuppyListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PuppyListViewController.swift; sourceTree = "<group>"; };
+		7B3AD20F1D5BC51100CA2897 /* CorgiViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CorgiViewController.swift; sourceTree = "<group>"; };
 		7B43F39D1D50CAFA000B1A30 /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = "Externals/Nimble/build/Debug-iphoneos/Nimble.framework"; sourceTree = "<group>"; };
 		7B43F3A51D562302000B1A30 /* Success.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Success.swift; sourceTree = "<group>"; };
 		7B43F3A71D562318000B1A30 /* Failure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Failure.swift; sourceTree = "<group>"; };
@@ -231,14 +241,13 @@
 		7B0D3B291CFA73710096DBC2 /* Storyboards */ = {
 			isa = PBXGroup;
 			children = (
+				7B3AD20A1D5BC49C00CA2897 /* Puppies */,
 				7B0D3B2A1CFA73930096DBC2 /* TurtlesAndFriendsStoryboard.storyboard */,
 				7B0D3B341CFA74B80096DBC2 /* AnimalListViewController.swift */,
 				7B0D3B2C1CFA73AF0096DBC2 /* BoxTurtleViewController.swift */,
 				7B0D3B321CFA74870096DBC2 /* SpottedTurtleViewController.swift */,
 				7B0D3B2E1CFA73FC0096DBC2 /* CrabStoryboard.storyboard */,
 				7B0D3B301CFA74070096DBC2 /* CrabViewController.swift */,
-				7B0D3B6D1CFB50F00096DBC2 /* PuppyStoryboard.storyboard */,
-				7B0D3B6F1CFB51070096DBC2 /* PuppyListViewController.swift */,
 			);
 			path = Storyboards;
 			sourceTree = "<group>";
@@ -274,6 +283,26 @@
 				7B0D3B291CFA73710096DBC2 /* Storyboards */,
 			);
 			path = FleetTestApp;
+			sourceTree = "<group>";
+		};
+		7B3AD1F91D5A1AD700CA2897 /* Wait */ = {
+			isa = PBXGroup;
+			children = (
+				7B3AD1FA1D5A1AD700CA2897 /* Wait.swift */,
+				7B3AD2041D5A1C8A00CA2897 /* WaitResult.swift */,
+				7B3AD2061D5B61E800CA2897 /* WaitPromise.swift */,
+			);
+			path = Wait;
+			sourceTree = "<group>";
+		};
+		7B3AD20A1D5BC49C00CA2897 /* Puppies */ = {
+			isa = PBXGroup;
+			children = (
+				7B3AD20B1D5BC4F500CA2897 /* PuppyStoryboard.storyboard */,
+				7B3AD20C1D5BC4F500CA2897 /* PuppyListViewController.swift */,
+				7B3AD20F1D5BC51100CA2897 /* CorgiViewController.swift */,
+			);
+			path = Puppies;
 			sourceTree = "<group>";
 		};
 		7B43F3A11D562295000B1A30 /* Results */ = {
@@ -480,6 +509,7 @@
 				7BAC78E81D4CEC0C000F86E4 /* User */,
 				7BAC78A81D4A432A000F86E4 /* Info.plist */,
 				7BAC78AE1D4A438E000F86E4 /* BoxTurtlePageTests.swift */,
+				7B3AD2081D5BC12B00CA2897 /* UserWaitTests.swift */,
 			);
 			path = FleetUITests;
 			sourceTree = "<group>";
@@ -499,9 +529,10 @@
 		7BAC78D61D4B00FB000F86E4 /* User */ = {
 			isa = PBXGroup;
 			children = (
+				7BAC78D71D4B00FB000F86E4 /* User.swift */,
+				7B3AD1F91D5A1AD700CA2897 /* Wait */,
 				7B43F3B81D5634E0000B1A30 /* Expectations */,
 				7BAC78DF1D4CE4E6000F86E4 /* Actions */,
-				7BAC78D71D4B00FB000F86E4 /* User.swift */,
 			);
 			path = User;
 			sourceTree = "<group>";
@@ -720,7 +751,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7B0D3B6E1CFB50F00096DBC2 /* PuppyStoryboard.storyboard in Resources */,
+				7B3AD20D1D5BC4F500CA2897 /* PuppyStoryboard.storyboard in Resources */,
 				7B0D3B601CFB2C270096DBC2 /* CrabStoryboard.storyboard in Resources */,
 				7B0D3B5F1CFB2C210096DBC2 /* TurtlesAndFriendsStoryboard.storyboard in Resources */,
 				7B0D3B521CFB29B40096DBC2 /* LaunchScreen.storyboard in Resources */,
@@ -782,11 +813,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B3AD2101D5BC51100CA2897 /* CorgiViewController.swift in Sources */,
 				7B0D3B661CFB2E280096DBC2 /* CrabViewController.swift in Sources */,
+				7B3AD20E1D5BC4F500CA2897 /* PuppyListViewController.swift in Sources */,
 				7B0D3B651CFB2E230096DBC2 /* AppDelegate.swift in Sources */,
 				7B0D3B621CFB2E120096DBC2 /* AnimalListViewController.swift in Sources */,
 				7B0D3B631CFB2E120096DBC2 /* BoxTurtleViewController.swift in Sources */,
-				7B0D3B701CFB51070096DBC2 /* PuppyListViewController.swift in Sources */,
 				7B0D3B641CFB2E120096DBC2 /* SpottedTurtleViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -843,6 +875,7 @@
 				7BAC78AF1D4A438E000F86E4 /* BoxTurtlePageTests.swift in Sources */,
 				7B43F3AE1D56240D000B1A30 /* FailureSpec.swift in Sources */,
 				7BAC78EC1D4CECAB000F86E4 /* TapButtonActionSpec.swift in Sources */,
+				7B3AD2091D5BC12B00CA2897 /* UserWaitTests.swift in Sources */,
 				7B43F3C31D563A61000B1A30 /* CanSeeTextExpectationSpec.swift in Sources */,
 				7BAC78F71D4CF129000F86E4 /* FakeReporter.swift in Sources */,
 			);
@@ -852,14 +885,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B3AD2071D5B61E800CA2897 /* WaitPromise.swift in Sources */,
 				7B43F3A81D562318000B1A30 /* Failure.swift in Sources */,
 				7B43F3C51D563D59000B1A30 /* Action.swift in Sources */,
+				7B3AD1FB1D5A1AD700CA2897 /* Wait.swift in Sources */,
 				7BAC78E31D4CE575000F86E4 /* TapButtonAction.swift in Sources */,
 				7B43F3BA1D563588000B1A30 /* Expectation.swift in Sources */,
 				7BAC78EE1D4CEE40000F86E4 /* FleetUI.swift in Sources */,
 				7B43F3BC1D563650000B1A30 /* ExpectationResult.swift in Sources */,
 				7B43F3A61D562302000B1A30 /* Success.swift in Sources */,
 				7B43F3C11D563A02000B1A30 /* CanSeeTextExpectation.swift in Sources */,
+				7B3AD2051D5A1C8A00CA2897 /* WaitResult.swift in Sources */,
 				7B43F3BF1D56393B000B1A30 /* ExpectationCreators.swift in Sources */,
 				7BAC78F41D4CF097000F86E4 /* Reporter.swift in Sources */,
 				7B43F3AA1D56231E000B1A30 /* Error.swift in Sources */,
