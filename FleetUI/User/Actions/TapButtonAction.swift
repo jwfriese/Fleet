@@ -8,12 +8,17 @@ class TapButtonAction: Action {
     }
 
     func perform(app: XCUIApplication) throws -> ActionResult {
-        let buttonExists = app.buttons[text].exists
-        if buttonExists {
-            app.buttons[text].tap()
-            return Success()
-        } else {
+        let buttonExists = wait(3) { return app.buttons[self.text].exists }
+        guard buttonExists else {
             return Failure("User could not find button with text \"\(text)\": It does not seem to exist")
         }
+
+        let isButtonHittable = wait(3) { return app.buttons[self.text].hittable }
+        guard isButtonHittable else {
+            return Failure("User could not tap button with text \"\(text)\": It was never hittable")
+        }
+
+        app.buttons[text].tap()
+        return Success()
     }
 }
