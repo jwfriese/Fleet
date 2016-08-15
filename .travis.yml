@@ -7,6 +7,8 @@ before_install:
 install:
 - git submodule init
 - git submodule update
+- gem install specific_install
+- gem specific_install jwfriese/xcpretty
 
 script:
 - go run Testing/tests.go
