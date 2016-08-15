@@ -15,7 +15,7 @@ func main() {
 }
 
 func runUnitTests(stdOut io.Writer, stdErr io.Writer) {
-	runCommand := exec.Command("go", "run", "script/unittests.go")
+	runCommand := exec.Command("go", "run", "Testing/unittests.go")
 	runCommand.Stdout = stdOut
 	runCommand.Stderr = stdErr
 

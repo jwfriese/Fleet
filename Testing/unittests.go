@@ -15,11 +15,26 @@ func main() {
 	}
 
 	unitTestCommand := exec.Command("xcodebuild", "test", "-workspace", "Fleet.xcworkspace", "-scheme", "Fleet", "-destination", "platform=iOS Simulator,OS=9.3,name=iPhone 6")
-	unitTestCommand.Stdout = stdOut
-	unitTestCommand.Stderr = stdErr
-	unitTestErr := unitTestCommand.Run()
-	if unitTestErr != nil {
-		log.Fatal(unitTestErr)
+	xcprettyCommand := exec.Command("xcpretty")
+	xcprettyCommand.Stdin, err = unitTestCommand.StdoutPipe()
+	if err != nil {
+		log.Fatal(err)
+	}
+	xcprettyCommand.Stdout = stdOut
+	xcprettyCommand.Stderr = stdErr
+	err = xcprettyCommand.Start()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = unitTestCommand.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = xcprettyCommand.Wait()
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	_, err = stdOut.Write([]byte("Fleet unit tests passed...\n"))
