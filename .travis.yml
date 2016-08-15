@@ -9,7 +9,6 @@ before_install:
 install:
 - git submodule init
 - git submodule update
-- gem install specific_install
-- gem specific_install https://github.com/jwfriese/xcpretty.git
+- gem
 script:
 - go run Testing/tests.go
