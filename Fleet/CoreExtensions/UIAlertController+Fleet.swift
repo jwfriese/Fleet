@@ -22,9 +22,7 @@ public extension UIAlertController {
                 }
             }
 
-            if isCancelStyle {
-                presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
-            }
+            presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
         } else {
             Logger.logWarning("No action with title \"\(title)\" found on alert")
         }
