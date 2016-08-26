@@ -13,10 +13,17 @@ public extension UIAlertController {
         }
 
         if let actionWithTitle = filteredActions.first {
+            let isCancelStyle = actionWithTitle.style == .Cancel
             if let handler = actionWithTitle.handler {
                 handler(actionWithTitle)
             } else {
-                Logger.logWarning("Action with title \"\(title)\" has no handler")
+                if !isCancelStyle {
+                    Logger.logWarning("Action with title \"\(title)\" has no handler and is not Cancel style")
+                }
+            }
+
+            if isCancelStyle {
+                presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
             }
         } else {
             Logger.logWarning("No action with title \"\(title)\" found on alert")

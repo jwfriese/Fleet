@@ -15,10 +15,7 @@ class SpottedTurtleViewController: UIViewController {
 
         alertController.addAction(alertAction)
 
-        let dismissAction = UIAlertAction(title: "Cower", style: .Cancel) { action in
-            self.dismissViewControllerAnimated(true, completion: nil)
-        }
-
+        let dismissAction = UIAlertAction(title: "Cower", style: .Cancel, handler: nil)
         alertController.addAction(dismissAction)
 
         presentViewController(alertController, animated: true, completion: nil)

@@ -26,4 +26,15 @@ class UIAlertController_FleetSpec: XCTestCase {
         expect(self.viewControllerThatPresentsAlerts.presentedViewController).to(beNil())
         expect(self.viewControllerThatPresentsAlerts.informationalLabel?.text).to(equal("WAIT NO PUT ME DOWN"))
     }
+
+    func test_tapAlertActionWithTitle_whenActionWithThatTitleExistsOnAlert_whenActionIsCancelStyle_dismissesAlert() {
+        let alertWithCancelAction = UIAlertController()
+        alertWithCancelAction.addAction(UIAlertAction(title: "Go Away", style: .Cancel, handler: nil))
+        viewControllerThatPresentsAlerts.presentViewController(alertWithCancelAction, animated: false, completion: nil)
+
+        let alertController = Fleet.getCurrentScreen()?.presentedAlert
+        alertController?.tapAlertActionWithTitle("Go Away")
+
+        expect(self.viewControllerThatPresentsAlerts.presentedViewController).to(beNil())
+    }
 }
