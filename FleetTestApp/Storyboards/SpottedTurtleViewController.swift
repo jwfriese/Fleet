@@ -10,7 +10,6 @@ class SpottedTurtleViewController: UIViewController {
 
         let alertAction = UIAlertAction(title: "Pick Up Anyway", style: .Default) { action in
             self.informationalLabel?.text = "WAIT NO PUT ME DOWN"
-            self.dismissViewControllerAnimated(true, completion: nil)
         }
 
         alertController.addAction(alertAction)
