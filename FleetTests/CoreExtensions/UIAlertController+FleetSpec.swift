@@ -14,7 +14,7 @@ class UIAlertController_FleetSpec: XCTestCase {
         storyboard = UIStoryboard.init(name: "TurtlesAndFriendsStoryboard", bundle: nil)
         viewControllerThatPresentsAlerts = storyboard.instantiateViewControllerWithIdentifier("SpottedTurtleViewController") as! SpottedTurtleViewController
 
-        Fleet.swapWindowRootViewController(viewControllerThatPresentsAlerts)
+        Fleet.setApplicationWindowRootViewController(viewControllerThatPresentsAlerts)
     }
 
     func test_tapAlertActionWithTitle_whenActionWithThatTitleExistsOnAlert_executesTheActionHandler() {

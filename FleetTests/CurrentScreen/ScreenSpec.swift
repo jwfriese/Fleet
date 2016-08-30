@@ -16,7 +16,7 @@ class ScreenSpec: XCTestCase {
         storyboard = UIStoryboard.init(name: "TurtlesAndFriendsStoryboard", bundle: nil)
         viewControllerThatPresentsAlerts = storyboard.instantiateViewControllerWithIdentifier("SpottedTurtleViewController") as! SpottedTurtleViewController
 
-        Fleet.swapWindowRootViewController(viewControllerThatPresentsAlerts)
+        Fleet.setApplicationWindowRootViewController(viewControllerThatPresentsAlerts)
     }
 
     func test_topmostPresentedViewController_returnsTopmostPresentedViewController() {

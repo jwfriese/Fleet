@@ -5,7 +5,7 @@ public class Fleet {
         return Screen()
     }
 
-    public static func swapWindowRootViewController(viewController: UIViewController) {
+    public static func setApplicationWindowRootViewController(viewController: UIViewController) {
         UIApplication.sharedApplication().keyWindow?.rootViewController = viewController
     }
 
