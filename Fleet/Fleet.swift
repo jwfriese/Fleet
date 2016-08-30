@@ -1,8 +1,17 @@
-import Foundation
+import UIKit
 
 public class Fleet {
-    public static func getCurrentScreen() -> FLTScreen? {
-        return Screen()
+    public static func getApplicationScreen() -> FLTScreen? {
+        guard let window = UIApplication.sharedApplication().keyWindow else {
+            Logger.logWarning("Cannot get application screen: UIApplication not set up with a key window.")
+            return nil
+        }
+
+        return Screen(forWindow: window)
+    }
+
+    public static func getScreenForWindow(window: UIWindow) -> FLTScreen {
+        return Screen(forWindow: window)
     }
 
     public static func setApplicationWindowRootViewController(viewController: UIViewController) {

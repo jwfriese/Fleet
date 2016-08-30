@@ -20,7 +20,7 @@ class UIAlertController_FleetSpec: XCTestCase {
     func test_tapAlertActionWithTitle_whenActionWithThatTitleExistsOnAlert_executesTheActionHandler() {
         self.viewControllerThatPresentsAlerts.alertButtonOne?.tap()
 
-        let alertController = Fleet.getCurrentScreen()?.presentedAlert
+        let alertController = Fleet.getApplicationScreen()?.presentedAlert
         alertController?.tapAlertActionWithTitle("Pick Up Anyway")
 
         expect(self.viewControllerThatPresentsAlerts.presentedViewController).to(beNil())
@@ -32,7 +32,7 @@ class UIAlertController_FleetSpec: XCTestCase {
         alertWithCancelAction.addAction(UIAlertAction(title: "Go Away", style: .Cancel, handler: nil))
         viewControllerThatPresentsAlerts.presentViewController(alertWithCancelAction, animated: false, completion: nil)
 
-        let alertController = Fleet.getCurrentScreen()?.presentedAlert
+        let alertController = Fleet.getApplicationScreen()?.presentedAlert
         alertController?.tapAlertActionWithTitle("Go Away")
 
         expect(self.viewControllerThatPresentsAlerts.presentedViewController).to(beNil())
