@@ -19,7 +19,6 @@
 		7B0D3B641CFB2E120096DBC2 /* SpottedTurtleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B321CFA74870096DBC2 /* SpottedTurtleViewController.swift */; };
 		7B0D3B651CFB2E230096DBC2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B471CFB29B40096DBC2 /* AppDelegate.swift */; };
 		7B0D3B661CFB2E280096DBC2 /* CrabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B301CFA74070096DBC2 /* CrabViewController.swift */; };
-		7B0D3B6A1CFB37B50096DBC2 /* TestNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B691CFB37B50096DBC2 /* TestNavigationController.swift */; };
 		7B0D3B711CFB5F5C0096DBC2 /* ButtonTapTestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BA90AD91CC3F0C60040B031 /* ButtonTapTestViewController.xib */; };
 		7B0D3B751CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B741CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift */; };
 		7B0D3B791CFC7CEB0096DBC2 /* UIViewController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B781CFC7CEB0096DBC2 /* UIViewController+Fleet.swift */; };
@@ -92,7 +91,6 @@
 		7B0D3B511CFB29B40096DBC2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7B0D3B591CFB2B860096DBC2 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = FleetTestApp/Info.plist; sourceTree = SOURCE_ROOT; };
 		7B0D3B671CFB2F030096DBC2 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		7B0D3B691CFB37B50096DBC2 /* TestNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestNavigationController.swift; sourceTree = "<group>"; };
 		7B0D3B741CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FLTStoryboardBindingError.swift; sourceTree = "<group>"; };
 		7B0D3B781CFC7CEB0096DBC2 /* UIViewController+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Fleet.swift"; sourceTree = "<group>"; };
 		7B0D3B7A1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+FleetSpec.swift"; sourceTree = "<group>"; };
@@ -599,7 +597,6 @@
 				7BA90AD41CC3EF6F0040B031 /* UIButton+FleetSpec.swift in Sources */,
 				7B0D3B381CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift in Sources */,
 				7B675E9C1D0DC398002E6B45 /* VisualTreeWalkerSpec.swift in Sources */,
-				7B0D3B6A1CFB37B50096DBC2 /* TestNavigationController.swift in Sources */,
 				7B675E961D0DAF94002E6B45 /* ScreenSpec.swift in Sources */,
 				7B675E7D1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift in Sources */,
 			);
