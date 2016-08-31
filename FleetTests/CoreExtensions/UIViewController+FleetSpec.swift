@@ -3,8 +3,13 @@ import Fleet
 import Nimble
 
 class UIViewController_FleetSpec: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    private class TestViewController: UIViewController {
+        var viewDidLoadCallCount: UInt = 0
+
+        private override func viewDidLoad() {
+            super.viewDidLoad()
+            viewDidLoadCallCount += 1
+        }
     }
 
     func test_presentViewController_immediatelyPresentsTheViewController() {
@@ -66,5 +71,21 @@ class UIViewController_FleetSpec: XCTestCase {
 
         expect(bottom.presentedViewController).to(beIdenticalTo(top))
         expect(top.presentingViewController).to(beIdenticalTo(bottom))
+    }
+
+    func test_presentViewController_immediatelyLoadsThePresentedViewController() {
+        let bottom = UIViewController()
+        let top = TestViewController()
+
+        bottom.presentViewController(top, animated: true, completion: nil)
+        expect(top.viewDidLoadCallCount).to(equal(1))
+    }
+
+    func test_presentViewController_doesNotLoadPresentedViewControllerMultipleTimes() {
+        let bottom = UIViewController()
+        let top = TestViewController()
+
+        bottom.presentViewController(top, animated: true, completion: nil)
+        expect(top.viewDidLoadCallCount).toNotEventually(beGreaterThan(1))
     }
 }

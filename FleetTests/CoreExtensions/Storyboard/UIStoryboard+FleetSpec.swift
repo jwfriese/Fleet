@@ -58,7 +58,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
         let mockCrabViewController = MockCrabViewController()
         try! turtlesAndFriendsStoryboard.bindViewController(mockCrabViewController, toIdentifier: "CrabViewController", forReferencedStoryboardWithName: "CrabStoryboard")
 
-        let testNavigationController = TestNavigationController()
+        let testNavigationController = UINavigationController()
 
         let animalListViewController = turtlesAndFriendsStoryboard.instantiateViewControllerWithIdentifier("AnimalListViewController") as? AnimalListViewController
         testNavigationController.pushViewController(animalListViewController!, animated: false)
@@ -88,7 +88,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
 
         try! turtlesAndFriendsStoryboard.bindViewController(mockPuppyListViewController, asInitialViewControllerForReferencedStoryboardWithName: "PuppyStoryboard")
 
-        let testNavigationController = TestNavigationController()
+        let testNavigationController = UINavigationController()
 
         let animalListViewController = turtlesAndFriendsStoryboard.instantiateViewControllerWithIdentifier("AnimalListViewController") as? AnimalListViewController
         testNavigationController.pushViewController(animalListViewController!, animated: false)

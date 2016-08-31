@@ -1,4 +1,10 @@
-class Screen { }
+class Screen {
+    private var window: UIWindow
+
+    init(forWindow window: UIWindow) {
+        self.window = window
+    }
+}
 
 extension Screen: FLTScreen {
     var topmostPresentedViewController: UIViewController? {

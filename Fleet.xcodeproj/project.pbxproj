@@ -19,7 +19,6 @@
 		7B0D3B641CFB2E120096DBC2 /* SpottedTurtleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B321CFA74870096DBC2 /* SpottedTurtleViewController.swift */; };
 		7B0D3B651CFB2E230096DBC2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B471CFB29B40096DBC2 /* AppDelegate.swift */; };
 		7B0D3B661CFB2E280096DBC2 /* CrabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B301CFA74070096DBC2 /* CrabViewController.swift */; };
-		7B0D3B6A1CFB37B50096DBC2 /* TestNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B691CFB37B50096DBC2 /* TestNavigationController.swift */; };
 		7B0D3B711CFB5F5C0096DBC2 /* ButtonTapTestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BA90AD91CC3F0C60040B031 /* ButtonTapTestViewController.xib */; };
 		7B0D3B751CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B741CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift */; };
 		7B0D3B791CFC7CEB0096DBC2 /* UIViewController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B781CFC7CEB0096DBC2 /* UIViewController+Fleet.swift */; };
@@ -52,6 +51,11 @@
 		7BA90ADC1CC3F0E00040B031 /* ButtonTapTestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90ADB1CC3F0E00040B031 /* ButtonTapTestViewController.swift */; };
 		7BA90ADF1CC3F6C50040B031 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90ADE1CC3F6C50040B031 /* File.swift */; };
 		7BAC789F1D3E6C96000F86E4 /* UITextField+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBFCD2E1D3DAE6C00C3EF0F /* UITextField+FleetSpec.swift */; };
+		7BB14A5B1D747940002ABE82 /* KittensStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7BB14A5A1D747940002ABE82 /* KittensStoryboard.storyboard */; };
+		7BB14A5D1D7479C4002ABE82 /* KittensNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A5C1D7479C4002ABE82 /* KittensNavigationController.swift */; };
+		7BB14A5F1D75065E002ABE82 /* UINavigationController+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A5E1D75065E002ABE82 /* UINavigationController+FleetSpec.swift */; };
+		7BB14A611D75091B002ABE82 /* UINavigationController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A601D75091B002ABE82 /* UINavigationController+Fleet.swift */; };
+		7BB14A641D770D5C002ABE82 /* ContainObjectSatisfying.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A631D770D5C002ABE82 /* ContainObjectSatisfying.swift */; };
 		7BBFCD2D1D3DA82500C3EF0F /* UITextField+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBFCD2C1D3DA82500C3EF0F /* UITextField+Fleet.swift */; };
 /* End PBXBuildFile section */
 
@@ -88,7 +92,6 @@
 		7B0D3B511CFB29B40096DBC2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7B0D3B591CFB2B860096DBC2 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = FleetTestApp/Info.plist; sourceTree = SOURCE_ROOT; };
 		7B0D3B671CFB2F030096DBC2 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		7B0D3B691CFB37B50096DBC2 /* TestNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestNavigationController.swift; sourceTree = "<group>"; };
 		7B0D3B741CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FLTStoryboardBindingError.swift; sourceTree = "<group>"; };
 		7B0D3B781CFC7CEB0096DBC2 /* UIViewController+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Fleet.swift"; sourceTree = "<group>"; };
 		7B0D3B7A1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+FleetSpec.swift"; sourceTree = "<group>"; };
@@ -123,6 +126,11 @@
 		7BA90AD91CC3F0C60040B031 /* ButtonTapTestViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ButtonTapTestViewController.xib; sourceTree = "<group>"; };
 		7BA90ADB1CC3F0E00040B031 /* ButtonTapTestViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonTapTestViewController.swift; sourceTree = "<group>"; };
 		7BA90ADE1CC3F6C50040B031 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
+		7BB14A5A1D747940002ABE82 /* KittensStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = KittensStoryboard.storyboard; sourceTree = "<group>"; };
+		7BB14A5C1D7479C4002ABE82 /* KittensNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KittensNavigationController.swift; sourceTree = "<group>"; };
+		7BB14A5E1D75065E002ABE82 /* UINavigationController+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UINavigationController+FleetSpec.swift"; sourceTree = "<group>"; };
+		7BB14A601D75091B002ABE82 /* UINavigationController+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UINavigationController+Fleet.swift"; sourceTree = "<group>"; };
+		7BB14A631D770D5C002ABE82 /* ContainObjectSatisfying.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainObjectSatisfying.swift; sourceTree = "<group>"; };
 		7BBFCD2C1D3DA82500C3EF0F /* UITextField+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+Fleet.swift"; sourceTree = "<group>"; };
 		7BBFCD2E1D3DAE6C00C3EF0F /* UITextField+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+FleetSpec.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -157,6 +165,7 @@
 		7B0D3B291CFA73710096DBC2 /* Storyboards */ = {
 			isa = PBXGroup;
 			children = (
+				7BB14A591D747906002ABE82 /* Kittens */,
 				7B3AD20A1D5BC49C00CA2897 /* Puppies */,
 				7B0D3B2A1CFA73930096DBC2 /* TurtlesAndFriendsStoryboard.storyboard */,
 				7B0D3B341CFA74B80096DBC2 /* AnimalListViewController.swift */,
@@ -291,6 +300,7 @@
 				7B675E9F1D0DCA38002E6B45 /* UIAlertController+Fleet.swift */,
 				7B675EA11D0DD64D002E6B45 /* UIAlertAction+Fleet.swift */,
 				7BBFCD2C1D3DA82500C3EF0F /* UITextField+Fleet.swift */,
+				7BB14A601D75091B002ABE82 /* UINavigationController+Fleet.swift */,
 			);
 			path = CoreExtensions;
 			sourceTree = "<group>";
@@ -317,6 +327,7 @@
 				7B675E9D1D0DCA1D002E6B45 /* UIAlertController+FleetSpec.swift */,
 				7B675EA31D0DD660002E6B45 /* UIAlertAction+FleetSpec.swift */,
 				7BBFCD2E1D3DAE6C00C3EF0F /* UITextField+FleetSpec.swift */,
+				7BB14A5E1D75065E002ABE82 /* UINavigationController+FleetSpec.swift */,
 			);
 			path = CoreExtensions;
 			sourceTree = "<group>";
@@ -358,10 +369,27 @@
 		7BA90ADD1CC3F6B50040B031 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				7B0D3B691CFB37B50096DBC2 /* TestNavigationController.swift */,
+				7BB14A621D770CBD002ABE82 /* NimbleExtensions */,
 				7BA90ADE1CC3F6C50040B031 /* File.swift */,
 			);
 			path = Helpers;
+			sourceTree = "<group>";
+		};
+		7BB14A591D747906002ABE82 /* Kittens */ = {
+			isa = PBXGroup;
+			children = (
+				7BB14A5A1D747940002ABE82 /* KittensStoryboard.storyboard */,
+				7BB14A5C1D7479C4002ABE82 /* KittensNavigationController.swift */,
+			);
+			path = Kittens;
+			sourceTree = "<group>";
+		};
+		7BB14A621D770CBD002ABE82 /* NimbleExtensions */ = {
+			isa = PBXGroup;
+			children = (
+				7BB14A631D770D5C002ABE82 /* ContainObjectSatisfying.swift */,
+			);
+			path = NimbleExtensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -484,6 +512,7 @@
 				7B0D3B601CFB2C270096DBC2 /* CrabStoryboard.storyboard in Resources */,
 				7B0D3B5F1CFB2C210096DBC2 /* TurtlesAndFriendsStoryboard.storyboard in Resources */,
 				7B0D3B521CFB29B40096DBC2 /* LaunchScreen.storyboard in Resources */,
+				7BB14A5B1D747940002ABE82 /* KittensStoryboard.storyboard in Resources */,
 				7B0D3B4F1CFB29B40096DBC2 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -534,6 +563,7 @@
 				7B0D3B651CFB2E230096DBC2 /* AppDelegate.swift in Sources */,
 				7B0D3B621CFB2E120096DBC2 /* AnimalListViewController.swift in Sources */,
 				7B0D3B631CFB2E120096DBC2 /* BoxTurtleViewController.swift in Sources */,
+				7BB14A5D1D7479C4002ABE82 /* KittensNavigationController.swift in Sources */,
 				7B0D3B641CFB2E120096DBC2 /* SpottedTurtleViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -556,6 +586,7 @@
 				7B675EA21D0DD64D002E6B45 /* UIAlertAction+Fleet.swift in Sources */,
 				7B675EA01D0DCA38002E6B45 /* UIAlertController+Fleet.swift in Sources */,
 				7B9458121D4D7ED100F16A64 /* StoryboardReferenceMap.swift in Sources */,
+				7BB14A611D75091B002ABE82 /* UINavigationController+Fleet.swift in Sources */,
 				7B0D3B3B1CFA76200096DBC2 /* UIStoryboard+Fleet.swift in Sources */,
 				7B675E821D0C5372002E6B45 /* UIBarButtonItem+Fleet.swift in Sources */,
 			);
@@ -568,14 +599,15 @@
 				7B675EA41D0DD660002E6B45 /* UIAlertAction+FleetSpec.swift in Sources */,
 				7BA90ADC1CC3F0E00040B031 /* ButtonTapTestViewController.swift in Sources */,
 				7BA90ADF1CC3F6C50040B031 /* File.swift in Sources */,
+				7BB14A5F1D75065E002ABE82 /* UINavigationController+FleetSpec.swift in Sources */,
 				7B9458141D4D7F0300F16A64 /* StoryboardDeserializerSpec.swift in Sources */,
+				7BB14A641D770D5C002ABE82 /* ContainObjectSatisfying.swift in Sources */,
 				7BAC789F1D3E6C96000F86E4 /* UITextField+FleetSpec.swift in Sources */,
 				7B675E9E1D0DCA1D002E6B45 /* UIAlertController+FleetSpec.swift in Sources */,
 				7B0D3B7B1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift in Sources */,
 				7BA90AD41CC3EF6F0040B031 /* UIButton+FleetSpec.swift in Sources */,
 				7B0D3B381CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift in Sources */,
 				7B675E9C1D0DC398002E6B45 /* VisualTreeWalkerSpec.swift in Sources */,
-				7B0D3B6A1CFB37B50096DBC2 /* TestNavigationController.swift in Sources */,
 				7B675E961D0DAF94002E6B45 /* ScreenSpec.swift in Sources */,
 				7B675E7D1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift in Sources */,
 			);

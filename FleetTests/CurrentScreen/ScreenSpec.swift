@@ -4,36 +4,51 @@ import Nimble
 @testable import FleetTestApp
 
 class ScreenSpec: XCTestCase {
-    var subject: FLTScreen!
-    var storyboard: UIStoryboard!
-    var viewControllerThatPresentsAlerts: SpottedTurtleViewController!
+    func test_topmostPresentedViewController_onApplicationScreen_returnsTopmostPresentedViewControllerOnApplicationViewStack() {
+        let applicationRootViewController = UIViewController()
+        Fleet.setApplicationWindowRootViewController(applicationRootViewController)
 
-    override func setUp() {
-        super.setUp()
-
-        subject = Fleet.getCurrentScreen()
-
-        storyboard = UIStoryboard.init(name: "TurtlesAndFriendsStoryboard", bundle: nil)
-        viewControllerThatPresentsAlerts = storyboard.instantiateViewControllerWithIdentifier("SpottedTurtleViewController") as! SpottedTurtleViewController
-
-        Fleet.swapWindowRootViewController(viewControllerThatPresentsAlerts)
-    }
-
-    func test_topmostPresentedViewController_returnsTopmostPresentedViewController() {
-        expect(self.subject.topmostPresentedViewController).to(beIdenticalTo(viewControllerThatPresentsAlerts))
+        let applicationScreen = Fleet.getApplicationScreen()
+        expect(applicationScreen?.topmostPresentedViewController).to(beIdenticalTo(applicationRootViewController))
 
         let newTopmostViewController = UIViewController()
-        viewControllerThatPresentsAlerts.presentViewController(newTopmostViewController, animated: true, completion: nil)
+        applicationRootViewController.presentViewController(newTopmostViewController, animated: false, completion: nil)
 
-        expect(self.subject.topmostPresentedViewController).to(beIdenticalTo(newTopmostViewController))
+        expect(applicationScreen?.topmostPresentedViewController).to(beIdenticalTo(newTopmostViewController))
+    }
+
+    func test_topmostPresentedViewController_onAnotherWindow_returnsTopmostPresentedViewController() {
+        let window = UIWindow()
+        let someOtherWindowRootViewController = UIViewController()
+        window.rootViewController = someOtherWindowRootViewController
+        window.makeKeyAndVisible()
+
+        let screen = Fleet.getScreenForWindow(window)
+
+        expect(screen.topmostPresentedViewController).to(beIdenticalTo(someOtherWindowRootViewController))
+
+        let newTopmostViewController = UIViewController()
+        someOtherWindowRootViewController.presentViewController(newTopmostViewController, animated: true, completion: nil)
+
+        expect(screen.topmostPresentedViewController).to(beIdenticalTo(newTopmostViewController))
     }
 
     func test_presentedAlert_whenNoAlertIsPresented_returnsNil() {
-        expect(self.subject.presentedAlert).to(beNil())
+        let storyboard = UIStoryboard.init(name: "TurtlesAndFriendsStoryboard", bundle: nil)
+        let viewControllerThatPresentsAlerts = storyboard.instantiateViewControllerWithIdentifier("SpottedTurtleViewController") as! SpottedTurtleViewController
+        Fleet.setApplicationWindowRootViewController(viewControllerThatPresentsAlerts)
+
+        let applicationScreen = Fleet.getApplicationScreen()
+        expect(applicationScreen!.presentedAlert).to(beNil())
     }
 
     func test_presentedAlert_whenAnAlertIsPresented_whenAlertIsAlertStyle_returnsTheAlert() {
+        let storyboard = UIStoryboard.init(name: "TurtlesAndFriendsStoryboard", bundle: nil)
+        let viewControllerThatPresentsAlerts = storyboard.instantiateViewControllerWithIdentifier("SpottedTurtleViewController") as! SpottedTurtleViewController
+        Fleet.setApplicationWindowRootViewController(viewControllerThatPresentsAlerts)
         viewControllerThatPresentsAlerts.alertButtonOne?.tap()
-        expect(self.subject.presentedAlert).toNot(beNil())
+
+        let applicationScreen = Fleet.getApplicationScreen()
+        expect(applicationScreen!.presentedAlert).toNot(beNil())
     }
 }
