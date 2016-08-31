@@ -56,6 +56,7 @@
 		7BB14A5F1D75065E002ABE82 /* UINavigationController+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A5E1D75065E002ABE82 /* UINavigationController+FleetSpec.swift */; };
 		7BB14A611D75091B002ABE82 /* UINavigationController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A601D75091B002ABE82 /* UINavigationController+Fleet.swift */; };
 		7BB14A641D770D5C002ABE82 /* ContainObjectSatisfying.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A631D770D5C002ABE82 /* ContainObjectSatisfying.swift */; };
+		7BB14A661D772481002ABE82 /* FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A651D772481002ABE82 /* FleetSpec.swift */; };
 		7BBFCD2D1D3DA82500C3EF0F /* UITextField+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBFCD2C1D3DA82500C3EF0F /* UITextField+Fleet.swift */; };
 /* End PBXBuildFile section */
 
@@ -131,6 +132,7 @@
 		7BB14A5E1D75065E002ABE82 /* UINavigationController+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UINavigationController+FleetSpec.swift"; sourceTree = "<group>"; };
 		7BB14A601D75091B002ABE82 /* UINavigationController+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UINavigationController+Fleet.swift"; sourceTree = "<group>"; };
 		7BB14A631D770D5C002ABE82 /* ContainObjectSatisfying.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainObjectSatisfying.swift; sourceTree = "<group>"; };
+		7BB14A651D772481002ABE82 /* FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FleetSpec.swift; sourceTree = "<group>"; };
 		7BBFCD2C1D3DA82500C3EF0F /* UITextField+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+Fleet.swift"; sourceTree = "<group>"; };
 		7BBFCD2E1D3DAE6C00C3EF0F /* UITextField+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+FleetSpec.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -309,6 +311,7 @@
 			isa = PBXGroup;
 			children = (
 				7B0D3B671CFB2F030096DBC2 /* Info.plist */,
+				7BB14A651D772481002ABE82 /* FleetSpec.swift */,
 				7BA90ADD1CC3F6B50040B031 /* Helpers */,
 				7BA90AD61CC3F07B0040B031 /* SupportingResources */,
 				7B675E8C1D0DA5D5002E6B45 /* CurrentScreen */,
@@ -597,6 +600,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B675EA41D0DD660002E6B45 /* UIAlertAction+FleetSpec.swift in Sources */,
+				7BB14A661D772481002ABE82 /* FleetSpec.swift in Sources */,
 				7BA90ADC1CC3F0E00040B031 /* ButtonTapTestViewController.swift in Sources */,
 				7BA90ADF1CC3F6C50040B031 /* File.swift in Sources */,
 				7BB14A5F1D75065E002ABE82 /* UINavigationController+FleetSpec.swift in Sources */,

@@ -8,7 +8,7 @@ class Screen {
 
 extension Screen: FLTScreen {
     var topmostPresentedViewController: UIViewController? {
-        let rootViewController = UIApplication.sharedApplication().keyWindow?.rootViewController
+        let rootViewController = window.rootViewController
         if var viewController = rootViewController {
             while viewController.presentedViewController != nil {
                 viewController = viewController.presentedViewController!
@@ -17,7 +17,6 @@ extension Screen: FLTScreen {
             return viewController
         }
 
-        Logger.logWarning("Unable to locate test application's root view controller. Make sure there is a key window even in test runs.")
         return nil
     }
 
