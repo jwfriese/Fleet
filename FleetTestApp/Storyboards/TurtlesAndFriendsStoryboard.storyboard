@@ -219,18 +219,27 @@
                                     <action selector="goToPuppy" destination="kr1-g9-ioz" eventType="touchUpInside" id="S4I-fT-rSm"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jj2-CU-ifK" userLabel="Kitten Button">
+                                <rect key="frame" x="280" y="494" width="41" height="30"/>
+                                <state key="normal" title="Kitten"/>
+                                <connections>
+                                    <segue destination="pfk-wd-JTs" kind="show" identifier="ShowKittens" id="qkX-VI-Qoa"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="RhY-4G-fqL" firstAttribute="top" secondItem="ROB-Ac-9ZK" secondAttribute="bottom" constant="36" id="Kdo-Wp-Ywh"/>
                             <constraint firstItem="g4Z-Qd-G7i" firstAttribute="centerX" secondItem="nUc-bw-ld4" secondAttribute="centerX" id="Kfu-6X-lBm"/>
                             <constraint firstItem="S9G-IJ-tbd" firstAttribute="centerX" secondItem="iNi-QD-GN6" secondAttribute="centerX" id="N0B-3d-KfM"/>
+                            <constraint firstItem="jj2-CU-ifK" firstAttribute="top" secondItem="RhY-4G-fqL" secondAttribute="bottom" constant="36" id="Rgc-ej-Uk6"/>
                             <constraint firstItem="nUc-bw-ld4" firstAttribute="centerX" secondItem="S9G-IJ-tbd" secondAttribute="centerX" id="SWm-k3-3A7"/>
                             <constraint firstItem="ROB-Ac-9ZK" firstAttribute="centerX" secondItem="g4Z-Qd-G7i" secondAttribute="centerX" id="ccH-r8-Krc"/>
                             <constraint firstItem="g4Z-Qd-G7i" firstAttribute="top" secondItem="nUc-bw-ld4" secondAttribute="bottom" constant="36" id="cww-u0-jV7"/>
                             <constraint firstItem="ROB-Ac-9ZK" firstAttribute="top" secondItem="g4Z-Qd-G7i" secondAttribute="bottom" constant="36" id="fZ0-0k-pss"/>
                             <constraint firstItem="nUc-bw-ld4" firstAttribute="top" secondItem="S9G-IJ-tbd" secondAttribute="bottom" constant="36" id="iTk-Je-W92"/>
                             <constraint firstItem="RhY-4G-fqL" firstAttribute="centerX" secondItem="ROB-Ac-9ZK" secondAttribute="centerX" id="kEp-H9-1y7"/>
+                            <constraint firstItem="jj2-CU-ifK" firstAttribute="centerX" secondItem="RhY-4G-fqL" secondAttribute="centerX" id="qG5-r0-wEy"/>
                             <constraint firstItem="S9G-IJ-tbd" firstAttribute="top" secondItem="hsV-oW-N0J" secondAttribute="bottom" constant="100" id="rbd-7A-cIo"/>
                         </constraints>
                     </view>
@@ -275,6 +284,14 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZCb-Xe-WkL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="35.5" y="-57"/>
+        </scene>
+        <!--KittensStoryboard-->
+        <scene sceneID="Fco-cp-xb7">
+            <objects>
+                <viewControllerPlaceholder storyboardName="KittensStoryboard" id="pfk-wd-JTs" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="uz4-Kw-6XZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="26.5" y="115"/>
         </scene>
     </scenes>
     <resources>
