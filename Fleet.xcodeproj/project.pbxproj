@@ -55,6 +55,7 @@
 		7BB14A5D1D7479C4002ABE82 /* KittensNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A5C1D7479C4002ABE82 /* KittensNavigationController.swift */; };
 		7BB14A5F1D75065E002ABE82 /* UINavigationController+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A5E1D75065E002ABE82 /* UINavigationController+FleetSpec.swift */; };
 		7BB14A611D75091B002ABE82 /* UINavigationController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A601D75091B002ABE82 /* UINavigationController+Fleet.swift */; };
+		7BB14A641D770D5C002ABE82 /* ContainObjectSatisfying.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A631D770D5C002ABE82 /* ContainObjectSatisfying.swift */; };
 		7BBFCD2D1D3DA82500C3EF0F /* UITextField+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBFCD2C1D3DA82500C3EF0F /* UITextField+Fleet.swift */; };
 /* End PBXBuildFile section */
 
@@ -129,6 +130,7 @@
 		7BB14A5C1D7479C4002ABE82 /* KittensNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KittensNavigationController.swift; sourceTree = "<group>"; };
 		7BB14A5E1D75065E002ABE82 /* UINavigationController+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UINavigationController+FleetSpec.swift"; sourceTree = "<group>"; };
 		7BB14A601D75091B002ABE82 /* UINavigationController+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UINavigationController+Fleet.swift"; sourceTree = "<group>"; };
+		7BB14A631D770D5C002ABE82 /* ContainObjectSatisfying.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainObjectSatisfying.swift; sourceTree = "<group>"; };
 		7BBFCD2C1D3DA82500C3EF0F /* UITextField+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+Fleet.swift"; sourceTree = "<group>"; };
 		7BBFCD2E1D3DAE6C00C3EF0F /* UITextField+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+FleetSpec.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -367,7 +369,7 @@
 		7BA90ADD1CC3F6B50040B031 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				7B0D3B691CFB37B50096DBC2 /* TestNavigationController.swift */,
+				7BB14A621D770CBD002ABE82 /* NimbleExtensions */,
 				7BA90ADE1CC3F6C50040B031 /* File.swift */,
 			);
 			path = Helpers;
@@ -380,6 +382,14 @@
 				7BB14A5C1D7479C4002ABE82 /* KittensNavigationController.swift */,
 			);
 			path = Kittens;
+			sourceTree = "<group>";
+		};
+		7BB14A621D770CBD002ABE82 /* NimbleExtensions */ = {
+			isa = PBXGroup;
+			children = (
+				7BB14A631D770D5C002ABE82 /* ContainObjectSatisfying.swift */,
+			);
+			path = NimbleExtensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -591,6 +601,7 @@
 				7BA90ADF1CC3F6C50040B031 /* File.swift in Sources */,
 				7BB14A5F1D75065E002ABE82 /* UINavigationController+FleetSpec.swift in Sources */,
 				7B9458141D4D7F0300F16A64 /* StoryboardDeserializerSpec.swift in Sources */,
+				7BB14A641D770D5C002ABE82 /* ContainObjectSatisfying.swift in Sources */,
 				7BAC789F1D3E6C96000F86E4 /* UITextField+FleetSpec.swift in Sources */,
 				7B675E9E1D0DCA1D002E6B45 /* UIAlertController+FleetSpec.swift in Sources */,
 				7B0D3B7B1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift in Sources */,

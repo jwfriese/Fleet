@@ -23,21 +23,33 @@ class StoryboardDeserializerSpec: XCTestCase {
         let deserializer = StoryboardDeserializer()
         let reference = try! deserializer.deserializeStoryboardWithName("TurtlesAndFriendsStoryboard")
         expect(reference.externalReferences.count).to(equal(4))
-        if reference.externalReferences.count == 4 {
-            expect(reference.externalReferences[0].connectedViewControllerIdentifier).to(equal("UIViewController-s4q-fa-MbE"))
-            expect(reference.externalReferences[1].connectedViewControllerIdentifier).to(equal("UIViewController-fVV-aN-iXJ"))
-            expect(reference.externalReferences[2].connectedViewControllerIdentifier).to(equal("UIViewController-pfk-wd-JTs"))
-            expect(reference.externalReferences[3].connectedViewControllerIdentifier).to(equal("UIViewController-gcW-ev-w5z"))
 
-            expect(reference.externalReferences[0].externalViewControllerIdentifier).to(equal("CrabViewController"))
-            expect(reference.externalReferences[1].externalViewControllerIdentifier).to(equal(""))
-            expect(reference.externalReferences[2].externalViewControllerIdentifier).to(equal(""))
-            expect(reference.externalReferences[3].externalViewControllerIdentifier).to(equal("CrabViewController"))
+        expect(reference.externalReferences).to(containObjectSatisfying({ reference in
+            let identifiersEqual = reference.connectedViewControllerIdentifier == "UIViewController-s4q-fa-MbE"
+            let externalIdentifiersEqual = reference.externalViewControllerIdentifier == "CrabViewController"
+            let storyboardNamesEqual = reference.externalStoryboardName == "CrabStoryboard"
+            return identifiersEqual && externalIdentifiersEqual && storyboardNamesEqual
+        }))
 
-            expect(reference.externalReferences[0].externalStoryboardName).to(equal("CrabStoryboard"))
-            expect(reference.externalReferences[1].externalStoryboardName).to(equal("PuppyStoryboard"))
-            expect(reference.externalReferences[2].externalStoryboardName).to(equal("KittensStoryboard"))
-            expect(reference.externalReferences[3].externalStoryboardName).to(equal("CrabStoryboard"))
-        }
+        expect(reference.externalReferences).to(containObjectSatisfying({ reference in
+            let identifiersEqual = reference.connectedViewControllerIdentifier == "UIViewController-fVV-aN-iXJ"
+            let externalIdentifiersEqual = reference.externalViewControllerIdentifier == ""
+            let storyboardNamesEqual = reference.externalStoryboardName == "PuppyStoryboard"
+            return identifiersEqual && externalIdentifiersEqual && storyboardNamesEqual
+        }))
+
+        expect(reference.externalReferences).to(containObjectSatisfying({ reference in
+            let identifiersEqual = reference.connectedViewControllerIdentifier == "UIViewController-pfk-wd-JTs"
+            let externalIdentifiersEqual = reference.externalViewControllerIdentifier == ""
+            let storyboardNamesEqual = reference.externalStoryboardName == "KittensStoryboard"
+            return identifiersEqual && externalIdentifiersEqual && storyboardNamesEqual
+        }))
+
+        expect(reference.externalReferences).to(containObjectSatisfying({ reference in
+            let identifiersEqual = reference.connectedViewControllerIdentifier == "UIViewController-gcW-ev-w5z"
+            let externalIdentifiersEqual = reference.externalViewControllerIdentifier == "CrabViewController"
+            let storyboardNamesEqual = reference.externalStoryboardName == "CrabStoryboard"
+            return identifiersEqual && externalIdentifiersEqual && storyboardNamesEqual
+        }))
     }
 }
