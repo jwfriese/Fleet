@@ -6,18 +6,32 @@ import Nimble
 class ScreenSpec: XCTestCase {
     func test_topmostPresentedViewController_returnsTopmostPresentedViewController() {
         let window = UIWindow()
-        let someOtherWindowRootViewController = UIViewController()
-        window.rootViewController = someOtherWindowRootViewController
+        let rootViewController = UIViewController()
+        window.rootViewController = rootViewController
         window.makeKeyAndVisible()
 
         let screen = Screen(forWindow: window)
 
-        expect(screen.topmostPresentedViewController).to(beIdenticalTo(someOtherWindowRootViewController))
+        expect(screen.topmostPresentedViewController).to(beIdenticalTo(rootViewController))
 
         let newTopmostViewController = UIViewController()
-        someOtherWindowRootViewController.presentViewController(newTopmostViewController, animated: true, completion: nil)
+        rootViewController.presentViewController(newTopmostViewController, animated: true, completion: nil)
 
         expect(screen.topmostPresentedViewController).to(beIdenticalTo(newTopmostViewController))
+    }
+
+    func test_topmostViewController_whenNavigationControllerIsInWindowViewStack_returnsVisibleViewController() {
+        let window = UIWindow()
+        let rootNavigationController = UINavigationController()
+        window.rootViewController = rootNavigationController
+        window.makeKeyAndVisible()
+
+        let screen = Screen(forWindow: window)
+
+        let pushedViewController = UIViewController()
+        rootNavigationController.pushViewController(pushedViewController, animated: false)
+
+        expect(screen.topmostPresentedViewController).to(beIdenticalTo(pushedViewController))
     }
 
     func test_presentedAlert_whenNoAlertIsPresented_returnsNil() {

@@ -8,16 +8,19 @@ class Screen {
 
 extension Screen: FLTScreen {
     var topmostPresentedViewController: UIViewController? {
-        let rootViewController = window.rootViewController
-        if var viewController = rootViewController {
-            while viewController.presentedViewController != nil {
-                viewController = viewController.presentedViewController!
-            }
+        return topmostViewControllerRecursive(window.rootViewController)
+    }
 
-            return viewController
+    private func topmostViewControllerRecursive(rootViewController: UIViewController?) -> UIViewController? {
+        if let navigationController = rootViewController as? UINavigationController {
+            return navigationController.visibleViewController
         }
 
-        return nil
+        if let presentedViewController = rootViewController?.presentedViewController {
+            return topmostViewControllerRecursive(presentedViewController)
+        }
+
+        return rootViewController
     }
 
     var presentedAlert: UIAlertController? {
