@@ -20,3 +20,4 @@ expect(navigationController.topViewController).to(beIdenticalTo(rootViewControll
 expect(navigationController.visibleViewController).to(beIdenticalTo(rootViewController))
 ```
 
+The behavior is similar for `popToViewController(_:animated:)` and `popToRootViewControllerAnimated(_:)`
