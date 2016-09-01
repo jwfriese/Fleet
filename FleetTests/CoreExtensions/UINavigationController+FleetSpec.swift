@@ -82,6 +82,71 @@ class UINavigationController_FleetSpec: XCTestCase {
         expect(navigationController.topViewController).to(beIdenticalTo(root))
     }
 
+    func test_popToViewController_immediatelySetsTheGivenViewControllerAsTopViewController() {
+        let root = UIViewController()
+        let navigationController = UINavigationController(rootViewController: root)
+        let window = UIWindow()
+        window.rootViewController = navigationController
+        window.makeKeyAndVisible()
+
+        let controllerOne = UIViewController()
+        let controllerTwo = UIViewController()
+        let controllerThree = UIViewController()
+
+        navigationController.pushViewController(controllerOne, animated: false)
+        navigationController.pushViewController(controllerTwo, animated: false)
+        navigationController.pushViewController(controllerThree, animated: false)
+
+        navigationController.popToViewController(controllerOne, animated: true)
+
+        expect(navigationController.topViewController).to(beIdenticalTo(controllerOne))
+    }
+
+    func test_popToViewController_whenTheNavigationControllerIsInVisibleWindow_returnsThePoppedViewControllers() {
+        let root = UIViewController()
+        let navigationController = UINavigationController(rootViewController: root)
+        let window = UIWindow()
+        window.rootViewController = navigationController
+        window.makeKeyAndVisible()
+
+        let controllerOne = UIViewController()
+        let controllerTwo = UIViewController()
+        let controllerThree = UIViewController()
+
+        navigationController.pushViewController(controllerOne, animated: false)
+        navigationController.pushViewController(controllerTwo, animated: false)
+        navigationController.pushViewController(controllerThree, animated: false)
+
+        let poppedControllers = navigationController.popToViewController(controllerOne, animated: true)
+
+        if poppedControllers != nil {
+            expect(poppedControllers!.count).to(equal(2))
+            expect(poppedControllers![0]).to(beIdenticalTo(controllerTwo))
+            expect(poppedControllers![1]).to(beIdenticalTo(controllerThree))
+        } else {
+            fail("Expected popToViewController(_:animated:) to return popped view controllers")
+        }
+    }
+
+    func test_popToViewController_whenTheNavigationControllerNotInVisibleWindow_returnsNil() {
+        let root = UIViewController()
+        let navigationController = UINavigationController(rootViewController: root)
+        let window = UIWindow()
+        window.rootViewController = navigationController
+
+        let controllerOne = UIViewController()
+        let controllerTwo = UIViewController()
+        let controllerThree = UIViewController()
+
+        navigationController.pushViewController(controllerOne, animated: false)
+        navigationController.pushViewController(controllerTwo, animated: false)
+        navigationController.pushViewController(controllerThree, animated: false)
+
+        let poppedControllers = navigationController.popToViewController(controllerOne, animated: true)
+
+        expect(poppedControllers).to(beNil())
+    }
+
     func test_navigationControllerWithSegueInViewDidLoad_segueHappensAndResultIsImmediatelyVisible() {
         let storyboard = UIStoryboard(name: "KittensStoryboard", bundle: nil)
         let viewController = UIViewController()

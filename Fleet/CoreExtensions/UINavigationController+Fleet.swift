@@ -9,6 +9,7 @@ public extension UINavigationController {
         dispatch_once(&Static.token) {
             swizzlePushViewController()
             swizzlePopViewController()
+            swizzlePopToViewController()
         }
     }
 
@@ -44,5 +45,19 @@ public extension UINavigationController {
         let poppedViewController = newViewControllers.removeLast()
         self.setViewControllers(newViewControllers, animated: false)
         return poppedViewController
+    }
+
+    private class func swizzlePopToViewController() {
+        let originalSelector = #selector(UINavigationController.popToViewController(_:animated:))
+        let swizzledSelector = #selector(UINavigationController.fleet_popToViewController(_:animated:))
+
+        let originalMethod = class_getInstanceMethod(self, originalSelector)
+        let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
+
+        method_exchangeImplementations(originalMethod, swizzledMethod)
+    }
+
+    func fleet_popToViewController(viewController: UIViewController, animated: Bool) -> [UIViewController]? {
+        return fleet_popToViewController(viewController, animated: false)
     }
 }
