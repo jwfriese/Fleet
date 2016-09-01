@@ -10,6 +10,7 @@ public extension UINavigationController {
             swizzlePushViewController()
             swizzlePopViewController()
             swizzlePopToViewController()
+            swizzlePopToRootViewControllerAnimated()
         }
     }
 
@@ -59,5 +60,19 @@ public extension UINavigationController {
 
     func fleet_popToViewController(viewController: UIViewController, animated: Bool) -> [UIViewController]? {
         return fleet_popToViewController(viewController, animated: false)
+    }
+
+    private class func swizzlePopToRootViewControllerAnimated() {
+        let originalSelector = #selector(UINavigationController.popToRootViewControllerAnimated(_:))
+        let swizzledSelector = #selector(UINavigationController.fleet_popToRootViewControllerAnimated(_:))
+
+        let originalMethod = class_getInstanceMethod(self, originalSelector)
+        let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
+
+        method_exchangeImplementations(originalMethod, swizzledMethod)
+    }
+
+    func fleet_popToRootViewControllerAnimated(animated: Bool) -> [UIViewController]? {
+        return fleet_popToRootViewControllerAnimated(false)
     }
 }
