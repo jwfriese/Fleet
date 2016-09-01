@@ -4,7 +4,7 @@ import Nimble
 @testable import FleetTestApp
 
 class ScreenSpec: XCTestCase {
-    func test_topmostPresentedViewController_returnsTopmostPresentedViewController() {
+    func test_topmostViewController_returnsTopmostViewController() {
         let window = UIWindow()
         let rootViewController = UIViewController()
         window.rootViewController = rootViewController
