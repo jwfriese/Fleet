@@ -24,10 +24,10 @@ class FleetSpec: XCTestCase {
     }
 
     func test_getApplicationWindow_returnsScreenAttachedToApplicationWindow() {
-        expect(self.applicationScreen.topmostPresentedViewController).to(beIdenticalTo(appWindowRootViewController))
+        expect(self.applicationScreen.topmostViewController).to(beIdenticalTo(appWindowRootViewController))
     }
 
     func test_getScreenForWindow_returnsScreenAttachedToGivenWindow() {
-        expect(self.otherWindowScreen.topmostPresentedViewController).to(beIdenticalTo(otherWindowRootViewController))
+        expect(self.otherWindowScreen.topmostViewController).to(beIdenticalTo(otherWindowRootViewController))
     }
 }

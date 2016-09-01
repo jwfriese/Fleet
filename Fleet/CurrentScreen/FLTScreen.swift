@@ -1,6 +1,6 @@
 import UIKit
 
 public protocol FLTScreen {
-    var topmostPresentedViewController: UIViewController? { get }
+    var topmostViewController: UIViewController? { get }
     var presentedAlert: UIAlertController? { get }
 }

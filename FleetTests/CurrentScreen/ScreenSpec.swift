@@ -12,12 +12,12 @@ class ScreenSpec: XCTestCase {
 
         let screen = Screen(forWindow: window)
 
-        expect(screen.topmostPresentedViewController).to(beIdenticalTo(rootViewController))
+        expect(screen.topmostViewController).to(beIdenticalTo(rootViewController))
 
         let newTopmostViewController = UIViewController()
         rootViewController.presentViewController(newTopmostViewController, animated: true, completion: nil)
 
-        expect(screen.topmostPresentedViewController).to(beIdenticalTo(newTopmostViewController))
+        expect(screen.topmostViewController).to(beIdenticalTo(newTopmostViewController))
     }
 
     func test_topmostViewController_whenNavigationControllerIsInWindowViewStack_returnsVisibleViewController() {
@@ -31,7 +31,7 @@ class ScreenSpec: XCTestCase {
         let pushedViewController = UIViewController()
         rootNavigationController.pushViewController(pushedViewController, animated: false)
 
-        expect(screen.topmostPresentedViewController).to(beIdenticalTo(pushedViewController))
+        expect(screen.topmostViewController).to(beIdenticalTo(pushedViewController))
     }
 
     func test_presentedAlert_whenNoAlertIsPresented_returnsNil() {

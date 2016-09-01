@@ -7,7 +7,7 @@ class Screen {
 }
 
 extension Screen: FLTScreen {
-    var topmostPresentedViewController: UIViewController? {
+    var topmostViewController: UIViewController? {
         return topmostViewControllerRecursive(window.rootViewController)
     }
 
@@ -25,7 +25,7 @@ extension Screen: FLTScreen {
 
     var presentedAlert: UIAlertController? {
         get {
-            return topmostPresentedViewController as? UIAlertController
+            return topmostViewController as? UIAlertController
         }
     }
 }
