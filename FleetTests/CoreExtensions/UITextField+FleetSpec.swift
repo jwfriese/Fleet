@@ -7,6 +7,7 @@ class TestTextFieldDelegate: NSObject {
     var didCallDidBeginEditing: Bool = false
     var didCallShouldEndEditing: Bool = false
     var didCallDidEndEditing: Bool = false
+    var didCallShouldClear: Bool = false
     var textChanges: [String] = []
 }
 
@@ -24,6 +25,7 @@ extension TestTextFieldDelegate: UITextFieldDelegate {
         didCallDidBeginEditing = false
         didCallShouldEndEditing = false
         didCallDidEndEditing = false
+        didCallShouldClear = false
         textChanges = []
     }
 
@@ -47,6 +49,11 @@ extension TestTextFieldDelegate: UITextFieldDelegate {
 
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
         textChanges.append(string)
+        return true
+    }
+
+    func textFieldShouldClear(textField: UITextField) -> Bool {
+        didCallShouldClear = true
         return true
     }
 }
@@ -213,5 +220,23 @@ class UITextField_FleetSpec: XCTestCase {
         try! textField.enter()
         textField.pasteText("turtle")
         expect(self.textField.text).to(equal("turtle"))
+    }
+
+    func test_clearText_shouldActuallyClearTheText() {
+        textField.text = "some text"
+        textField.clearText()
+        expect(self.textField.text).to(equal(""))
+    }
+
+    func test_clearText_whenNoDelegate_stillClearsText() {
+        textField.delegate = nil
+        textField.text = "some text"
+        textField.clearText()
+        expect(self.textField.text).to(equal(""))
+    }
+
+    func test_clearText_notifiesTheDelegate() {
+        textField.clearText()
+        expect(self.delegate.didCallShouldClear).to(beTrue())
     }
 }

@@ -146,4 +146,18 @@ extension UITextField {
 
         self.sendActionsForControlEvents(.EditingChanged)
     }
+
+    /**
+        Clears all text from the text field, firing the textFieldShouldClear?
+        event as happens when the user clears the field through the UI.
+
+        If the text field has no delegate, the text is still cleared from the
+        field.
+     */
+    public func clearText() {
+        self.text = ""
+        if let delegate = delegate {
+            delegate.textFieldShouldClear?(self)
+        }
+    }
 }
