@@ -34,6 +34,51 @@ class ScreenSpec: XCTestCase {
         expect(screen.topmostViewController).to(beIdenticalTo(pushedViewController))
     }
 
+    func test_topmostViewController_whenOnlyANavigationControllerIsInViewStack_returnsTheNavigationController() {
+        let window = UIWindow()
+        let rootNavigationController = UINavigationController()
+        window.rootViewController = rootNavigationController
+        window.makeKeyAndVisible()
+
+        let screen = Screen(forWindow: window)
+
+        expect(screen.topmostViewController).to(beIdenticalTo(rootNavigationController))
+    }
+
+    func test_topmostViewController_whenTheTopViewControllerHasAPresentedViewController_returnsThatPresentedViewController() {
+        let window = UIWindow()
+        let rootNavigationController = UINavigationController()
+        window.rootViewController = rootNavigationController
+        window.makeKeyAndVisible()
+
+        let screen = Screen(forWindow: window)
+
+        let rootViewController = UIViewController()
+        rootNavigationController.pushViewController(rootViewController, animated: false)
+
+        let viewControllerToPresent = UIViewController()
+        rootViewController.presentViewController(viewControllerToPresent, animated: false, completion: nil)
+
+        expect(screen.topmostViewController).to(beIdenticalTo(viewControllerToPresent))
+    }
+
+    func test_topmostViewController_whenAViewControllerIsModallyPresentedOverTopViewControllerInNavigationStack_returnsModallyPresentedController() {
+        let window = UIWindow()
+        let rootNavigationController = UINavigationController()
+        window.rootViewController = rootNavigationController
+        window.makeKeyAndVisible()
+
+        let screen = Screen(forWindow: window)
+
+        let rootViewController = UIViewController()
+        rootNavigationController.pushViewController(rootViewController, animated: false)
+
+        let viewControllerToShow = UIViewController()
+        rootViewController.showViewController(viewControllerToShow, sender: nil)
+
+        expect(screen.topmostViewController).to(beIdenticalTo(viewControllerToShow))
+    }
+
     func test_presentedAlert_whenNoAlertIsPresented_returnsNil() {
         let storyboard = UIStoryboard.init(name: "TurtlesAndFriendsStoryboard", bundle: nil)
         let viewControllerThatPresentsAlerts = storyboard.instantiateViewControllerWithIdentifier("SpottedTurtleViewController") as! SpottedTurtleViewController

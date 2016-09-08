@@ -13,7 +13,15 @@ extension Screen: FLTScreen {
 
     private func topmostViewControllerRecursive(rootViewController: UIViewController?) -> UIViewController? {
         if let navigationController = rootViewController as? UINavigationController {
-            return navigationController.visibleViewController
+            guard let topViewController = navigationController.topViewController else {
+                return navigationController
+            }
+
+            guard let presentedViewController = topViewController.presentedViewController else {
+                return topViewController
+            }
+
+            return presentedViewController
         }
 
         if let presentedViewController = rootViewController?.presentedViewController {
