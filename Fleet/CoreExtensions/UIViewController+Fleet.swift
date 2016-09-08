@@ -4,7 +4,7 @@ import ObjectiveC
 private var presentedViewControllerAssociatedKey: UInt = 0
 private var presentingViewControllerAssociatedKey: UInt = 0
 
-public extension UIViewController {
+extension UIViewController {
     public override class func initialize() {
         struct Static {
             static var token: dispatch_once_t = 0
