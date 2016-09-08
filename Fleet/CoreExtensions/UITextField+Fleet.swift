@@ -106,8 +106,10 @@ extension UITextField {
         }
 
         if let delegate = delegate {
+            self.text = ""
             for (index, char) in text.characters.enumerate() {
                 _ = delegate.textField?(self, shouldChangeCharactersInRange: NSRange.init(location: index, length: 1), replacementString: String(char))
+                self.text?.append(char)
                 self.sendActionsForControlEvents(.EditingChanged)
             }
         } else {

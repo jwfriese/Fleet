@@ -133,6 +133,11 @@ class UITextField_FleetSpec: XCTestCase {
         expect(self.delegate.didCallDidEndEditing).to(beTrue())
     }
 
+    func test_enterText_whenThereIsADelegate_actuallyEntersTheText() {
+        try! textField.enterText("turtle")
+        expect(self.textField.text).to(equal("turtle"))
+    }
+
     func test_enterText_whenDisabled_throwsError() {
         textField.enabled = false
         expect { try self.textField.enterText("turtle") }.to(throwError(FLTTextFieldError.DisabledTextFieldError))
@@ -144,6 +149,12 @@ class UITextField_FleetSpec: XCTestCase {
 
         textField.typeText("turtle")
         expect(self.delegate.textChanges).to(equal(["t", "u", "r", "t", "l", "e"]))
+    }
+
+    func test_typeText_whenThereIsADelegate_actuallyTypesTheText() {
+        try! textField.enter()
+        textField.typeText("turtle")
+        expect(self.textField.text).to(equal("turtle"))
     }
 
     func test_typeText_whenNeverEnteredTextField_doesNothing() {
