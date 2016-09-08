@@ -37,3 +37,9 @@ textField.pasteText("text")
 // each character in the given string, while pasteText(_:) triggers it for the 
 // entire given string. 
 ```
+
+```swift
+textField.clearText()
+
+// Sends the appropriate shouldClearText methods to the delegate. 
+```
