@@ -5,9 +5,12 @@ import Nimble
 class UINavigationController_FleetSpec: XCTestCase {
     private class TestViewController: UIViewController {
         var viewDidLoadCallCount: UInt = 0
+        var capturedNavigationController: UINavigationController?
+
         private override func viewDidLoad() {
             super.viewDidLoad()
             viewDidLoadCallCount += 1
+            capturedNavigationController = navigationController
         }
     }
 
@@ -50,6 +53,20 @@ class UINavigationController_FleetSpec: XCTestCase {
         navigationController.pushViewController(controllerToPush, animated: true)
 
         expect(controllerToPush.viewDidLoadCallCount).toNotEventually(beGreaterThan(1))
+    }
+
+    func test_pushViewController_doesNotLoadThePushedViewControllerUntilItWouldHaveANavigationController() {
+        let root = UIViewController()
+        let navigationController = UINavigationController(rootViewController: root)
+        let window = UIWindow()
+        window.rootViewController = navigationController
+        window.makeKeyAndVisible()
+
+        let controllerToPush = TestViewController()
+
+        navigationController.pushViewController(controllerToPush, animated: true)
+
+        expect(controllerToPush.capturedNavigationController).toEventuallyNot(beNil())
     }
 
     func test_popViewController_returnsPoppedViewController() {

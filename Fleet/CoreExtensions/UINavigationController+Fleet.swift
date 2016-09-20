@@ -27,8 +27,8 @@ extension UINavigationController {
     func fleet_pushViewController(viewController: UIViewController, animated: Bool) {
         var newViewControllers = self.viewControllers
         newViewControllers.append(viewController)
-        let _ = viewController.view
         self.setViewControllers(newViewControllers, animated: false)
+        let _ = viewController.view
     }
 
     private class func swizzlePopViewController() {
