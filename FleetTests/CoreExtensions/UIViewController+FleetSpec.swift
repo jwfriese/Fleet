@@ -86,6 +86,6 @@ class UIViewController_FleetSpec: XCTestCase {
         let top = TestViewController()
 
         bottom.presentViewController(top, animated: true, completion: nil)
-        expect(top.viewDidLoadCallCount).toNotEventually(beGreaterThan(1))
+        expect(top.viewDidLoadCallCount).toEventuallyNot(beGreaterThan(1))
     }
 }

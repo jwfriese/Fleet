@@ -52,7 +52,7 @@ class UINavigationController_FleetSpec: XCTestCase {
 
         navigationController.pushViewController(controllerToPush, animated: true)
 
-        expect(controllerToPush.viewDidLoadCallCount).toNotEventually(beGreaterThan(1))
+        expect(controllerToPush.viewDidLoadCallCount).toEventuallyNot(beGreaterThan(1))
     }
 
     func test_pushViewController_doesNotLoadThePushedViewControllerUntilItWouldHaveANavigationController() {
