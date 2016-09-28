@@ -14,10 +14,10 @@ class PuppyListViewController: UIViewController {
         }
     }
 
-    private func revealPuppies() {
-        corgiButton?.hidden = false
-        malteseButton?.hidden = false
-        frenchBulldogButton?.hidden = false
-        basenjiButton?.hidden = false
+    fileprivate func revealPuppies() {
+        corgiButton?.isHidden = false
+        malteseButton?.isHidden = false
+        frenchBulldogButton?.isHidden = false
+        basenjiButton?.isHidden = false
     }
 }

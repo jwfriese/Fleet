@@ -18,17 +18,17 @@ extension UIAlertAction {
         }
     }
 
-    override public class func initialize() {
+    override open class func initialize() {
         struct Static {
-            static var token: dispatch_once_t = 0
+            static var token = NSUUID().uuidString
         }
 
-        dispatch_once(&Static.token) {
+        DispatchQueue.once(token: Static.token) {
             swizzleHandlerSetter()
         }
     }
 
-    private class func swizzleHandlerSetter() {
+    fileprivate class func swizzleHandlerSetter() {
         let originalSelector = Selector("setHandler:")
         let swizzledSelector = #selector(UIAlertAction.fleet_setHandler(_:))
 
@@ -38,12 +38,12 @@ extension UIAlertAction {
         method_exchangeImplementations(originalMethod, swizzledMethod)
     }
 
-    func fleet_setHandler(handler: ((UIAlertAction) -> Void)?) {
+    func fleet_setHandler(_ handler: ((UIAlertAction) -> Void)?) {
         fleet_property_handler = handler
         fleet_setHandler(handler)
     }
 
-    private var fleet_property_handler: ((UIAlertAction) -> Void)? {
+    fileprivate var fleet_property_handler: ((UIAlertAction) -> Void)? {
         get {
             let block = objc_getAssociatedObject(self, &handlerAssociatedKey) as? ObjectifiedBlock
             return block?.block

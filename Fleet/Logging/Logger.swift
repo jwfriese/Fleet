@@ -1,11 +1,11 @@
 import Foundation
 
 class Logger {
-    static func log(message: String) {
+    static func log(_ message: String) {
         print("Fleet: \(message)")
     }
 
-    static func logWarning(message: String) {
+    static func logWarning(_ message: String) {
         log("** WARNING ** \(message)")
     }
 }

@@ -3,7 +3,7 @@ import UIKit
 private var isFocusedAssociatedKey: UInt = 0
 
 extension UITextField {
-    private var isFocused: Bool? {
+    fileprivate var isFocusedInField: Bool? {
         get {
             let isFocusedValue = objc_getAssociatedObject(self, &isFocusedAssociatedKey) as? NSNumber
             return isFocusedValue?.boolValue
@@ -12,7 +12,7 @@ extension UITextField {
         set {
             var isFocusedValue: NSNumber?
             if let newValue = newValue {
-                isFocusedValue = NSNumber(bool: newValue)
+                isFocusedValue = NSNumber(value: newValue)
             }
 
             objc_setAssociatedObject(self, &isFocusedAssociatedKey, isFocusedValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
@@ -20,8 +20,8 @@ extension UITextField {
     }
 }
 
-public enum FLTTextFieldError: ErrorType {
-    case DisabledTextFieldError
+public enum FLTTextFieldError: Error {
+    case disabledTextFieldError
 }
 
 extension UITextField {
@@ -33,22 +33,22 @@ extension UITextField {
             text field is disabled.
     */
     public func enter() throws {
-        if isFocused != nil && isFocused! {
+        if isFocusedInField != nil && isFocusedInField! {
             Logger.logWarning("Attempting to enter a UITextField that was already entered")
             return
         }
 
-        if !enabled {
-            throw FLTTextFieldError.DisabledTextFieldError
+        if !isEnabled {
+            throw FLTTextFieldError.disabledTextFieldError
         }
 
-        isFocused = true
+        isFocusedInField = true
         if let delegate = delegate {
             _ = delegate.textFieldShouldBeginEditing?(self)
             _ = delegate.textFieldDidBeginEditing?(self)
         }
 
-        self.sendActionsForControlEvents(.EditingDidBegin)
+        self.sendActions(for: .editingDidBegin)
     }
 
     /**
@@ -56,7 +56,7 @@ extension UITextField {
         does make the text field resign first responder.
     */
     public func leave() {
-        if isFocused == nil || !isFocused! {
+        if isFocusedInField == nil || !isFocusedInField! {
             Logger.logWarning("Attempting to leave a UITextField that was never entered")
             return
         }
@@ -66,8 +66,8 @@ extension UITextField {
             _ = delegate.textFieldDidEndEditing?(self)
         }
 
-        self.sendActionsForControlEvents(.EditingDidEnd)
-        isFocused = false
+        self.sendActions(for: .editingDidEnd)
+        isFocusedInField = false
     }
 
     /**
@@ -83,7 +83,7 @@ extension UITextField {
         - Throws: `FLTTextFieldError.DisabledTextFieldError` if the
             text field is disabled.
     */
-    public func enterText(text: String) throws {
+    public func enterText(_ text: String) throws {
         try self.enter()
         self.typeText(text)
         self.leave()
@@ -99,24 +99,24 @@ extension UITextField {
 
         - Parameter text:   The text to type into the field
     */
-    public func typeText(text: String) {
-        if isFocused == nil || !isFocused! {
+    public func typeText(_ text: String) {
+        if isFocusedInField == nil || !isFocusedInField! {
             Logger.logWarning("Attempting to type \"\(text)\" into a UITextField that was never entered")
             return
         }
 
         if let delegate = delegate {
             self.text = ""
-            for (index, char) in text.characters.enumerate() {
-                _ = delegate.textField?(self, shouldChangeCharactersInRange: NSRange.init(location: index, length: 1), replacementString: String(char))
+            for (index, char) in text.characters.enumerated() {
+                _ = delegate.textField?(self, shouldChangeCharactersIn: NSRange.init(location: index, length: 1), replacementString: String(char))
                 self.text?.append(char)
-                self.sendActionsForControlEvents(.EditingChanged)
+                self.sendActions(for: .editingChanged)
             }
         } else {
             self.text = ""
-            for (_, char) in text.characters.enumerate() {
+            for (_, char) in text.characters.enumerated() {
                 self.text?.append(char)
-                self.sendActionsForControlEvents(.EditingChanged)
+                self.sendActions(for: .editingChanged)
             }
         }
     }
@@ -131,20 +131,20 @@ extension UITextField {
 
         - Parameter text:   The text to paste into the field
     */
-    public func pasteText(text: String) {
-        if isFocused == nil || !isFocused! {
+    public func pasteText(_ text: String) {
+        if isFocusedInField == nil || !isFocusedInField! {
             Logger.logWarning("Attempting to paste \"\(text)\" into a UITextField that was never entered")
             return
         }
 
         if let delegate = delegate {
             let length = text.characters.count
-            _ = delegate.textField?(self, shouldChangeCharactersInRange: NSRange.init(location: 0, length:length), replacementString: text)
+            _ = delegate.textField?(self, shouldChangeCharactersIn: NSRange.init(location: 0, length:length), replacementString: text)
         } else {
             self.text = text
         }
 
-        self.sendActionsForControlEvents(.EditingChanged)
+        self.sendActions(for: .editingChanged)
     }
 
     /**
@@ -157,7 +157,7 @@ extension UITextField {
     public func clearText() {
         self.text = ""
         if let delegate = delegate {
-            delegate.textFieldShouldClear?(self)
+            _ = delegate.textFieldShouldClear?(self)
         }
     }
 }

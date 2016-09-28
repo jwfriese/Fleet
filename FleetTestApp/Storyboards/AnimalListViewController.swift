@@ -8,22 +8,22 @@ class AnimalListViewController: UIViewController {
     @IBOutlet weak var puppyButton: UIButton?
 
     @IBAction func goToBoxTurtle() {
-        performSegueWithIdentifier("ShowBoxTurtle", sender: nil)
+        performSegue(withIdentifier: "ShowBoxTurtle", sender: nil)
     }
 
     @IBAction func goToSpottedTurtle() {
-        performSegueWithIdentifier("ShowSpottedTurtle", sender: nil)
+        performSegue(withIdentifier: "ShowSpottedTurtle", sender: nil)
     }
 
     @IBAction func goToCrab() {
-        performSegueWithIdentifier("ShowCrab", sender: nil)
+        performSegue(withIdentifier: "ShowCrab", sender: nil)
     }
 
     @IBAction func goToCrab2() {
-        performSegueWithIdentifier("ShowCrab2", sender: nil)
+        performSegue(withIdentifier: "ShowCrab2", sender: nil)
     }
 
     @IBAction func goToPuppy() {
-        performSegueWithIdentifier("ShowPuppy", sender: nil)
+        performSegue(withIdentifier: "ShowPuppy", sender: nil)
     }
 }

@@ -1,5 +1,5 @@
 class Screen {
-    private var window: UIWindow
+    fileprivate var window: UIWindow
 
     init(forWindow window: UIWindow) {
         self.window = window
@@ -11,7 +11,7 @@ extension Screen: FLTScreen {
         return topmostViewControllerRecursive(window.rootViewController)
     }
 
-    private func topmostViewControllerRecursive(rootViewController: UIViewController?) -> UIViewController? {
+    fileprivate func topmostViewControllerRecursive(_ rootViewController: UIViewController?) -> UIViewController? {
         if let navigationController = rootViewController as? UINavigationController {
             guard let topViewController = navigationController.topViewController else {
                 return navigationController

@@ -8,7 +8,7 @@ class UIButton_FleetSpec: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        buttonTapTestViewController = ButtonTapTestViewController(nibName: "ButtonTapTestViewController", bundle: NSBundle.currentTestBundle)
+        buttonTapTestViewController = ButtonTapTestViewController(nibName: "ButtonTapTestViewController", bundle: Bundle.currentTestBundle)
         buttonTapTestViewController?.view
     }
 

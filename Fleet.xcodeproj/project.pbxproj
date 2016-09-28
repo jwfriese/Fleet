@@ -58,6 +58,7 @@
 		7BB14A701D77B425002ABE82 /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A6D1D77B425002ABE82 /* Screen.swift */; };
 		7BB14A711D77B425002ABE82 /* FLTScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A6E1D77B425002ABE82 /* FLTScreen.swift */; };
 		7BBFCD2D1D3DA82500C3EF0F /* UITextField+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBFCD2C1D3DA82500C3EF0F /* UITextField+Fleet.swift */; };
+		AE94D23C1D9C2618005CD9E0 /* DispatchOnce.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE94D23B1D9C2618005CD9E0 /* DispatchOnce.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -135,6 +136,7 @@
 		7BB14A6E1D77B425002ABE82 /* FLTScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FLTScreen.swift; sourceTree = "<group>"; };
 		7BBFCD2C1D3DA82500C3EF0F /* UITextField+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+Fleet.swift"; sourceTree = "<group>"; };
 		7BBFCD2E1D3DAE6C00C3EF0F /* UITextField+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+FleetSpec.swift"; sourceTree = "<group>"; };
+		AE94D23B1D9C2618005CD9E0 /* DispatchOnce.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DispatchOnce.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -271,6 +273,7 @@
 		7BA90AB51CC130980040B031 /* Fleet */ = {
 			isa = PBXGroup;
 			children = (
+				AE94D23A1D9C25DB005CD9E0 /* SwizzleGuarding */,
 				7B675E931D0DA7EA002E6B45 /* Fleet.swift */,
 				7B9458171D4E470C00F16A64 /* Script */,
 				7B675E871D0C5AEE002E6B45 /* Logging */,
@@ -395,6 +398,14 @@
 			path = Screen;
 			sourceTree = "<group>";
 		};
+		AE94D23A1D9C25DB005CD9E0 /* SwizzleGuarding */ = {
+			isa = PBXGroup;
+			children = (
+				AE94D23B1D9C2618005CD9E0 /* DispatchOnce.swift */,
+			);
+			path = SwizzleGuarding;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -476,12 +487,15 @@
 				TargetAttributes = {
 					7B0D3B441CFB29B40096DBC2 = {
 						CreatedOnToolsVersion = 7.3.1;
+						LastSwiftMigration = 0800;
 					};
 					7BA90AB21CC130980040B031 = {
 						CreatedOnToolsVersion = 7.3;
+						LastSwiftMigration = 0800;
 					};
 					7BA90AC41CC3B8950040B031 = {
 						CreatedOnToolsVersion = 7.3;
+						LastSwiftMigration = 0800;
 						TestTargetID = 7B0D3B441CFB29B40096DBC2;
 					};
 				};
@@ -577,6 +591,7 @@
 			files = (
 				7BA90AC01CC3B6B80040B031 /* UIButton+Fleet.swift in Sources */,
 				7BB14A711D77B425002ABE82 /* FLTScreen.swift in Sources */,
+				AE94D23C1D9C2618005CD9E0 /* DispatchOnce.swift in Sources */,
 				7B675E941D0DA7EA002E6B45 /* Fleet.swift in Sources */,
 				7B9458101D4D7DFA00F16A64 /* StoryboardDeserializer.swift in Sources */,
 				7B0D3B3F1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift in Sources */,
@@ -654,6 +669,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.FleetTestApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -669,6 +685,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.FleetTestApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -717,6 +734,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -760,6 +778,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -787,6 +806,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -809,6 +829,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.Fleet;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -824,6 +845,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.FleetTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FleetTestApp.app/FleetTestApp";
 			};
 			name = Debug;
@@ -839,6 +861,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.FleetTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FleetTestApp.app/FleetTestApp";
 			};
 			name = Release;

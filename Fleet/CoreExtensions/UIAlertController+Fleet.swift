@@ -7,13 +7,13 @@ public extension UIAlertController {
 
         - Parameter title:  The title of the action to tap
     */
-    public func tapAlertActionWithTitle(title: String) {
+    public func tapAlertActionWithTitle(_ title: String) {
         let filteredActions = actions.filter { action in
             return action.title == title
         }
 
         if let actionWithTitle = filteredActions.first {
-            let isCancelStyle = actionWithTitle.style == .Cancel
+            let isCancelStyle = actionWithTitle.style == .cancel
             if let handler = actionWithTitle.handler {
                 handler(actionWithTitle)
             } else {
@@ -22,7 +22,7 @@ public extension UIAlertController {
                 }
             }
 
-            presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
+            presentingViewController?.dismiss(animated: true, completion: nil)
         } else {
             Logger.logWarning("No action with title \"\(title)\" found on alert")
         }
