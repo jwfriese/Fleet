@@ -9,7 +9,7 @@ class UIButton_FleetSpec: XCTestCase {
         super.setUp()
 
         buttonTapTestViewController = ButtonTapTestViewController(nibName: "ButtonTapTestViewController", bundle: Bundle.currentTestBundle)
-        buttonTapTestViewController?.view
+        _ = buttonTapTestViewController?.view
     }
 
     func testCallingTapOnButton() {

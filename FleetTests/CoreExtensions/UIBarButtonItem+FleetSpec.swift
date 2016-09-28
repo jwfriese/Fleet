@@ -14,7 +14,7 @@ class UIBarButtonItem_FleetSpec: XCTestCase {
 
     func test_tap_directlyOnBarButtonItem_whenEnabled_performsAction() {
         let boxTurtleViewController = turtlesAndFriendsStoryboard.instantiateViewController(withIdentifier: "BoxTurtleViewController") as? BoxTurtleViewController
-        boxTurtleViewController?.view
+        _ = boxTurtleViewController?.view
 
         boxTurtleViewController?.rightBarButtonItem?.tap()
 
@@ -23,7 +23,7 @@ class UIBarButtonItem_FleetSpec: XCTestCase {
 
     func test_tap_directlyOnBarButtonItem_whenNotEnabled_doesNotPerformAction() {
         let boxTurtleViewController = turtlesAndFriendsStoryboard.instantiateViewController(withIdentifier: "BoxTurtleViewController") as? BoxTurtleViewController
-        boxTurtleViewController?.view
+        _ = boxTurtleViewController?.view
 
         boxTurtleViewController?.rightBarButtonItem?.isEnabled = false
 
