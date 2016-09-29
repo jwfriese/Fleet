@@ -29,7 +29,7 @@ extension UIAlertAction {
     }
 
     fileprivate class func swizzleHandlerSetter() {
-        let originalSelector = Selector("setHandler:")
+        let originalSelector = Selector(("setHandler:"))
         let swizzledSelector = #selector(UIAlertAction.fleet_setHandler(_:))
 
         let originalMethod = class_getInstanceMethod(self, originalSelector)
