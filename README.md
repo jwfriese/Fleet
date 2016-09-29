@@ -1,4 +1,4 @@
-# Fleet
+# Fleet [![Build Status](https://travis-ci.org/jwfriese/Fleet.svg?branch=master)](https://travis-ci.org/jwfriese/Fleet) 
 Fleet is a UIKit-focused testing framework intended for use on iOS projects written in Swift.
 
 ## Installation
