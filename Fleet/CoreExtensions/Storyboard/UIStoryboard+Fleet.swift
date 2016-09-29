@@ -110,7 +110,6 @@ extension UIStoryboard {
     open override class func initialize() {
         if !didSwizzle {
             swizzleViewControllerInstantiationMethod()
-            swizzlePrivateStoryboardReferenceViewControllerInstantiationMethod()
             didSwizzle = true
         }
     }
@@ -135,29 +134,6 @@ extension UIStoryboard {
         }
 
         let viewController = fleet_instantiateViewController(withIdentifier: identifier)
-        return viewController
-    }
-
-    class func swizzlePrivateStoryboardReferenceViewControllerInstantiationMethod() {
-        let originalSelector = Selector("instantiateViewControllerReferencedByPlaceholderWithIdentifier:")
-        let swizzledSelector = #selector(UIStoryboard.fleet_instantiateViewControllerReferencedByPlaceholderWithIdentifier(_:))
-
-        let originalMethod = class_getInstanceMethod(self, originalSelector)
-        let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
-
-        method_exchangeImplementations(originalMethod, swizzledMethod)
-    }
-
-    func fleet_instantiateViewControllerReferencedByPlaceholderWithIdentifier(_ identifier: String) -> UIViewController {
-        if let storyboardBindingIdentifier = storyboardBindingIdentifier {
-            if let storyboardInstanceBinding = storyboardInstanceBindingMap[storyboardBindingIdentifier] {
-                if let boundInstance = storyboardInstanceBinding.viewController(forIdentifier: identifier) {
-                    return boundInstance
-                }
-            }
-        }
-
-        let viewController = self.fleet_instantiateViewControllerReferencedByPlaceholderWithIdentifier(identifier)
         return viewController
     }
 }
