@@ -1,11 +1,11 @@
 ## UITextField
 
-Instead of having to manually send text editing events yourself, you can now simply enter text into a text field using `enter(_:)` on any `UITextField`. 
+Instead of having to manually send text editing events yourself, you can now simply enter text into a text field using `enter(text:)` on any `UITextField`. 
 
 For example:
 ```swift
 let textField = viewController.someTextField
-textField.enter("text")
+textField.enter(text: "text")
 
 // Any delegate attached to the text field will automatically receive all
 // events that you would expect to receive had a real user interacted 

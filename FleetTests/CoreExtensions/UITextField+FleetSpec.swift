@@ -131,7 +131,7 @@ class UITextField_FleetSpec: XCTestCase {
     }
 
     func test_enterText_entersTextFieldTypesTextAndLeavesTextField() {
-        try! textField.enter("turtle")
+        try! textField.enter(text: "turtle")
 
         expect(self.delegate.didCallShouldBeginEditing).to(beTrue())
         expect(self.delegate.didCallDidBeginEditing).to(beTrue())
@@ -141,13 +141,13 @@ class UITextField_FleetSpec: XCTestCase {
     }
 
     func test_enterText_whenThereIsADelegate_actuallyEntersTheText() {
-        try! textField.enter("turtle")
+        try! textField.enter(text: "turtle")
         expect(self.textField.text).to(equal("turtle"))
     }
 
     func test_enterText_whenDisabled_throwsError() {
         textField.isEnabled = false
-        expect { try self.textField.enter("turtle") }.to(throwError(FLTTextFieldError.disabledTextFieldError))
+        expect { try self.textField.enter(text: "turtle") }.to(throwError(FLTTextFieldError.disabledTextFieldError))
     }
 
     func test_typeText_typesTextIntoTextField() {

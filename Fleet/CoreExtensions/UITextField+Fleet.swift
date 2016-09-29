@@ -83,7 +83,7 @@ extension UITextField {
         - Throws: `FLTTextFieldError.DisabledTextFieldError` if the
             text field is disabled.
     */
-    public func enter(_ text: String) throws {
+    public func enter(text: String) throws {
         try self.focus()
         self.type(text)
         self.unfocus()
