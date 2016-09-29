@@ -131,7 +131,7 @@ class UITextField_FleetSpec: XCTestCase {
     }
 
     func test_enterText_entersTextFieldTypesTextAndLeavesTextField() {
-        try! textField.enter(text: "turtle")
+        try! textField.enter("turtle")
 
         expect(self.delegate.didCallShouldBeginEditing).to(beTrue())
         expect(self.delegate.didCallDidBeginEditing).to(beTrue())
@@ -141,31 +141,31 @@ class UITextField_FleetSpec: XCTestCase {
     }
 
     func test_enterText_whenThereIsADelegate_actuallyEntersTheText() {
-        try! textField.enter(text: "turtle")
+        try! textField.enter("turtle")
         expect(self.textField.text).to(equal("turtle"))
     }
 
     func test_enterText_whenDisabled_throwsError() {
         textField.isEnabled = false
-        expect { try self.textField.enter(text: "turtle") }.to(throwError(FLTTextFieldError.disabledTextFieldError))
+        expect { try self.textField.enter("turtle") }.to(throwError(FLTTextFieldError.disabledTextFieldError))
     }
 
     func test_typeText_typesTextIntoTextField() {
         try! textField.focus()
         delegate.resetState()
 
-        textField.type(text: "turtle")
+        textField.type("turtle")
         expect(self.delegate.textChanges).to(equal(["t", "u", "r", "t", "l", "e"]))
     }
 
     func test_typeText_whenThereIsADelegate_actuallyTypesTheText() {
         try! textField.focus()
-        textField.type(text: "turtle")
+        textField.type("turtle")
         expect(self.textField.text).to(equal("turtle"))
     }
 
     func test_typeText_whenNeverEnteredTextField_doesNothing() {
-        textField.type(text: "turtle")
+        textField.type("turtle")
         expect(self.delegate.textChanges).to(equal([]))
     }
 
@@ -178,14 +178,14 @@ class UITextField_FleetSpec: XCTestCase {
                             for: .editingChanged
         )
 
-        textField.type(text: "turtle")
+        textField.type("turtle")
         expect(testTarget.didCallDo).to(beTrue())
     }
 
     func test_typeText_whenNoDelegate_stillUpdatesText() {
         textField.delegate = nil
         try! textField.focus()
-        textField.type(text: "turtle")
+        textField.type("turtle")
         expect(self.textField.text).to(equal("turtle"))
     }
 

@@ -83,9 +83,9 @@ extension UITextField {
         - Throws: `FLTTextFieldError.DisabledTextFieldError` if the
             text field is disabled.
     */
-    public func enter(text: String) throws {
+    public func enter(_ text: String) throws {
         try self.focus()
-        self.type(text: text)
+        self.type(text)
         self.unfocus()
     }
 
@@ -99,7 +99,7 @@ extension UITextField {
 
         - Parameter text:   The text to type into the field
     */
-    public func type(text: String) {
+    public func type(_ text: String) {
         if fleet_isFocused == nil || !fleet_isFocused! {
             Logger.logWarning("Attempting to type \"\(text)\" into a UITextField that was never focused")
             return
