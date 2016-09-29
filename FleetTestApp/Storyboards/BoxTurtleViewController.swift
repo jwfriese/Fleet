@@ -16,7 +16,7 @@ class BoxTurtleViewController: UIViewController {
         doTurtleDanceParty()
     }
 
-    private func doTurtleDanceParty() {
+    fileprivate func doTurtleDanceParty() {
         if let boxTurtleImage = boxTurtleImage {
             let path = UIBezierPath()
 
@@ -31,19 +31,19 @@ class BoxTurtleViewController: UIViewController {
             let leftMoveControlLeft = CGPoint(x: startingPoint.x - 30, y: startingPoint.y - 30)
             let leftMoveControlRight = CGPoint(x: startingPoint.x, y: startingPoint.y - 30)
 
-            path.moveToPoint(startingPoint)
-            path.addCurveToPoint(rightPoint, controlPoint1: rightMoveControlLeft, controlPoint2: rightMoveControlRight)
-            path.addCurveToPoint(startingPoint, controlPoint1: rightMoveControlRight, controlPoint2: rightMoveControlLeft)
+            path.move(to: startingPoint)
+            path.addCurve(to: rightPoint, controlPoint1: rightMoveControlLeft, controlPoint2: rightMoveControlRight)
+            path.addCurve(to: startingPoint, controlPoint1: rightMoveControlRight, controlPoint2: rightMoveControlLeft)
 
-            path.addCurveToPoint(leftPoint, controlPoint1: leftMoveControlRight, controlPoint2: leftMoveControlLeft)
-            path.addCurveToPoint(startingPoint, controlPoint1: leftMoveControlLeft, controlPoint2: leftMoveControlRight)
+            path.addCurve(to: leftPoint, controlPoint1: leftMoveControlRight, controlPoint2: leftMoveControlLeft)
+            path.addCurve(to: startingPoint, controlPoint1: leftMoveControlLeft, controlPoint2: leftMoveControlRight)
 
             let animation = CAKeyframeAnimation(keyPath: "position")
-            animation.path = path.CGPath
+            animation.path = path.cgPath
             animation.duration = 1.5
             animation.repeatCount = 10
 
-            boxTurtleImage.layer.addAnimation(animation, forKey: "TURTLE DANCE PARTY")
+            boxTurtleImage.layer.add(animation, forKey: "TURTLE DANCE PARTY")
         }
     }
 }

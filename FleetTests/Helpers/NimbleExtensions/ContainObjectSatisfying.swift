@@ -1,6 +1,6 @@
 import Nimble
 
-func containObjectSatisfying<S: SequenceType, T where S.Generator.Element == T>(predicate: (T) -> Bool) -> NonNilMatcherFunc<S> {
+func containObjectSatisfying<S: Sequence, T>(_ predicate: @escaping (T) -> Bool) -> NonNilMatcherFunc<S> where S.Iterator.Element == T {
 
     return NonNilMatcherFunc { actualExpression, failureMessage in
         failureMessage.postfixMessage = "contain object satisfying"

@@ -12,7 +12,7 @@ class UIAlertController_FleetSpec: XCTestCase {
         super.setUp()
 
         storyboard = UIStoryboard.init(name: "TurtlesAndFriendsStoryboard", bundle: nil)
-        viewControllerThatPresentsAlerts = storyboard.instantiateViewControllerWithIdentifier("SpottedTurtleViewController") as! SpottedTurtleViewController
+        viewControllerThatPresentsAlerts = storyboard.instantiateViewController(withIdentifier: "SpottedTurtleViewController") as! SpottedTurtleViewController
 
         Fleet.setApplicationWindowRootViewController(viewControllerThatPresentsAlerts)
     }
@@ -29,8 +29,8 @@ class UIAlertController_FleetSpec: XCTestCase {
 
     func test_tapAlertActionWithTitle_whenActionWithThatTitleExistsOnAlert_whenActionIsCancelStyle_dismissesAlert() {
         let alertWithCancelAction = UIAlertController()
-        alertWithCancelAction.addAction(UIAlertAction(title: "Go Away", style: .Cancel, handler: nil))
-        viewControllerThatPresentsAlerts.presentViewController(alertWithCancelAction, animated: false, completion: nil)
+        alertWithCancelAction.addAction(UIAlertAction(title: "Go Away", style: .cancel, handler: nil))
+        viewControllerThatPresentsAlerts.present(alertWithCancelAction, animated: false, completion: nil)
 
         let alertController = Fleet.getApplicationScreen()?.presentedAlert
         alertController?.tapAlertActionWithTitle("Go Away")

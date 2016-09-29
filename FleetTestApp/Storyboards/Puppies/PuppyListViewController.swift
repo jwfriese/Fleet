@@ -8,16 +8,15 @@ class PuppyListViewController: UIViewController {
     @IBOutlet weak var basenjiButton: UIButton?
 
     @IBAction func showPuppiesList() {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1.5 * Double(NSEC_PER_SEC))),
-            dispatch_get_main_queue()) {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(1.5 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) {
             self.revealPuppies()
         }
     }
 
-    private func revealPuppies() {
-        corgiButton?.hidden = false
-        malteseButton?.hidden = false
-        frenchBulldogButton?.hidden = false
-        basenjiButton?.hidden = false
+    fileprivate func revealPuppies() {
+        corgiButton?.isHidden = false
+        malteseButton?.isHidden = false
+        frenchBulldogButton?.isHidden = false
+        basenjiButton?.isHidden = false
     }
 }

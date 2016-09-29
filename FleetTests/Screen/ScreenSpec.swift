@@ -15,7 +15,7 @@ class ScreenSpec: XCTestCase {
         expect(screen.topmostViewController).to(beIdenticalTo(rootViewController))
 
         let newTopmostViewController = UIViewController()
-        rootViewController.presentViewController(newTopmostViewController, animated: true, completion: nil)
+        rootViewController.present(newTopmostViewController, animated: true, completion: nil)
 
         expect(screen.topmostViewController).to(beIdenticalTo(newTopmostViewController))
     }
@@ -57,7 +57,7 @@ class ScreenSpec: XCTestCase {
         rootNavigationController.pushViewController(rootViewController, animated: false)
 
         let viewControllerToPresent = UIViewController()
-        rootViewController.presentViewController(viewControllerToPresent, animated: false, completion: nil)
+        rootViewController.present(viewControllerToPresent, animated: false, completion: nil)
 
         expect(screen.topmostViewController).to(beIdenticalTo(viewControllerToPresent))
     }
@@ -74,14 +74,14 @@ class ScreenSpec: XCTestCase {
         rootNavigationController.pushViewController(rootViewController, animated: false)
 
         let viewControllerToShow = UIViewController()
-        rootViewController.showViewController(viewControllerToShow, sender: nil)
+        rootViewController.show(viewControllerToShow, sender: nil)
 
         expect(screen.topmostViewController).to(beIdenticalTo(viewControllerToShow))
     }
 
     func test_presentedAlert_whenNoAlertIsPresented_returnsNil() {
         let storyboard = UIStoryboard.init(name: "TurtlesAndFriendsStoryboard", bundle: nil)
-        let viewControllerThatPresentsAlerts = storyboard.instantiateViewControllerWithIdentifier("SpottedTurtleViewController") as! SpottedTurtleViewController
+        let viewControllerThatPresentsAlerts = storyboard.instantiateViewController(withIdentifier: "SpottedTurtleViewController") as! SpottedTurtleViewController
 
         let window = UIWindow()
         window.rootViewController = viewControllerThatPresentsAlerts
@@ -94,7 +94,7 @@ class ScreenSpec: XCTestCase {
 
     func test_presentedAlert_whenAnAlertIsPresented_whenAlertIsAlertStyle_returnsTheAlert() {
         let storyboard = UIStoryboard.init(name: "TurtlesAndFriendsStoryboard", bundle: nil)
-        let viewControllerThatPresentsAlerts = storyboard.instantiateViewControllerWithIdentifier("SpottedTurtleViewController") as! SpottedTurtleViewController
+        let viewControllerThatPresentsAlerts = storyboard.instantiateViewController(withIdentifier: "SpottedTurtleViewController") as! SpottedTurtleViewController
 
         let window = UIWindow()
         window.rootViewController = viewControllerThatPresentsAlerts

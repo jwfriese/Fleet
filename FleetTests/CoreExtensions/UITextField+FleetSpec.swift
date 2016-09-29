@@ -29,30 +29,30 @@ extension TestTextFieldDelegate: UITextFieldDelegate {
         textChanges = []
     }
 
-    func textFieldShouldBeginEditing(textField: UITextField) -> Bool {
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         didCallShouldBeginEditing = true
         return true
     }
 
-    func textFieldShouldEndEditing(textField: UITextField) -> Bool {
+    func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
         didCallShouldEndEditing = true
         return true
     }
 
-    func textFieldDidBeginEditing(textField: UITextField) {
+    func textFieldDidBeginEditing(_ textField: UITextField) {
         didCallDidBeginEditing = true
     }
 
-    func textFieldDidEndEditing(textField: UITextField) {
+    func textFieldDidEndEditing(_ textField: UITextField) {
         didCallDidEndEditing = true
     }
 
-    func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         textChanges.append(string)
         return true
     }
 
-    func textFieldShouldClear(textField: UITextField) -> Bool {
+    func textFieldShouldClear(_ textField: UITextField) -> Bool {
         didCallShouldClear = true
         return true
     }
@@ -64,7 +64,7 @@ class UITextField_FleetSpec: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        textField = UITextField(frame: CGRectMake(100,100,100,100))
+        textField = UITextField(frame: CGRect(x: 100,y: 100,width: 100,height: 100))
         delegate = TestTextFieldDelegate()
         textField.delegate = delegate
     }
@@ -85,8 +85,8 @@ class UITextField_FleetSpec: XCTestCase {
     }
 
     func test_enter_whenDisabled_throwsError() {
-        textField.enabled = false
-        expect { try self.textField.enter() }.to(throwError(FLTTextFieldError.DisabledTextFieldError))
+        textField.isEnabled = false
+        expect { try self.textField.enter() }.to(throwError(FLTTextFieldError.disabledTextFieldError))
     }
 
 
@@ -95,7 +95,7 @@ class UITextField_FleetSpec: XCTestCase {
         let testTarget = TestTextFieldTarget()
         textField.addTarget(testTarget,
                             action: #selector(TestTextFieldTarget.doFunc),
-                            forControlEvents: .EditingDidBegin
+                            for: .editingDidBegin
         )
 
         try! textField.enter()
@@ -123,7 +123,7 @@ class UITextField_FleetSpec: XCTestCase {
         let testTarget = TestTextFieldTarget()
         textField.addTarget(testTarget,
                             action: #selector(TestTextFieldTarget.doFunc),
-                            forControlEvents: .EditingDidEnd
+                            for: .editingDidEnd
         )
 
         textField.leave()
@@ -146,8 +146,8 @@ class UITextField_FleetSpec: XCTestCase {
     }
 
     func test_enterText_whenDisabled_throwsError() {
-        textField.enabled = false
-        expect { try self.textField.enterText("turtle") }.to(throwError(FLTTextFieldError.DisabledTextFieldError))
+        textField.isEnabled = false
+        expect { try self.textField.enterText("turtle") }.to(throwError(FLTTextFieldError.disabledTextFieldError))
     }
 
     func test_typeText_typesTextIntoTextField() {
@@ -175,7 +175,7 @@ class UITextField_FleetSpec: XCTestCase {
         let testTarget = TestTextFieldTarget()
         textField.addTarget(testTarget,
                             action: #selector(TestTextFieldTarget.doFunc),
-                            forControlEvents: .EditingChanged
+                            for: .editingChanged
         )
 
         textField.typeText("turtle")
@@ -208,7 +208,7 @@ class UITextField_FleetSpec: XCTestCase {
         let testTarget = TestTextFieldTarget()
         textField.addTarget(testTarget,
                             action: #selector(TestTextFieldTarget.doFunc),
-                            forControlEvents: .EditingChanged
+                            for: .editingChanged
         )
 
         textField.pasteText("turtle")

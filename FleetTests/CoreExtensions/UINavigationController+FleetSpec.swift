@@ -3,11 +3,11 @@ import Fleet
 import Nimble
 
 class UINavigationController_FleetSpec: XCTestCase {
-    private class TestViewController: UIViewController {
+    fileprivate class TestViewController: UIViewController {
         var viewDidLoadCallCount: UInt = 0
         var capturedNavigationController: UINavigationController?
 
-        private override func viewDidLoad() {
+        fileprivate override func viewDidLoad() {
             super.viewDidLoad()
             viewDidLoadCallCount += 1
             capturedNavigationController = navigationController
@@ -79,7 +79,7 @@ class UINavigationController_FleetSpec: XCTestCase {
         let controllerToPushThenPop = UIViewController()
 
         navigationController.pushViewController(controllerToPushThenPop, animated: true)
-        let poppedViewController = navigationController.popViewControllerAnimated(true)
+        let poppedViewController = navigationController.popViewController(animated: true)
 
         expect(poppedViewController).to(beIdenticalTo(controllerToPushThenPop))
     }
@@ -94,7 +94,7 @@ class UINavigationController_FleetSpec: XCTestCase {
         let controllerToPushThenPop = UIViewController()
 
         navigationController.pushViewController(controllerToPushThenPop, animated: true)
-        navigationController.popViewControllerAnimated(true)
+        navigationController.popViewController(animated: true)
 
         expect(navigationController.topViewController).to(beIdenticalTo(root))
     }
@@ -177,7 +177,7 @@ class UINavigationController_FleetSpec: XCTestCase {
         navigationController.pushViewController(controllerOne, animated: true)
         navigationController.pushViewController(controllerTwo, animated: true)
 
-        navigationController.popToRootViewControllerAnimated(false)
+        navigationController.popToRootViewController(animated: false)
 
         expect(navigationController.topViewController).to(beIdenticalTo(root))
     }
@@ -195,7 +195,7 @@ class UINavigationController_FleetSpec: XCTestCase {
         navigationController.pushViewController(controllerOne, animated: false)
         navigationController.pushViewController(controllerTwo, animated: false)
 
-        let poppedControllers = navigationController.popToRootViewControllerAnimated(true)
+        let poppedControllers = navigationController.popToRootViewController(animated: true)
 
         if poppedControllers != nil {
             expect(poppedControllers!.count).to(equal(2))
@@ -218,7 +218,7 @@ class UINavigationController_FleetSpec: XCTestCase {
         navigationController.pushViewController(controllerOne, animated: false)
         navigationController.pushViewController(controllerTwo, animated: false)
 
-        let poppedControllers = navigationController.popToRootViewControllerAnimated(true)
+        let poppedControllers = navigationController.popToRootViewController(animated: true)
 
         expect(poppedControllers).to(beNil())
     }

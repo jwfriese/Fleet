@@ -1,20 +1,20 @@
 import Foundation
 
-public enum FLTStoryboardBindingError: ErrorType {
-    case InvalidViewControllerIdentifier(String)
-    case InvalidExternalStoryboardReference(String)
-    case InternalInconsistency(String)
+public enum FLTStoryboardBindingError: Error {
+    case invalidViewControllerIdentifier(String)
+    case invalidExternalStoryboardReference(String)
+    case internalInconsistency(String)
 
     var description: String {
         get {
             var description = ""
 
             switch self {
-            case .InvalidViewControllerIdentifier(let message):
+            case .invalidViewControllerIdentifier(let message):
                 description = message
-            case .InvalidExternalStoryboardReference(let message):
+            case .invalidExternalStoryboardReference(let message):
                 description = message
-            case .InternalInconsistency(let message):
+            case .internalInconsistency(let message):
                 description = message
             }
 

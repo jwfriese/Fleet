@@ -3,10 +3,10 @@ import Fleet
 import Nimble
 
 class UIViewController_FleetSpec: XCTestCase {
-    private class TestViewController: UIViewController {
+    fileprivate class TestViewController: UIViewController {
         var viewDidLoadCallCount: UInt = 0
 
-        private override func viewDidLoad() {
+        fileprivate override func viewDidLoad() {
             super.viewDidLoad()
             viewDidLoadCallCount += 1
         }
@@ -16,7 +16,7 @@ class UIViewController_FleetSpec: XCTestCase {
         let bottom = UIViewController()
         let top = UIViewController()
 
-        bottom.presentViewController(top, animated: true, completion: nil)
+        bottom.present(top, animated: true, completion: nil)
 
         expect(bottom.presentedViewController).to(beIdenticalTo(top))
         expect(top.presentingViewController).to(beIdenticalTo(bottom))
@@ -26,9 +26,9 @@ class UIViewController_FleetSpec: XCTestCase {
         let bottom = UIViewController()
         let top = UIViewController()
 
-        bottom.presentViewController(top, animated: true, completion: nil)
+        bottom.present(top, animated: true, completion: nil)
 
-        bottom.dismissViewControllerAnimated(true, completion: nil)
+        bottom.dismiss(animated: true, completion: nil)
         expect(bottom.presentedViewController).to(beNil())
         expect(top.presentingViewController).to(beNil())
     }
@@ -42,7 +42,7 @@ class UIViewController_FleetSpec: XCTestCase {
             didFireCompletionHandler = true
         }
 
-        bottom.presentViewController(top, animated: true, completion: completionHandler)
+        bottom.present(top, animated: true, completion: completionHandler)
 
         expect(didFireCompletionHandler).to(beTrue())
     }
@@ -51,14 +51,14 @@ class UIViewController_FleetSpec: XCTestCase {
         let bottom = UIViewController()
         let top = UIViewController()
 
-        bottom.presentViewController(top, animated: true, completion: nil)
+        bottom.present(top, animated: true, completion: nil)
 
         var didFireCompletionHandler = false
         let completionHandler = {
             didFireCompletionHandler = true
         }
 
-        bottom.dismissViewControllerAnimated(true, completion: completionHandler)
+        bottom.dismiss(animated: true, completion: completionHandler)
 
         expect(didFireCompletionHandler).to(beTrue())
     }
@@ -67,7 +67,7 @@ class UIViewController_FleetSpec: XCTestCase {
         let bottom = UIViewController()
         let top = UIViewController()
 
-        bottom.showViewController(top, sender: nil)
+        bottom.show(top, sender: nil)
 
         expect(bottom.presentedViewController).to(beIdenticalTo(top))
         expect(top.presentingViewController).to(beIdenticalTo(bottom))
@@ -77,7 +77,7 @@ class UIViewController_FleetSpec: XCTestCase {
         let bottom = UIViewController()
         let top = TestViewController()
 
-        bottom.presentViewController(top, animated: true, completion: nil)
+        bottom.present(top, animated: true, completion: nil)
         expect(top.viewDidLoadCallCount).to(equal(1))
     }
 
@@ -85,7 +85,7 @@ class UIViewController_FleetSpec: XCTestCase {
         let bottom = UIViewController()
         let top = TestViewController()
 
-        bottom.presentViewController(top, animated: true, completion: nil)
+        bottom.present(top, animated: true, completion: nil)
         expect(top.viewDidLoadCallCount).toEventuallyNot(beGreaterThan(1))
     }
 }

@@ -6,7 +6,7 @@ import Nimble
 class UIAlertAction_FleetSpec: XCTestCase {
     func test_handler_returnsTheHandlerUsedToInitializeAction() {
         var didFireHandler = false
-        let alertAction = UIAlertAction(title: "title", style: .Default) { action in
+        let alertAction = UIAlertAction(title: "title", style: .default) { action in
             didFireHandler = true
         }
 
