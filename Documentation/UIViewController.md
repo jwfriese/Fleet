@@ -6,13 +6,13 @@ When firing code in test that would make a view controller either present or dis
 let bottom = UIViewController()
 let top = UIViewController()
         
-bottom.presentViewController(top, animated: true, completion: nil)
+bottom.present(top, animated: true, completion: nil)
 
 // You can test that the present has successfully occurred immediately after executing it. 
 expect(bottom.presentedViewController).to(beIdenticalTo(top))
 expect(top.presentingViewController).to(beIdenticalTo(bottom))
         
-bottom.dismissViewControllerAnimated(true, completion: nil)
+bottom.dismiss(animated: true, completion: nil)
 
 // Likewise with the dismiss -- as soon as you call the code, you can assert on the results.
 expect(bottom.presentedViewController).to(beNil())
@@ -29,7 +29,7 @@ let completionHandler = {
     didFireCompletionHandler = true
 }
         
-bottom.presentViewController(top, animated: true, completion: completionHandler)
+bottom.present(top, animated: true, completion: completionHandler)
 
 // The results of the completion handler can be seen immediately.        
 expect(didFireCompletionHandler).to(beTrue())

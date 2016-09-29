@@ -4,8 +4,8 @@ Unit testing the behavior of buttons on UIAlertControllers has always been a cha
 
 Suppose you have an alert controller in code that is set up like this:
 ```swift
-let alertController = UIAlertController(title: "Some Alert", message: "This is a regular old alert", preferredStyle: .Alert)
-let someAction = UIAlertAction(title: "Some Action", style: .Default) { action in
+let alertController = UIAlertController(title: "Some Alert", message: "This is a regular old alert", preferredStyle: .alert)
+let someAction = UIAlertAction(title: "Some Action", style: .default) { action in
     // Do some stuff in here
 }
 
@@ -13,7 +13,7 @@ alertController.addAction(someAction)
 ```     
 With Fleet, you can unit test the stuff that happens in that action much more easily than before. With one simple line of code, that action's handler will be fired:
 ```swift
-alertController.tapAlertActionWithTitle("Some Action")
+alertController.tapAlertAction(withTitle: "Some Action")
 
 // Now you can make any assertions you'd like on the behavior of that action. 
 ```

@@ -4,7 +4,7 @@ Rather than using:
 
 ```swift
 let someButton = viewControllerWithButton.buttonUnderTest
-someButton.sendActionForControlEvents(.TouchUpInside)
+someButton.sendActions(for: .touchUpInside)
 ```
 
 you can use Fleet's extension `tap` like so:

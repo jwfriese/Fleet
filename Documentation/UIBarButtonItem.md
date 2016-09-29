@@ -10,7 +10,7 @@ flow for testing taps on UIBarButtonItem objects:
 //    link my target or action correctly? Or maybe the implementation of the action is
 //    wrong? 
 let someBarButtonItem = viewControllerWithNavBar.rightBarButton
-someBarButtonItem.target?.performSelector(someBarButtonItem.action, withObject: someBarButtonItem)
+someBarButtonItem.target?.perform(someBarButtonItem.action, with: someBarButtonItem)
 ```
 
 Instead, you can use the Fleet extension `tap` like so:
