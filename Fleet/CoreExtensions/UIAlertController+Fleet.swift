@@ -7,7 +7,7 @@ public extension UIAlertController {
 
         - Parameter title:  The title of the action to tap
     */
-    public func tapAlertActionWithTitle(_ title: String) {
+    public func tapAlertAction(withTitle title: String) {
         let filteredActions = actions.filter { action in
             return action.title == title
         }

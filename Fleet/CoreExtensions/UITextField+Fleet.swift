@@ -26,13 +26,13 @@ public enum FLTTextFieldError: Error {
 
 extension UITextField {
     /**
-        Enters the text field, firing the .EditingDidBegin events. It
+        Gives the text field focus, firing the .EditingDidBegin events. It
         does not give the text field first responder.
 
         - Throws: `FLTTextFieldError.DisabledTextFieldError` if the
             text field is disabled.
     */
-    public func enter() throws {
+    public func focus() throws {
         if fleet_isFocused != nil && fleet_isFocused! {
             Logger.logWarning("Attempting to enter a UITextField that was already entered")
             return
@@ -52,12 +52,12 @@ extension UITextField {
     }
 
     /**
-        Enters the text field, firing the .EditingDidEnd events. It
+        Ends focus in the text field, firing the .EditingDidEnd events. It
         does make the text field resign first responder.
     */
-    public func leave() {
+    public func unfocus() {
         if fleet_isFocused == nil || !fleet_isFocused! {
-            Logger.logWarning("Attempting to leave a UITextField that was never entered")
+            Logger.logWarning("Attempting to end focus for a UITextField that was never focused")
             return
         }
 
@@ -71,7 +71,7 @@ extension UITextField {
     }
 
     /**
-        Enters the text field, enters the given text, and leaves it, firing
+        Focuses the text field, enters the given text, and unfocuses it, firing
         the .EditingDidBegin, .EditingChanged, and .EditingDidEnd events
         as appropriate. Does not manipulate first responder.
 
@@ -83,10 +83,10 @@ extension UITextField {
         - Throws: `FLTTextFieldError.DisabledTextFieldError` if the
             text field is disabled.
     */
-    public func enterText(_ text: String) throws {
-        try self.enter()
-        self.typeText(text)
-        self.leave()
+    public func enter(text: String) throws {
+        try self.focus()
+        self.type(text: text)
+        self.unfocus()
     }
 
     /**
@@ -99,9 +99,9 @@ extension UITextField {
 
         - Parameter text:   The text to type into the field
     */
-    public func typeText(_ text: String) {
+    public func type(text: String) {
         if fleet_isFocused == nil || !fleet_isFocused! {
-            Logger.logWarning("Attempting to type \"\(text)\" into a UITextField that was never entered")
+            Logger.logWarning("Attempting to type \"\(text)\" into a UITextField that was never focused")
             return
         }
 
@@ -131,9 +131,9 @@ extension UITextField {
 
         - Parameter text:   The text to paste into the field
     */
-    public func pasteText(_ text: String) {
+    public func paste(text: String) {
         if fleet_isFocused == nil || !fleet_isFocused! {
-            Logger.logWarning("Attempting to paste \"\(text)\" into a UITextField that was never entered")
+            Logger.logWarning("Attempting to paste \"\(text)\" into a UITextField that was never focused")
             return
         }
 

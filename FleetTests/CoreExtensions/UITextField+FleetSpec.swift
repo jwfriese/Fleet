@@ -70,23 +70,23 @@ class UITextField_FleetSpec: XCTestCase {
     }
 
     func test_enter_entersTheTextField() {
-        try! textField.enter()
+        try! textField.focus()
         expect(self.delegate.didCallShouldBeginEditing).to(beTrue())
         expect(self.delegate.didCallDidBeginEditing).to(beTrue())
     }
 
     func test_enter_whenAlreadyEntered_doesNothing() {
-        try! textField.enter()
+        try! textField.focus()
         delegate.resetState()
 
-        try! textField.enter()
+        try! textField.focus()
         expect(self.delegate.didCallShouldBeginEditing).to(beFalse())
         expect(self.delegate.didCallDidBeginEditing).to(beFalse())
     }
 
     func test_enter_whenDisabled_throwsError() {
         textField.isEnabled = false
-        expect { try self.textField.enter() }.to(throwError(FLTTextFieldError.disabledTextFieldError))
+        expect { try self.textField.focus() }.to(throwError(FLTTextFieldError.disabledTextFieldError))
     }
 
 
@@ -98,40 +98,40 @@ class UITextField_FleetSpec: XCTestCase {
                             for: .editingDidBegin
         )
 
-        try! textField.enter()
+        try! textField.focus()
         expect(testTarget.didCallDo).to(beTrue())
     }
 
     func test_leave_leavesTheEnteredTextField() {
-        try! textField.enter()
+        try! textField.focus()
         delegate.resetState()
 
-        textField.leave()
+        textField.unfocus()
         expect(self.delegate.didCallShouldEndEditing).to(beTrue())
         expect(self.delegate.didCallDidEndEditing).to(beTrue())
     }
 
     func test_leave_beforeHavingEnteredTextField_doesNothing() {
-        textField.leave()
+        textField.unfocus()
         expect(self.delegate.didCallShouldEndEditing).to(beFalse())
         expect(self.delegate.didCallDidEndEditing).to(beFalse())
     }
 
     func test_leave_whenNoDelegate_stillSendsEditingDidEndEvent() {
         textField.delegate = nil
-        try! textField.enter()
+        try! textField.focus()
         let testTarget = TestTextFieldTarget()
         textField.addTarget(testTarget,
                             action: #selector(TestTextFieldTarget.doFunc),
                             for: .editingDidEnd
         )
 
-        textField.leave()
+        textField.unfocus()
         expect(testTarget.didCallDo).to(beTrue())
     }
 
     func test_enterText_entersTextFieldTypesTextAndLeavesTextField() {
-        try! textField.enterText("turtle")
+        try! textField.enter(text: "turtle")
 
         expect(self.delegate.didCallShouldBeginEditing).to(beTrue())
         expect(self.delegate.didCallDidBeginEditing).to(beTrue())
@@ -141,84 +141,84 @@ class UITextField_FleetSpec: XCTestCase {
     }
 
     func test_enterText_whenThereIsADelegate_actuallyEntersTheText() {
-        try! textField.enterText("turtle")
+        try! textField.enter(text: "turtle")
         expect(self.textField.text).to(equal("turtle"))
     }
 
     func test_enterText_whenDisabled_throwsError() {
         textField.isEnabled = false
-        expect { try self.textField.enterText("turtle") }.to(throwError(FLTTextFieldError.disabledTextFieldError))
+        expect { try self.textField.enter(text: "turtle") }.to(throwError(FLTTextFieldError.disabledTextFieldError))
     }
 
     func test_typeText_typesTextIntoTextField() {
-        try! textField.enter()
+        try! textField.focus()
         delegate.resetState()
 
-        textField.typeText("turtle")
+        textField.type(text: "turtle")
         expect(self.delegate.textChanges).to(equal(["t", "u", "r", "t", "l", "e"]))
     }
 
     func test_typeText_whenThereIsADelegate_actuallyTypesTheText() {
-        try! textField.enter()
-        textField.typeText("turtle")
+        try! textField.focus()
+        textField.type(text: "turtle")
         expect(self.textField.text).to(equal("turtle"))
     }
 
     func test_typeText_whenNeverEnteredTextField_doesNothing() {
-        textField.typeText("turtle")
+        textField.type(text: "turtle")
         expect(self.delegate.textChanges).to(equal([]))
     }
 
     func test_typeText_whenNoDelegate_stillSendsEditingChangedEvent() {
         textField.delegate = nil
-        try! textField.enter()
+        try! textField.focus()
         let testTarget = TestTextFieldTarget()
         textField.addTarget(testTarget,
                             action: #selector(TestTextFieldTarget.doFunc),
                             for: .editingChanged
         )
 
-        textField.typeText("turtle")
+        textField.type(text: "turtle")
         expect(testTarget.didCallDo).to(beTrue())
     }
 
     func test_typeText_whenNoDelegate_stillUpdatesText() {
         textField.delegate = nil
-        try! textField.enter()
-        textField.typeText("turtle")
+        try! textField.focus()
+        textField.type(text: "turtle")
         expect(self.textField.text).to(equal("turtle"))
     }
 
     func test_pasteText_typesTextIntoTextFieldAllAtOnce() {
-        try! textField.enter()
+        try! textField.focus()
         delegate.resetState()
 
-        textField.pasteText("turtle")
+        textField.paste(text: "turtle")
         expect(self.delegate.textChanges).to(equal(["turtle"]))
     }
 
     func test_pasteText_whenNeverEnteredTextField_doesNothing() {
-        textField.pasteText("turtle")
+        textField.paste(text: "turtle")
         expect(self.delegate.textChanges).to(equal([]))
     }
 
     func test_pasteText_whenNoDelegate_stillSendsEditingChangedEvent() {
         textField.delegate = nil
-        try! textField.enter()
+        try! textField.focus()
         let testTarget = TestTextFieldTarget()
         textField.addTarget(testTarget,
                             action: #selector(TestTextFieldTarget.doFunc),
                             for: .editingChanged
         )
 
-        textField.pasteText("turtle")
+        textField.paste(text: "turtle")
         expect(testTarget.didCallDo).to(beTrue())
     }
 
     func test_pasteText_whenNoDelegate_stillUpdatesText() {
         textField.delegate = nil
-        try! textField.enter()
-        textField.pasteText("turtle")
+        try! textField.focus()
+        textField.paste(text: "turtle")
         expect(self.textField.text).to(equal("turtle"))
     }
 

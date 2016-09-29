@@ -29,7 +29,7 @@ extension UIStoryboard {
         if let storyboardBindingIdentifier = storyboardBindingIdentifier {
             if storyboardInstanceBindingMap[storyboardBindingIdentifier] == nil {
                 let deserializer = StoryboardDeserializer()
-                let storyboardReference = try deserializer.deserializeStoryboardWithName(storyboardName)
+                let storyboardReference = try deserializer.deserializeStoryboard(withName: storyboardName)
                 storyboardInstanceBindingMap[storyboardBindingIdentifier] = StoryboardInstanceBinding(fromStoryboardName: storyboardName, storyboardReferenceMap: storyboardReference)
             }
         }
@@ -47,11 +47,11 @@ extension UIStoryboard {
         - Throws: A `FLTStoryboardBindingError.InvalidViewControllerIdentifier` if there is no
             view controller reference on the storyboard with the given identifier.
     */
-    public func bindViewController(_ viewController: UIViewController, toIdentifier identifier: String) throws {
+    public func bind(viewController: UIViewController, toIdentifier identifier: String) throws {
         try initializeStoryboardBindings()
         if let storyboardBindingIdentifier = storyboardBindingIdentifier {
             if let storyboardInstanceBinding = storyboardInstanceBindingMap[storyboardBindingIdentifier] {
-                try storyboardInstanceBinding.bindViewController(viewController, toIdentifier: identifier)
+                try storyboardInstanceBinding.bind(viewController: viewController, toIdentifier: identifier)
             }
         }
     }
@@ -73,11 +73,11 @@ extension UIStoryboard {
             external storyboard view controller reference on the storyboard with the given identifier
             and given storyboard name.
     */
-    public func bindViewController(_ viewController: UIViewController, toIdentifier identifier: String,forReferencedStoryboardWithName referencedStoryboardName: String) throws {
+    public func bind(viewController: UIViewController, toIdentifier identifier: String, forReferencedStoryboardWithName referencedStoryboardName: String) throws {
         try initializeStoryboardBindings()
         if let storyboardBindingIdentifier = storyboardBindingIdentifier {
             if let storyboardInstanceBinding = storyboardInstanceBindingMap[storyboardBindingIdentifier] {
-                try storyboardInstanceBinding.bindViewController(viewController, toIdentifier: identifier,
+                try storyboardInstanceBinding.bind(viewController: viewController, toIdentifier: identifier,
                                                                  forReferencedStoryboardWithName:referencedStoryboardName)
             }
         }
@@ -98,11 +98,11 @@ extension UIStoryboard {
             external storyboard view controller reference on the storyboard with the given
             storyboard name.
     */
-    public func bindViewController(_ viewController: UIViewController, asInitialViewControllerForReferencedStoryboardWithName referencedStoryboardName: String) throws {
+    public func bind(viewController: UIViewController, asInitialViewControllerForReferencedStoryboardWithName referencedStoryboardName: String) throws {
         try initializeStoryboardBindings()
         if let storyboardBindingIdentifier = storyboardBindingIdentifier {
             if let storyboardInstanceBinding = storyboardInstanceBindingMap[storyboardBindingIdentifier] {
-                try storyboardInstanceBinding.bindViewController(viewController, asInitialViewControllerForReferencedStoryboardWithName: referencedStoryboardName)
+                try storyboardInstanceBinding.bind(viewController: viewController, asInitialViewControllerForReferencedStoryboardWithName: referencedStoryboardName)
             }
         }
     }
@@ -117,7 +117,7 @@ extension UIStoryboard {
 
     class func swizzleViewControllerInstantiationMethod() {
         let originalSelector = #selector(UIStoryboard.instantiateViewController(withIdentifier:))
-        let swizzledSelector = #selector(UIStoryboard.fleet_instantiateViewControllerWithIdentifier(_:))
+        let swizzledSelector = #selector(UIStoryboard.fleet_instantiateViewController(withIdentifier:))
 
         let originalMethod = class_getInstanceMethod(self, originalSelector)
         let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
@@ -125,16 +125,16 @@ extension UIStoryboard {
         method_exchangeImplementations(originalMethod, swizzledMethod)
     }
 
-    func fleet_instantiateViewControllerWithIdentifier(_ identifier: String) -> UIViewController {
+    func fleet_instantiateViewController(withIdentifier identifier: String) -> UIViewController {
         if let storyboardBindingIdentifier = storyboardBindingIdentifier {
             if let storyboardInstanceBinding = storyboardInstanceBindingMap[storyboardBindingIdentifier] {
-                if let boundInstance = storyboardInstanceBinding.viewControllerForIdentifier(identifier) {
+                if let boundInstance = storyboardInstanceBinding.viewController(forIdentifier: identifier) {
                     return boundInstance
                 }
             }
         }
 
-        let viewController = fleet_instantiateViewControllerWithIdentifier(identifier)
+        let viewController = fleet_instantiateViewController(withIdentifier: identifier)
         return viewController
     }
 
@@ -151,7 +151,7 @@ extension UIStoryboard {
     func fleet_instantiateViewControllerReferencedByPlaceholderWithIdentifier(_ identifier: String) -> UIViewController {
         if let storyboardBindingIdentifier = storyboardBindingIdentifier {
             if let storyboardInstanceBinding = storyboardInstanceBindingMap[storyboardBindingIdentifier] {
-                if let boundInstance = storyboardInstanceBinding.viewControllerForIdentifier(identifier) {
+                if let boundInstance = storyboardInstanceBinding.viewController(forIdentifier: identifier) {
                     return boundInstance
                 }
             }

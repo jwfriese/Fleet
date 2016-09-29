@@ -21,7 +21,7 @@ class UIAlertController_FleetSpec: XCTestCase {
         self.viewControllerThatPresentsAlerts.alertButtonOne?.tap()
 
         let alertController = Fleet.getApplicationScreen()?.presentedAlert
-        alertController?.tapAlertActionWithTitle("Pick Up Anyway")
+        alertController?.tapAlertAction(withTitle: "Pick Up Anyway")
 
         expect(self.viewControllerThatPresentsAlerts.presentedViewController).to(beNil())
         expect(self.viewControllerThatPresentsAlerts.informationalLabel?.text).to(equal("WAIT NO PUT ME DOWN"))
@@ -33,7 +33,7 @@ class UIAlertController_FleetSpec: XCTestCase {
         viewControllerThatPresentsAlerts.present(alertWithCancelAction, animated: false, completion: nil)
 
         let alertController = Fleet.getApplicationScreen()?.presentedAlert
-        alertController?.tapAlertActionWithTitle("Go Away")
+        alertController?.tapAlertAction(withTitle: "Go Away")
 
         expect(self.viewControllerThatPresentsAlerts.presentedViewController).to(beNil())
     }

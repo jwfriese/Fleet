@@ -20,7 +20,7 @@ class FleetSpec: XCTestCase {
         otherWindow = UIWindow()
         otherWindowRootViewController = UIViewController()
         otherWindow.rootViewController = otherWindowRootViewController
-        otherWindowScreen = Fleet.getScreenForWindow(otherWindow)
+        otherWindowScreen = Fleet.getScreen(forWindow: otherWindow)
     }
 
     func test_getApplicationWindow_returnsScreenAttachedToApplicationWindow() {

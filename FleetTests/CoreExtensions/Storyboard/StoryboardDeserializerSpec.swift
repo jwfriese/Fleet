@@ -8,7 +8,7 @@ class StoryboardDeserializerSpec: XCTestCase {
         let deserializer = StoryboardDeserializer()
         var threwError = false
         do {
-            let _ = try deserializer.deserializeStoryboardWithName("garbage")
+            let _ = try deserializer.deserializeStoryboard(withName: "garbage")
         } catch FLTStoryboardBindingError.internalInconsistency(let message) {
             threwError = true
             expect(message).to(equal("Failed to build storyboard reference map for storyboard with name garbage. Either this storyboard does not exist or Fleet is not set up for storyboard binding. Check the documentation to ensure that you have set up Fleet correctly for storyboard testing"))
@@ -21,7 +21,7 @@ class StoryboardDeserializerSpec: XCTestCase {
 
     func test_deserializingStoryboard_whenStoryboardExists_deserializesIntoStoryboardReferenceMap() {
         let deserializer = StoryboardDeserializer()
-        let reference = try! deserializer.deserializeStoryboardWithName("TurtlesAndFriendsStoryboard")
+        let reference = try! deserializer.deserializeStoryboard(withName: "TurtlesAndFriendsStoryboard")
         expect(reference.externalReferences.count).to(equal(4))
 
         expect(reference.externalReferences).to(containObjectSatisfying({ reference in

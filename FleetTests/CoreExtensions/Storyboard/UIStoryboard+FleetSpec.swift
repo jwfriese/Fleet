@@ -18,7 +18,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
 
     func test_bindingViewControllerToIdentifier_whenSameStoryboard_returnsBoundViewController() {
         let mockBoxTurtleViewController = MockBoxTurtleViewController()
-        try! turtlesAndFriendsStoryboard.bindViewController(mockBoxTurtleViewController, toIdentifier: "BoxTurtleViewController")
+        try! turtlesAndFriendsStoryboard.bind(viewController: mockBoxTurtleViewController, toIdentifier: "BoxTurtleViewController")
 
         let boxTurtleViewController = turtlesAndFriendsStoryboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")
         expect(boxTurtleViewController).to(beIdenticalTo(mockBoxTurtleViewController))
@@ -28,7 +28,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
         var threwError = false
         let whateverViewController = UIViewController()
         do {
-            try turtlesAndFriendsStoryboard.bindViewController(whateverViewController, toIdentifier: "WhateverViewController")
+            try turtlesAndFriendsStoryboard.bind(viewController: whateverViewController, toIdentifier: "WhateverViewController")
         } catch FLTStoryboardBindingError.invalidViewControllerIdentifier(let message) {
             threwError = true
             expect(message).to(equal("Could not find identifier WhateverViewController on storyboard with name TurtlesAndFriendsStoryboard"))
@@ -43,10 +43,10 @@ class UIStoryboard_FleetSpec: XCTestCase {
         var threwError = false
         let whateverViewController = UIViewController()
         do {
-            try turtlesAndFriendsStoryboard.bindViewController(whateverViewController, toIdentifier: "CrabViewController")
+            try turtlesAndFriendsStoryboard.bind(viewController: whateverViewController, toIdentifier: "CrabViewController")
         } catch FLTStoryboardBindingError.invalidViewControllerIdentifier(let message) {
             threwError = true
-            expect(message).to(equal("Could not find identifier CrabViewController on storyboard with name TurtlesAndFriendsStoryboard, but found this identifier on an external storyboard reference. Use UIStoryboard.bindViewController(_:toIdentifier:forReferencedStoryboardWithName:) to bind to external references"))
+            expect(message).to(equal("Could not find identifier CrabViewController on storyboard with name TurtlesAndFriendsStoryboard, but found this identifier on an external storyboard reference. Use UIStoryboard.bind(viewController:toIdentifier:forReferencedStoryboardWithName:) to bind to external references"))
         } catch { }
 
         if !threwError {
@@ -56,7 +56,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
 
     func test_bindingViewControllerToIdentifierReferenceToAnotherStoryboard() {
         let mockCrabViewController = MockCrabViewController()
-        try! turtlesAndFriendsStoryboard.bindViewController(mockCrabViewController, toIdentifier: "CrabViewController", forReferencedStoryboardWithName: "CrabStoryboard")
+        try! turtlesAndFriendsStoryboard.bind(viewController: mockCrabViewController, toIdentifier: "CrabViewController", forReferencedStoryboardWithName: "CrabStoryboard")
 
         let testNavigationController = UINavigationController()
 
@@ -72,7 +72,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
         var threwError = false
         let whateverViewController = UIViewController()
         do {
-            try turtlesAndFriendsStoryboard.bindViewController(whateverViewController, toIdentifier: "WhateverViewController", forReferencedStoryboardWithName: "CrabStoryboard")
+            try turtlesAndFriendsStoryboard.bind(viewController: whateverViewController, toIdentifier: "WhateverViewController", forReferencedStoryboardWithName: "CrabStoryboard")
         } catch FLTStoryboardBindingError.invalidExternalStoryboardReference(let message) {
             threwError = true
             expect(message).to(equal("Could not find identifier WhateverViewController (external storyboard reference: CrabStoryboard) on storyboard TurtlesAndFriendsStoryboard"))
@@ -86,7 +86,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
     func test_bindingViewControllerToInitialViewControllerOfReferenceToAnotherStoryboard() {
         let mockPuppyListViewController = MockPuppyListViewController()
 
-        try! turtlesAndFriendsStoryboard.bindViewController(mockPuppyListViewController, asInitialViewControllerForReferencedStoryboardWithName: "PuppyStoryboard")
+        try! turtlesAndFriendsStoryboard.bind(viewController: mockPuppyListViewController, asInitialViewControllerForReferencedStoryboardWithName: "PuppyStoryboard")
 
         let testNavigationController = UINavigationController()
 
@@ -102,7 +102,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
         var pass = false
         let whateverViewController = UIViewController()
         do {
-            try turtlesAndFriendsStoryboard.bindViewController(whateverViewController, asInitialViewControllerForReferencedStoryboardWithName: "WhateverStoryboard")
+            try turtlesAndFriendsStoryboard.bind(viewController: whateverViewController, asInitialViewControllerForReferencedStoryboardWithName: "WhateverStoryboard")
         } catch FLTStoryboardBindingError.invalidExternalStoryboardReference {
             pass = true
         } catch { }
@@ -116,10 +116,10 @@ class UIStoryboard_FleetSpec: XCTestCase {
         let turtleStoryboardTwo = UIStoryboard(name: "TurtlesAndFriendsStoryboard", bundle: nil)
 
         let mockBoxTurtleViewControllerBlue = MockBoxTurtleViewController()
-        try! turtlesAndFriendsStoryboard.bindViewController(mockBoxTurtleViewControllerBlue, toIdentifier: "BoxTurtleViewController")
+        try! turtlesAndFriendsStoryboard.bind(viewController: mockBoxTurtleViewControllerBlue, toIdentifier: "BoxTurtleViewController")
 
         let mockBoxTurtleViewControllerGreen = MockBoxTurtleViewController()
-        try! turtleStoryboardTwo.bindViewController(mockBoxTurtleViewControllerGreen, toIdentifier: "BoxTurtleViewController")
+        try! turtleStoryboardTwo.bind(viewController: mockBoxTurtleViewControllerGreen, toIdentifier: "BoxTurtleViewController")
 
         let blueBoxTurtleViewController = turtlesAndFriendsStoryboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")
         expect(blueBoxTurtleViewController).to(beIdenticalTo(mockBoxTurtleViewControllerBlue))

@@ -1,7 +1,7 @@
 import Foundation
 
 class StoryboardDeserializer {
-    func deserializeStoryboardWithName(_ name: String) throws -> StoryboardReferenceMap {
+    func deserializeStoryboard(withName name: String) throws -> StoryboardReferenceMap {
         guard let testBundle = Fleet.currentTestBundle else {
             let message = "Could not find test bundle to load storyboard with name \(name)"
             throw FLTStoryboardBindingError.internalInconsistency(message)

@@ -11,16 +11,16 @@ internal final class StoryboardInstanceBinding {
         self.storyboardReferenceMap = storyboardReferenceMap
     }
 
-    func viewControllerForIdentifier(_ identifier: String) -> UIViewController? {
+    func viewController(forIdentifier identifier: String) -> UIViewController? {
         return binding[identifier]
     }
 
-    func bindViewController(_ viewController: UIViewController, toIdentifier identifier: String) throws {
+    func bind(viewController: UIViewController, toIdentifier identifier: String) throws {
         if let storyboardReferenceMap = storyboardReferenceMap {
             if !storyboardReferenceMap.viewControllerIdentifiers.contains(identifier) {
                 var message = ""
-                if storyboardReferenceMap.hasExternalReferenceForIdentifier(identifier) {
-                    message = "Could not find identifier \(identifier) on storyboard with name \(storyboardName), but found this identifier on an external storyboard reference. Use UIStoryboard.bindViewController(_:toIdentifier:forReferencedStoryboardWithName:) to bind to external references"
+                if storyboardReferenceMap.hasExternalReference(withIdentifier: identifier) {
+                    message = "Could not find identifier \(identifier) on storyboard with name \(storyboardName), but found this identifier on an external storyboard reference. Use UIStoryboard.bind(viewController:toIdentifier:forReferencedStoryboardWithName:) to bind to external references"
                 } else {
                     message = "Could not find identifier \(identifier) on storyboard with name \(storyboardName)"
                 }
@@ -34,7 +34,7 @@ internal final class StoryboardInstanceBinding {
         binding[identifier] = viewController
     }
 
-    func bindViewController(_ viewController: UIViewController, toIdentifier identifier: String, forReferencedStoryboardWithName name: String) throws {
+    func bind(viewController: UIViewController, toIdentifier identifier: String, forReferencedStoryboardWithName name: String) throws {
 
         var referenceExists = false
         if let storyboardReferenceMap = storyboardReferenceMap {
@@ -52,7 +52,7 @@ internal final class StoryboardInstanceBinding {
         }
     }
 
-    func bindViewController(_ viewController: UIViewController, asInitialViewControllerForReferencedStoryboardWithName name: String) throws {
+    func bind(viewController: UIViewController, asInitialViewControllerForReferencedStoryboardWithName name: String) throws {
         var referenceExists = false
         if let storyboardReferenceMap = storyboardReferenceMap {
             for externalReference in storyboardReferenceMap.externalReferences {

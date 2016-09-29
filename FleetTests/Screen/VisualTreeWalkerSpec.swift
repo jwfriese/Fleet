@@ -46,9 +46,9 @@ class VisualTreeWalkerSpec: XCTestCase {
     }
 
     func test_findAllSubviewsOfType_returnsAllSubviewsOfTheGivenType() {
-        expect(self.subject.findAllSubviewsOfType(UITextField.self, inRootVisual:self.rootView).count).to(equal(2))
+        expect(self.subject.findAllSubviews(ofType: UITextField.self, inRootVisual:self.rootView).count).to(equal(2))
 
-        let rabbitButtons = self.subject.findAllSubviewsOfType(UIButton.self, inRootVisual: self.rootView, conformingToBlock: { (button: UIButton) -> Bool in
+        let rabbitButtons = self.subject.findAllSubviews(ofType: UIButton.self, inRootVisual: self.rootView, conformingToBlock: { (button: UIButton) -> Bool in
             return button.titleLabel?.text == "Rabbit"
             })
 

@@ -10,7 +10,7 @@ open class Fleet {
         return Screen(forWindow: window)
     }
 
-    open static func getScreenForWindow(_ window: UIWindow) -> FLTScreen {
+    open static func getScreen(forWindow window: UIWindow) -> FLTScreen {
         return Screen(forWindow: window)
     }
 

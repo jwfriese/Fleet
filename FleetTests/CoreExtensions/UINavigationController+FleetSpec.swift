@@ -226,7 +226,7 @@ class UINavigationController_FleetSpec: XCTestCase {
     func test_navigationControllerWithSegueInViewDidLoad_segueHappensAndResultIsImmediatelyVisible() {
         let storyboard = UIStoryboard(name: "KittensStoryboard", bundle: nil)
         let viewController = UIViewController()
-        try! storyboard.bindViewController(viewController, toIdentifier: "KittenImage")
+        try! storyboard.bind(viewController: viewController, toIdentifier: "KittenImage")
 
         let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
         let window = UIWindow()
