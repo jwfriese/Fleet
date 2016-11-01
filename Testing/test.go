@@ -15,7 +15,7 @@ func main() {
 	stdErr := os.Stderr
 	programCall := os.Args
 	if len(programCall) < 3 {
-		log.Fatal(errors.New("Usage: ./tests <runtime> <device type>"))
+		log.Fatal(errors.New("Usage: ./test <runtime> <device type>"))
 	}
 
 	args := programCall[1:]
