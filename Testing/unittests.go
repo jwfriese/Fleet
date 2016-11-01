@@ -17,7 +17,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	iosVersion := "iOS 10.1"
+	iosVersion := "iOS 10.0"
 	deviceVersion := "iPhone 6"
 	availabilityErr := simulator.IsDeviceAvailable(iosVersion, deviceVersion)
 	if availabilityErr != nil {
