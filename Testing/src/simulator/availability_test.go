@@ -23,7 +23,8 @@ var _ = Describe("Simulator Availability", func() {
 		BeforeEach(func() {
 			environment := &simulator.SimulatorEnvironment{
 				RuntimeToDeviceMap: map[string][]string{
-					"iOS 9.0": []string{"iPhone 4s", "iPhone 6"},
+					"iOS 9.0":  []string{"iPhone 4s", "iPhone 6"},
+					"iOS 10.0": []string{"iPhone 5", "iPhone 7"},
 				},
 			}
 
@@ -49,7 +50,6 @@ var _ = Describe("Simulator Availability", func() {
 			It("returns a descriptive error", func() {
 				err := subject.CheckAvailability("iOS 9.1", "iPhone 4s")
 				Expect(err).To(HaveOccurred())
-				Expect(err.Error()).To(Equal("Could not find 'iOS 9.1' runtime"))
 			})
 		})
 	})

@@ -30,7 +30,7 @@ func (a *simulatorAvailability) CheckAvailability(osString string, deviceTypeStr
 	environment := a.environmentParser.ParseEnvironment()
 	devices := environment.RuntimeToDeviceMap[osString]
 	if len(devices) == 0 {
-		errorString := fmt.Sprintf("Could not find '%s' runtime", osString)
+		errorString := fmt.Sprintf("Could not find '%s' runtime\nAvailable runtimes: %v", osString, environment.AvailableRuntimes())
 		return errors.New(errorString)
 	}
 
