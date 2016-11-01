@@ -6,9 +6,10 @@ before_install:
 - export PATH=$PATH:$XCODEBUILD_PATH
 - export PATH=$PATH:~/bin
 install:
-- export GOPATH=$(pwd)/Testing
 - git submodule init
 - git submodule update
 - gem install xcpretty --user-install -n~/bin
+- export GOPATH=$(pwd)/Testing
 script:
-- go run Testing/tests.go
+- go build Testing/test.go
+- ./test 'iOS 10.0' 'iPhone 6'
