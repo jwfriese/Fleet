@@ -1,9 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
+	"simulator"
+	"strings"
 )
 
 func main() {
@@ -14,7 +17,16 @@ func main() {
 		log.Fatal(err)
 	}
 
-	unitTestCommand := exec.Command("xcodebuild", "test", "-workspace", "Fleet.xcworkspace", "-scheme", "Fleet", "-destination", "platform=iOS Simulator,OS=9.3,name=iPhone 6")
+	iosVersion := "iOS 10.1"
+	deviceVersion := "iPhone 6"
+	availabilityErr := simulator.IsDeviceAvailable(iosVersion, deviceVersion)
+	if availabilityErr != nil {
+		log.Fatal(availabilityErr)
+	}
+
+	iosVersionNumber := strings.Trim(iosVersion, "iOS ")
+	destinationString := fmt.Sprintf("platform=iOS Simulator,OS=%s,name=%s", iosVersionNumber, deviceVersion)
+	unitTestCommand := exec.Command("xcodebuild", "test", "-workspace", "Fleet.xcworkspace", "-scheme", "Fleet", "-destination", destinationString)
 	xcprettyCommand := exec.Command("xcpretty")
 	xcprettyCommand.Stdin, err = unitTestCommand.StdoutPipe()
 	if err != nil {

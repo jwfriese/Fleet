@@ -2,6 +2,9 @@
 #
 # gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
 
+# All .swp files
+*.swp
+
 ## Build generated
 build/
 DerivedData
@@ -63,3 +66,12 @@ Carthage/Build
 
 fastlane/report.xml
 fastlane/screenshots
+
+# The project maintains a Golang ecosystem, which we want to ignore most of. The only things to 
+# include are the files for the Go lib that this project is developing.
+Testing/pkg
+Testing/bin
+
+Testing/src/*
+!Testing/src/simulator
+
