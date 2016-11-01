@@ -6,6 +6,7 @@ before_install:
 - export PATH=$PATH:$XCODEBUILD_PATH
 - export PATH=$PATH:~/bin
 install:
+- export GOPATH=$(pwd)/Testing
 - git submodule init
 - git submodule update
 - gem install xcpretty --user-install -n~/bin
