@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -12,13 +13,21 @@ import (
 func main() {
 	stdOut := os.Stdout
 	stdErr := os.Stderr
-	_, err := stdOut.Write([]byte("Running Fleet unit tests...\n"))
+	programCall := os.Args
+	if len(programCall) < 3 {
+		log.Fatal(errors.New("Usage: ./tests <runtime> <device type>"))
+	}
+
+	args := programCall[1:]
+	iosVersion := args[0]
+	deviceVersion := args[1]
+
+	testInitReport := fmt.Sprintf("Running Fleet unit tests with iOS version '%s' on  device type '%s'\n", iosVersion, deviceVersion)
+	_, err := stdOut.Write([]byte(testInitReport))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	iosVersion := "iOS 10.0"
-	deviceVersion := "iPhone 6"
 	availabilityErr := simulator.IsDeviceAvailable(iosVersion, deviceVersion)
 	if availabilityErr != nil {
 		log.Fatal(availabilityErr)
