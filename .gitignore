@@ -75,3 +75,5 @@ Testing/bin
 Testing/src/*
 !Testing/src/simulator
 
+# The binary produced for running tests
+test
