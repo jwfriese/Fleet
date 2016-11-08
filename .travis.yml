@@ -11,5 +11,5 @@ install:
 - gem install xcpretty --user-install -n~/bin
 - go get github.com/jwfriese/iossimulator
 script:
-- go build Testing/test.go
+- go build script/test.go
 - ./test 'iOS 10.0' 'iPhone 6'
