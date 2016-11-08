@@ -6,8 +6,9 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"simulator"
 	"strings"
+
+	"github.com/jwfriese/iossimulator"
 )
 
 func main() {
@@ -28,7 +29,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	availabilityErr := simulator.IsDeviceAvailable(iosVersion, deviceVersion)
+	availabilityErr := iossimulator.IsDeviceAvailable(iosVersion, deviceVersion)
 	if availabilityErr != nil {
 		log.Fatal(availabilityErr)
 	}
