@@ -5,6 +5,8 @@ before_install:
 - export XCODEBUILD_PATH=$(which xcodebuild)
 - export PATH=$PATH:$XCODEBUILD_PATH
 - export PATH=$PATH:~/bin
+- mkdir ~/go
+- export GOPATH=~/go
 install:
 - git submodule init
 - git submodule update
