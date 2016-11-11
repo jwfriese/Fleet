@@ -3,6 +3,12 @@ import UIKit
 private let BirdsTableViewCellIdentifier = "BirdsTableViewCell"
 
 class BirdsViewController: UIViewController {
+    var willSelectRowCallCount: Int = 0
+    var didSelectRowCallCount: Int = 0
+
+    var willSelectRowCallArgs: [IndexPath] = [IndexPath]()
+    var didSelectRowCallArgs: [IndexPath] = [IndexPath]()
+
     @IBOutlet weak var birdsTableView: UITableView?
 
     fileprivate var birdTypes: [String] {
@@ -42,10 +48,27 @@ class BirdsViewController: UIViewController {
 }
 
 extension BirdsViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        willSelectRowCallCount += 1
+        willSelectRowCallArgs.append(indexPath)
+
+        let birdType = birdTypes[indexPath.row]
+        if birdType == "Pigeon" {
+            return nil
+        } else if birdType == "Goose" {
+            return IndexPath(row: 1, section: 0)
+        }
+
+        return indexPath
+    }
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        didSelectRowCallCount += 1
+        didSelectRowCallArgs.append(indexPath)
+
         let birdType = birdTypes[indexPath.row]
         let messageString = "You selected \(birdType)"
-        let alert = UIAlertController(title: "Bird Selected", message: messageString, preferredStyle: .alert)
+        let alert = UIAlertController(title: "Bird Selected (Selection \(willSelectRowCallCount))", message: messageString, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: ":D", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
     }
