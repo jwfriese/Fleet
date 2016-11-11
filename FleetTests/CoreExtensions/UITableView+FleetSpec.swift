@@ -65,4 +65,30 @@ class UITableView_FleetSpec: XCTestCase {
         expect(error).toNot(beNil())
         expect(String(describing: error!)).to(equal("Fleet error: Invalid index path: Section 0 does not have row 100 (row count in section 0 == 21)"))
     }
+
+    func test_selectRow_whenSelectionIsValid_postsUITableViewSelectionDidChangeNotification() {
+        let storyboard = UIStoryboard(name: "Birds", bundle: nil)
+        let viewController = storyboard.instantiateInitialViewController() as! BirdsViewController
+        let _ = viewController.view
+
+        class Listener: NSObject {
+            fileprivate var callCount = 0
+            func listen() {
+                callCount += 1
+            }
+        }
+
+        let listener = Listener()
+
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(listener,
+                                       selector: #selector(Listener.listen),
+                                       name: NSNotification.Name.UITableViewSelectionDidChange,
+                                       object: nil
+        )
+
+        let _ = viewController.birdsTableView?.selectRow(at: IndexPath(row: 0, section: 0))
+
+        expect(listener.callCount).to(equal(1))
+    }
 }
