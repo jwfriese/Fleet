@@ -91,4 +91,15 @@ class UITableView_FleetSpec: XCTestCase {
 
         expect(listener.callCount).to(equal(1))
     }
+
+    func test_selectRow_whenTableViewDoesNotAllowSelection_returnsAnError() {
+        let storyboard = UIStoryboard(name: "Birds", bundle: nil)
+        let viewController = storyboard.instantiateInitialViewController() as! BirdsViewController
+        let _ = viewController.view
+        viewController.birdsTableView?.allowsSelection = false
+
+        let error = viewController.birdsTableView?.selectRow(at: IndexPath(row: 0, section: 0))
+        expect(error).toNot(beNil())
+        expect(String(describing: error!)).to(equal("Fleet error: Attempted to select row on table view with 'allowsSelection' == false"))
+    }
 }

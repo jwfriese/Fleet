@@ -11,9 +11,14 @@ public extension UITableView {
         - at: The index path to attempt to tap
 
     - returns:
-    A FleetError if the there is no cell at the given index path, otherwise nil.
+    Nil if selection is successful, otherwise a FleetError if there is no cell at the given index path
+    or if the table view does not allow selection ('allowsSelection' == false)
     */
     public func selectRow(at indexPath: IndexPath) -> FleetError? {
+        guard allowsSelection else {
+            return FleetError(message: "Attempted to select row on table view with 'allowsSelection' == false")
+        }
+
         let sectionCount = self.numberOfSections
         if indexPath.section >= sectionCount {
             return FleetError(message: "Invalid index path: Table view has no section \(indexPath.section) (section count in table view == \(sectionCount))")
