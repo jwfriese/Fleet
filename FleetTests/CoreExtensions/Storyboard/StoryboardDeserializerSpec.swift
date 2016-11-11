@@ -22,7 +22,7 @@ class StoryboardDeserializerSpec: XCTestCase {
     func test_deserializingStoryboard_whenStoryboardExists_deserializesIntoStoryboardReferenceMap() {
         let deserializer = StoryboardDeserializer()
         let reference = try! deserializer.deserializeStoryboard(withName: "TurtlesAndFriendsStoryboard")
-        expect(reference.externalReferences.count).to(equal(4))
+        expect(reference.externalReferences.count).to(equal(5))
 
         expect(reference.externalReferences).to(containObjectSatisfying({ reference in
             let identifiersEqual = reference.connectedViewControllerIdentifier == "UIViewController-s4q-fa-MbE"
