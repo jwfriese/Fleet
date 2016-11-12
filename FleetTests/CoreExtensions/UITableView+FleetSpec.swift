@@ -11,12 +11,28 @@ class UITableView_FleetSpec: XCTestCase {
         let _ = viewController.view
         let _ = viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
 
-        guard let cell = viewController.birdsTableView?.cellForRow(at: IndexPath(row: 1, section: 0)) else {
-            fail("Unexpected failure trying to fetch a cell")
+        guard let selectedIndexPath = viewController.birdsTableView?.indexPathForSelectedRow else {
+            fail("Failed to select row at index path (\(IndexPath(row: 1, section: 0)))")
             return
         }
 
-        expect(cell.isSelected).to(beTrue())
+        expect(selectedIndexPath).to(equal(IndexPath(row: 1, section: 0)))
+    }
+
+    func test_selectRow_whenACellWasPreviouslySelected_deselectsThePreviouslySelectedCell() {
+        let storyboard = UIStoryboard(name: "Birds", bundle: nil)
+        let viewController = storyboard.instantiateInitialViewController() as! BirdsViewController
+        let _ = viewController.view
+        let _ = viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
+        let _ = viewController.birdsTableView?.selectRow(at: IndexPath(row: 4, section: 0))
+
+        guard let selectedIndexPaths = viewController.birdsTableView?.indexPathsForSelectedRows else {
+            fail("Failed to select any rows")
+            return
+        }
+
+        expect(selectedIndexPaths.count).to(equal(1))
+        expect(selectedIndexPaths.first).to(equal(IndexPath(row: 4, section: 0)))
     }
 
     func test_selectRow_whenACellExistsAtThatIndexPath_firesWillSelectAndDidSelectDelegateMethods() {
@@ -32,6 +48,20 @@ class UITableView_FleetSpec: XCTestCase {
         expect(viewController.didSelectRowCallArgs[0]).to(equal(IndexPath(row: 1, section: 0)))
     }
 
+    func test_selectRow_whenACellExistsAtThatIndexPath_firesWillDeselectAndDidDeselectDelegateMethods() {
+        let storyboard = UIStoryboard(name: "Birds", bundle: nil)
+        let viewController = storyboard.instantiateInitialViewController() as! BirdsViewController
+        let _ = viewController.view
+        let _ = viewController.birdsTableView?.selectRow(at: IndexPath(row: 10, section: 0))
+        let error = viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
+
+        expect(error).to(beNil())
+        expect(viewController.willDeselectRowCallCount).to(equal(1))
+        expect(viewController.willDeselectRowCallArgs[0]).to(equal(IndexPath(row: 10, section: 0)))
+        expect(viewController.didDeselectRowCallCount).to(equal(1))
+        expect(viewController.didDeselectRowCallArgs[0]).to(equal(IndexPath(row: 10, section: 0)))
+    }
+
     func test_selectRow_whenTheDelegateDoesNotAllowSelectionOfThatIndexPath_callsWillSelectAndNotDidSelectOnDelegate() {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateInitialViewController() as! BirdsViewController
@@ -43,6 +73,20 @@ class UITableView_FleetSpec: XCTestCase {
         expect(error).to(beNil())
         expect(viewController.willSelectRowCallCount).to(equal(1))
         expect(viewController.didSelectRowCallCount).to(equal(0))
+    }
+
+    func test_selectRow_whenTheDelegateDoesNotAllowDeselectionOfThatIndexPath_callsWillDeselectAndNotDidDeselectOnDelegate() {
+        let storyboard = UIStoryboard(name: "Birds", bundle: nil)
+        let viewController = storyboard.instantiateInitialViewController() as! BirdsViewController
+        let _ = viewController.view
+
+        // The controller does not allow the fifth row to be deselected.
+        let _ = viewController.birdsTableView?.selectRow(at: IndexPath(row: 4, section: 0))
+        let error = viewController.birdsTableView?.selectRow(at: IndexPath(row: 8, section: 0))
+
+        expect(error).to(beNil())
+        expect(viewController.willDeselectRowCallCount).to(equal(1))
+        expect(viewController.didDeselectRowCallCount).to(equal(0))
     }
 
     func test_selectRow_whenTheDelegateChangesSelectionToAnotherIndexPath_callsDidSelectMethodWithOtherIndexPath() {
@@ -58,6 +102,22 @@ class UITableView_FleetSpec: XCTestCase {
         expect(viewController.willSelectRowCallArgs[0]).to(equal(IndexPath(row: 2, section: 0)))
         expect(viewController.didSelectRowCallCount).to(equal(1))
         expect(viewController.didSelectRowCallArgs[0]).to(equal(IndexPath(row: 1, section: 0)))
+    }
+
+    func test_selectRow_whenTheDelegateChangesDeselectionToAnotherIndexPath_callsDidDeselectMethodWithOtherIndexPath() {
+        let storyboard = UIStoryboard(name: "Birds", bundle: nil)
+        let viewController = storyboard.instantiateInitialViewController() as! BirdsViewController
+        let _ = viewController.view
+
+        // The controller reroutes selection of the seventh row to the sixth row.
+        let _ = viewController.birdsTableView?.selectRow(at: IndexPath(row: 6, section: 0))
+        let error = viewController.birdsTableView?.selectRow(at: IndexPath(row: 10, section: 0))
+
+        expect(error).to(beNil())
+        expect(viewController.willDeselectRowCallCount).to(equal(1))
+        expect(viewController.willDeselectRowCallArgs[0]).to(equal(IndexPath(row: 6, section: 0)))
+        expect(viewController.didDeselectRowCallCount).to(equal(1))
+        expect(viewController.didDeselectRowCallArgs[0]).to(equal(IndexPath(row: 5, section: 0)))
     }
 
     func test_selectRow_whenNoCellExistsAtThatIndexPath_whenInvalidSectionInIndexPath_returnsAnError() {
@@ -101,7 +161,7 @@ class UITableView_FleetSpec: XCTestCase {
                                        object: nil
         )
 
-        let _ = viewController.birdsTableView?.selectRow(at: IndexPath(row: 0, section: 0))
+        let _ = viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
 
         expect(listener.callCount).to(equal(1))
     }

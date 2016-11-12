@@ -9,6 +9,12 @@ class BirdsViewController: UIViewController {
     var willSelectRowCallArgs: [IndexPath] = [IndexPath]()
     var didSelectRowCallArgs: [IndexPath] = [IndexPath]()
 
+    var willDeselectRowCallCount: Int = 0
+    var didDeselectRowCallCount: Int = 0
+
+    var willDeselectRowCallArgs: [IndexPath] = [IndexPath]()
+    var didDeselectRowCallArgs: [IndexPath] = [IndexPath]()
+
     @IBOutlet weak var birdsTableView: UITableView?
 
     fileprivate var birdTypes: [String] {
@@ -71,6 +77,25 @@ extension BirdsViewController: UITableViewDelegate {
         let alert = UIAlertController(title: "Bird Selected (Selection \(willSelectRowCallCount))", message: messageString, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: ":D", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
+    }
+
+    func tableView(_ tableView: UITableView, willDeselectRowAt indexPath: IndexPath) -> IndexPath? {
+        willDeselectRowCallCount += 1
+        willDeselectRowCallArgs.append(indexPath)
+
+        let birdType = birdTypes[indexPath.row]
+        if birdType == "Crow" {
+            return nil
+        } else if birdType == "Hawk" {
+            return IndexPath(row: 5, section: 0)
+        }
+
+        return indexPath
+    }
+
+    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        didDeselectRowCallCount += 1
+        didDeselectRowCallArgs.append(indexPath)
     }
 }
 
