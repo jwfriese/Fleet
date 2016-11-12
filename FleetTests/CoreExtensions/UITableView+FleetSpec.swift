@@ -5,6 +5,20 @@ import Nimble
 @testable import FleetTestApp
 
 class UITableView_FleetSpec: XCTestCase {
+    func test_selectRow_whenACellExistsAtThatIndexPath_selectsTheCell() {
+        let storyboard = UIStoryboard(name: "Birds", bundle: nil)
+        let viewController = storyboard.instantiateInitialViewController() as! BirdsViewController
+        let _ = viewController.view
+        let _ = viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
+
+        guard let cell = viewController.birdsTableView?.cellForRow(at: IndexPath(row: 1, section: 0)) else {
+            fail("Unexpected failure trying to fetch a cell")
+            return
+        }
+
+        expect(cell.isSelected).to(beTrue())
+    }
+
     func test_selectRow_whenACellExistsAtThatIndexPath_firesWillSelectAndDidSelectDelegateMethods() {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateInitialViewController() as! BirdsViewController

@@ -29,6 +29,7 @@ public extension UITableView {
             return FleetError(message: "Invalid index path: Section \(indexPath.section) does not have row \(indexPath.row) (row count in section \(indexPath.section) == \(rowCount))")
         }
 
+        self.selectRow(at: indexPath, animated: false, scrollPosition: .none)
         NotificationCenter.default.post(name: NSNotification.Name.UITableViewSelectionDidChange, object: nil)
 
         let indexPathToSelectOptional = self.delegate!.tableView!(self, willSelectRowAt: indexPath)
