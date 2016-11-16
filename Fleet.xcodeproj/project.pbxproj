@@ -25,12 +25,14 @@
 		7B0D3B7B1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B7A1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift */; };
 		7B13BA141DD4ABF100C9098C /* BirdsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B13BA131DD4ABF100C9098C /* BirdsViewController.swift */; };
 		7B13BA161DD4AC4000C9098C /* Birds.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B13BA151DD4AC4000C9098C /* Birds.storyboard */; };
-		7B13BA181DD4B2E800C9098C /* UITableView+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B13BA171DD4B2E800C9098C /* UITableView+Fleet.swift */; };
-		7B13BA1A1DD4B30E00C9098C /* UITableView+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B13BA191DD4B30E00C9098C /* UITableView+FleetSpec.swift */; };
 		7B13BA1C1DD4B42B00C9098C /* FleetError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B13BA1B1DD4B42B00C9098C /* FleetError.swift */; };
 		7B13BA1E1DD4B4DA00C9098C /* FleetErrorSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B13BA1D1DD4B4DA00C9098C /* FleetErrorSpec.swift */; };
 		7B29F4171DDB5446008EA836 /* UITableViewRowAction+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B29F4161DDB5446008EA836 /* UITableViewRowAction+FleetSpec.swift */; };
 		7B29F4191DDB54E9008EA836 /* UITableViewRowAction+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B29F4181DDB54E9008EA836 /* UITableViewRowAction+Fleet.swift */; };
+		7B29F41D1DDCABF5008EA836 /* UITableView+SelectRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B29F41C1DDCABF5008EA836 /* UITableView+SelectRow.swift */; };
+		7B29F41F1DDCAC76008EA836 /* UITableView+SelectCellAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B29F41E1DDCAC76008EA836 /* UITableView+SelectCellAction.swift */; };
+		7B29F4211DDCAC8A008EA836 /* UITableView+SelectCellActionSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B29F4201DDCAC8A008EA836 /* UITableView+SelectCellActionSpec.swift */; };
+		7B29F4231DDCACA5008EA836 /* UITableView+SelectRowSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B29F4221DDCACA5008EA836 /* UITableView+SelectRowSpec.swift */; };
 		7B3AD20D1D5BC4F500CA2897 /* PuppyStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B3AD20B1D5BC4F500CA2897 /* PuppyStoryboard.storyboard */; };
 		7B3AD20E1D5BC4F500CA2897 /* PuppyListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3AD20C1D5BC4F500CA2897 /* PuppyListViewController.swift */; };
 		7B3AD2101D5BC51100CA2897 /* CorgiViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3AD20F1D5BC51100CA2897 /* CorgiViewController.swift */; };
@@ -106,12 +108,14 @@
 		7B0D3B7A1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+FleetSpec.swift"; sourceTree = "<group>"; };
 		7B13BA131DD4ABF100C9098C /* BirdsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BirdsViewController.swift; sourceTree = "<group>"; };
 		7B13BA151DD4AC4000C9098C /* Birds.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Birds.storyboard; sourceTree = "<group>"; };
-		7B13BA171DD4B2E800C9098C /* UITableView+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+Fleet.swift"; sourceTree = "<group>"; };
-		7B13BA191DD4B30E00C9098C /* UITableView+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+FleetSpec.swift"; sourceTree = "<group>"; };
 		7B13BA1B1DD4B42B00C9098C /* FleetError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FleetError.swift; sourceTree = "<group>"; };
 		7B13BA1D1DD4B4DA00C9098C /* FleetErrorSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FleetErrorSpec.swift; sourceTree = "<group>"; };
 		7B29F4161DDB5446008EA836 /* UITableViewRowAction+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableViewRowAction+FleetSpec.swift"; sourceTree = "<group>"; };
 		7B29F4181DDB54E9008EA836 /* UITableViewRowAction+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableViewRowAction+Fleet.swift"; sourceTree = "<group>"; };
+		7B29F41C1DDCABF5008EA836 /* UITableView+SelectRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+SelectRow.swift"; sourceTree = "<group>"; };
+		7B29F41E1DDCAC76008EA836 /* UITableView+SelectCellAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+SelectCellAction.swift"; sourceTree = "<group>"; };
+		7B29F4201DDCAC8A008EA836 /* UITableView+SelectCellActionSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+SelectCellActionSpec.swift"; sourceTree = "<group>"; };
+		7B29F4221DDCACA5008EA836 /* UITableView+SelectRowSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+SelectRowSpec.swift"; sourceTree = "<group>"; };
 		7B3AD20B1D5BC4F500CA2897 /* PuppyStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = PuppyStoryboard.storyboard; sourceTree = "<group>"; };
 		7B3AD20C1D5BC4F500CA2897 /* PuppyListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PuppyListViewController.swift; sourceTree = "<group>"; };
 		7B3AD20F1D5BC51100CA2897 /* CorgiViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CorgiViewController.swift; sourceTree = "<group>"; };
@@ -229,6 +233,24 @@
 			path = FleetTestApp;
 			sourceTree = "<group>";
 		};
+		7B29F41A1DDCABAD008EA836 /* TableView */ = {
+			isa = PBXGroup;
+			children = (
+				7B29F4201DDCAC8A008EA836 /* UITableView+SelectCellActionSpec.swift */,
+				7B29F4221DDCACA5008EA836 /* UITableView+SelectRowSpec.swift */,
+			);
+			path = TableView;
+			sourceTree = "<group>";
+		};
+		7B29F41B1DDCABDD008EA836 /* TableView */ = {
+			isa = PBXGroup;
+			children = (
+				7B29F41E1DDCAC76008EA836 /* UITableView+SelectCellAction.swift */,
+				7B29F41C1DDCABF5008EA836 /* UITableView+SelectRow.swift */,
+			);
+			path = TableView;
+			sourceTree = "<group>";
+		};
 		7B3AD20A1D5BC49C00CA2897 /* Puppies */ = {
 			isa = PBXGroup;
 			children = (
@@ -312,6 +334,7 @@
 		7BA90ABE1CC3B5E30040B031 /* CoreExtensions */ = {
 			isa = PBXGroup;
 			children = (
+				7B29F41B1DDCABDD008EA836 /* TableView */,
 				7B0D3B391CFA76200096DBC2 /* Storyboard */,
 				7BA90ABF1CC3B6B80040B031 /* UIButton+Fleet.swift */,
 				7B0D3B781CFC7CEB0096DBC2 /* UIViewController+Fleet.swift */,
@@ -320,7 +343,6 @@
 				7B675EA11D0DD64D002E6B45 /* UIAlertAction+Fleet.swift */,
 				7BBFCD2C1D3DA82500C3EF0F /* UITextField+Fleet.swift */,
 				7BB14A601D75091B002ABE82 /* UINavigationController+Fleet.swift */,
-				7B13BA171DD4B2E800C9098C /* UITableView+Fleet.swift */,
 				7B29F4181DDB54E9008EA836 /* UITableViewRowAction+Fleet.swift */,
 			);
 			path = CoreExtensions;
@@ -343,6 +365,7 @@
 		7BA90AD01CC3E82B0040B031 /* CoreExtensions */ = {
 			isa = PBXGroup;
 			children = (
+				7B29F41A1DDCABAD008EA836 /* TableView */,
 				7B0D3B361CFA76170096DBC2 /* Storyboard */,
 				7BA90AD31CC3EF6F0040B031 /* UIButton+FleetSpec.swift */,
 				7B0D3B7A1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift */,
@@ -351,7 +374,6 @@
 				7B675EA31D0DD660002E6B45 /* UIAlertAction+FleetSpec.swift */,
 				7BBFCD2E1D3DAE6C00C3EF0F /* UITextField+FleetSpec.swift */,
 				7BB14A5E1D75065E002ABE82 /* UINavigationController+FleetSpec.swift */,
-				7B13BA191DD4B30E00C9098C /* UITableView+FleetSpec.swift */,
 				7B29F4161DDB5446008EA836 /* UITableViewRowAction+FleetSpec.swift */,
 			);
 			path = CoreExtensions;
@@ -618,15 +640,16 @@
 				7B9458101D4D7DFA00F16A64 /* StoryboardDeserializer.swift in Sources */,
 				7B0D3B3F1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift in Sources */,
 				7B0D3B791CFC7CEB0096DBC2 /* UIViewController+Fleet.swift in Sources */,
+				7B29F41F1DDCAC76008EA836 /* UITableView+SelectCellAction.swift in Sources */,
 				7B29F4191DDB54E9008EA836 /* UITableViewRowAction+Fleet.swift in Sources */,
 				7B0D3B751CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift in Sources */,
 				7BBFCD2D1D3DA82500C3EF0F /* UITextField+Fleet.swift in Sources */,
-				7B13BA181DD4B2E800C9098C /* UITableView+Fleet.swift in Sources */,
 				7BB14A701D77B425002ABE82 /* Screen.swift in Sources */,
 				7B675E891D0C5AFB002E6B45 /* Logger.swift in Sources */,
 				7B675EA21D0DD64D002E6B45 /* UIAlertAction+Fleet.swift in Sources */,
 				7BB14A6F1D77B425002ABE82 /* VisualTreeWalker.swift in Sources */,
 				7B675EA01D0DCA38002E6B45 /* UIAlertController+Fleet.swift in Sources */,
+				7B29F41D1DDCABF5008EA836 /* UITableView+SelectRow.swift in Sources */,
 				7B9458121D4D7ED100F16A64 /* StoryboardReferenceMap.swift in Sources */,
 				7BB14A611D75091B002ABE82 /* UINavigationController+Fleet.swift in Sources */,
 				7B13BA1C1DD4B42B00C9098C /* FleetError.swift in Sources */,
@@ -652,10 +675,11 @@
 				7B29F4171DDB5446008EA836 /* UITableViewRowAction+FleetSpec.swift in Sources */,
 				7B675E9E1D0DCA1D002E6B45 /* UIAlertController+FleetSpec.swift in Sources */,
 				7B0D3B7B1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift in Sources */,
+				7B29F4231DDCACA5008EA836 /* UITableView+SelectRowSpec.swift in Sources */,
 				7BA90AD41CC3EF6F0040B031 /* UIButton+FleetSpec.swift in Sources */,
-				7B13BA1A1DD4B30E00C9098C /* UITableView+FleetSpec.swift in Sources */,
 				7B0D3B381CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift in Sources */,
 				7B675E7D1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift in Sources */,
+				7B29F4211DDCAC8A008EA836 /* UITableView+SelectCellActionSpec.swift in Sources */,
 				7B13BA1E1DD4B4DA00C9098C /* FleetErrorSpec.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
