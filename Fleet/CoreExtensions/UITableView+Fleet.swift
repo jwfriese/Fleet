@@ -61,6 +61,10 @@ public extension UITableView {
             return FleetError(message: "Invalid index path: Section \(indexPath.section) does not have row \(indexPath.row) (row count in section \(indexPath.section) == \(rowCount))")
         }
 
+        guard dataSource!.tableView!(self, canEditRowAt: indexPath) else {
+            return FleetError(message: "Editing of row \(indexPath.row) in section \(indexPath.section) is not allowed by the table view's data source")
+        }
+
         let editActions = delegate!.tableView!(self, editActionsForRowAt: indexPath)
         let actionOpt = editActions?.first() { element in
             return element.title == title

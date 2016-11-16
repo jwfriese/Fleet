@@ -216,4 +216,20 @@ class UITableView_FleetSpec: XCTestCase {
         expect(error).toNot(beNil())
         expect(String(describing: error!)).to(equal("Fleet error: Invalid index path: Section 0 does not have row 100 (row count in section 0 == 21)"))
     }
+
+    func test_selectCellAction_whenDataSourceSaysThatIndexPathCannotBeEdited_returnsAnError() {
+        let storyboard = UIStoryboard(name: "Birds", bundle: nil)
+        let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
+        let _ = viewController.view
+
+        // The fourth row in the table view is not editable
+        let errorOpt = viewController.birdsTableView?.selectCellAction(withTitle: "One", at: IndexPath(row: 3, section: 0))
+
+        guard let error = errorOpt else {
+            fail("Failed to return any FleetError")
+            return
+        }
+
+        expect(String(describing: error)).to(equal("Fleet error: Editing of row 3 in section 0 is not allowed by the table view's data source"))
+    }
 }
