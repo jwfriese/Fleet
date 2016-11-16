@@ -8,6 +8,7 @@ before_install:
 - mkdir ~/go
 - export GOPATH=~/go
 install:
+- xcrun simctl list
 - git submodule init
 - git submodule update
 - gem install xcpretty --user-install -n~/bin
