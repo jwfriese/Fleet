@@ -33,7 +33,7 @@ NotificationCenter.default.post(name: NSNotification.Name.UITableViewSelectionDi
 All this setup, and the code still isn't even testing deselection behavior. Fleet provides a helper method
 that lets developers write test setup code like this for _all_ table view behavior tests: 
 ```swift
-tableView.selectRow(at: indexPath)
+let _ = tableView.selectRow(at: indexPath)
 ```
 
 When this method is called, all the following occurs:
@@ -55,3 +55,20 @@ Additionally, the method returns an error object that clearly describes any prob
 when attempting to take the selection action, such as:
 - Attempting to select an index path that does not exist in the table
 - Attempting to select an index path that does not allow selection
+
+### Selecting a custom table view cell edit action
+Fleet also provides a helper method for selecting custom edit actions on a row:
+```swift
+let _ = tableView.selectCellAction(withTitle: "Edit Action Title", at: indexPath)
+```
+
+When this method is called, all the following occurs:
+- `UITableViewDelegate.tableView(_:willBeginEditingRowAt:)` is called at the appropriate time
+- `UITableViewDelegate.tableView(_:willEndEditingRowAt:)` is called at the appropriate time
+- The callback assigned to that edit action is called
+
+The method returns an error object that clearly describes any problem that occurs
+when attempting to take the edit action, such as:
+- Attempting to take an edit action on an index path that does not exist in the table
+- Attempting to take an edit action on an index path that does not allow editing
+- Attempting to take an edit action that does not exist at that index path
