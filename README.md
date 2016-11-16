@@ -10,6 +10,7 @@ Fleet extends UIKit classes in order to make it easier to test your code's inter
 
 - [UIStoryboard](./Documentation/UIStoryboard.md) - Supports injection of view controller fakes into a storyboard. It even supports injection into storyboard references.
 - [UIViewController](./Documentation/UIViewController.md) - Allows specs to test view controller presentation and dismissal without waiting for the UI run-loop.
+- [UITableView](./Documentation/UITableView.md) - Provides methods mimicing user actions on table views, ensuring all appropriate delegate and data source callbacks are run.
 - [UINavigationController](./Documentation/UINavigationController.md) - Allows specs to test pushing and popping on the navigation stack without waiting for the UI run-loop.
 - [UIButton](./Documentation/UIButton.md) - Provides convenience methods for interacting with buttons in test.
 - [UIBarButtonItem](./Documentation/UIBarButtonItem.md) - Provides convenience methods similar to those provided for UIButton.
