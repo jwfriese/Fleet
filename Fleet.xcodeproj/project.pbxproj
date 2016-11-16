@@ -29,6 +29,8 @@
 		7B13BA1A1DD4B30E00C9098C /* UITableView+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B13BA191DD4B30E00C9098C /* UITableView+FleetSpec.swift */; };
 		7B13BA1C1DD4B42B00C9098C /* FleetError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B13BA1B1DD4B42B00C9098C /* FleetError.swift */; };
 		7B13BA1E1DD4B4DA00C9098C /* FleetErrorSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B13BA1D1DD4B4DA00C9098C /* FleetErrorSpec.swift */; };
+		7B29F4171DDB5446008EA836 /* UITableViewRowAction+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B29F4161DDB5446008EA836 /* UITableViewRowAction+FleetSpec.swift */; };
+		7B29F4191DDB54E9008EA836 /* UITableViewRowAction+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B29F4181DDB54E9008EA836 /* UITableViewRowAction+Fleet.swift */; };
 		7B3AD20D1D5BC4F500CA2897 /* PuppyStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B3AD20B1D5BC4F500CA2897 /* PuppyStoryboard.storyboard */; };
 		7B3AD20E1D5BC4F500CA2897 /* PuppyListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3AD20C1D5BC4F500CA2897 /* PuppyListViewController.swift */; };
 		7B3AD2101D5BC51100CA2897 /* CorgiViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3AD20F1D5BC51100CA2897 /* CorgiViewController.swift */; };
@@ -108,6 +110,8 @@
 		7B13BA191DD4B30E00C9098C /* UITableView+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+FleetSpec.swift"; sourceTree = "<group>"; };
 		7B13BA1B1DD4B42B00C9098C /* FleetError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FleetError.swift; sourceTree = "<group>"; };
 		7B13BA1D1DD4B4DA00C9098C /* FleetErrorSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FleetErrorSpec.swift; sourceTree = "<group>"; };
+		7B29F4161DDB5446008EA836 /* UITableViewRowAction+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableViewRowAction+FleetSpec.swift"; sourceTree = "<group>"; };
+		7B29F4181DDB54E9008EA836 /* UITableViewRowAction+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableViewRowAction+Fleet.swift"; sourceTree = "<group>"; };
 		7B3AD20B1D5BC4F500CA2897 /* PuppyStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = PuppyStoryboard.storyboard; sourceTree = "<group>"; };
 		7B3AD20C1D5BC4F500CA2897 /* PuppyListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PuppyListViewController.swift; sourceTree = "<group>"; };
 		7B3AD20F1D5BC51100CA2897 /* CorgiViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CorgiViewController.swift; sourceTree = "<group>"; };
@@ -246,8 +250,8 @@
 		7B8509C41DD22F28004A75A8 /* Birds */ = {
 			isa = PBXGroup;
 			children = (
-				7B13BA131DD4ABF100C9098C /* BirdsViewController.swift */,
 				7B13BA151DD4AC4000C9098C /* Birds.storyboard */,
+				7B13BA131DD4ABF100C9098C /* BirdsViewController.swift */,
 			);
 			path = Birds;
 			sourceTree = "<group>";
@@ -317,6 +321,7 @@
 				7BBFCD2C1D3DA82500C3EF0F /* UITextField+Fleet.swift */,
 				7BB14A601D75091B002ABE82 /* UINavigationController+Fleet.swift */,
 				7B13BA171DD4B2E800C9098C /* UITableView+Fleet.swift */,
+				7B29F4181DDB54E9008EA836 /* UITableViewRowAction+Fleet.swift */,
 			);
 			path = CoreExtensions;
 			sourceTree = "<group>";
@@ -347,6 +352,7 @@
 				7BBFCD2E1D3DAE6C00C3EF0F /* UITextField+FleetSpec.swift */,
 				7BB14A5E1D75065E002ABE82 /* UINavigationController+FleetSpec.swift */,
 				7B13BA191DD4B30E00C9098C /* UITableView+FleetSpec.swift */,
+				7B29F4161DDB5446008EA836 /* UITableViewRowAction+FleetSpec.swift */,
 			);
 			path = CoreExtensions;
 			sourceTree = "<group>";
@@ -612,6 +618,7 @@
 				7B9458101D4D7DFA00F16A64 /* StoryboardDeserializer.swift in Sources */,
 				7B0D3B3F1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift in Sources */,
 				7B0D3B791CFC7CEB0096DBC2 /* UIViewController+Fleet.swift in Sources */,
+				7B29F4191DDB54E9008EA836 /* UITableViewRowAction+Fleet.swift in Sources */,
 				7B0D3B751CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift in Sources */,
 				7BBFCD2D1D3DA82500C3EF0F /* UITextField+Fleet.swift in Sources */,
 				7B13BA181DD4B2E800C9098C /* UITableView+Fleet.swift in Sources */,
@@ -642,6 +649,7 @@
 				7B9458141D4D7F0300F16A64 /* StoryboardDeserializerSpec.swift in Sources */,
 				7BB14A641D770D5C002ABE82 /* ContainObjectSatisfying.swift in Sources */,
 				7BAC789F1D3E6C96000F86E4 /* UITextField+FleetSpec.swift in Sources */,
+				7B29F4171DDB5446008EA836 /* UITableViewRowAction+FleetSpec.swift in Sources */,
 				7B675E9E1D0DCA1D002E6B45 /* UIAlertController+FleetSpec.swift in Sources */,
 				7B0D3B7B1CFC7D160096DBC2 /* UIViewController+FleetSpec.swift in Sources */,
 				7BA90AD41CC3EF6F0040B031 /* UIButton+FleetSpec.swift in Sources */,

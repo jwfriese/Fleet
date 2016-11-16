@@ -113,4 +113,39 @@ extension BirdsViewController: UITableViewDataSource {
         cell?.textLabel?.text = birdTypes[indexPath.row]
         return cell!
     }
+
+    func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath) {
+        let _ = self.birdsTableView?.cellForRow(at: indexPath)
+        let _ = 1
+    }
+
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let oneAction = UITableViewRowAction(style: .normal, title: "One") { action, indexPath in
+            DispatchQueue.main.async {
+                let alert = UIAlertController(title: "", message: "One tapped at row \(indexPath.row)", preferredStyle: .alert)
+                self.present(alert, animated: false, completion: nil)
+            }
+        }
+        oneAction.backgroundColor = UIColor.green
+
+        let twoAction = UITableViewRowAction(style: .normal, title: "Two") { action, indexPath in
+            DispatchQueue.main.async {
+                let alert = UIAlertController(title: "", message: "Two tapped at row \(indexPath.row)", preferredStyle: .alert)
+                self.present(alert, animated: false, completion: nil)
+            }
+        }
+        twoAction.backgroundColor = UIColor.red
+
+        let threeAction = UITableViewRowAction(style: .normal, title: "Three") { action, indexPath in
+            DispatchQueue.main.async {
+                let alert = UIAlertController(title: "", message: "Three tapped at row \(indexPath.row)", preferredStyle: .alert)
+                self.present(alert, animated: false, completion: nil)
+            }
+        }
+        threeAction.backgroundColor = UIColor.blue
+
+        return [oneAction, twoAction, threeAction]
+    }
+
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) { }
 }

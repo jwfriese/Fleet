@@ -49,4 +49,28 @@ public extension UITableView {
         self.delegate!.tableView!(self, didSelectRowAt: indexPathToSelect)
         return nil
     }
+
+    func selectCellAction(withTitle title: String, at indexPath: IndexPath) -> FleetError? {
+        let sectionCount = self.numberOfSections
+        if indexPath.section >= sectionCount {
+            return FleetError(message: "Invalid index path: Table view has no section \(indexPath.section) (section count in table view == \(sectionCount))")
+        }
+
+        let rowCount = self.numberOfRows(inSection: indexPath.section)
+        if indexPath.row >= rowCount {
+            return FleetError(message: "Invalid index path: Section \(indexPath.section) does not have row \(indexPath.row) (row count in section \(indexPath.section) == \(rowCount))")
+        }
+
+        let editActions = delegate!.tableView!(self, editActionsForRowAt: indexPath)
+        let actionOpt = editActions?.first() { element in
+            return element.title == title
+        }
+
+        guard let action = actionOpt else {
+            return FleetError(message: "Could not find edit action with title '\(title)' at row \(indexPath.row) in section \(indexPath.section)")
+        }
+
+        action.handler!(action, indexPath)
+        return nil
+    }
 }
