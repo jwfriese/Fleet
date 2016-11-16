@@ -15,6 +15,9 @@ class BirdsViewController: UIViewController {
     var willDeselectRowCallArgs: [IndexPath] = [IndexPath]()
     var didDeselectRowCallArgs: [IndexPath] = [IndexPath]()
 
+    var willBeginEditingRowCallArgs: [IndexPath] = [IndexPath]()
+    var didEndEditingRowCallArgs: [IndexPath] = [IndexPath]()
+
     @IBOutlet weak var birdsTableView: UITableView?
 
     fileprivate var birdTypes: [String] {
@@ -115,8 +118,11 @@ extension BirdsViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath) {
-        let _ = self.birdsTableView?.cellForRow(at: indexPath)
-        let _ = 1
+        willBeginEditingRowCallArgs.append(indexPath)
+    }
+
+    func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?) {
+        didEndEditingRowCallArgs.append(indexPath!)
     }
 
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {

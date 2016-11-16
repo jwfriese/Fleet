@@ -188,6 +188,26 @@ class UITableView_FleetSpec: XCTestCase {
         expect((viewController.presentedViewController as? UIAlertController)?.message).toEventually(equal("Two tapped at row 10"))
     }
 
+    func test_selectCellAction_whenTheActionExists_callsWillBeginEditingOnDelegate() {
+        let storyboard = UIStoryboard(name: "Birds", bundle: nil)
+        let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
+        let _ = viewController.view
+
+        let _ = viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0))
+        expect(viewController.willBeginEditingRowCallArgs.count).to(equal(1))
+        expect(viewController.willBeginEditingRowCallArgs.first).to(equal(IndexPath(row: 10, section: 0)))
+    }
+
+    func test_selectCellAction_whenTheActionExists_callsDidEndEditingOnDelegate() {
+        let storyboard = UIStoryboard(name: "Birds", bundle: nil)
+        let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
+        let _ = viewController.view
+
+        let _ = viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0))
+        expect(viewController.didEndEditingRowCallArgs.count).to(equal(1))
+        expect(viewController.didEndEditingRowCallArgs.first).to(equal(IndexPath(row: 10, section: 0)))
+    }
+
     func test_selectCellAction_whenTheActionDoesNotExist_returnsAnError() {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController

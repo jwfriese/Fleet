@@ -74,7 +74,9 @@ public extension UITableView {
             return FleetError(message: "Could not find edit action with title '\(title)' at row \(indexPath.row) in section \(indexPath.section)")
         }
 
+        delegate!.tableView!(self, willBeginEditingRowAt: indexPath)
         action.handler!(action, indexPath)
+        delegate!.tableView!(self, didEndEditingRowAt: indexPath)
         return nil
     }
 }
