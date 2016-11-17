@@ -54,6 +54,22 @@ class UIStoryboard_FleetSpec: XCTestCase {
         }
     }
 
+    func test_bindingViewController_whenBoundViewControllerHasAlreadyLoadedItsView_throwsError() {
+        var threwError = false
+        let preloadedViewController = MockBoxTurtleViewController()
+        preloadedViewController.viewDidLoad()
+        do {
+            try turtlesAndFriendsStoryboard.bind(viewController: preloadedViewController, toIdentifier: "BoxTurtleViewController")
+        } catch FLTStoryboardBindingError.invalidViewControllerState(let message) {
+            threwError = true
+            expect(message).to(equal("Attempted to bind a view controller whose view has already been loaded to storyboard identifier 'BoxTurtleViewController'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."))
+        } catch { }
+
+        if !threwError {
+            fail("Expected to throw InvalidViewControllerState error")
+        }
+    }
+
     func test_bindingViewControllerToIdentifierReferenceToAnotherStoryboard() {
         let mockCrabViewController = MockCrabViewController()
         try! turtlesAndFriendsStoryboard.bind(viewController: mockCrabViewController, toIdentifier: "CrabViewController", forReferencedStoryboardWithName: "CrabStoryboard")
@@ -83,6 +99,22 @@ class UIStoryboard_FleetSpec: XCTestCase {
         }
     }
 
+    func test_bindingViewControllerToIdentifierReferenceToAnotherStoryboard_whenBoundViewControllerHasAlreadyLoadedItsView_throwsError() {
+        var threwError = false
+        let preloadedViewController = MockBoxTurtleViewController()
+        preloadedViewController.viewDidLoad()
+        do {
+            try turtlesAndFriendsStoryboard.bind(viewController: preloadedViewController, toIdentifier: "CrabViewController", forReferencedStoryboardWithName: "CrabStoryboard")
+        } catch FLTStoryboardBindingError.invalidViewControllerState(let message) {
+            threwError = true
+            expect(message).to(equal("Attempted to bind a view controller whose view has already been loaded to view controller identifier 'CrabViewController' on storyboard 'CrabStoryboard'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."))
+        } catch { }
+
+        if !threwError {
+            fail("Expected to throw InvalidViewControllerState error")
+        }
+    }
+
     func test_bindingViewControllerToInitialViewControllerOfReferenceToAnotherStoryboard() {
         let mockPuppyListViewController = MockPuppyListViewController()
 
@@ -109,6 +141,22 @@ class UIStoryboard_FleetSpec: XCTestCase {
 
         if !pass {
             fail("Expected to throw InvalidExternalStoryboardReference error")
+        }
+    }
+
+    func test_bindingViewControllerToInitialViewControllerOfReferenceToAnotherStoryboard_whenBoundViewControllerHasAlreadyLoadedItsView_throwsError() {
+        var threwError = false
+        let preloadedViewController = UIViewController()
+        preloadedViewController.viewDidLoad()
+        do {
+            try turtlesAndFriendsStoryboard.bind(viewController: preloadedViewController, asInitialViewControllerForReferencedStoryboardWithName: "PuppyStoryboard")
+        } catch FLTStoryboardBindingError.invalidViewControllerState(let message) {
+            threwError = true
+            expect(message).to(equal("Attempted to bind a view controller whose view has already been loaded to initial view controller of storyboard 'PuppyStoryboard'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."))
+        } catch { }
+
+        if !threwError {
+            fail("Expected to throw InvalidViewControllerState error")
         }
     }
 

@@ -45,9 +45,15 @@ extension UIStoryboard {
                                     bound to it
 
         - Throws: A `FLTStoryboardBindingError.InvalidViewControllerIdentifier` if there is no
-            view controller reference on the storyboard with the given identifier.
+            view controller reference on the storyboard with the given identifier, or
+            `FLTStoryboardBindingError.InvalidViewControllerState` if the input view controller has
+            already loaded its view.
     */
     public func bind(viewController: UIViewController, toIdentifier identifier: String) throws {
+        if viewController.viewDidLoadCallCount > 0 {
+            let message = "Attempted to bind a view controller whose view has already been loaded to storyboard identifier '\(identifier)'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."
+            throw FLTStoryboardBindingError.invalidViewControllerState(message)
+        }
         try initializeStoryboardBindings()
         if let storyboardBindingIdentifier = storyboardBindingIdentifier {
             if let storyboardInstanceBinding = storyboardInstanceBindingMap[storyboardBindingIdentifier] {
@@ -71,9 +77,15 @@ extension UIStoryboard {
 
         - Throws: A `FLTStoryboardBindingError.InvalidExternalStoryboardReference` if there is no
             external storyboard view controller reference on the storyboard with the given identifier
-            and given storyboard name.
+            and given storyboard name, or
+            `FLTStoryboardBindingError.InvalidViewControllerState` if the input view controller has
+            already loaded its view.
     */
     public func bind(viewController: UIViewController, toIdentifier identifier: String, forReferencedStoryboardWithName referencedStoryboardName: String) throws {
+        if viewController.viewDidLoadCallCount > 0 {
+            let message = "Attempted to bind a view controller whose view has already been loaded to view controller identifier '\(identifier)' on storyboard '\(referencedStoryboardName)'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."
+            throw FLTStoryboardBindingError.invalidViewControllerState(message)
+        }
         try initializeStoryboardBindings()
         if let storyboardBindingIdentifier = storyboardBindingIdentifier {
             if let storyboardInstanceBinding = storyboardInstanceBindingMap[storyboardBindingIdentifier] {
@@ -96,9 +108,15 @@ extension UIStoryboard {
 
         - Throws: A `FLTStoryboardBindingError.InvalidExternalStoryboardReference` if there is no
             external storyboard view controller reference on the storyboard with the given
-            storyboard name.
+            storyboard name, or
+            `FLTStoryboardBindingError.InvalidViewControllerState` if the input view controller has
+            already loaded its view.
     */
     public func bind(viewController: UIViewController, asInitialViewControllerForReferencedStoryboardWithName referencedStoryboardName: String) throws {
+        if viewController.viewDidLoadCallCount > 0 {
+            let message = "Attempted to bind a view controller whose view has already been loaded to initial view controller of storyboard '\(referencedStoryboardName)'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."
+            throw FLTStoryboardBindingError.invalidViewControllerState(message)
+        }
         try initializeStoryboardBindings()
         if let storyboardBindingIdentifier = storyboardBindingIdentifier {
             if let storyboardInstanceBinding = storyboardInstanceBindingMap[storyboardBindingIdentifier] {

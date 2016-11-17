@@ -4,6 +4,7 @@ public enum FLTStoryboardBindingError: Error {
     case invalidViewControllerIdentifier(String)
     case invalidExternalStoryboardReference(String)
     case internalInconsistency(String)
+    case invalidViewControllerState(String)
 
     var description: String {
         get {
@@ -16,7 +17,9 @@ public enum FLTStoryboardBindingError: Error {
                 description = message
             case .internalInconsistency(let message):
                 description = message
-            }
+            case .invalidViewControllerState(let message):
+                description = message
+        }
 
             return description
         }
