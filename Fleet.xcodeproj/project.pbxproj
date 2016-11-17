@@ -33,6 +33,7 @@
 		7B29F41F1DDCAC76008EA836 /* UITableView+SelectCellAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B29F41E1DDCAC76008EA836 /* UITableView+SelectCellAction.swift */; };
 		7B29F4211DDCAC8A008EA836 /* UITableView+SelectCellActionSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B29F4201DDCAC8A008EA836 /* UITableView+SelectCellActionSpec.swift */; };
 		7B29F4231DDCACA5008EA836 /* UITableView+SelectRowSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B29F4221DDCACA5008EA836 /* UITableView+SelectRowSpec.swift */; };
+		7B29F4251DDDEA60008EA836 /* SegueDetailSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B29F4241DDDEA60008EA836 /* SegueDetailSpec.swift */; };
 		7B3AD20D1D5BC4F500CA2897 /* PuppyStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B3AD20B1D5BC4F500CA2897 /* PuppyStoryboard.storyboard */; };
 		7B3AD20E1D5BC4F500CA2897 /* PuppyListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3AD20C1D5BC4F500CA2897 /* PuppyListViewController.swift */; };
 		7B3AD2101D5BC51100CA2897 /* CorgiViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3AD20F1D5BC51100CA2897 /* CorgiViewController.swift */; };
@@ -116,6 +117,7 @@
 		7B29F41E1DDCAC76008EA836 /* UITableView+SelectCellAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+SelectCellAction.swift"; sourceTree = "<group>"; };
 		7B29F4201DDCAC8A008EA836 /* UITableView+SelectCellActionSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+SelectCellActionSpec.swift"; sourceTree = "<group>"; };
 		7B29F4221DDCACA5008EA836 /* UITableView+SelectRowSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+SelectRowSpec.swift"; sourceTree = "<group>"; };
+		7B29F4241DDDEA60008EA836 /* SegueDetailSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SegueDetailSpec.swift; sourceTree = "<group>"; };
 		7B3AD20B1D5BC4F500CA2897 /* PuppyStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = PuppyStoryboard.storyboard; sourceTree = "<group>"; };
 		7B3AD20C1D5BC4F500CA2897 /* PuppyListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PuppyListViewController.swift; sourceTree = "<group>"; };
 		7B3AD20F1D5BC51100CA2897 /* CorgiViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CorgiViewController.swift; sourceTree = "<group>"; };
@@ -205,6 +207,7 @@
 			children = (
 				7B0D3B371CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift */,
 				7B9458131D4D7F0300F16A64 /* StoryboardDeserializerSpec.swift */,
+				7B29F4241DDDEA60008EA836 /* SegueDetailSpec.swift */,
 			);
 			path = Storyboard;
 			sourceTree = "<group>";
@@ -665,6 +668,7 @@
 				7B675EA41D0DD660002E6B45 /* UIAlertAction+FleetSpec.swift in Sources */,
 				7BB14A661D772481002ABE82 /* FleetSpec.swift in Sources */,
 				7B933C291D77B48D001B98F0 /* ScreenSpec.swift in Sources */,
+				7B29F4251DDDEA60008EA836 /* SegueDetailSpec.swift in Sources */,
 				7B933C281D77B48D001B98F0 /* VisualTreeWalkerSpec.swift in Sources */,
 				7BA90ADC1CC3F0E00040B031 /* ButtonTapTestViewController.swift in Sources */,
 				7BA90ADF1CC3F6C50040B031 /* File.swift in Sources */,
