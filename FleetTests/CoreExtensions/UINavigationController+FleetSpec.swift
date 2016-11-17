@@ -4,12 +4,12 @@ import Nimble
 
 class UINavigationController_FleetSpec: XCTestCase {
     fileprivate class TestViewController: UIViewController {
-        var viewDidLoadCallCount: UInt = 0
+        var testViewDidLoadCallCount: UInt = 0
         var capturedNavigationController: UINavigationController?
 
         fileprivate override func viewDidLoad() {
             super.viewDidLoad()
-            viewDidLoadCallCount += 1
+            testViewDidLoadCallCount += 1
             capturedNavigationController = navigationController
         }
     }
@@ -38,7 +38,7 @@ class UINavigationController_FleetSpec: XCTestCase {
         let controllerToPush = TestViewController()
 
         navigationController.pushViewController(controllerToPush, animated: true)
-        expect(controllerToPush.viewDidLoadCallCount).to(equal(1))
+        expect(controllerToPush.testViewDidLoadCallCount).to(equal(1))
     }
 
     func test_pushViewController_doesNotCausePushedViewControllerToLoadMultipleTimes() {
@@ -52,7 +52,7 @@ class UINavigationController_FleetSpec: XCTestCase {
 
         navigationController.pushViewController(controllerToPush, animated: true)
 
-        expect(controllerToPush.viewDidLoadCallCount).toEventuallyNot(beGreaterThan(1))
+        expect(controllerToPush.testViewDidLoadCallCount).toEventuallyNot(beGreaterThan(1))
     }
 
     func test_pushViewController_doesNotLoadThePushedViewControllerUntilItWouldHaveANavigationController() {

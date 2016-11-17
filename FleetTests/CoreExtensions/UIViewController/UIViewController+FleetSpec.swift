@@ -4,11 +4,11 @@ import Nimble
 
 class UIViewController_FleetSpec: XCTestCase {
     fileprivate class TestViewController: UIViewController {
-        var viewDidLoadCallCount: UInt = 0
+        var testViewDidLoadCallCount: UInt = 0
 
         fileprivate override func viewDidLoad() {
             super.viewDidLoad()
-            viewDidLoadCallCount += 1
+            testViewDidLoadCallCount += 1
         }
     }
 
@@ -78,7 +78,7 @@ class UIViewController_FleetSpec: XCTestCase {
         let top = TestViewController()
 
         bottom.present(top, animated: true, completion: nil)
-        expect(top.viewDidLoadCallCount).to(equal(1))
+        expect(top.testViewDidLoadCallCount).to(equal(1))
     }
 
     func test_presentViewController_doesNotLoadPresentedViewControllerMultipleTimes() {
@@ -86,6 +86,6 @@ class UIViewController_FleetSpec: XCTestCase {
         let top = TestViewController()
 
         bottom.present(top, animated: true, completion: nil)
-        expect(top.viewDidLoadCallCount).toEventuallyNot(beGreaterThan(1))
+        expect(top.testViewDidLoadCallCount).toEventuallyNot(beGreaterThan(1))
     }
 }
