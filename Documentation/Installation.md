@@ -15,7 +15,7 @@ To your test target, add a `Run Script`. The script will run a shell script incl
 
 The `Run Script` should look like this:
 
-`$PROJECT_DIR/Externals/Fleet/Fleet/Script/copy_storyboard_info_files.sh`
+`$PROJECT_DIR/Externals/Fleet/Fleet/Script/copy_storyboard_info_files.sh "PRODUCTION_TARGET_NAME"`
 
 #### Cocoapods
 
@@ -27,7 +27,7 @@ The `Run Script` should look like this:
 3) *(The following step is only necessary if you are using Fleet's storyboard-related features)*
 To your test target, add a `Run Script`. The script will run a shell script preserved in the framework's Pod. Assuming your `Pods` directory is in your source root, your `Run Script` would look like this:
 
-`"${SRCROOT}/Pods/Fleet/Fleet/Script/copy_storyboard_info_files.sh"`
+`${SRCROOT}/Pods/Fleet/Fleet/Script/copy_storyboard_info_files.sh "PRODUCTION_TARGET_NAME"`
 
 #### Carthage
 
@@ -49,6 +49,6 @@ Additionally, add as an input file Fleet's framework. The path probably looks so
 5) *(The following step is only necessary if you are using Fleet's storyboard-related features)*
 To your test target, add a `Run Script`. The script will run a shell script included in the framework. Assuming your `Carthage` directory is in your source root, your `Run Script` would look like this:
 
-`$PROJECT_DIR/Carthage/Build/iOS/Fleet.framework/copy_storyboard_info_files.sh`
+`$PROJECT_DIR/Carthage/Build/iOS/Fleet.framework/copy_storyboard_info_files.sh "PRODUCTION_TARGET_NAME"`
 
 For further reference see [Carthage's documentation](https://github.com/Carthage/Carthage/blob/master/README.md).
