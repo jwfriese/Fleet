@@ -49,6 +49,6 @@ Additionally, add as an input file Fleet's framework. The path probably looks so
 5) *(The following step is only necessary if you are using Fleet's storyboard-related features)*
 To your test target, add a `Run Script`. The script will run a shell script included in the framework. Assuming your `Carthage` directory is in your source root, your `Run Script` would look like this:
 
-`$PROJECT_DIR/Carthage/Build/iOS/Fleet.framework/copy_storyboard_info_files.sh`
+`"$PROJECT_DIR/Carthage/Build/iOS/Fleet.framework/copy_storyboard_info_files.sh"`
 
 For further reference see [Carthage's documentation](https://github.com/Carthage/Carthage/blob/master/README.md).
