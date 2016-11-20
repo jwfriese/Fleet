@@ -51,7 +51,7 @@ extension UIStoryboard {
         with the given identifier
      */
     public func mockIdentifier(_ identifier: String) throws -> UIViewController {
-        let mock = FleetMockViewController()
+        let mock = FleetViewController()
         try bind(viewController: mock, toIdentifier: identifier)
         return mock
     }
@@ -75,7 +75,7 @@ extension UIStoryboard {
         given name has no view controller with the given identifier
      */
     public func mockIdentifier(_ identifier: String, forReferencedStoryboardWithName referencedStoryboardName: String) throws -> UIViewController {
-        let mock = FleetMockViewController()
+        let mock = FleetViewController()
         try bind(viewController: mock, toIdentifier: identifier, forReferencedStoryboardWithName: referencedStoryboardName)
         return mock
     }
@@ -101,7 +101,7 @@ extension UIStoryboard {
         reference to a storyboard with the given name
      */
     public func mockInitialViewController(forReferencedStoryboardWithName name: String) throws -> UIViewController {
-        let mock = FleetMockViewController()
+        let mock = FleetViewController()
         try bind(viewController: mock, asInitialViewControllerForReferencedStoryboardWithName: name)
         return mock
     }

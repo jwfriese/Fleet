@@ -18,7 +18,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
 
     func test_mockIdentifier_whenTheIdentifierExistsOnTheStoryboard_returnsMockViewController() {
         let mockViewController = try! turtlesAndFriendsStoryboard.mockIdentifier("BoxTurtleViewController")
-        expect(mockViewController).to(beAnInstanceOf(FleetMockViewController.self))
+        expect(mockViewController).to(beAnInstanceOf(FleetViewController.self))
 
         let storyboardViewController = turtlesAndFriendsStoryboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")
         expect(storyboardViewController).to(beIdenticalTo(mockViewController))

@@ -7,7 +7,7 @@ import UIKit
  `viewWillDisappear(_:)`, and `viewDidDisappear(_:)` methods so that
  they take no action.
  */
-public class FleetMockViewController: UIViewController {
+public class FleetViewController: UIViewController {
     public override func viewDidLoad() {}
     public override func viewWillAppear(_ animated: Bool) {}
     public override func viewDidAppear(_ animated: Bool) {}
