@@ -41,19 +41,30 @@ extension UIStoryboard {
 
      - parameters:
         - identifier: The storyboard identifier of the view controller to mock
+        - classToMock: The class for which a mock should be created and returned
 
      - returns:
         The view controller instance that will be used as the view controller returned
-        for the given identifier in all contexts following this function's execution.
+        for the given identifier in all contexts following this function's execution. It
+        will be a mock of the view controller type passed into the `classToMock` argument,
+        and as such will be usable as if it were a real object of that type. It will not
+        execute any view controller lifecycle code such as `viewDidLoad`.
 
      - throws:
         An .invalidViewControllerIdentifier in the case that the storyboard has no view controller
         with the given identifier
      */
-    public func mockIdentifier(_ identifier: String) throws -> UIViewController {
-        let mock = FleetViewController()
-        try bind(viewController: mock, toIdentifier: identifier)
-        return mock
+    public func mockIdentifier(_ identifier: String, usingMockFor classToMock: AnyClass) throws -> UIViewController {
+        var mock: UIViewController? = nil
+        do {
+            mock = try Fleet.mockFor(classToMock)
+        } catch let error {
+            let fleetError = error as! FleetError
+            throw FLTStoryboardBindingError.invalidMockType(fleetError.description)
+        }
+
+        try bind(viewController: mock!, toIdentifier: identifier)
+        return mock!
     }
 
     /**
@@ -65,19 +76,30 @@ extension UIStoryboard {
      - parameters:
         - identifier: The storyboard identifier of the view controller to mock
         - referencedStoryboardName: The name of the storyboard associated with the external reference
+        - classToMock: The class for which a mock should be created and returned
 
      - returns:
         The view controller instance that will be used as the view controller returned
-        for the given identifier in all contexts following this function's execution.
+        for the given identifier in all contexts following this function's execution. It
+        will be a mock of the view controller type passed into the `classToMock` argument,
+        and as such will be usable as if it were a real object of that type. It will not
+        execute any view controller lifecycle code such as `viewDidLoad`.
 
      - throws:
         An .invalidExternalStoryboardReference in the case that the storyboard with the
         given name has no view controller with the given identifier
      */
-    public func mockIdentifier(_ identifier: String, forReferencedStoryboardWithName referencedStoryboardName: String) throws -> UIViewController {
-        let mock = FleetViewController()
-        try bind(viewController: mock, toIdentifier: identifier, forReferencedStoryboardWithName: referencedStoryboardName)
-        return mock
+    public func mockIdentifier(_ identifier: String, forReferencedStoryboardWithName referencedStoryboardName: String, usingMockFor classToMock: AnyClass) throws -> UIViewController {
+        var mock: UIViewController? = nil
+        do {
+            mock = try Fleet.mockFor(classToMock)
+        } catch let error {
+            let fleetError = error as! FleetError
+            throw FLTStoryboardBindingError.invalidMockType(fleetError.description)
+        }
+
+        try bind(viewController: mock!, toIdentifier: identifier, forReferencedStoryboardWithName: referencedStoryboardName)
+        return mock!
     }
 
     /**
@@ -91,19 +113,30 @@ extension UIStoryboard {
 
     - parameters:
         - name: The name of the storyboard associated with the external reference
+        - classToMock: The class for which a mock should be created and returned
 
     - returns:
         The view controller instance that will be used as the initial view controller of
         that external storyboard reference in all contexts following this function's execution.
+        It will be a mock of the view controller type passed into the `classToMock` argument,
+        and as such will be usable as if it were a real object of that type. It will not
+        execute any view controller lifecycle code such as `viewDidLoad`.
 
     - throws:
         An .invalidExternalStoryboardReference in the case that the storyboard has no external
         reference to a storyboard with the given name
      */
-    public func mockInitialViewController(forReferencedStoryboardWithName name: String) throws -> UIViewController {
-        let mock = FleetViewController()
-        try bind(viewController: mock, asInitialViewControllerForReferencedStoryboardWithName: name)
-        return mock
+    public func mockInitialViewController(forReferencedStoryboardWithName name: String, usingMockFor classToMock: AnyClass) throws -> UIViewController {
+        var mock: UIViewController? = nil
+        do {
+            mock = try Fleet.mockFor(classToMock)
+        } catch let error {
+            let fleetError = error as! FleetError
+            throw FLTStoryboardBindingError.invalidMockType(fleetError.description)
+        }
+
+        try bind(viewController: mock!, asInitialViewControllerForReferencedStoryboardWithName: name)
+        return mock!
     }
 
     /**

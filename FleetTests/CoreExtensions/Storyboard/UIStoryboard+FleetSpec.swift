@@ -17,8 +17,8 @@ class UIStoryboard_FleetSpec: XCTestCase {
     }
 
     func test_mockIdentifier_whenTheIdentifierExistsOnTheStoryboard_returnsMockViewController() {
-        let mockViewController = try! turtlesAndFriendsStoryboard.mockIdentifier("BoxTurtleViewController")
-        expect(mockViewController).to(beAnInstanceOf(FleetViewController.self))
+        let mockViewController = try! turtlesAndFriendsStoryboard.mockIdentifier("BoxTurtleViewController", usingMockFor: BoxTurtleViewController.self)
+        expect(mockViewController).to(beAKindOf(BoxTurtleViewController.self))
 
         let storyboardViewController = turtlesAndFriendsStoryboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")
         expect(storyboardViewController).to(beIdenticalTo(mockViewController))
@@ -27,7 +27,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
     func test_mockIdentifier_whenInvalidIdentifier_throwsError() {
         var threwError = false
         do {
-            let _ = try turtlesAndFriendsStoryboard.mockIdentifier("WatermelonViewController")
+            let _ = try turtlesAndFriendsStoryboard.mockIdentifier("WatermelonViewController", usingMockFor: UIViewController.self)
         } catch FLTStoryboardBindingError.invalidViewControllerIdentifier(let message) {
             threwError = true
             expect(message).to(equal("Could not find identifier WatermelonViewController on storyboard with name TurtlesAndFriendsStoryboard"))
@@ -41,7 +41,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
     func test_mockIdentifier_whenIdentifierExistsOnlyOnStoryboardRef_returnsError() {
         var threwError = false
         do {
-            let _ = try turtlesAndFriendsStoryboard.mockIdentifier("CrabViewController")
+            let _ = try turtlesAndFriendsStoryboard.mockIdentifier("CrabViewController", usingMockFor: CrabViewController.self)
         } catch FLTStoryboardBindingError.invalidViewControllerIdentifier(let message) {
             threwError = true
             expect(message).to(equal("Could not find identifier CrabViewController on storyboard with name TurtlesAndFriendsStoryboard, but found this identifier on an external storyboard reference. Use UIStoryboard.bind(viewController:toIdentifier:forReferencedStoryboardWithName:) to bind to external references"))
@@ -52,8 +52,23 @@ class UIStoryboard_FleetSpec: XCTestCase {
         }
     }
 
+    func test_mockIdentifier_whenMockClassIsNotSubclassOfUIViewController_returnsError() {
+        var threwError = false
+        do {
+            let _ = try turtlesAndFriendsStoryboard.mockIdentifier("CrabViewController", usingMockFor: NSData.self)
+        } catch FLTStoryboardBindingError.invalidMockType(let message) {
+            threwError = true
+            expect(message).to(equal("Fleet error: Fleet only creates mocks for UIViewController subclasses"))
+        } catch { }
+
+        if !threwError {
+            fail("Expected to throw invalidMockType error")
+        }
+    }
+
     func test_mockIdentifierForReferenceToAnotherStoryboard() {
-        let mockViewController = try! turtlesAndFriendsStoryboard.mockIdentifier("CrabViewController", forReferencedStoryboardWithName: "CrabStoryboard")
+        let mockViewController = try! turtlesAndFriendsStoryboard.mockIdentifier("CrabViewController", forReferencedStoryboardWithName: "CrabStoryboard", usingMockFor: CrabViewController.self)
+        expect(mockViewController).to(beAKindOf(CrabViewController.self))
 
         let testNavigationController = UINavigationController()
 
@@ -68,7 +83,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
     func test_mockIdentifierForReferenceToAnotherStoryboard_whenInvalidIdentifier_throwsError() {
         var threwError = false
         do {
-            let _ = try turtlesAndFriendsStoryboard.mockIdentifier("WatermelonViewController", forReferencedStoryboardWithName: "CrabStoryboard")
+            let _ = try turtlesAndFriendsStoryboard.mockIdentifier("WatermelonViewController", forReferencedStoryboardWithName: "CrabStoryboard", usingMockFor: CrabViewController.self)
         } catch FLTStoryboardBindingError.invalidExternalStoryboardReference(let message) {
             threwError = true
             expect(message).to(equal("Could not find identifier WatermelonViewController (external storyboard reference: CrabStoryboard) on storyboard TurtlesAndFriendsStoryboard"))
@@ -79,8 +94,23 @@ class UIStoryboard_FleetSpec: XCTestCase {
         }
     }
 
+    func test_mockIdentifierForReferenceToAnotherStoryboard_whenMockClassIsNotSubclassOfUIViewController_returnsError() {
+        var threwError = false
+        do {
+            let _ = try turtlesAndFriendsStoryboard.mockIdentifier("CrabViewController", forReferencedStoryboardWithName: "CrabStoryboard", usingMockFor: NSData.self)
+        } catch FLTStoryboardBindingError.invalidMockType(let message) {
+            threwError = true
+            expect(message).to(equal("Fleet error: Fleet only creates mocks for UIViewController subclasses"))
+        } catch { }
+
+        if !threwError {
+            fail("Expected to throw invalidMockType error")
+        }
+    }
+
     func test_mockInitialViewControllerOfReferenceToAnotherStoryboard() {
-        let mockInitialViewController = try! turtlesAndFriendsStoryboard.mockInitialViewController(forReferencedStoryboardWithName: "PuppyStoryboard")
+        let mockInitialViewController = try! turtlesAndFriendsStoryboard.mockInitialViewController(forReferencedStoryboardWithName: "PuppyStoryboard", usingMockFor: PuppyListViewController.self)
+        expect(mockInitialViewController).to(beAKindOf(PuppyListViewController.self))
 
         let testNavigationController = UINavigationController()
 
@@ -95,7 +125,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
     func test_mockInitialViewControllerOfReferenceToAnotherStoryboard_whenInvalidIdentifier_throwsError() {
         var threwError = false
         do {
-            let _ = try turtlesAndFriendsStoryboard.mockInitialViewController(forReferencedStoryboardWithName: "WatermelonStoryboard")
+            let _ = try turtlesAndFriendsStoryboard.mockInitialViewController(forReferencedStoryboardWithName: "WatermelonStoryboard", usingMockFor: UIViewController.self)
         } catch FLTStoryboardBindingError.invalidExternalStoryboardReference(let message) {
             threwError = true
             expect(message).to(equal("Could not find reference to an external storyboard with name WatermelonStoryboard on storyboard TurtlesAndFriendsStoryboard"))
@@ -103,6 +133,20 @@ class UIStoryboard_FleetSpec: XCTestCase {
 
         if !threwError {
             fail("Expected to throw InvalidExternalStoryboardReference error")
+        }
+    }
+
+    func test_mockInitialViewControllerOfReferenceToAnotherStoryboard_whenMockClassIsNotSubclassOfUIViewController_returnsError() {
+        var threwError = false
+        do {
+            let _ = try turtlesAndFriendsStoryboard.mockInitialViewController(forReferencedStoryboardWithName: "PuppyStoryboard", usingMockFor: NSData.self)
+        } catch FLTStoryboardBindingError.invalidMockType(let message) {
+            threwError = true
+            expect(message).to(equal("Fleet error: Fleet only creates mocks for UIViewController subclasses"))
+        } catch { }
+
+        if !threwError {
+            fail("Expected to throw invalidMockType error")
         }
     }
 
