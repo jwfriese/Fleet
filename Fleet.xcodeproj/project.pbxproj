@@ -46,7 +46,6 @@
 		7B675EA01D0DCA38002E6B45 /* UIAlertController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E9F1D0DCA38002E6B45 /* UIAlertController+Fleet.swift */; };
 		7B675EA21D0DD64D002E6B45 /* UIAlertAction+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675EA11D0DD64D002E6B45 /* UIAlertAction+Fleet.swift */; };
 		7B675EA41D0DD660002E6B45 /* UIAlertAction+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675EA31D0DD660002E6B45 /* UIAlertAction+FleetSpec.swift */; };
-		7B8F2B201DE0B06300B6F4C2 /* FleetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8F2B1F1DE0B06300B6F4C2 /* FleetViewController.swift */; };
 		7B8F2B261DE12CC700B6F4C2 /* MockFor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8F2B251DE12CC700B6F4C2 /* MockFor.swift */; };
 		7B8F2B381DE258EB00B6F4C2 /* IsClassKindOfSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8F2B371DE258EB00B6F4C2 /* IsClassKindOfSpec.swift */; };
 		7B8F2B3B1DE2592C00B6F4C2 /* FleetObjC.h in Headers */ = {isa = PBXBuildFile; fileRef = 7B8F2B391DE2592C00B6F4C2 /* FleetObjC.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -138,7 +137,6 @@
 		7B675E9F1D0DCA38002E6B45 /* UIAlertController+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Fleet.swift"; sourceTree = "<group>"; };
 		7B675EA11D0DD64D002E6B45 /* UIAlertAction+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertAction+Fleet.swift"; sourceTree = "<group>"; };
 		7B675EA31D0DD660002E6B45 /* UIAlertAction+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertAction+FleetSpec.swift"; sourceTree = "<group>"; };
-		7B8F2B1F1DE0B06300B6F4C2 /* FleetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FleetViewController.swift; sourceTree = "<group>"; };
 		7B8F2B251DE12CC700B6F4C2 /* MockFor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockFor.swift; sourceTree = "<group>"; };
 		7B8F2B371DE258EB00B6F4C2 /* IsClassKindOfSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IsClassKindOfSpec.swift; sourceTree = "<group>"; };
 		7B8F2B391DE2592C00B6F4C2 /* FleetObjC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FleetObjC.h; sourceTree = "<group>"; };
@@ -234,7 +232,6 @@
 				7B0D3B3E1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift */,
 				7B0D3B741CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift */,
 				7B9458111D4D7ED100F16A64 /* StoryboardReferenceMap.swift */,
-				7B8F2B1F1DE0B06300B6F4C2 /* FleetViewController.swift */,
 			);
 			path = Storyboard;
 			sourceTree = "<group>";
@@ -722,7 +719,6 @@
 				7B675EA21D0DD64D002E6B45 /* UIAlertAction+Fleet.swift in Sources */,
 				7B8F2B261DE12CC700B6F4C2 /* MockFor.swift in Sources */,
 				7BB14A6F1D77B425002ABE82 /* VisualTreeWalker.swift in Sources */,
-				7B8F2B201DE0B06300B6F4C2 /* FleetViewController.swift in Sources */,
 				7B675EA01D0DCA38002E6B45 /* UIAlertController+Fleet.swift in Sources */,
 				7B29F41D1DDCABF5008EA836 /* UITableView+SelectRow.swift in Sources */,
 				7B9458121D4D7ED100F16A64 /* StoryboardReferenceMap.swift in Sources */,
