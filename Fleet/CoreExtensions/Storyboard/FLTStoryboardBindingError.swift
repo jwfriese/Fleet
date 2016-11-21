@@ -5,6 +5,7 @@ public enum FLTStoryboardBindingError: Error {
     case invalidExternalStoryboardReference(String)
     case internalInconsistency(String)
     case invalidViewControllerState(String)
+    case invalidMockType(String)
 
     var description: String {
         get {
@@ -18,6 +19,8 @@ public enum FLTStoryboardBindingError: Error {
             case .internalInconsistency(let message):
                 description = message
             case .invalidViewControllerState(let message):
+                description = message
+            case .invalidMockType(let message):
                 description = message
         }
 

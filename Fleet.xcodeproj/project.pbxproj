@@ -46,6 +46,12 @@
 		7B675EA01D0DCA38002E6B45 /* UIAlertController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E9F1D0DCA38002E6B45 /* UIAlertController+Fleet.swift */; };
 		7B675EA21D0DD64D002E6B45 /* UIAlertAction+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675EA11D0DD64D002E6B45 /* UIAlertAction+Fleet.swift */; };
 		7B675EA41D0DD660002E6B45 /* UIAlertAction+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675EA31D0DD660002E6B45 /* UIAlertAction+FleetSpec.swift */; };
+		7B8F2B201DE0B06300B6F4C2 /* FleetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8F2B1F1DE0B06300B6F4C2 /* FleetViewController.swift */; };
+		7B8F2B261DE12CC700B6F4C2 /* MockFor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8F2B251DE12CC700B6F4C2 /* MockFor.swift */; };
+		7B8F2B381DE258EB00B6F4C2 /* IsClassKindOfSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8F2B371DE258EB00B6F4C2 /* IsClassKindOfSpec.swift */; };
+		7B8F2B3B1DE2592C00B6F4C2 /* FleetObjC.h in Headers */ = {isa = PBXBuildFile; fileRef = 7B8F2B391DE2592C00B6F4C2 /* FleetObjC.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		7B8F2B3C1DE2592C00B6F4C2 /* FleetObjC.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B8F2B3A1DE2592C00B6F4C2 /* FleetObjC.m */; };
+		7B8F2B3F1DE259B400B6F4C2 /* MockForSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8F2B3E1DE259B400B6F4C2 /* MockForSpec.swift */; };
 		7B933C281D77B48D001B98F0 /* VisualTreeWalkerSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B933C261D77B48D001B98F0 /* VisualTreeWalkerSpec.swift */; };
 		7B933C291D77B48D001B98F0 /* ScreenSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B933C271D77B48D001B98F0 /* ScreenSpec.swift */; };
 		7B9458101D4D7DFA00F16A64 /* StoryboardDeserializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B94580F1D4D7DFA00F16A64 /* StoryboardDeserializer.swift */; };
@@ -132,6 +138,12 @@
 		7B675E9F1D0DCA38002E6B45 /* UIAlertController+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Fleet.swift"; sourceTree = "<group>"; };
 		7B675EA11D0DD64D002E6B45 /* UIAlertAction+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertAction+Fleet.swift"; sourceTree = "<group>"; };
 		7B675EA31D0DD660002E6B45 /* UIAlertAction+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertAction+FleetSpec.swift"; sourceTree = "<group>"; };
+		7B8F2B1F1DE0B06300B6F4C2 /* FleetViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FleetViewController.swift; sourceTree = "<group>"; };
+		7B8F2B251DE12CC700B6F4C2 /* MockFor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockFor.swift; sourceTree = "<group>"; };
+		7B8F2B371DE258EB00B6F4C2 /* IsClassKindOfSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IsClassKindOfSpec.swift; sourceTree = "<group>"; };
+		7B8F2B391DE2592C00B6F4C2 /* FleetObjC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FleetObjC.h; sourceTree = "<group>"; };
+		7B8F2B3A1DE2592C00B6F4C2 /* FleetObjC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FleetObjC.m; sourceTree = "<group>"; };
+		7B8F2B3E1DE259B400B6F4C2 /* MockForSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockForSpec.swift; sourceTree = "<group>"; };
 		7B933C261D77B48D001B98F0 /* VisualTreeWalkerSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VisualTreeWalkerSpec.swift; sourceTree = "<group>"; };
 		7B933C271D77B48D001B98F0 /* ScreenSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScreenSpec.swift; sourceTree = "<group>"; };
 		7B94580F1D4D7DFA00F16A64 /* StoryboardDeserializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryboardDeserializer.swift; sourceTree = "<group>"; };
@@ -222,6 +234,7 @@
 				7B0D3B3E1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift */,
 				7B0D3B741CFBA43C0096DBC2 /* FLTStoryboardBindingError.swift */,
 				7B9458111D4D7ED100F16A64 /* StoryboardReferenceMap.swift */,
+				7B8F2B1F1DE0B06300B6F4C2 /* FleetViewController.swift */,
 			);
 			path = Storyboard;
 			sourceTree = "<group>";
@@ -300,6 +313,39 @@
 			path = Birds;
 			sourceTree = "<group>";
 		};
+		7B8F2B241DE12CA700B6F4C2 /* Mocking */ = {
+			isa = PBXGroup;
+			children = (
+				7B8F2B251DE12CC700B6F4C2 /* MockFor.swift */,
+			);
+			path = Mocking;
+			sourceTree = "<group>";
+		};
+		7B8F2B351DE2587100B6F4C2 /* ObjC */ = {
+			isa = PBXGroup;
+			children = (
+				7B8F2B391DE2592C00B6F4C2 /* FleetObjC.h */,
+				7B8F2B3A1DE2592C00B6F4C2 /* FleetObjC.m */,
+			);
+			path = ObjC;
+			sourceTree = "<group>";
+		};
+		7B8F2B361DE258DE00B6F4C2 /* ObjC */ = {
+			isa = PBXGroup;
+			children = (
+				7B8F2B371DE258EB00B6F4C2 /* IsClassKindOfSpec.swift */,
+			);
+			path = ObjC;
+			sourceTree = "<group>";
+		};
+		7B8F2B3D1DE2595300B6F4C2 /* Mocking */ = {
+			isa = PBXGroup;
+			children = (
+				7B8F2B3E1DE259B400B6F4C2 /* MockForSpec.swift */,
+			);
+			path = Mocking;
+			sourceTree = "<group>";
+		};
 		7B933C251D77B457001B98F0 /* Screen */ = {
 			isa = PBXGroup;
 			children = (
@@ -348,6 +394,8 @@
 				7B9458171D4E470C00F16A64 /* Script */,
 				7B675E871D0C5AEE002E6B45 /* Logging */,
 				7BA90ABE1CC3B5E30040B031 /* CoreExtensions */,
+				7B8F2B351DE2587100B6F4C2 /* ObjC */,
+				7B8F2B241DE12CA700B6F4C2 /* Mocking */,
 				7BB14A6B1D77B410002ABE82 /* Screen */,
 			);
 			path = Fleet;
@@ -379,6 +427,8 @@
 				7BA90ADD1CC3F6B50040B031 /* Helpers */,
 				7BA90AD61CC3F07B0040B031 /* SupportingResources */,
 				7BA90AD01CC3E82B0040B031 /* CoreExtensions */,
+				7B8F2B361DE258DE00B6F4C2 /* ObjC */,
+				7B8F2B3D1DE2595300B6F4C2 /* Mocking */,
 				7B933C251D77B457001B98F0 /* Screen */,
 			);
 			path = FleetTests;
@@ -479,6 +529,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7BA90AB71CC130990040B031 /* Fleet.h in Headers */,
+				7B8F2B3B1DE2592C00B6F4C2 /* FleetObjC.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -556,7 +607,7 @@
 					};
 					7BA90AB21CC130980040B031 = {
 						CreatedOnToolsVersion = 7.3;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0810;
 					};
 					7BA90AC41CC3B8950040B031 = {
 						CreatedOnToolsVersion = 7.3;
@@ -660,6 +711,7 @@
 				7BB14A711D77B425002ABE82 /* FLTScreen.swift in Sources */,
 				7B675E941D0DA7EA002E6B45 /* Fleet.swift in Sources */,
 				7B9458101D4D7DFA00F16A64 /* StoryboardDeserializer.swift in Sources */,
+				7B8F2B3C1DE2592C00B6F4C2 /* FleetObjC.m in Sources */,
 				7B0D3B3F1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift in Sources */,
 				7B29F41F1DDCAC76008EA836 /* UITableView+SelectCellAction.swift in Sources */,
 				7B29F4191DDB54E9008EA836 /* UITableViewRowAction+Fleet.swift in Sources */,
@@ -668,7 +720,9 @@
 				7BB14A701D77B425002ABE82 /* Screen.swift in Sources */,
 				7B675E891D0C5AFB002E6B45 /* Logger.swift in Sources */,
 				7B675EA21D0DD64D002E6B45 /* UIAlertAction+Fleet.swift in Sources */,
+				7B8F2B261DE12CC700B6F4C2 /* MockFor.swift in Sources */,
 				7BB14A6F1D77B425002ABE82 /* VisualTreeWalker.swift in Sources */,
+				7B8F2B201DE0B06300B6F4C2 /* FleetViewController.swift in Sources */,
 				7B675EA01D0DCA38002E6B45 /* UIAlertController+Fleet.swift in Sources */,
 				7B29F41D1DDCABF5008EA836 /* UITableView+SelectRow.swift in Sources */,
 				7B9458121D4D7ED100F16A64 /* StoryboardReferenceMap.swift in Sources */,
@@ -696,12 +750,14 @@
 				7B9458141D4D7F0300F16A64 /* StoryboardDeserializerSpec.swift in Sources */,
 				7BB14A641D770D5C002ABE82 /* ContainObjectSatisfying.swift in Sources */,
 				7BAC789F1D3E6C96000F86E4 /* UITextField+FleetSpec.swift in Sources */,
+				7B8F2B3F1DE259B400B6F4C2 /* MockForSpec.swift in Sources */,
 				7B29F42E1DDDFAB2008EA836 /* UIViewController+FleetInternalSpec.swift in Sources */,
 				7B29F4171DDB5446008EA836 /* UITableViewRowAction+FleetSpec.swift in Sources */,
 				7B675E9E1D0DCA1D002E6B45 /* UIAlertController+FleetSpec.swift in Sources */,
 				7B29F4231DDCACA5008EA836 /* UITableView+SelectRowSpec.swift in Sources */,
 				7BA90AD41CC3EF6F0040B031 /* UIButton+FleetSpec.swift in Sources */,
 				7B0D3B381CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift in Sources */,
+				7B8F2B381DE258EB00B6F4C2 /* IsClassKindOfSpec.swift in Sources */,
 				7B675E7D1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift in Sources */,
 				7B29F4211DDCAC8A008EA836 /* UITableView+SelectCellActionSpec.swift in Sources */,
 				7B13BA1E1DD4B4DA00C9098C /* FleetErrorSpec.swift in Sources */,
@@ -811,6 +867,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -857,6 +914,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;

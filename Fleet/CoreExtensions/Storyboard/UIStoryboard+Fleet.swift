@@ -36,19 +36,123 @@ extension UIStoryboard {
     }
 
     /**
-        Binds the given view controller to the view controller reference associated with the
-        given identifier. The bound view controller will then always be returned when the
-        bound identifier is used to instantiate a view controller, even in segues.
+     Substitutes with a mock the view controller that the storyboard returns when asked for
+     the view controller with the given identifier.
 
-        - Parameter viewController:     The view controller to bind
-        - Parameter identifier:     The identifier whose reference should have the view controller
-                                    bound to it
+     - parameters:
+        - identifier: The storyboard identifier of the view controller to mock
+        - classToMock: The class for which a mock should be created and returned
 
-        - Throws: A `FLTStoryboardBindingError.InvalidViewControllerIdentifier` if there is no
-            view controller reference on the storyboard with the given identifier, or
-            `FLTStoryboardBindingError.InvalidViewControllerState` if the input view controller has
-            already loaded its view.
-    */
+     - returns:
+        The view controller instance that will be used as the view controller returned
+        for the given identifier in all contexts following this function's execution. It
+        will be a mock of the view controller type passed into the `classToMock` argument,
+        and as such will be usable as if it were a real object of that type. It will not
+        execute any view controller lifecycle code such as `viewDidLoad`.
+
+     - throws:
+        An .invalidViewControllerIdentifier in the case that the storyboard has no view controller
+        with the given identifier
+     */
+    public func mockIdentifier(_ identifier: String, usingMockFor classToMock: AnyClass) throws -> UIViewController {
+        var mock: UIViewController? = nil
+        do {
+            mock = try Fleet.mockFor(classToMock)
+        } catch let error {
+            let fleetError = error as! FleetError
+            throw FLTStoryboardBindingError.invalidMockType(fleetError.description)
+        }
+
+        try bind(viewController: mock!, toIdentifier: identifier)
+        return mock!
+    }
+
+    /**
+     Given the name of an external storyboard reference within this storyboard, and an
+     identifier for a view controller on that storyboard, substitutes with a mock the
+     view controller it would return when asked for the view controller with that
+     identifier.
+
+     - parameters:
+        - identifier: The storyboard identifier of the view controller to mock
+        - referencedStoryboardName: The name of the storyboard associated with the external reference
+        - classToMock: The class for which a mock should be created and returned
+
+     - returns:
+        The view controller instance that will be used as the view controller returned
+        for the given identifier in all contexts following this function's execution. It
+        will be a mock of the view controller type passed into the `classToMock` argument,
+        and as such will be usable as if it were a real object of that type. It will not
+        execute any view controller lifecycle code such as `viewDidLoad`.
+
+     - throws:
+        An .invalidExternalStoryboardReference in the case that the storyboard with the
+        given name has no view controller with the given identifier
+     */
+    public func mockIdentifier(_ identifier: String, forReferencedStoryboardWithName referencedStoryboardName: String, usingMockFor classToMock: AnyClass) throws -> UIViewController {
+        var mock: UIViewController? = nil
+        do {
+            mock = try Fleet.mockFor(classToMock)
+        } catch let error {
+            let fleetError = error as! FleetError
+            throw FLTStoryboardBindingError.invalidMockType(fleetError.description)
+        }
+
+        try bind(viewController: mock!, toIdentifier: identifier, forReferencedStoryboardWithName: referencedStoryboardName)
+        return mock!
+    }
+
+    /**
+    Given the name of an external storyboard reference within this storyboard, substitutes
+    with a mock the view controller it would return as its initial view controller, and
+    returns that mock.
+
+    When this method executes successfully, any code that uses this storyboard to retrieve
+    the initial view controller of the named external storyboard will receive the mock instead
+    of a real instantiated view controller.
+
+    - parameters:
+        - name: The name of the storyboard associated with the external reference
+        - classToMock: The class for which a mock should be created and returned
+
+    - returns:
+        The view controller instance that will be used as the initial view controller of
+        that external storyboard reference in all contexts following this function's execution.
+        It will be a mock of the view controller type passed into the `classToMock` argument,
+        and as such will be usable as if it were a real object of that type. It will not
+        execute any view controller lifecycle code such as `viewDidLoad`.
+
+    - throws:
+        An .invalidExternalStoryboardReference in the case that the storyboard has no external
+        reference to a storyboard with the given name
+     */
+    public func mockInitialViewController(forReferencedStoryboardWithName name: String, usingMockFor classToMock: AnyClass) throws -> UIViewController {
+        var mock: UIViewController? = nil
+        do {
+            mock = try Fleet.mockFor(classToMock)
+        } catch let error {
+            let fleetError = error as! FleetError
+            throw FLTStoryboardBindingError.invalidMockType(fleetError.description)
+        }
+
+        try bind(viewController: mock!, asInitialViewControllerForReferencedStoryboardWithName: name)
+        return mock!
+    }
+
+    /**
+     Binds the given view controller to the view controller reference associated with the
+     given identifier. The bound view controller will then always be returned when the
+     bound identifier is used to instantiate a view controller, even in segues.
+
+     - Parameter viewController:     The view controller to bind
+     - Parameter identifier:     The identifier whose reference should have the view controller
+     bound to it
+
+     - Throws: A `FLTStoryboardBindingError.InvalidViewControllerIdentifier` if there is no
+     view controller reference on the storyboard with the given identifier, or
+     `FLTStoryboardBindingError.InvalidViewControllerState` if the input view controller has
+     already loaded its view.
+     */
     public func bind(viewController: UIViewController, toIdentifier identifier: String) throws {
         if viewController.viewDidLoadCallCount > 0 {
             let message = "Attempted to bind a view controller whose view has already been loaded to storyboard identifier '\(identifier)'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."
@@ -63,24 +167,24 @@ extension UIStoryboard {
     }
 
     /**
-        Binds the given view controller to the view controller reference associated with the
-        given identifier on the external storyboard reference with the given name. The bound view
-        controller will then always be returned when the bound identifier is used to instantiate a
-        view controller, even in segues. Use this to bind view controllers to external storyboard
-        references.
+     Binds the given view controller to the view controller reference associated with the
+     given identifier on the external storyboard reference with the given name. The bound view
+     controller will then always be returned when the bound identifier is used to instantiate a
+     view controller, even in segues. Use this to bind view controllers to external storyboard
+     references.
 
-        - Parameter viewController:     The view controller to bind
-        - Parameter identifier:     The identifier whose reference should have the view controller
-            bound to it
-        - Parameter referencedStoryboardName:     The name of the storyboard to which the external
-            reference is associated
+     - Parameter viewController:     The view controller to bind
+     - Parameter identifier:     The identifier whose reference should have the view controller
+     bound to it
+     - Parameter referencedStoryboardName:     The name of the storyboard to which the external
+     reference is associated
 
-        - Throws: A `FLTStoryboardBindingError.InvalidExternalStoryboardReference` if there is no
-            external storyboard view controller reference on the storyboard with the given identifier
-            and given storyboard name, or
-            `FLTStoryboardBindingError.InvalidViewControllerState` if the input view controller has
-            already loaded its view.
-    */
+     - Throws: A `FLTStoryboardBindingError.InvalidExternalStoryboardReference` if there is no
+     external storyboard view controller reference on the storyboard with the given identifier
+     and given storyboard name, or
+     `FLTStoryboardBindingError.InvalidViewControllerState` if the input view controller has
+     already loaded its view.
+     */
     public func bind(viewController: UIViewController, toIdentifier identifier: String, forReferencedStoryboardWithName referencedStoryboardName: String) throws {
         if viewController.viewDidLoadCallCount > 0 {
             let message = "Attempted to bind a view controller whose view has already been loaded to view controller identifier '\(identifier)' on storyboard '\(referencedStoryboardName)'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."
@@ -90,28 +194,28 @@ extension UIStoryboard {
         if let storyboardBindingIdentifier = storyboardBindingIdentifier {
             if let storyboardInstanceBinding = storyboardInstanceBindingMap[storyboardBindingIdentifier] {
                 try storyboardInstanceBinding.bind(viewController: viewController, toIdentifier: identifier,
-                                                                 forReferencedStoryboardWithName:referencedStoryboardName)
+                                                   forReferencedStoryboardWithName:referencedStoryboardName)
             }
         }
     }
 
     /**
-        Binds the given view controller to be the initial view controller instantiated from the
-        external storyboard associated with the given storyboard name. The bound view controller
-        will then always be returned when the external storyboard reference is used to instantiate a
-        view controller, even in segues. Use this to bind view controllers to external storyboard
-        references that instantiate the extenral storyboard's initial view controller.
+     Binds the given view controller to be the initial view controller instantiated from the
+     external storyboard associated with the given storyboard name. The bound view controller
+     will then always be returned when the external storyboard reference is used to instantiate a
+     view controller, even in segues. Use this to bind view controllers to external storyboard
+     references that instantiate the extenral storyboard's initial view controller.
 
-        - Parameter viewController:     The view controller to bind
-        - Parameter referencedStoryboardName:     The name of the storyboard to which the external
-            reference is associated
+     - Parameter viewController:     The view controller to bind
+     - Parameter referencedStoryboardName:     The name of the storyboard to which the external
+     reference is associated
 
-        - Throws: A `FLTStoryboardBindingError.InvalidExternalStoryboardReference` if there is no
-            external storyboard view controller reference on the storyboard with the given
-            storyboard name, or
-            `FLTStoryboardBindingError.InvalidViewControllerState` if the input view controller has
-            already loaded its view.
-    */
+     - Throws: A `FLTStoryboardBindingError.InvalidExternalStoryboardReference` if there is no
+     external storyboard view controller reference on the storyboard with the given
+     storyboard name, or
+     `FLTStoryboardBindingError.InvalidViewControllerState` if the input view controller has
+     already loaded its view.
+     */
     public func bind(viewController: UIViewController, asInitialViewControllerForReferencedStoryboardWithName referencedStoryboardName: String) throws {
         if viewController.viewDidLoadCallCount > 0 {
             let message = "Attempted to bind a view controller whose view has already been loaded to initial view controller of storyboard '\(referencedStoryboardName)'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."
