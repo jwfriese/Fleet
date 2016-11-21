@@ -1,7 +1,8 @@
 import XCTest
 import UIKit
-import Fleet
 import Nimble
+
+@testable import Fleet
 
 fileprivate class MockForSpecViewController: UIViewController {
     var didCallViewDidLoad: Bool = false
