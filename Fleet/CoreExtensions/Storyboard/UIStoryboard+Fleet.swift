@@ -54,8 +54,8 @@ extension UIStoryboard {
         An .invalidViewControllerIdentifier in the case that the storyboard has no view controller
         with the given identifier
      */
-    public func mockIdentifier(_ identifier: String, usingMockFor classToMock: AnyClass) throws -> UIViewController {
-        var mock: UIViewController? = nil
+    public func mockIdentifier<T>(_ identifier: String, usingMockFor classToMock: T.Type) throws -> T where T: UIViewController {
+        var mock: T? = nil
         do {
             mock = try Fleet.mockFor(classToMock)
         } catch let error {
@@ -89,8 +89,8 @@ extension UIStoryboard {
         An .invalidExternalStoryboardReference in the case that the storyboard with the
         given name has no view controller with the given identifier
      */
-    public func mockIdentifier(_ identifier: String, forReferencedStoryboardWithName referencedStoryboardName: String, usingMockFor classToMock: AnyClass) throws -> UIViewController {
-        var mock: UIViewController? = nil
+    public func mockIdentifier<T>(_ identifier: String, forReferencedStoryboardWithName referencedStoryboardName: String, usingMockFor classToMock: T.Type) throws -> T where T: UIViewController {
+        var mock: T? = nil
         do {
             mock = try Fleet.mockFor(classToMock)
         } catch let error {
@@ -126,8 +126,8 @@ extension UIStoryboard {
         An .invalidExternalStoryboardReference in the case that the storyboard has no external
         reference to a storyboard with the given name
      */
-    public func mockInitialViewController(forReferencedStoryboardWithName name: String, usingMockFor classToMock: AnyClass) throws -> UIViewController {
-        var mock: UIViewController? = nil
+    public func mockInitialViewController<T>(forReferencedStoryboardWithName name: String, usingMockFor classToMock: T.Type) throws -> T where T: UIViewController {
+        var mock: T? = nil
         do {
             mock = try Fleet.mockFor(classToMock)
         } catch let error {

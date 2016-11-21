@@ -35,85 +35,67 @@ fileprivate class MockForSpecViewController: UIViewController {
 class MockForSpec: XCTestCase {
     func test_mockFor_whenGivenAViewControllerClass_returnsMockThatIsASubclassOfTheGivenClass() {
         let mock = try! Fleet.mockFor(MockForSpecViewController.self)
-        let castedMock = mock as? MockForSpecViewController
-        expect(castedMock).toNot(beNil())
+        expect(mock).toNot(beNil())
+        expect(mock).to(beAKindOf(MockForSpecViewController.self))
     }
 
     func test_mockFor_whenTheMockCallsViewDidLoadDirectly_itDoesNotExecuteItsMockedClassViewDidLoadMethod() {
         let mock = try! Fleet.mockFor(MockForSpecViewController.self)
-        guard let castedMock = mock as? MockForSpecViewController else {
-            fail("Failed to subclass correctly")
-            return
-        }
 
-        mock.viewDidLoad()
-        expect(castedMock.didCallViewDidLoad).to(beFalse())
+        let uiKitMock: UIViewController = mock
+
+        uiKitMock.viewDidLoad()
+        expect(mock.didCallViewDidLoad).to(beFalse())
     }
 
     func test_mockFor_whenTheMockCallsViewDidLoadImplicitly_itDoesNotExecuteItsMockedClassViewDidLoadMethod() {
         let mock = try! Fleet.mockFor(MockForSpecViewController.self)
-        guard let castedMock = mock as? MockForSpecViewController else {
-            fail("Failed to subclass correctly")
-            return
-        }
 
-        let _ = castedMock.view
-        expect(castedMock.didCallViewDidLoad).to(beFalse())
+        let _ = mock.view
+        expect(mock.didCallViewDidLoad).to(beFalse())
     }
 
     func test_mockFor_whenTheMockIsPresentedInAWindow_itDoesNotExecuteItsMockedClassViewDidLoadMethod() {
         let mock = try! Fleet.mockFor(MockForSpecViewController.self)
-        guard let castedMock = mock as? MockForSpecViewController else {
-            fail("Failed to subclass correctly")
-            return
-        }
 
         Fleet.setApplicationWindowRootViewController(mock)
-        expect(castedMock.didCallViewDidLoad).to(beFalse())
+        expect(mock.didCallViewDidLoad).to(beFalse())
     }
 
     func test_mockFor_whenTheMockCallsViewWillAppear_itDoesNotExecuteItsMockedClassViewWillAppearMethod() {
         let mock = try! Fleet.mockFor(MockForSpecViewController.self)
-        guard let castedMock = mock as? MockForSpecViewController else {
-            fail("Failed to subclass correctly")
-            return
-        }
 
-        mock.viewWillAppear(false)
-        expect(castedMock.didCallViewWillAppear).to(beFalse())
+        let uiKitMock: UIViewController = mock
+
+        uiKitMock.viewWillAppear(false)
+        expect(mock.didCallViewWillAppear).to(beFalse())
     }
 
     func test_mockFor_whenTheMockCallsViewDidAppear_itDoesNotExecuteItsMockedClassViewDidAppearMethod() {
         let mock = try! Fleet.mockFor(MockForSpecViewController.self)
-        guard let castedMock = mock as? MockForSpecViewController else {
-            fail("Failed to subclass correctly")
-            return
-        }
 
-        mock.viewDidAppear(false)
-        expect(castedMock.didCallViewDidAppear).to(beFalse())
+        let uiKitMock: UIViewController = mock
+
+        uiKitMock.viewDidAppear(false)
+        expect(mock.didCallViewDidAppear).to(beFalse())
     }
 
     func test_mockFor_whenTheMockCallsViewWillDisappear_itDoesNotExecuteItsMockedClassViewWillDisappearMethod() {
         let mock = try! Fleet.mockFor(MockForSpecViewController.self)
-        guard let castedMock = mock as? MockForSpecViewController else {
-            fail("Failed to subclass correctly")
-            return
-        }
 
-        mock.viewWillDisappear(false)
-        expect(castedMock.didCallViewWillDisappear).to(beFalse())
+        let uiKitMock: UIViewController = mock
+
+        uiKitMock.viewWillDisappear(false)
+        expect(mock.didCallViewWillDisappear).to(beFalse())
     }
 
     func test_mockFor_whenTheMockCallsViewDidDisappear_itDoesNotExecuteItsMockedClassViewDidDisappearMethod() {
         let mock = try! Fleet.mockFor(MockForSpecViewController.self)
-        guard let castedMock = mock as? MockForSpecViewController else {
-            fail("Failed to subclass correctly")
-            return
-        }
 
-        mock.viewDidDisappear(false)
-        expect(castedMock.didCallViewDidDisappear).to(beFalse())
+        let uiKitMock: UIViewController = mock
+
+        uiKitMock.viewDidDisappear(false)
+        expect(mock.didCallViewDidDisappear).to(beFalse())
     }
 
     func test_mockFor_whenAMockIsCreated_itDoesNotAffectOtherInstancesOfTheMockedType() {
@@ -148,23 +130,5 @@ class MockForSpec: XCTestCase {
         } catch {
             fail("Expected not to throw an error")
         }
-    }
-
-    func test_mockFor_whenGivenAClassThatIsNotASubclassOfUIViewController_throwsError() {
-        var didThrowError = false
-        do {
-            let _ = try Fleet.mockFor(NSData.self)
-
-        } catch let error {
-            guard let fleetError = error as? FleetError else {
-                fail("Expected thrown error to be of type FleetError")
-                return
-            }
-
-            expect(String(describing: fleetError)).to(equal("Fleet error: Fleet only creates mocks for UIViewController subclasses"))
-            didThrowError = true
-        }
-
-        expect(didThrowError).to(beTrue())
     }
 }

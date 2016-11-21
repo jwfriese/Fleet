@@ -52,20 +52,6 @@ class UIStoryboard_FleetSpec: XCTestCase {
         }
     }
 
-    func test_mockIdentifier_whenMockClassIsNotSubclassOfUIViewController_returnsError() {
-        var threwError = false
-        do {
-            let _ = try turtlesAndFriendsStoryboard.mockIdentifier("CrabViewController", usingMockFor: NSData.self)
-        } catch FLTStoryboardBindingError.invalidMockType(let message) {
-            threwError = true
-            expect(message).to(equal("Fleet error: Fleet only creates mocks for UIViewController subclasses"))
-        } catch { }
-
-        if !threwError {
-            fail("Expected to throw invalidMockType error")
-        }
-    }
-
     func test_mockIdentifierForReferenceToAnotherStoryboard() {
         let mockViewController = try! turtlesAndFriendsStoryboard.mockIdentifier("CrabViewController", forReferencedStoryboardWithName: "CrabStoryboard", usingMockFor: CrabViewController.self)
         expect(mockViewController).to(beAKindOf(CrabViewController.self))
@@ -94,20 +80,6 @@ class UIStoryboard_FleetSpec: XCTestCase {
         }
     }
 
-    func test_mockIdentifierForReferenceToAnotherStoryboard_whenMockClassIsNotSubclassOfUIViewController_returnsError() {
-        var threwError = false
-        do {
-            let _ = try turtlesAndFriendsStoryboard.mockIdentifier("CrabViewController", forReferencedStoryboardWithName: "CrabStoryboard", usingMockFor: NSData.self)
-        } catch FLTStoryboardBindingError.invalidMockType(let message) {
-            threwError = true
-            expect(message).to(equal("Fleet error: Fleet only creates mocks for UIViewController subclasses"))
-        } catch { }
-
-        if !threwError {
-            fail("Expected to throw invalidMockType error")
-        }
-    }
-
     func test_mockInitialViewControllerOfReferenceToAnotherStoryboard() {
         let mockInitialViewController = try! turtlesAndFriendsStoryboard.mockInitialViewController(forReferencedStoryboardWithName: "PuppyStoryboard", usingMockFor: PuppyListViewController.self)
         expect(mockInitialViewController).to(beAKindOf(PuppyListViewController.self))
@@ -133,20 +105,6 @@ class UIStoryboard_FleetSpec: XCTestCase {
 
         if !threwError {
             fail("Expected to throw InvalidExternalStoryboardReference error")
-        }
-    }
-
-    func test_mockInitialViewControllerOfReferenceToAnotherStoryboard_whenMockClassIsNotSubclassOfUIViewController_returnsError() {
-        var threwError = false
-        do {
-            let _ = try turtlesAndFriendsStoryboard.mockInitialViewController(forReferencedStoryboardWithName: "PuppyStoryboard", usingMockFor: NSData.self)
-        } catch FLTStoryboardBindingError.invalidMockType(let message) {
-            threwError = true
-            expect(message).to(equal("Fleet error: Fleet only creates mocks for UIViewController subclasses"))
-        } catch { }
-
-        if !threwError {
-            fail("Expected to throw invalidMockType error")
         }
     }
 
