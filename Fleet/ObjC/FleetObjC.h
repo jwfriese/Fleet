@@ -2,7 +2,14 @@
 
 @interface FleetObjC: NSObject
 
-+ (id)mockFor:(Class)klass;
-+ (BOOL)isClass:(Class)klass kindOf:(Class)superclass;
+/**
+ Internal Fleet use only
+ */
++ (id)_mockFor:(Class)klass;
+
+/**
+ Internal Fleet use only
+ */
++ (BOOL)_isClass:(Class)klass kindOf:(Class)superclass;
 
 @end

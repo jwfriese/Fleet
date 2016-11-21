@@ -54,7 +54,7 @@ const char * getViewDidDisappearTypes(Class klass) {
 
 @implementation FleetObjC
 
-+ (id)mockFor:(Class)klass {
++ (id)_mockFor:(Class)klass {
     NSString *originalClassName = [NSString stringWithCString:class_getName(klass) encoding:NSUTF8StringEncoding];
     NSString *mockClassName = [NSString stringWithFormat:@"fleet_mock_%@", originalClassName];
     const char *mockClassNameCString = [mockClassName cStringUsingEncoding:NSUTF8StringEncoding];
@@ -74,7 +74,7 @@ const char * getViewDidDisappearTypes(Class klass) {
     return instance;
 }
 
-+ (BOOL)isClass:(Class)klass kindOf:(Class)superclass {
++ (BOOL)_isClass:(Class)klass kindOf:(Class)superclass {
     if (klass == superclass) {
         return YES;
     }
