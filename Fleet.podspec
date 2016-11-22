@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                    = "Fleet"
-  s.version                 = "2.0.1"
+  s.version                 = "2.0.2"
   s.summary                 = "A UIKit-focused Swift testing framework"
   s.homepage                = "https://github.com/jwfriese/Fleet"
   s.license                 = { :type => "Apache 2.0", :file => "LICENSE" }
