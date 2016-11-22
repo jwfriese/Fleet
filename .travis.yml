@@ -1,6 +1,9 @@
 language: generic
 os: osx
 osx_image: xcode8.1
+branches:
+  only:
+  - master
 before_install:
 - export XCODEBUILD_PATH=$(which xcodebuild)
 - export PATH=$PATH:$XCODEBUILD_PATH
