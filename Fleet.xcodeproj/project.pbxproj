@@ -75,6 +75,7 @@
 		7BB14A701D77B425002ABE82 /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A6D1D77B425002ABE82 /* Screen.swift */; };
 		7BB14A711D77B425002ABE82 /* FLTScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A6E1D77B425002ABE82 /* FLTScreen.swift */; };
 		7BBFCD2D1D3DA82500C3EF0F /* UITextField+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBFCD2C1D3DA82500C3EF0F /* UITextField+Fleet.swift */; };
+		7BEE35B51E15434A00302991 /* UITableView+SelectRowMinimalDelegateImplSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BEE35B41E15434A00302991 /* UITableView+SelectRowMinimalDelegateImplSpec.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -169,6 +170,7 @@
 		7BB14A6E1D77B425002ABE82 /* FLTScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FLTScreen.swift; sourceTree = "<group>"; };
 		7BBFCD2C1D3DA82500C3EF0F /* UITextField+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+Fleet.swift"; sourceTree = "<group>"; };
 		7BBFCD2E1D3DAE6C00C3EF0F /* UITextField+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+FleetSpec.swift"; sourceTree = "<group>"; };
+		7BEE35B41E15434A00302991 /* UITableView+SelectRowMinimalDelegateImplSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+SelectRowMinimalDelegateImplSpec.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -253,6 +255,7 @@
 			children = (
 				7B29F4201DDCAC8A008EA836 /* UITableView+SelectCellActionSpec.swift */,
 				7B29F4221DDCACA5008EA836 /* UITableView+SelectRowSpec.swift */,
+				7BEE35B41E15434A00302991 /* UITableView+SelectRowMinimalDelegateImplSpec.swift */,
 			);
 			path = TableView;
 			sourceTree = "<group>";
@@ -734,6 +737,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7BEE35B51E15434A00302991 /* UITableView+SelectRowMinimalDelegateImplSpec.swift in Sources */,
 				7B29F42C1DDDFA94008EA836 /* UIViewController+FleetSpec.swift in Sources */,
 				7B675EA41D0DD660002E6B45 /* UIAlertAction+FleetSpec.swift in Sources */,
 				7BB14A661D772481002ABE82 /* FleetSpec.swift in Sources */,
