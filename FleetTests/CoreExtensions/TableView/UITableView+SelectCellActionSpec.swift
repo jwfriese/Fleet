@@ -92,4 +92,30 @@ class UITableView_SelectCellActionSpec: XCTestCase {
         expect(String(describing: error!)).to(equal("Fleet error: Attempted to select cell action on table view without a data source"))
     }
 
+    func test_selectCellAction_whenNoDelegateSet_returnsAnError() {
+        let storyboard = UIStoryboard(name: "Birds", bundle: nil)
+        let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
+        let _ = viewController.view
+        viewController.birdsTableView?.delegate = nil
+
+        let error = viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0))
+        expect(error).toNot(beNil())
+        expect(String(describing: error!)).to(equal("Fleet error: UITableViewDelegate required for cells to perform actions"))
+    }
+
+    func test_selectCellAction_whenDelegateDoesNotImplementEditActionsMethod_returnsAnError() {
+        let storyboard = UIStoryboard(name: "Birds", bundle: nil)
+        let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
+        let _ = viewController.view
+
+
+        class MinimalDelegate: NSObject, UITableViewDelegate {}
+
+        let minimalDelegate = MinimalDelegate()
+        viewController.birdsTableView?.delegate = minimalDelegate
+
+        let error = viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0))
+        expect(error).toNot(beNil())
+        expect(String(describing: error!)).to(equal("Fleet error: Delegate must implement `UITableViewDelegate.editActionsForRowAt:` method to use cell actions"))
+    }
 }

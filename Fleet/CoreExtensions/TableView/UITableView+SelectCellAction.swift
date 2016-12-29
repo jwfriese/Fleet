@@ -19,6 +19,14 @@ public extension UITableView {
             return FleetError(message: "Attempted to select cell action on table view without a data source")
         }
 
+        guard let delegate = delegate else {
+            return FleetError(message: "UITableViewDelegate required for cells to perform actions")
+        }
+
+        if !delegate.responds(to: #selector(UITableViewDelegate.tableView(_:editActionsForRowAt:))) {
+            return FleetError(message: "Delegate must implement `UITableViewDelegate.editActionsForRowAt:` method to use cell actions")
+        }
+
         let sectionCount = self.numberOfSections
         if indexPath.section >= sectionCount {
             return FleetError(message: "Invalid index path: Table view has no section \(indexPath.section) (section count in table view == \(sectionCount))")
@@ -33,7 +41,7 @@ public extension UITableView {
             return FleetError(message: "Editing of row \(indexPath.row) in section \(indexPath.section) is not allowed by the table view's data source")
         }
 
-        let editActions = delegate!.tableView!(self, editActionsForRowAt: indexPath)
+        let editActions = delegate.tableView!(self, editActionsForRowAt: indexPath)
         let actionOpt = editActions?.first() { element in
             return element.title == title
         }
@@ -42,9 +50,9 @@ public extension UITableView {
             return FleetError(message: "Could not find edit action with title '\(title)' at row \(indexPath.row) in section \(indexPath.section)")
         }
 
-        delegate!.tableView!(self, willBeginEditingRowAt: indexPath)
+        delegate.tableView?(self, willBeginEditingRowAt: indexPath)
         action.handler!(action, indexPath)
-        delegate!.tableView!(self, didEndEditingRowAt: indexPath)
+        delegate.tableView?(self, didEndEditingRowAt: indexPath)
         return nil
     }
 }
