@@ -31,14 +31,7 @@ public extension UITableView {
 
         let doesDelegateImplementWillDeselect = delegate!.responds(to: #selector(UITableViewDelegate.tableView(_:willDeselectRowAt:)))
         if doesDelegateImplementWillDeselect {
-            if let selectedRowIndexPath = indexPathForSelectedRow {
-                let indexPathToDeselectOptional = delegate!.tableView!(self, willDeselectRowAt: selectedRowIndexPath)
-                if let indexPathToDeselect = indexPathToDeselectOptional {
-                    deselectRow(at: indexPathToDeselect, animated: false)
-                    NotificationCenter.default.post(name: NSNotification.Name.UITableViewSelectionDidChange, object: nil)
-                    delegate?.tableView?(self, didDeselectRowAt: indexPathToDeselect)
-                }
-            }
+            deselectPreviouslySelectedRow()
         }
 
         var indexPathToSelect = indexPath
@@ -57,5 +50,16 @@ public extension UITableView {
 
         delegate!.tableView?(self, didSelectRowAt: indexPathToSelect)
         return nil
+    }
+
+    private func deselectPreviouslySelectedRow() {
+        if let selectedRowIndexPath = indexPathForSelectedRow {
+            let indexPathToDeselectOptional = delegate!.tableView!(self, willDeselectRowAt: selectedRowIndexPath)
+            if let indexPathToDeselect = indexPathToDeselectOptional {
+                deselectRow(at: indexPathToDeselect, animated: false)
+                NotificationCenter.default.post(name: NSNotification.Name.UITableViewSelectionDidChange, object: nil)
+                delegate?.tableView?(self, didDeselectRowAt: indexPathToDeselect)
+            }
+        }
     }
 }
