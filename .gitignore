@@ -77,3 +77,6 @@ Testing/src/*
 
 # The binary produced for running tests
 test
+
+# The binary produced for trimming
+trim
