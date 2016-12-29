@@ -27,17 +27,19 @@ public extension UITableView {
             return FleetError(message: "Delegate must implement `UITableViewDelegate.editActionsForRowAt:` method to use cell actions")
         }
 
-        let sectionCount = self.numberOfSections
+        let sectionCount = numberOfSections
         if indexPath.section >= sectionCount {
             return FleetError(message: "Invalid index path: Table view has no section \(indexPath.section) (section count in table view == \(sectionCount))")
         }
 
-        let rowCount = self.numberOfRows(inSection: indexPath.section)
+        let rowCount = numberOfRows(inSection: indexPath.section)
         if indexPath.row >= rowCount {
             return FleetError(message: "Invalid index path: Section \(indexPath.section) does not have row \(indexPath.row) (row count in section \(indexPath.section) == \(rowCount))")
         }
 
-        guard dataSource.tableView!(self, canEditRowAt: indexPath) else {
+        let doesDataSourceImplementCanEditRow = dataSource.responds(to: #selector(UITableViewDataSource.tableView(_:canEditRowAt:)))
+        let canEditCell = doesDataSourceImplementCanEditRow && dataSource.tableView!(self, canEditRowAt: indexPath)
+        if !canEditCell {
             return FleetError(message: "Editing of row \(indexPath.row) in section \(indexPath.section) is not allowed by the table view's data source")
         }
 
