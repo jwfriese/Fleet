@@ -6,10 +6,10 @@ public extension UITableView {
      Unlike UITableView's selectRow(at:animated:scrollPosition:) method, this
      method fires the table view's hooked-in delegate call backs and sends a
      notification.
-     
+
      - parameters:
      - at: The index path to attempt to tap
-     
+
      - returns:
      Nil if selection is successful, otherwise a FleetError if there is no cell at the given index path
      or if the table view does not allow selection ('allowsSelection' == false)
@@ -18,44 +18,44 @@ public extension UITableView {
         guard allowsSelection else {
             return FleetError(message: "Attempted to select row on table view with 'allowsSelection' == false")
         }
-        
-        let sectionCount = self.numberOfSections
+
+        let sectionCount = numberOfSections
         if indexPath.section >= sectionCount {
             return FleetError(message: "Invalid index path: Table view has no section \(indexPath.section) (section count in table view == \(sectionCount))")
         }
-        
-        let rowCount = self.numberOfRows(inSection: indexPath.section)
+
+        let rowCount = numberOfRows(inSection: indexPath.section)
         if indexPath.row >= rowCount {
             return FleetError(message: "Invalid index path: Section \(indexPath.section) does not have row \(indexPath.row) (row count in section \(indexPath.section) == \(rowCount))")
         }
-        
-        let doesDelegateImplementWillDeselect = self.delegate!.responds(to: #selector(UITableViewDelegate.tableView(_:willDeselectRowAt:)))
+
+        let doesDelegateImplementWillDeselect = delegate!.responds(to: #selector(UITableViewDelegate.tableView(_:willDeselectRowAt:)))
         if doesDelegateImplementWillDeselect {
-            if let selectedRowIndexPath = self.indexPathForSelectedRow {
-                let indexPathToDeselectOptional = self.delegate!.tableView!(self, willDeselectRowAt: selectedRowIndexPath)
+            if let selectedRowIndexPath = indexPathForSelectedRow {
+                let indexPathToDeselectOptional = delegate!.tableView!(self, willDeselectRowAt: selectedRowIndexPath)
                 if let indexPathToDeselect = indexPathToDeselectOptional {
-                    self.deselectRow(at: indexPathToDeselect, animated: false)
+                    deselectRow(at: indexPathToDeselect, animated: false)
                     NotificationCenter.default.post(name: NSNotification.Name.UITableViewSelectionDidChange, object: nil)
-                    self.delegate?.tableView?(self, didDeselectRowAt: indexPathToDeselect)
+                    delegate?.tableView?(self, didDeselectRowAt: indexPathToDeselect)
                 }
             }
         }
-        
+
         var indexPathToSelect = indexPath
-        let doesDelegateImplementWillSelect = self.delegate!.responds(to: #selector(UITableViewDelegate.tableView(_:willSelectRowAt:)))
+        let doesDelegateImplementWillSelect = delegate!.responds(to: #selector(UITableViewDelegate.tableView(_:willSelectRowAt:)))
         if doesDelegateImplementWillSelect {
-            let indexPathToSelectOptional = self.delegate!.tableView!(self, willSelectRowAt: indexPath)
+            let indexPathToSelectOptional = delegate!.tableView!(self, willSelectRowAt: indexPath)
             guard let unwrappedIndexPathToSelect = indexPathToSelectOptional else {
                 return nil
             }
-            
+
             indexPathToSelect = unwrappedIndexPathToSelect
         }
-        
-        self.selectRow(at: indexPath, animated: false, scrollPosition: .none)
+
+        selectRow(at: indexPath, animated: false, scrollPosition: .none)
         NotificationCenter.default.post(name: NSNotification.Name.UITableViewSelectionDidChange, object: nil)
-        
-        self.delegate!.tableView?(self, didSelectRowAt: indexPathToSelect)
+
+        delegate!.tableView?(self, didSelectRowAt: indexPathToSelect)
         return nil
     }
 }
