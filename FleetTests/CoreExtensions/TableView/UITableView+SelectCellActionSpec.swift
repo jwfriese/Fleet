@@ -80,4 +80,16 @@ class UITableView_SelectCellActionSpec: XCTestCase {
 
         expect(String(describing: error)).to(equal("Fleet error: Editing of row 3 in section 0 is not allowed by the table view's data source"))
     }
+
+    func test_selectCellAction_whenTableViewDoesNotHaveDataSource_returnsAnError() {
+        let storyboard = UIStoryboard(name: "Birds", bundle: nil)
+        let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
+        let _ = viewController.view
+        viewController.birdsTableView?.dataSource = nil
+
+        let error = viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0))
+        expect(error).toNot(beNil())
+        expect(String(describing: error!)).to(equal("Fleet error: Attempted to select cell action on table view without a data source"))
+    }
+
 }

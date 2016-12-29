@@ -15,6 +15,10 @@ public extension UITableView {
     or if there is no edit action with the given title on the cell.
     */
     func selectCellAction(withTitle title: String, at indexPath: IndexPath) -> FleetError? {
+        guard let dataSource = dataSource else {
+            return FleetError(message: "Attempted to select cell action on table view without a data source")
+        }
+
         let sectionCount = self.numberOfSections
         if indexPath.section >= sectionCount {
             return FleetError(message: "Invalid index path: Table view has no section \(indexPath.section) (section count in table view == \(sectionCount))")
@@ -25,7 +29,7 @@ public extension UITableView {
             return FleetError(message: "Invalid index path: Section \(indexPath.section) does not have row \(indexPath.row) (row count in section \(indexPath.section) == \(rowCount))")
         }
 
-        guard dataSource!.tableView!(self, canEditRowAt: indexPath) else {
+        guard dataSource.tableView!(self, canEditRowAt: indexPath) else {
             return FleetError(message: "Editing of row \(indexPath.row) in section \(indexPath.section) is not allowed by the table view's data source")
         }
 
