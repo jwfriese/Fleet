@@ -15,6 +15,10 @@ public extension UITableView {
      or if the table view does not allow selection ('allowsSelection' == false)
      */
     public func selectRow(at indexPath: IndexPath) -> FleetError? {
+        guard let _ = self.dataSource else {
+            return FleetError(message: "Attempted to select row on table view without a data source")
+        }
+
         guard allowsSelection else {
             return FleetError(message: "Attempted to select row on table view with 'allowsSelection' == false")
         }
@@ -29,13 +33,14 @@ public extension UITableView {
             return FleetError(message: "Invalid index path: Section \(indexPath.section) does not have row \(indexPath.row) (row count in section \(indexPath.section) == \(rowCount))")
         }
 
-        let doesDelegateImplementWillDeselect = delegate!.responds(to: #selector(UITableViewDelegate.tableView(_:willDeselectRowAt:)))
+        let hasDelegate = delegate != nil
+        let doesDelegateImplementWillDeselect = hasDelegate && delegate!.responds(to: #selector(UITableViewDelegate.tableView(_:willDeselectRowAt:)))
         if doesDelegateImplementWillDeselect {
             deselectPreviouslySelectedRow()
         }
 
         var indexPathToSelect = indexPath
-        let doesDelegateImplementWillSelect = delegate!.responds(to: #selector(UITableViewDelegate.tableView(_:willSelectRowAt:)))
+        let doesDelegateImplementWillSelect = hasDelegate && delegate!.responds(to: #selector(UITableViewDelegate.tableView(_:willSelectRowAt:)))
         if doesDelegateImplementWillSelect {
             let indexPathToSelectOptional = delegate!.tableView!(self, willSelectRowAt: indexPath)
             guard let unwrappedIndexPathToSelect = indexPathToSelectOptional else {
@@ -48,7 +53,7 @@ public extension UITableView {
         selectRow(at: indexPath, animated: false, scrollPosition: .none)
         NotificationCenter.default.post(name: NSNotification.Name.UITableViewSelectionDidChange, object: nil)
 
-        delegate!.tableView?(self, didSelectRowAt: indexPathToSelect)
+        delegate?.tableView?(self, didSelectRowAt: indexPathToSelect)
         return nil
     }
 

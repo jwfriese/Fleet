@@ -170,10 +170,36 @@ class UITableView_SelectRowSpec: XCTestCase {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
+        viewController.birdsTableView?.dataSource = nil
+
+        let error = viewController.birdsTableView?.selectRow(at: IndexPath(row: 0, section: 0))
+        expect(error).toNot(beNil())
+        expect(String(describing: error!)).to(equal("Fleet error: Attempted to select row on table view without a data source"))
+    }
+
+    func test_selectRow_whenTableViewDoesNotHaveDataSource_returnsAnError() {
+        let storyboard = UIStoryboard(name: "Birds", bundle: nil)
+        let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
+        let _ = viewController.view
         viewController.birdsTableView?.allowsSelection = false
 
         let error = viewController.birdsTableView?.selectRow(at: IndexPath(row: 0, section: 0))
         expect(error).toNot(beNil())
         expect(String(describing: error!)).to(equal("Fleet error: Attempted to select row on table view with 'allowsSelection' == false"))
+    }
+
+    func test_selectRow_whenTableViewDoesNotHaveDelegate_stillSelectsTheRow() {
+        let storyboard = UIStoryboard(name: "Birds", bundle: nil)
+        let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
+        let _ = viewController.view
+        viewController.birdsTableView?.delegate = nil
+        let _ = viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
+
+        guard let selectedIndexPath = viewController.birdsTableView?.indexPathForSelectedRow else {
+            fail("Failed to select row at index path (\(IndexPath(row: 1, section: 0)))")
+            return
+        }
+
+        expect(selectedIndexPath).to(equal(IndexPath(row: 1, section: 0)))
     }
 }
