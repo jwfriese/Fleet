@@ -38,7 +38,7 @@ class UINavigationController_FleetSpec: XCTestCase {
         let controllerToPush = TestViewController()
 
         navigationController.pushViewController(controllerToPush, animated: true)
-        expect(controllerToPush.testViewDidLoadCallCount).to(equal(1))
+        expect(controllerToPush.testViewDidLoadCallCount).toEventually(equal(1))
     }
 
     func test_pushViewController_doesNotCausePushedViewControllerToLoadMultipleTimes() {
