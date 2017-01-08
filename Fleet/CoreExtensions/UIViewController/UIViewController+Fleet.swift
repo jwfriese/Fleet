@@ -14,9 +14,6 @@ extension UIViewController {
             swizzleViewDidLoad()
             swizzlePresent()
             swizzleDismiss()
-            swizzleShow()
-            swizzlePresentedViewControllerProperty()
-            swizzlePresentingViewControllerProperty()
             didSwizzle = true
         }
     }
@@ -73,14 +70,7 @@ extension UIViewController {
     }
 
     func fleet_present(viewController: UIViewController, animated: Bool, completion: (() -> ())?) {
-        self.fleet_property_presentedViewController = viewController
-        viewController.fleet_property_presentingViewController = self
-
-        if let completion = completion {
-            completion()
-        }
-
-        fleet_present(viewController: viewController, animated: animated, completion: nil)
+        fleet_present(viewController: viewController, animated: false, completion: completion)
     }
 
     fileprivate class func swizzleDismiss() {
@@ -94,78 +84,6 @@ extension UIViewController {
     }
 
     func fleet_dismiss(animated: Bool, completion: (() -> ())?) {
-        let viewControllerToDismiss = self.fleet_property_presentedViewController
-
-        self.fleet_property_presentedViewController = nil
-        viewControllerToDismiss?.fleet_property_presentingViewController = nil
-
-        if let completion = completion {
-            completion()
-        }
-
-        fleet_dismiss(animated: animated, completion: nil)
-    }
-
-    fileprivate class func swizzleShow() {
-        let originalSelector = #selector(UIViewController.show(_:sender:))
-        let swizzledSelector = #selector(UIViewController.fleet_show(viewController:sender:))
-
-        let originalMethod = class_getInstanceMethod(self, originalSelector)
-        let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
-
-        method_exchangeImplementations(originalMethod, swizzledMethod)
-    }
-
-    func fleet_show(viewController: UIViewController, sender: AnyObject?) {
-        self.fleet_property_presentedViewController = viewController
-        viewController.fleet_property_presentingViewController = self
-
-        fleet_show(viewController: viewController, sender: sender)
-    }
-
-    fileprivate class func swizzlePresentedViewControllerProperty() {
-        let originalSelector = #selector(getter: UIViewController.presentedViewController)
-        let swizzledSelector = #selector(UIViewController.fleet_presentedViewController)
-
-        let originalMethod = class_getInstanceMethod(self, originalSelector)
-        let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
-
-        method_exchangeImplementations(originalMethod, swizzledMethod)
-    }
-
-    fileprivate var fleet_property_presentedViewController: UIViewController? {
-        get {
-            return objc_getAssociatedObject(self, &presentedViewControllerAssociatedKey) as? UIViewController
-        }
-        set {
-            objc_setAssociatedObject(self, &presentedViewControllerAssociatedKey, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
-        }
-    }
-
-    func fleet_presentedViewController() -> UIViewController? {
-        return self.fleet_property_presentedViewController
-    }
-
-    fileprivate class func swizzlePresentingViewControllerProperty() {
-        let originalSelector = #selector(getter: UIViewController.presentingViewController)
-        let swizzledSelector = #selector(UIViewController.fleet_presentingViewController)
-
-        let originalMethod = class_getInstanceMethod(self, originalSelector)
-        let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
-
-        method_exchangeImplementations(originalMethod, swizzledMethod)
-    }
-
-    fileprivate var fleet_property_presentingViewController: UIViewController? {
-        get {
-            return objc_getAssociatedObject(self, &presentingViewControllerAssociatedKey) as? UIViewController
-        }
-        set {
-            objc_setAssociatedObject(self, &presentingViewControllerAssociatedKey, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
-        }
-    }
-
-    func fleet_presentingViewController() -> UIViewController? {
-        return fleet_property_presentingViewController
+        fleet_dismiss(animated: false, completion: completion)
     }
 }

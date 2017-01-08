@@ -14,67 +14,66 @@ class UIViewController_FleetSpec: XCTestCase {
 
     func test_presentViewController_immediatelyPresentsTheViewController() {
         let bottom = UIViewController()
+        Fleet.setApplicationWindowRootViewController(bottom)
         let top = UIViewController()
 
         bottom.present(top, animated: true, completion: nil)
 
-        expect(bottom.presentedViewController).to(beIdenticalTo(top))
-        expect(top.presentingViewController).to(beIdenticalTo(bottom))
+        expect(Fleet.getApplicationScreen()?.topmostViewController).toEventually(beIdenticalTo(top))
     }
 
-    func test_dismissViewController_immediatelyDismissesThePresentedViewController() {
+    func test_presentViewController_executesTheGivenCompletionHandlerAfterPresentationFinishes() {
         let bottom = UIViewController()
+        Fleet.setApplicationWindowRootViewController(bottom)
         let top = UIViewController()
 
-        bottom.present(top, animated: true, completion: nil)
-
-        bottom.dismiss(animated: true, completion: nil)
-        expect(bottom.presentedViewController).to(beNil())
-        expect(top.presentingViewController).to(beNil())
-    }
-
-    func test_presentViewController_immediatelyExecutesTheGivenCompletionHandler() {
-        let bottom = UIViewController()
-        let top = UIViewController()
-
-        var didFireCompletionHandler = false
+        var didCompletionHandlerFireAfterPresenting = false
         let completionHandler = {
-            didFireCompletionHandler = true
+            if Fleet.getApplicationScreen()?.topmostViewController === top {
+                didCompletionHandlerFireAfterPresenting = true
+            }
         }
 
         bottom.present(top, animated: true, completion: completionHandler)
 
-        expect(didFireCompletionHandler).to(beTrue())
+        expect(didCompletionHandlerFireAfterPresenting).toEventually(beTrue())
     }
 
-    func test_dismissViewController_immediatelyExecutesTheGivenCompletionHandler() {
+    func test_dismissViewController_dismissesThePresentedViewControllerAndFiresExecutionHandlerAfterDismiss() {
         let bottom = UIViewController()
+        Fleet.setApplicationWindowRootViewController(bottom)
         let top = UIViewController()
 
-        bottom.present(top, animated: true, completion: nil)
-
-        var didFireCompletionHandler = false
-        let completionHandler = {
-            didFireCompletionHandler = true
+        var didPresentSuccessfully = false
+        bottom.present(top, animated: true) {
+            if Fleet.getApplicationScreen()?.topmostViewController === top {
+                didPresentSuccessfully = true
+            }
         }
 
-        bottom.dismiss(animated: true, completion: completionHandler)
+        var didDismissPresentedController = false
+        bottom.dismiss(animated: true) {
+            if didPresentSuccessfully && Fleet.getApplicationScreen()?.topmostViewController === bottom {
+                didDismissPresentedController = true
+            }
+        }
 
-        expect(didFireCompletionHandler).to(beTrue())
+        expect(didDismissPresentedController).toEventually(beTrue())
     }
 
     func test_showViewController_immediatelyPresentsTheViewController() {
         let bottom = UIViewController()
+        Fleet.setApplicationWindowRootViewController(bottom)
         let top = UIViewController()
 
         bottom.show(top, sender: nil)
 
-        expect(bottom.presentedViewController).to(beIdenticalTo(top))
-        expect(top.presentingViewController).to(beIdenticalTo(bottom))
+        expect(Fleet.getApplicationScreen()?.topmostViewController).toEventually(beIdenticalTo(top))
     }
 
     func test_presentViewController_immediatelyLoadsThePresentedViewController() {
         let bottom = UIViewController()
+        Fleet.setApplicationWindowRootViewController(bottom)
         let top = TestViewController()
 
         bottom.present(top, animated: true, completion: nil)
@@ -83,6 +82,7 @@ class UIViewController_FleetSpec: XCTestCase {
 
     func test_presentViewController_doesNotLoadPresentedViewControllerMultipleTimes() {
         let bottom = UIViewController()
+        Fleet.setApplicationWindowRootViewController(bottom)
         let top = TestViewController()
 
         bottom.present(top, animated: true, completion: nil)
