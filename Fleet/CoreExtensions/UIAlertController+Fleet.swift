@@ -12,17 +12,20 @@ public extension UIAlertController {
             return action.title == title
         }
 
+        var completionHandler: (() -> ())?
         if let actionWithTitle = filteredActions.first {
             let isCancelStyle = actionWithTitle.style == .cancel
             if let handler = actionWithTitle.handler {
-                handler(actionWithTitle)
+                completionHandler = {
+                    handler(actionWithTitle)
+                }
             } else {
                 if !isCancelStyle {
                     Logger.logWarning("Action with title \"\(title)\" has no handler and is not Cancel style")
                 }
             }
 
-            presentingViewController?.dismiss(animated: true, completion: nil)
+            presentingViewController?.dismiss(animated: true, completion: completionHandler)
         } else {
             Logger.logWarning("No action with title \"\(title)\" found on alert")
         }

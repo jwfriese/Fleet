@@ -8,12 +8,24 @@ class UITableView_SelectCellActionSpec: XCTestCase {
     func test_selectCellAction_whenTheActionExists_performsTheAction() {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
-        let _ = viewController.view
+        Fleet.setApplicationWindowRootViewController(viewController)
 
         let error = viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0))
         expect(error).to(beNil())
-        expect((viewController.presentedViewController as? UIAlertController)).toEventuallyNot(beNil())
-        expect((viewController.presentedViewController as? UIAlertController)?.message).toEventually(equal("Two tapped at row 10"))
+
+        var didPresentAlert = false
+        let assertAlertPresentedWithCorrectData: () -> Bool = {
+            if didPresentAlert {
+                let alert = Fleet.getApplicationScreen()?.topmostViewController as? UIAlertController
+                return alert?.message == "Two tapped at row 10"
+            }
+
+            let presentedAlert = Fleet.getApplicationScreen()?.topmostViewController as? UIAlertController
+            didPresentAlert = presentedAlert != nil
+            return false
+        }
+
+        expect(assertAlertPresentedWithCorrectData()).toEventually(beTrue())
     }
 
     func test_selectCellAction_whenTheActionExists_callsWillBeginEditingOnDelegate() {

@@ -5,36 +5,69 @@ import Fleet
 @testable import FleetTestApp
 
 class UIAlertController_FleetSpec: XCTestCase {
-    var storyboard: UIStoryboard!
-    var viewControllerThatPresentsAlerts: SpottedTurtleViewController!
+    func test_tapAlertActionWithTitle_whenActionWithThatTitleExistsOnAlert_executesTheActionHandlerAfterDismissingAlert() {
+        let rootViewController = UIViewController()
+        Fleet.setApplicationWindowRootViewController(rootViewController)
 
-    override func setUp() {
-        super.setUp()
+        let alert = UIAlertController(title: "title", message: "message", preferredStyle: .alert)
+        var didCallHandlerAfterDismissingAlert = false
+        let actionHandler: (UIAlertAction) -> () = { _ in
+            if Fleet.getApplicationScreen()?.topmostViewController === rootViewController {
+                didCallHandlerAfterDismissingAlert = true
+            }
+        }
 
-        storyboard = UIStoryboard.init(name: "TurtlesAndFriendsStoryboard", bundle: nil)
-        viewControllerThatPresentsAlerts = storyboard.instantiateViewController(withIdentifier: "SpottedTurtleViewController") as! SpottedTurtleViewController
+        let action = UIAlertAction(title: "action", style: .default, handler: actionHandler)
+        alert.addAction(action)
+        rootViewController.present(alert, animated: false, completion: nil)
 
-        Fleet.setApplicationWindowRootViewController(viewControllerThatPresentsAlerts)
+        expect(Fleet.getApplicationScreen()?.topmostViewController).to(beIdenticalTo(alert))
+
+        alert.tapAlertAction(withTitle: "action")
+        expect(didCallHandlerAfterDismissingAlert).toEventually(beTrue())
     }
 
-    func test_tapAlertActionWithTitle_whenActionWithThatTitleExistsOnAlert_executesTheActionHandler() {
-        self.viewControllerThatPresentsAlerts.alertButtonOne?.tap()
+    func test_tapAlertActionWithTitle_whenActionWithThatTitleExistsOnAlert_whenActionIsCancelStyle_executesTheActionHandlerAfterDismissingAlert() {
+        let rootViewController = UIViewController()
+        Fleet.setApplicationWindowRootViewController(rootViewController)
 
-        let alertController = Fleet.getApplicationScreen()?.presentedAlert
-        alertController?.tapAlertAction(withTitle: "Pick Up Anyway")
+        let alert = UIAlertController(title: "title", message: "message", preferredStyle: .alert)
+        var didCallHandlerAfterDismissingAlert = false
+        let actionHandler: (UIAlertAction) -> () = { _ in
+            if Fleet.getApplicationScreen()?.topmostViewController === rootViewController {
+                didCallHandlerAfterDismissingAlert = true
+            }
+        }
 
-        expect(self.viewControllerThatPresentsAlerts.presentedViewController).to(beNil())
-        expect(self.viewControllerThatPresentsAlerts.informationalLabel?.text).to(equal("WAIT NO PUT ME DOWN"))
+        let action = UIAlertAction(title: "cancel", style: .cancel, handler: actionHandler)
+        alert.addAction(action)
+        rootViewController.present(alert, animated: false, completion: nil)
+
+        expect(Fleet.getApplicationScreen()?.topmostViewController).to(beIdenticalTo(alert))
+
+        alert.tapAlertAction(withTitle: "cancel")
+        expect(didCallHandlerAfterDismissingAlert).toEventually(beTrue())
     }
 
-    func test_tapAlertActionWithTitle_whenActionWithThatTitleExistsOnAlert_whenActionIsCancelStyle_dismissesAlert() {
-        let alertWithCancelAction = UIAlertController()
-        alertWithCancelAction.addAction(UIAlertAction(title: "Go Away", style: .cancel, handler: nil))
-        viewControllerThatPresentsAlerts.present(alertWithCancelAction, animated: false, completion: nil)
+    func test_tapAlertActionWithTitle_callsUIKitMethodsOnMainThread() {
+        let rootViewController = UIViewController()
+        Fleet.setApplicationWindowRootViewController(rootViewController)
 
-        let alertController = Fleet.getApplicationScreen()?.presentedAlert
-        alertController?.tapAlertAction(withTitle: "Go Away")
+        let alert = UIAlertController(title: "title", message: "message", preferredStyle: .alert)
+        var didCallOnMainThread = false
+        let actionHandler: (UIAlertAction) -> () = { _ in
+            if Fleet.getApplicationScreen()?.topmostViewController === rootViewController {
+                didCallOnMainThread = Thread.isMainThread
+            }
+        }
 
-        expect(self.viewControllerThatPresentsAlerts.presentedViewController).to(beNil())
+        let action = UIAlertAction(title: "action", style: .default, handler: actionHandler)
+        alert.addAction(action)
+        rootViewController.present(alert, animated: false, completion: nil)
+
+        expect(Fleet.getApplicationScreen()?.topmostViewController).to(beIdenticalTo(alert))
+
+        alert.tapAlertAction(withTitle: "action")
+        expect(didCallOnMainThread).toEventually(beTrue())
     }
 }
