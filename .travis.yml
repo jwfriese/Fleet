@@ -18,4 +18,4 @@ install:
 - go get github.com/jwfriese/iossimulator
 script:
 - go build script/test.go
-- ./test 'iOS 9.3' 'iPhone 6'
+- ./test 'iOS 10.0' 'iPhone 6'
