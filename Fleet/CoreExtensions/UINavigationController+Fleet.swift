@@ -25,7 +25,10 @@ extension UINavigationController {
     }
 
     func fleet_pushViewController(_ viewController: UIViewController, animated: Bool) {
-        fleet_pushViewController(viewController, animated: false)
+        var newViewControllers = self.viewControllers
+        newViewControllers.append(viewController)
+        self.setViewControllers(newViewControllers, animated: false)
+        let _ = viewController.view
     }
 
     fileprivate class func swizzlePopViewController() {
@@ -39,7 +42,10 @@ extension UINavigationController {
     }
 
     func fleet_popViewControllerAnimated(_ animated: Bool) -> UIViewController? {
-        return fleet_popViewControllerAnimated(false)
+        var newViewControllers = self.viewControllers
+        let poppedViewController = newViewControllers.removeLast()
+        self.setViewControllers(newViewControllers, animated: false)
+        return poppedViewController
     }
 
     fileprivate class func swizzlePopToViewController() {
