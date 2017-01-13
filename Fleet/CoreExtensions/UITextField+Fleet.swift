@@ -20,7 +20,7 @@ extension UITextField {
     }
 }
 
-public enum FLTTextFieldError: Error {
+public enum TextFieldError: Error {
     case disabledTextFieldError
 }
 
@@ -29,7 +29,7 @@ extension UITextField {
         Gives the text field focus, firing the .EditingDidBegin events. It
         does not give the text field first responder.
 
-        - Throws: `FLTTextFieldError.DisabledTextFieldError` if the
+        - Throws: `TextFieldError.DisabledTextFieldError` if the
             text field is disabled.
     */
     public func focus() throws {
@@ -39,7 +39,7 @@ extension UITextField {
         }
 
         if !isEnabled {
-            throw FLTTextFieldError.disabledTextFieldError
+            throw TextFieldError.disabledTextFieldError
         }
 
         fleet_isFocused = true
@@ -80,7 +80,7 @@ extension UITextField {
 
         - Parameter text:   The text to type into the field
 
-        - Throws: `FLTTextFieldError.DisabledTextFieldError` if the
+        - Throws: `TextFieldError.DisabledTextFieldError` if the
             text field is disabled.
     */
     public func enter(text: String) throws {

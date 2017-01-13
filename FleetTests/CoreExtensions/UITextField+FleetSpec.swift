@@ -86,7 +86,7 @@ class UITextField_FleetSpec: XCTestCase {
 
     func test_enter_whenDisabled_throwsError() {
         textField.isEnabled = false
-        expect { try self.textField.focus() }.to(throwError(FLTTextFieldError.disabledTextFieldError))
+        expect { try self.textField.focus() }.to(throwError(TextFieldError.disabledTextFieldError))
     }
 
 
@@ -147,7 +147,7 @@ class UITextField_FleetSpec: XCTestCase {
 
     func test_enterText_whenDisabled_throwsError() {
         textField.isEnabled = false
-        expect { try self.textField.enter(text: "turtle") }.to(throwError(FLTTextFieldError.disabledTextFieldError))
+        expect { try self.textField.enter(text: "turtle") }.to(throwError(TextFieldError.disabledTextFieldError))
     }
 
     func test_typeText_typesTextIntoTextField() {
