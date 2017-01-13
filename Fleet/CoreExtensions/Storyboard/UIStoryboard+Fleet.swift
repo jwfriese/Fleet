@@ -60,7 +60,7 @@ extension UIStoryboard {
             mock = try Fleet.mockFor(classToMock)
         } catch let error {
             let fleetError = error as! FleetError
-            throw FLTStoryboardBindingError.invalidMockType(fleetError.description)
+            throw StoryboardBindingError.invalidMockType(fleetError.description)
         }
 
         try bind(viewController: mock!, toIdentifier: identifier)
@@ -95,7 +95,7 @@ extension UIStoryboard {
             mock = try Fleet.mockFor(classToMock)
         } catch let error {
             let fleetError = error as! FleetError
-            throw FLTStoryboardBindingError.invalidMockType(fleetError.description)
+            throw StoryboardBindingError.invalidMockType(fleetError.description)
         }
 
         try bind(viewController: mock!, toIdentifier: identifier, forReferencedStoryboardWithName: referencedStoryboardName)
@@ -132,7 +132,7 @@ extension UIStoryboard {
             mock = try Fleet.mockFor(classToMock)
         } catch let error {
             let fleetError = error as! FleetError
-            throw FLTStoryboardBindingError.invalidMockType(fleetError.description)
+            throw StoryboardBindingError.invalidMockType(fleetError.description)
         }
 
         try bind(viewController: mock!, asInitialViewControllerForReferencedStoryboardWithName: name)
@@ -148,15 +148,15 @@ extension UIStoryboard {
      - Parameter identifier:     The identifier whose reference should have the view controller
      bound to it
 
-     - Throws: A `FLTStoryboardBindingError.InvalidViewControllerIdentifier` if there is no
+     - Throws: A `StoryboardBindingError.InvalidViewControllerIdentifier` if there is no
      view controller reference on the storyboard with the given identifier, or
-     `FLTStoryboardBindingError.InvalidViewControllerState` if the input view controller has
+     `StoryboardBindingError.InvalidViewControllerState` if the input view controller has
      already loaded its view.
      */
     public func bind(viewController: UIViewController, toIdentifier identifier: String) throws {
         if viewController.viewDidLoadCallCount > 0 {
             let message = "Attempted to bind a view controller whose view has already been loaded to storyboard identifier '\(identifier)'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."
-            throw FLTStoryboardBindingError.invalidViewControllerState(message)
+            throw StoryboardBindingError.invalidViewControllerState(message)
         }
         try initializeStoryboardBindings()
         if let storyboardBindingIdentifier = storyboardBindingIdentifier {
@@ -179,16 +179,16 @@ extension UIStoryboard {
      - Parameter referencedStoryboardName:     The name of the storyboard to which the external
      reference is associated
 
-     - Throws: A `FLTStoryboardBindingError.InvalidExternalStoryboardReference` if there is no
+     - Throws: A `StoryboardBindingError.InvalidExternalStoryboardReference` if there is no
      external storyboard view controller reference on the storyboard with the given identifier
      and given storyboard name, or
-     `FLTStoryboardBindingError.InvalidViewControllerState` if the input view controller has
+     `StoryboardBindingError.InvalidViewControllerState` if the input view controller has
      already loaded its view.
      */
     public func bind(viewController: UIViewController, toIdentifier identifier: String, forReferencedStoryboardWithName referencedStoryboardName: String) throws {
         if viewController.viewDidLoadCallCount > 0 {
             let message = "Attempted to bind a view controller whose view has already been loaded to view controller identifier '\(identifier)' on storyboard '\(referencedStoryboardName)'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."
-            throw FLTStoryboardBindingError.invalidViewControllerState(message)
+            throw StoryboardBindingError.invalidViewControllerState(message)
         }
         try initializeStoryboardBindings()
         if let storyboardBindingIdentifier = storyboardBindingIdentifier {
@@ -210,16 +210,16 @@ extension UIStoryboard {
      - Parameter referencedStoryboardName:     The name of the storyboard to which the external
      reference is associated
 
-     - Throws: A `FLTStoryboardBindingError.InvalidExternalStoryboardReference` if there is no
+     - Throws: A `StoryboardBindingError.InvalidExternalStoryboardReference` if there is no
      external storyboard view controller reference on the storyboard with the given
      storyboard name, or
-     `FLTStoryboardBindingError.InvalidViewControllerState` if the input view controller has
+     `StoryboardBindingError.InvalidViewControllerState` if the input view controller has
      already loaded its view.
      */
     public func bind(viewController: UIViewController, asInitialViewControllerForReferencedStoryboardWithName referencedStoryboardName: String) throws {
         if viewController.viewDidLoadCallCount > 0 {
             let message = "Attempted to bind a view controller whose view has already been loaded to initial view controller of storyboard '\(referencedStoryboardName)'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."
-            throw FLTStoryboardBindingError.invalidViewControllerState(message)
+            throw StoryboardBindingError.invalidViewControllerState(message)
         }
         try initializeStoryboardBindings()
         if let storyboardBindingIdentifier = storyboardBindingIdentifier {

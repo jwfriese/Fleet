@@ -25,10 +25,10 @@ internal final class StoryboardInstanceBinding {
                     message = "Could not find identifier \(identifier) on storyboard with name \(storyboardName)"
                 }
 
-                throw FLTStoryboardBindingError.invalidViewControllerIdentifier(message)
+                throw StoryboardBindingError.invalidViewControllerIdentifier(message)
             }
         } else {
-            throw FLTStoryboardBindingError.internalInconsistency("Failed to build storyboard reference map. Check the documentation to ensure that you have set up Fleet correctly for storyboard testing")
+            throw StoryboardBindingError.internalInconsistency("Failed to build storyboard reference map. Check the documentation to ensure that you have set up Fleet correctly for storyboard testing")
         }
 
         binding[identifier] = viewController
@@ -48,7 +48,7 @@ internal final class StoryboardInstanceBinding {
         }
 
         if !referenceExists {
-            throw FLTStoryboardBindingError.invalidExternalStoryboardReference("Could not find identifier \(identifier) (external storyboard reference: \(name)) on storyboard \(storyboardName)")
+            throw StoryboardBindingError.invalidExternalStoryboardReference("Could not find identifier \(identifier) (external storyboard reference: \(name)) on storyboard \(storyboardName)")
         }
     }
 
@@ -66,7 +66,7 @@ internal final class StoryboardInstanceBinding {
         }
 
         if !referenceExists {
-            throw FLTStoryboardBindingError.invalidExternalStoryboardReference("Could not find reference to an external storyboard with name \(name) on storyboard \(storyboardName)")
+            throw StoryboardBindingError.invalidExternalStoryboardReference("Could not find reference to an external storyboard with name \(name) on storyboard \(storyboardName)")
         }
     }
 

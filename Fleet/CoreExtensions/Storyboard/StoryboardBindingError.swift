@@ -1,6 +1,6 @@
 import Foundation
 
-public enum FLTStoryboardBindingError: Error {
+public enum StoryboardBindingError: Error {
     case invalidViewControllerIdentifier(String)
     case invalidExternalStoryboardReference(String)
     case internalInconsistency(String)
