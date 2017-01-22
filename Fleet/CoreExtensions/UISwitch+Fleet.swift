@@ -10,6 +10,7 @@ extension UISwitch {
         }
 
         setOn(!isOn, animated: false)
+        sendActions(for: .valueChanged)
         return nil
     }
 }

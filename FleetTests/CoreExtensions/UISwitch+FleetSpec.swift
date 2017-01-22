@@ -39,4 +39,25 @@ class UISwitch_FleetSpec: XCTestCase {
         expect(error?.description).to(equal("Fleet error: Cannot flip UISwitch: Control is not enabled"))
         expect(subject.isOn).to(beFalse())
     }
+
+    fileprivate class SwitchCallbackTarget: NSObject {
+        var capturedSwitch: UISwitch?
+
+        func onSwitchValueChanged(sender: UISwitch) {
+            capturedSwitch = sender
+        }
+    }
+
+    func test_flip_callsActionsBoundToControlEvent() {
+        let subject = UISwitch()
+        subject.isHidden = false
+        subject.isEnabled = true
+
+        let callbackTarget = SwitchCallbackTarget()
+        subject.addTarget(callbackTarget, action: #selector(SwitchCallbackTarget.onSwitchValueChanged(sender:)), for: .valueChanged)
+
+        let error = subject.flip()
+        expect(error).to(beNil())
+        expect(callbackTarget.capturedSwitch).to(beIdenticalTo(subject))
+    }
 }
