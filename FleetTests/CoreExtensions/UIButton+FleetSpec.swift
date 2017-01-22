@@ -3,19 +3,23 @@ import Fleet
 import Nimble
 
 class UIButton_FleetSpec: XCTestCase {
-    var buttonTapTestViewController: ButtonTapTestViewController?
+    fileprivate class ButtonCallbackTarget: NSObject {
+        var capturedButton: UIButton?
 
-    override func setUp() {
-        super.setUp()
-
-        buttonTapTestViewController = ButtonTapTestViewController(nibName: "ButtonTapTestViewController", bundle: Bundle.currentTestBundle)
-        let _ = buttonTapTestViewController?.view
+        func onButtonTapped(sender: UIButton) {
+            capturedButton = sender
+        }
     }
 
-    func testCallingTapOnButton() {
-        buttonTapTestViewController?.testButton?.tap()
-        buttonTapTestViewController?.changeLabel()
+    func test_tap_whenButtonIsVisibleAndEnabled_tapsTheButton() {
+        let subject = UIButton()
+        subject.isHidden = false
+        subject.isEnabled = true
 
-        expect(self.buttonTapTestViewController?.testLabel?.text).toEventually(equal("some test label"))
+        let callbackTarget = ButtonCallbackTarget()
+        subject.addTarget(callbackTarget, action: #selector(ButtonCallbackTarget.onButtonTapped(sender:)), for: .touchUpInside)
+
+        subject.tap()
+        expect(callbackTarget.capturedButton).to(beIdenticalTo(subject))
     }
 }

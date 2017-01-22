@@ -19,7 +19,6 @@
 		7B0D3B641CFB2E120096DBC2 /* SpottedTurtleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B321CFA74870096DBC2 /* SpottedTurtleViewController.swift */; };
 		7B0D3B651CFB2E230096DBC2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B471CFB29B40096DBC2 /* AppDelegate.swift */; };
 		7B0D3B661CFB2E280096DBC2 /* CrabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B301CFA74070096DBC2 /* CrabViewController.swift */; };
-		7B0D3B711CFB5F5C0096DBC2 /* ButtonTapTestViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7BA90AD91CC3F0C60040B031 /* ButtonTapTestViewController.xib */; };
 		7B13BA141DD4ABF100C9098C /* BirdsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B13BA131DD4ABF100C9098C /* BirdsViewController.swift */; };
 		7B13BA161DD4AC4000C9098C /* Birds.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B13BA151DD4AC4000C9098C /* Birds.storyboard */; };
 		7B13BA1C1DD4B42B00C9098C /* FleetError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B13BA1B1DD4B42B00C9098C /* FleetError.swift */; };
@@ -62,7 +61,6 @@
 		7BA90ACA1CC3B8950040B031 /* Fleet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BA90AB31CC130980040B031 /* Fleet.framework */; };
 		7BA90AD21CC3EF420040B031 /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BA90AD11CC3EF420040B031 /* Nimble.framework */; };
 		7BA90AD41CC3EF6F0040B031 /* UIButton+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90AD31CC3EF6F0040B031 /* UIButton+FleetSpec.swift */; };
-		7BA90ADC1CC3F0E00040B031 /* ButtonTapTestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90ADB1CC3F0E00040B031 /* ButtonTapTestViewController.swift */; };
 		7BA90ADF1CC3F6C50040B031 /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90ADE1CC3F6C50040B031 /* File.swift */; };
 		7BAC789F1D3E6C96000F86E4 /* UITextField+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBFCD2E1D3DAE6C00C3EF0F /* UITextField+FleetSpec.swift */; };
 		7BB14A5B1D747940002ABE82 /* KittensStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7BB14A5A1D747940002ABE82 /* KittensStoryboard.storyboard */; };
@@ -158,8 +156,6 @@
 		7BA90AC51CC3B8950040B031 /* FleetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FleetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BA90AD11CC3EF420040B031 /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = "Externals/Nimble/build/Debug-iphoneos/Nimble.framework"; sourceTree = "<group>"; };
 		7BA90AD31CC3EF6F0040B031 /* UIButton+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIButton+FleetSpec.swift"; sourceTree = "<group>"; };
-		7BA90AD91CC3F0C60040B031 /* ButtonTapTestViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ButtonTapTestViewController.xib; sourceTree = "<group>"; };
-		7BA90ADB1CC3F0E00040B031 /* ButtonTapTestViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonTapTestViewController.swift; sourceTree = "<group>"; };
 		7BA90ADE1CC3F6C50040B031 /* File.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		7BB14A5A1D747940002ABE82 /* KittensStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = KittensStoryboard.storyboard; sourceTree = "<group>"; };
 		7BB14A5C1D7479C4002ABE82 /* KittensNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KittensNavigationController.swift; sourceTree = "<group>"; };
@@ -430,7 +426,6 @@
 				7BB14A651D772481002ABE82 /* FleetSpec.swift */,
 				7B13BA1D1DD4B4DA00C9098C /* FleetErrorSpec.swift */,
 				7BA90ADD1CC3F6B50040B031 /* Helpers */,
-				7BA90AD61CC3F07B0040B031 /* SupportingResources */,
 				7BA90AD01CC3E82B0040B031 /* CoreExtensions */,
 				7B8F2B361DE258DE00B6F4C2 /* ObjC */,
 				7B8F2B3D1DE2595300B6F4C2 /* Mocking */,
@@ -464,31 +459,6 @@
 				7BA90AD11CC3EF420040B031 /* Nimble.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		7BA90AD61CC3F07B0040B031 /* SupportingResources */ = {
-			isa = PBXGroup;
-			children = (
-				7BA90AD71CC3F09C0040B031 /* CoreExtensions */,
-			);
-			path = SupportingResources;
-			sourceTree = "<group>";
-		};
-		7BA90AD71CC3F09C0040B031 /* CoreExtensions */ = {
-			isa = PBXGroup;
-			children = (
-				7BA90AD81CC3F0B00040B031 /* UIButton */,
-			);
-			path = CoreExtensions;
-			sourceTree = "<group>";
-		};
-		7BA90AD81CC3F0B00040B031 /* UIButton */ = {
-			isa = PBXGroup;
-			children = (
-				7BA90AD91CC3F0C60040B031 /* ButtonTapTestViewController.xib */,
-				7BA90ADB1CC3F0E00040B031 /* ButtonTapTestViewController.swift */,
-			);
-			path = UIButton;
 			sourceTree = "<group>";
 		};
 		7BA90ADD1CC3F6B50040B031 /* Helpers */ = {
@@ -669,7 +639,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7B0D3B711CFB5F5C0096DBC2 /* ButtonTapTestViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -751,7 +720,6 @@
 				7B933C291D77B48D001B98F0 /* ScreenSpec.swift in Sources */,
 				7B29F4251DDDEA60008EA836 /* SegueDetailSpec.swift in Sources */,
 				7B933C281D77B48D001B98F0 /* VisualTreeWalkerSpec.swift in Sources */,
-				7BA90ADC1CC3F0E00040B031 /* ButtonTapTestViewController.swift in Sources */,
 				7BA90ADF1CC3F6C50040B031 /* File.swift in Sources */,
 				7BB14A5F1D75065E002ABE82 /* UINavigationController+FleetSpec.swift in Sources */,
 				7B9458141D4D7F0300F16A64 /* StoryboardDeserializerSpec.swift in Sources */,

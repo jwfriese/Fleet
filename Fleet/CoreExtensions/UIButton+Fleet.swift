@@ -1,6 +1,6 @@
-import Foundation
+import UIKit
 
-public extension UIButton {
+extension UIButton {
 
     /**
         Mimics a user tap on the button, firing any associated events
