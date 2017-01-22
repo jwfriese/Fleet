@@ -100,7 +100,7 @@ class ScreenSpec: XCTestCase {
         window.rootViewController = viewControllerThatPresentsAlerts
         window.makeKeyAndVisible()
 
-        viewControllerThatPresentsAlerts.alertButtonOne?.tap()
+        let _ = viewControllerThatPresentsAlerts.alertButtonOne?.tap()
 
         let screen = Screen(forWindow: window)
         expect(screen.presentedAlert).toNot(beNil())
