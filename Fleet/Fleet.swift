@@ -1,7 +1,7 @@
 import UIKit
 
-open class Fleet {
-    open static func getApplicationScreen() -> FLTScreen? {
+public class Fleet {
+    public static func getApplicationScreen() -> FLTScreen? {
         guard let window = UIApplication.shared.keyWindow else {
             Logger.logWarning("Cannot get application screen: UIApplication not set up with a key window.")
             return nil
@@ -10,11 +10,11 @@ open class Fleet {
         return Screen(forWindow: window)
     }
 
-    open static func getScreen(forWindow window: UIWindow) -> FLTScreen {
+    public static func getScreen(forWindow window: UIWindow) -> FLTScreen {
         return Screen(forWindow: window)
     }
 
-    open static func setApplicationWindowRootViewController(_ viewController: UIViewController) {
+    public static func setApplicationWindowRootViewController(_ viewController: UIViewController) {
         UIApplication.shared.keyWindow?.rootViewController = viewController
     }
 
@@ -29,5 +29,4 @@ open class Fleet {
             }
             .first
     }
-
 }
