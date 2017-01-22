@@ -25,7 +25,7 @@ let controller = getControllerUnderTest() as? ControllerUnderTest
 let _ = controller?.someSwitch?.flip()
 ```
 
-`flip` on `UISwitch` toggles the switch without animating it, doing the work of setting the switch with the 
+`flip` on `UISwitch` toggles the switch without animating it, doing the work of setting the switch with the
 correct value and ensuring that all relevant control events get sent.
 
 Additionally, it returns a `FleetError` optional that will contain an error in the following situations:
@@ -33,4 +33,4 @@ Additionally, it returns a `FleetError` optional that will contain an error in t
 2) The `UISwitch` is not enabled
 
 By contrast, calling the `setOn(_, animated:)` method yourself will give you no indication of whether a user
-could even have interacted with that object in the first place. 
+could even have interacted with that object in the first place.
