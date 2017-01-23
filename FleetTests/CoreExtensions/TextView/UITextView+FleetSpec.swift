@@ -376,4 +376,30 @@ class UITextView_FleetSpec: XCTestCase {
         expect(self.delegate.didCallDidEndEditing).to(beTrue())
         expect(self.subject.isFirstResponder).to(beFalse())
     }
+
+    fileprivate class BarebonesTextViewDelegate: NSObject, UITextViewDelegate {
+        override init() {}
+    } // implements none of the methods
+
+    func test_whenUsingDelegateWithNoImplementations_performsAsExpected() {
+        let textView = UITextView()
+        let minimallyImplementedDelegate = BarebonesTextViewDelegate()
+        textView.delegate = minimallyImplementedDelegate
+        try! Test.embedViewIntoMainApplicationWindow(textView)
+
+        var error = textView.enter(text: "turtle magic")
+        expect(error).to(beNil())
+        expect(textView.text).to(equal("turtle magic"))
+
+        error = textView.startEditing()
+        expect(error).to(beNil())
+
+        error = textView.backspace()
+        expect(error).to(beNil())
+        expect(textView.text).to(equal("turtle magi"))
+
+        error = textView.paste(text: "c woo")
+        expect(error).to(beNil())
+        expect(textView.text).to(equal("turtle magic woo"))
+    }
 }

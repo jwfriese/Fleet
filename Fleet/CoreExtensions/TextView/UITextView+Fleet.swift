@@ -56,8 +56,11 @@ extension UITextView {
             return FleetError(message: "Failed to start editing UITextView: Control is not editable.")
         }
         if let delegate = delegate {
-            guard delegate.textViewShouldBeginEditing!(self) else {
-                return nil
+            let doesImplementShouldBeginEditing = delegate.responds(to: #selector(UITextViewDelegate.textViewShouldBeginEditing(_:)))
+            if doesImplementShouldBeginEditing {
+                guard delegate.textViewShouldBeginEditing!(self) else {
+                    return nil
+                }
             }
         }
         guard becomeFirstResponder() else {
@@ -79,8 +82,11 @@ extension UITextView {
             return FleetError(message: "Could not stop editing UITextView: Must start editing the text view before you can stop editing it.")
         }
         if let delegate = delegate {
-            guard delegate.textViewShouldEndEditing!(self) else {
-                return nil
+            let doesImplementShouldEndEditing = delegate.responds(to: #selector(UITextViewDelegate.textViewShouldEndEditing(_:)))
+            if doesImplementShouldEndEditing {
+                guard delegate.textViewShouldEndEditing!(self) else {
+                    return nil
+                }
             }
         }
         guard resignFirstResponder() else {
@@ -110,7 +116,11 @@ extension UITextView {
                 existingText = unwrappedText
             }
             if let delegate = delegate {
-                let doesAllowTextChange = delegate.textView!(self, shouldChangeTextIn: NSMakeRange(existingText.characters.count, 0), replacementText: String(character))
+                let doesImplementShouldChangeText = delegate.responds(to: #selector(UITextViewDelegate.textView(_:shouldChangeTextIn:replacementText:)))
+                var doesAllowTextChange = true
+                if doesImplementShouldChangeText {
+                    doesAllowTextChange = delegate.textView!(self, shouldChangeTextIn: NSMakeRange(existingText.characters.count, 0), replacementText: String(character))
+                }
                 if doesAllowTextChange {
                     delegate.textViewDidChange?(self)
                     text.append(character)
@@ -142,7 +152,11 @@ extension UITextView {
             existingText = unwrappedText
         }
         if let delegate = delegate {
-            let doesAllowTextChange = delegate.textView!(self, shouldChangeTextIn: NSMakeRange(existingText.characters.count, 0), replacementText: textToPaste)
+            let doesImplementShouldChangeText = delegate.responds(to: #selector(UITextViewDelegate.textView(_:shouldChangeTextIn:replacementText:)))
+            var doesAllowTextChange = true
+            if doesImplementShouldChangeText {
+                doesAllowTextChange = delegate.textView!(self, shouldChangeTextIn: NSMakeRange(existingText.characters.count, 0), replacementText: textToPaste)
+            }
             if doesAllowTextChange {
                 delegate.textViewDidChange?(self)
                 text.append(textToPaste)
@@ -184,7 +198,11 @@ extension UITextView {
         if let delegate = delegate {
             let location = existingText.characters.count > 0 ? existingText.characters.count - 1 : 0
             let backspaceAmount = existingText.characters.count > 0 ? 1 : 0
-            let doesAllowTextChange = delegate.textView!(self, shouldChangeTextIn: NSMakeRange(location, backspaceAmount), replacementText: "")
+            let doesImplementShouldChangeText = delegate.responds(to: #selector(UITextViewDelegate.textView(_:shouldChangeTextIn:replacementText:)))
+            var doesAllowTextChange = true
+            if doesImplementShouldChangeText {
+                doesAllowTextChange = delegate.textView!(self, shouldChangeTextIn: NSMakeRange(location, backspaceAmount), replacementText: "")
+            }
             if doesAllowTextChange {
                 delegate.textViewDidChange?(self)
                 text.remove(at: text.index(before: text.endIndex))
