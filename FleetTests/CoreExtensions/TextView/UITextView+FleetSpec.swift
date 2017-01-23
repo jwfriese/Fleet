@@ -202,4 +202,46 @@ class UITextView_FleetSpec: XCTestCase {
         expect(error).to(beNil())
         expect(self.subject.text).to(equal("turtle magic"))
     }
+
+    func test_paste_putsGivenTextIntoTextView() {
+        let _ = subject.startEditing()
+        let error = subject.paste(text: "turtle magic")
+
+        expect(error).to(beNil())
+        expect(self.subject.text).to(equal("turtle magic"))
+    }
+
+    func test_paste_whenDelegateAllowsTextChanges_callsDelegateMethodsAppropriately() {
+        delegate.shouldAllowTextChanges = true
+        let _ = subject.startEditing()
+        let error = subject.paste(text: "turtle magic")
+
+        expect(error).to(beNil())
+        expect(self.delegate.textChanges).to(equal(["turtle magic"]))
+        expect(self.delegate.textRanges.count).to(equal(1))
+        expect(self.delegate.textRanges[0].location).to(equal(0))
+        expect(self.delegate.textRanges[0].length).to(equal(0))
+        expect(self.delegate.didChangeCallCount).to(equal(1))
+        expect(self.delegate.didChangeSelectionCallCount).to(equal(1))
+    }
+
+    func test_paste_whenDelegateDoesNotAllowTextChanges_callsDelegateMethodsAppropriately() {
+        delegate.shouldAllowTextChanges = false
+        let _ = subject.startEditing()
+        let error = subject.paste(text: "turtle magic")
+
+        expect(error).to(beNil())
+        expect(self.delegate.textChanges).to(equal([]))
+        expect(self.delegate.textRanges.count).to(equal(1))
+        expect(self.delegate.textRanges[0].location).to(equal(0))
+        expect(self.delegate.textRanges[0].length).to(equal(0))
+        expect(self.delegate.didChangeCallCount).to(equal(0))
+        expect(self.delegate.didChangeSelectionCallCount).to(equal(0))
+        expect(self.subject.text).to(equal(""))
+    }
+
+    func test_paste_whenNotFirstResponder_returnsError() {
+        let error = subject.paste(text: "turtle magic")
+        expect(error?.description).to(equal("Fleet error: Could not paste text into UITextView: Must start editing the text view before text can be pasted into it."))
+    }
 }

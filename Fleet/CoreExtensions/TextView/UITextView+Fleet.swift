@@ -49,4 +49,26 @@ extension UITextView {
 
         return nil
     }
+
+    public func paste(text textToPaste: String) -> FleetError? {
+        guard isFirstResponder else {
+            return FleetError(message: "Could not paste text into UITextView: Must start editing the text view before text can be pasted into it.")
+        }
+
+        var existingText = ""
+        if let unwrappedText = text {
+            existingText = unwrappedText
+        }
+        if let delegate = delegate {
+            let doesAllowTextChange = delegate.textView!(self, shouldChangeTextIn: NSMakeRange(existingText.characters.count, 0), replacementText: textToPaste)
+            if doesAllowTextChange {
+                delegate.textViewDidChange?(self)
+                text.append(textToPaste)
+            }
+        } else {
+            text.append(textToPaste)
+        }
+
+        return nil
+    }
 }
