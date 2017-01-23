@@ -356,4 +356,24 @@ class UITextView_FleetSpec: XCTestCase {
         expect(self.delegate.didChangeCallCount).to(equal(0))
         expect(self.delegate.didChangeSelectionCallCount).to(equal(0))
     }
+
+    func test_enter_convenienceMethod_startsEditingATextViewTypesTextAndStopsEditingAllInOneAction() {
+        let error = subject.enter(text: "turtle magic")
+
+        expect(error).to(beNil())
+        expect(self.subject.text).to(equal("turtle magic"))
+        expect(self.delegate.textChanges).to(equal(["t", "u", "r", "t", "l", "e", " ", "m", "a", "g", "i", "c"]))
+        expect(self.delegate.textRanges.count).to(equal(12))
+        expect(self.delegate.textRanges[0].location).to(equal(0))
+        expect(self.delegate.textRanges[0].length).to(equal(0))
+        expect(self.delegate.textRanges[9].location).to(equal(9))
+        expect(self.delegate.textRanges[9].length).to(equal(0))
+        expect(self.delegate.didChangeCallCount).to(equal(12)) // 12 for typed text
+        expect(self.delegate.didChangeSelectionCallCount).to(equal(12)) // 12 for typed text
+        expect(self.delegate.didCallShouldBeginEditing).to(beTrue())
+        expect(self.delegate.didCallDidBeginEditing).to(beTrue())
+        expect(self.delegate.didCallShouldEndEditing).to(beTrue())
+        expect(self.delegate.didCallDidEndEditing).to(beTrue())
+        expect(self.subject.isFirstResponder).to(beFalse())
+    }
 }

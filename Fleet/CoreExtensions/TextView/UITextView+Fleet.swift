@@ -1,6 +1,20 @@
 import UIKit
 
 extension UITextView {
+    public func enter(text: String) -> FleetError? {
+        if let error = startEditing() {
+            return error
+        }
+        if let error = type(text: text) {
+            return error
+        }
+        if let error = stopEditing() {
+            return error
+        }
+
+        return nil
+    }
+
     public func startEditing() -> FleetError? {
         if isFirstResponder {
             return nil
