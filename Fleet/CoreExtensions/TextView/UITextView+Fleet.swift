@@ -71,4 +71,36 @@ extension UITextView {
 
         return nil
     }
+
+    public func backspace() -> FleetError? {
+        guard isFirstResponder else {
+            return FleetError(message: "Could not backspace in UITextView: Must start editing the text view before backspaces can be performed.")
+        }
+
+        var existingText = ""
+        if let unwrappedText = text {
+            existingText = unwrappedText
+        }
+        if existingText == "" {
+            if let delegate = delegate {
+                // this still gets called in this case
+                let _ = delegate.textView!(self, shouldChangeTextIn: NSMakeRange(0, 0), replacementText: "")
+            }
+
+            return nil
+        }
+        if let delegate = delegate {
+            let location = existingText.characters.count > 0 ? existingText.characters.count - 1 : 0
+            let backspaceAmount = existingText.characters.count > 0 ? 1 : 0
+            let doesAllowTextChange = delegate.textView!(self, shouldChangeTextIn: NSMakeRange(location, backspaceAmount), replacementText: "")
+            if doesAllowTextChange {
+                delegate.textViewDidChange?(self)
+                text.remove(at: text.index(before: text.endIndex))
+            }
+        } else {
+            text.remove(at: text.index(before: text.endIndex))
+        }
+
+        return nil
+    }
 }

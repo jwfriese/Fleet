@@ -211,6 +211,11 @@ class UITextView_FleetSpec: XCTestCase {
         expect(self.subject.text).to(equal("turtle magic"))
     }
 
+    func test_paste_whenNotFirstResponder_returnsError() {
+        let error = subject.paste(text: "turtle magic")
+        expect(error?.description).to(equal("Fleet error: Could not paste text into UITextView: Must start editing the text view before text can be pasted into it."))
+    }
+
     func test_paste_whenDelegateAllowsTextChanges_callsDelegateMethodsAppropriately() {
         delegate.shouldAllowTextChanges = true
         let _ = subject.startEditing()
@@ -231,17 +236,98 @@ class UITextView_FleetSpec: XCTestCase {
         let error = subject.paste(text: "turtle magic")
 
         expect(error).to(beNil())
+        expect(self.subject.text).to(equal(""))
         expect(self.delegate.textChanges).to(equal([]))
         expect(self.delegate.textRanges.count).to(equal(1))
         expect(self.delegate.textRanges[0].location).to(equal(0))
         expect(self.delegate.textRanges[0].length).to(equal(0))
         expect(self.delegate.didChangeCallCount).to(equal(0))
         expect(self.delegate.didChangeSelectionCallCount).to(equal(0))
-        expect(self.subject.text).to(equal(""))
     }
 
-    func test_paste_whenNotFirstResponder_returnsError() {
-        let error = subject.paste(text: "turtle magic")
-        expect(error?.description).to(equal("Fleet error: Could not paste text into UITextView: Must start editing the text view before text can be pasted into it."))
+    func test_backspace_deletesTheLastCharacter() {
+        func test_type_typesGivenTextIntoTextView() {
+            let _ = subject.startEditing()
+            let _ = subject.type(text: "turtle magic")
+
+            delegate.resetState()
+
+            let error = subject.backspace()
+
+            expect(error).to(beNil())
+            expect(self.subject.text).to(equal("turtle magi"))
+        }
+    }
+
+    func test_backspace_whenNotFirstResponder_returnsError() {
+        let error = subject.backspace()
+        expect(error?.description).to(equal("Fleet error: Could not backspace in UITextView: Must start editing the text view before backspaces can be performed."))
+    }
+
+    func test_backspace_whenDelegateAllowsTextChanges_callsDelegateMethodsAppropriately() {
+        delegate.shouldAllowTextChanges = true
+        let _ = subject.startEditing()
+        let _ = subject.type(text: "turtle magic")
+
+        delegate.resetState()
+
+        let error = subject.backspace()
+
+        expect(error).to(beNil())
+        expect(self.delegate.textChanges).to(equal([""]))
+        expect(self.delegate.textRanges.count).to(equal(1))
+        expect(self.delegate.textRanges[0].location).to(equal(11))
+        expect(self.delegate.textRanges[0].length).to(equal(1))
+        expect(self.delegate.didChangeCallCount).to(equal(1))
+        expect(self.delegate.didChangeSelectionCallCount).to(equal(1))
+    }
+
+    func test_backspace_whenDelegateDoesNotAllowTextChanges_callsDelegateMethodsAppropriately() {
+        delegate.shouldAllowTextChanges = false
+        let _ = subject.startEditing()
+        let _ = subject.type(text: "turtle magic")
+
+        delegate.resetState()
+
+        let error = subject.backspace()
+
+        expect(error).to(beNil())
+        expect(self.delegate.textChanges).to(equal([]))
+        expect(self.delegate.textRanges.count).to(equal(1))
+        expect(self.delegate.textRanges[0].location).to(equal(0))
+        expect(self.delegate.textRanges[0].length).to(equal(0))
+        expect(self.delegate.didChangeCallCount).to(equal(0))
+        expect(self.delegate.didChangeSelectionCallCount).to(equal(0))
+    }
+
+    func test_backspace_whenNoDelegate_deletesTheLastCharacter() {
+        func test_type_typesGivenTextIntoTextView() {
+            let _ = subject.startEditing()
+            let _ = subject.type(text: "turtle magic")
+
+            subject.delegate = nil
+
+            let error = subject.backspace()
+
+            expect(error).to(beNil())
+            expect(self.subject.text).to(equal("turtle magi"))
+        }
+    }
+
+    func test_backspace_whenNoTextInTextView_doesNothing() {
+        let _ = subject.startEditing()
+
+        delegate.resetState()
+
+        let error = subject.backspace()
+
+        expect(error).to(beNil())
+        expect(self.subject.text).to(equal(""))
+        expect(self.delegate.textChanges).to(equal([""]))
+        expect(self.delegate.textRanges.count).to(equal(1))
+        expect(self.delegate.textRanges[0].location).to(equal(0))
+        expect(self.delegate.textRanges[0].length).to(equal(0))
+        expect(self.delegate.didChangeCallCount).to(equal(0))
+        expect(self.delegate.didChangeSelectionCallCount).to(equal(0))
     }
 }
