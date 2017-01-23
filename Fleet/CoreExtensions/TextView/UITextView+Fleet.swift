@@ -1,6 +1,26 @@
 import UIKit
 
 extension UITextView {
+    /**
+     Attempts to perform the following actions on the `UITextView` in sequence:
+     1) Start editing the text view
+     2) Type the given text
+     3) Stop editing the text view
+
+     It aims to be a functionally equivalent, much shorter version of the following code:
+     ```
+     var error = textView.startEditing()
+     guard error == nil else { // stop }
+     error = textView.type(text: "input text")
+     guard error == nil else { // stop }
+     error = textView.stopEditing()
+     ```
+
+     - returns:
+     `nil` if successful, or a `FleetError` if the text view is not available because it is hidden,
+     not selectable, not editable, if grabbing first responder fails for any reason, or if resigning
+     first responder fails for any reason.
+     */
     public func enter(text: String) -> FleetError? {
         if let error = startEditing() {
             return error
@@ -15,6 +35,13 @@ extension UITextView {
         return nil
     }
 
+    /**
+     Attempts to give the `UITextView` first responder focus.
+
+     - returns:
+     `nil` if successful, or a `FleetError` if the text view is not available because it is hidden,
+     not selectable, not editable, or if grabbing first responder fails for any reason.
+     */
     public func startEditing() -> FleetError? {
         if isFirstResponder {
             return nil
@@ -40,6 +67,13 @@ extension UITextView {
         return nil
     }
 
+    /**
+     Attempts to remove first responder focus from the `UITextView`.
+
+     - returns:
+     `nil` if successful, or a `FleetError` if the text view does not have first responder focus, or if resigning
+     first responder fails for any reason.
+     */
     public func stopEditing() -> FleetError? {
         guard isFirstResponder else {
             return FleetError(message: "Could not stop editing UITextView: Must start editing the text view before you can stop editing it.")
@@ -56,6 +90,15 @@ extension UITextView {
         return nil
     }
 
+    /**
+     Attempts to type text into a `UITextView` with first responder focus.
+
+     - returns:
+     `nil` if successful, or a `FleetError` if the text view does not have first responder focus.
+
+     - note:
+     This method types the text at the end of any existing text.
+     */
     public func type(text newText: String) -> FleetError? {
         guard isFirstResponder else {
             return FleetError(message: "Could not type text into UITextView: Must start editing the text view before text can be typed into it.")
@@ -80,6 +123,15 @@ extension UITextView {
         return nil
     }
 
+    /**
+     Attempts to paste text into a `UITextView` with first responder focus.
+
+     - returns:
+     `nil` if successful, or a `FleetError` if the text view does not have first responder focus.
+
+     - note:
+     This method pastes the text to the end of any existing text.
+     */
     public func paste(text textToPaste: String) -> FleetError? {
         guard isFirstResponder else {
             return FleetError(message: "Could not paste text into UITextView: Must start editing the text view before text can be pasted into it.")
@@ -102,6 +154,16 @@ extension UITextView {
         return nil
     }
 
+    /**
+     Attempts to hit the backspace key in a `UITextView` with first responder focus.
+
+     - returns:
+     `nil` if successful, or a `FleetError` if the text view does not have first responder focus.
+
+     - note:
+     This method acts at the end of any existing text. That is, it will remove the last character of
+     the `UITextView`'s existing text content.
+     */
     public func backspace() -> FleetError? {
         guard isFirstResponder else {
             return FleetError(message: "Could not backspace in UITextView: Must start editing the text view before backspaces can be performed.")
