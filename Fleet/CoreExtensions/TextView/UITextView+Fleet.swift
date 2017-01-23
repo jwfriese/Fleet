@@ -26,6 +26,22 @@ extension UITextView {
         return nil
     }
 
+    public func stopEditing() -> FleetError? {
+        guard isFirstResponder else {
+            return FleetError(message: "Could not stop editing UITextView: Must start editing the text view before you can stop editing it.")
+        }
+        if let delegate = delegate {
+            guard delegate.textViewShouldEndEditing!(self) else {
+                return nil
+            }
+        }
+        guard resignFirstResponder() else {
+            return FleetError(message: "UITextView failed to resign first responder. Make sure that the view is a part of the key window's view hierarchy.")
+        }
+
+        return nil
+    }
+
     public func type(text newText: String) -> FleetError? {
         guard isFirstResponder else {
             return FleetError(message: "Could not type text into UITextView: Must start editing the text view before text can be typed into it.")

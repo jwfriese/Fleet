@@ -148,6 +148,32 @@ class UITextView_FleetSpec: XCTestCase {
         expect(self.delegate.didCallShouldBeginEditing).to(beFalse())
     }
 
+    func test_stopEditing_whenTextViewIsFullyAvailable_removesFocusFromTheTextView() {
+        let _ = subject.startEditing()
+        let error = subject.stopEditing()
+
+        expect(error).to(beNil())
+        expect(self.subject.isFirstResponder).to(beFalse())
+    }
+
+    func test_stopEditing_whenNotFirstResponder_returnsError() {
+        let error = subject.stopEditing()
+        expect(error?.description).to(equal("Fleet error: Could not stop editing UITextView: Must start editing the text view before you can stop editing it."))
+    }
+
+    func test_stopEditing_whenDelegateAllowsEditingToEnd_callsDelegateMethodsAppropriately() {
+        let _ = subject.startEditing()
+        delegate.resetState()
+        delegate.shouldAllowEndEditing = true
+
+        let error = subject.stopEditing()
+
+        expect(error).to(beNil())
+        expect(self.delegate.didCallShouldEndEditing).to(beTrue())
+        expect(self.delegate.didCallDidEndEditing).to(beTrue())
+        expect(self.subject.isFirstResponder).to(beFalse())
+    }
+
     func test_type_typesGivenTextIntoTextView() {
         let _ = subject.startEditing()
         let error = subject.type(text: "turtle magic")
