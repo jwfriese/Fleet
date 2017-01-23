@@ -147,4 +147,49 @@ class UITextView_FleetSpec: XCTestCase {
         expect(error).to(beNil())
         expect(self.delegate.didCallShouldBeginEditing).to(beFalse())
     }
+
+    func test_type_typesGivenTextIntoTextView() {
+        let _ = subject.startEditing()
+        let error = subject.type(text: "turtle magic")
+
+        expect(error).to(beNil())
+        expect(self.subject.text).to(equal("turtle magic"))
+    }
+
+    func test_type_whenNotFirstResponder_returnsError() {
+        let error = subject.type(text: "turtle magic")
+        expect(error?.description).to(equal("Fleet error: Could not type text into UITextView: Must start editing the text view before text can be typed into it."))
+    }
+
+    func test_type_whenDelegateAllowsTextChanges_callsDelegateMethodsAppropriately() {
+        delegate.shouldAllowTextChanges = true
+        let _ = subject.startEditing()
+        let error = subject.type(text: "turtle magic")
+
+        expect(error).to(beNil())
+        expect(self.delegate.textChanges).to(equal(["t", "u", "r", "t", "l", "e", " ", "m", "a", "g", "i", "c"]))
+        expect(self.delegate.didChangeCallCount).to(equal(12)) // 12 for typed text
+        expect(self.delegate.didChangeSelectionCallCount).to(equal(12)) // 12 for typed text
+    }
+
+    func test_type_whenDelegateDoesNotAllowTextChanges_callsDelegateMethodsAppropriately() {
+        delegate.shouldAllowTextChanges = false
+        let _ = subject.startEditing()
+        let error = subject.type(text: "turtle magic")
+
+        expect(error).to(beNil())
+        expect(self.delegate.textChanges).to(equal([]))
+        expect(self.delegate.didChangeCallCount).to(equal(0))
+        expect(self.delegate.didChangeSelectionCallCount).to(equal(0))
+        expect(self.subject.text).to(equal(""))
+    }
+
+    func test_type_whenNoDelegate_typesGivenTextIntoTextView() {
+        let _ = subject.startEditing()
+        subject.delegate = nil
+        let error = subject.type(text: "turtle magic")
+
+        expect(error).to(beNil())
+        expect(self.subject.text).to(equal("turtle magic"))
+    }
 }

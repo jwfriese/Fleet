@@ -8,6 +8,7 @@ class TestTextViewDelegate: NSObject, UITextViewDelegate {
     var shouldAllowEndEditing = true
     var didCallDidEndEditing: Bool = false
     var textChanges: [String] = []
+    var shouldAllowTextChanges = true
     var didChangeCallCount = 0
     var didChangeSelectionCallCount = 0
 
@@ -42,8 +43,10 @@ class TestTextViewDelegate: NSObject, UITextViewDelegate {
     }
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        textChanges.append(text)
-        return true
+        if shouldAllowTextChanges {
+            textChanges.append(text)
+        }
+        return shouldAllowTextChanges
     }
 
     func textViewDidChange(_ textView: UITextView) {

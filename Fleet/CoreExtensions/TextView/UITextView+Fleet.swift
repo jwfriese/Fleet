@@ -25,4 +25,28 @@ extension UITextView {
 
         return nil
     }
+
+    public func type(text newText: String) -> FleetError? {
+        guard isFirstResponder else {
+            return FleetError(message: "Could not type text into UITextView: Must start editing the text view before text can be typed into it.")
+        }
+
+        for character in newText.characters {
+            var existingText = ""
+            if let unwrappedText = text {
+                existingText = unwrappedText
+            }
+            if let delegate = delegate {
+                let doesAllowTextChange = delegate.textView!(self, shouldChangeTextIn: NSMakeRange(existingText.characters.count, 1), replacementText: String(character))
+                if doesAllowTextChange {
+                    delegate.textViewDidChange?(self)
+                    text.append(character)
+                }
+            } else {
+                text.append(character)
+            }
+        }
+
+        return nil
+    }
 }
