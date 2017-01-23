@@ -37,7 +37,7 @@ extension UITextView {
                 existingText = unwrappedText
             }
             if let delegate = delegate {
-                let doesAllowTextChange = delegate.textView!(self, shouldChangeTextIn: NSMakeRange(existingText.characters.count, 1), replacementText: String(character))
+                let doesAllowTextChange = delegate.textView!(self, shouldChangeTextIn: NSMakeRange(existingText.characters.count, 0), replacementText: String(character))
                 if doesAllowTextChange {
                     delegate.textViewDidChange?(self)
                     text.append(character)

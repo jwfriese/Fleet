@@ -168,6 +168,11 @@ class UITextView_FleetSpec: XCTestCase {
 
         expect(error).to(beNil())
         expect(self.delegate.textChanges).to(equal(["t", "u", "r", "t", "l", "e", " ", "m", "a", "g", "i", "c"]))
+        expect(self.delegate.textRanges.count).to(equal(12))
+        expect(self.delegate.textRanges[0].location).to(equal(0))
+        expect(self.delegate.textRanges[0].length).to(equal(0))
+        expect(self.delegate.textRanges[9].location).to(equal(9))
+        expect(self.delegate.textRanges[9].length).to(equal(0))
         expect(self.delegate.didChangeCallCount).to(equal(12)) // 12 for typed text
         expect(self.delegate.didChangeSelectionCallCount).to(equal(12)) // 12 for typed text
     }
@@ -179,6 +184,11 @@ class UITextView_FleetSpec: XCTestCase {
 
         expect(error).to(beNil())
         expect(self.delegate.textChanges).to(equal([]))
+        expect(self.delegate.textRanges.count).to(equal(12))
+        expect(self.delegate.textRanges[0].location).to(equal(0))
+        expect(self.delegate.textRanges[0].length).to(equal(0))
+        expect(self.delegate.textRanges[9].location).to(equal(0))
+        expect(self.delegate.textRanges[9].length).to(equal(0))
         expect(self.delegate.didChangeCallCount).to(equal(0))
         expect(self.delegate.didChangeSelectionCallCount).to(equal(0))
         expect(self.subject.text).to(equal(""))
