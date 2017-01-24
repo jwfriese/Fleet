@@ -1,158 +1,163 @@
 import UIKit
 
-private var fleet_isFocusedAssociatedKey: UInt = 0
-
 extension UITextField {
-    fileprivate var fleet_isFocused: Bool? {
-        get {
-            let fleet_isFocusedValue = objc_getAssociatedObject(self, &fleet_isFocusedAssociatedKey) as? NSNumber
-            return fleet_isFocusedValue?.boolValue
+    public func enter(text: String) -> FleetError? {
+        if let error = startEditing() {
+            return error
+        }
+        if let error = type(text: text) {
+            return error
+        }
+        if let error = stopEditing() {
+            return error
         }
 
-        set {
-            var fleet_isFocusedValue: NSNumber?
-            if let newValue = newValue {
-                fleet_isFocusedValue = NSNumber(value: newValue as Bool)
+        return nil
+    }
+
+    public func startEditing() -> FleetError? {
+        if isFirstResponder {
+            return nil
+        }
+        guard !isHidden else {
+            return FleetError(message: "Failed to start editing UITextField: Control is not visible.")
+        }
+        guard isEnabled else {
+            return FleetError(message: "Failed to start editing UITextField: Control is not enabled.")
+        }
+        if let delegate = delegate {
+            let doesImplementShouldBeginEditing = delegate.responds(to: #selector(UITextFieldDelegate.textFieldShouldBeginEditing(_:)))
+            if doesImplementShouldBeginEditing {
+                guard delegate.textFieldShouldBeginEditing!(self) else {
+                    return nil
+                }
             }
-
-            objc_setAssociatedObject(self, &fleet_isFocusedAssociatedKey, fleet_isFocusedValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
         }
+        guard becomeFirstResponder() else {
+            return FleetError(message: "UITextField failed to become first responder. Make sure that the field is a part of the key window's view hierarchy.")
+        }
+
+        return nil
     }
-}
 
-public enum TextFieldError: Error {
-    case disabledTextFieldError
-}
-
-extension UITextField {
-    /**
-        Gives the text field focus, firing the .EditingDidBegin events. It
-        does not give the text field first responder.
-
-        - Throws: `TextFieldError.DisabledTextFieldError` if the
-            text field is disabled.
-    */
-    public func focus() throws {
-        if fleet_isFocused != nil && fleet_isFocused! {
-            Logger.logWarning("Attempting to enter a UITextField that was already entered")
-            return
+    public func stopEditing() -> FleetError? {
+        guard isFirstResponder else {
+            return FleetError(message: "Could not stop editing UITextField: Must start editing the text field before you can stop editing it.")
         }
-
-        if !isEnabled {
-            throw TextFieldError.disabledTextFieldError
-        }
-
-        fleet_isFocused = true
         if let delegate = delegate {
-            _ = delegate.textFieldShouldBeginEditing?(self)
-            _ = delegate.textFieldDidBeginEditing?(self)
+            let doesImplementShouldEndEditing = delegate.responds(to: #selector(UITextFieldDelegate.textFieldShouldEndEditing(_:)))
+            if doesImplementShouldEndEditing {
+                guard delegate.textFieldShouldEndEditing!(self) else {
+                    return nil
+                }
+            }
+        }
+        guard resignFirstResponder() else {
+            return FleetError(message: "UITextField failed to resign first responder. Make sure that the field is a part of the key window's view hierarchy.")
         }
 
-        self.sendActions(for: .editingDidBegin)
+        return nil
     }
 
-    /**
-        Ends focus in the text field, firing the .EditingDidEnd events. It
-        does make the text field resign first responder.
-    */
-    public func unfocus() {
-        if fleet_isFocused == nil || !fleet_isFocused! {
-            Logger.logWarning("Attempting to end focus for a UITextField that was never focused")
-            return
+    public func type(text newText: String) -> FleetError? {
+        guard isFirstResponder else {
+            return FleetError(message: "Could not type text into UITextField: Must start editing the text field before text can be typed into it.")
         }
 
+        for character in newText.characters {
+            var existingText = ""
+            if let unwrappedText = text {
+                existingText = unwrappedText
+            }
+            if let delegate = delegate {
+                let doesImplementShouldChangeText = delegate.responds(to: #selector(UITextFieldDelegate.textField(_:shouldChangeCharactersIn:replacementString:)))
+                var doesAllowTextChange = true
+                if doesImplementShouldChangeText {
+                    doesAllowTextChange = delegate.textField!(self, shouldChangeCharactersIn: NSMakeRange(existingText.characters.count, 0), replacementString: String(character))
+                }
+                if doesAllowTextChange {
+                    existingText += String(character)
+                    text = existingText
+                }
+            } else {
+                existingText += String(character)
+                text = existingText
+            }
+        }
+
+        return nil
+    }
+
+    public func paste(text textToPaste: String) -> FleetError? {
+        guard isFirstResponder else {
+            return FleetError(message: "Could not paste text into UITextField: Must start editing the text field before text can be pasted into it.")
+        }
+
+        var existingText = ""
+        if let unwrappedText = text {
+            existingText = unwrappedText
+        }
         if let delegate = delegate {
-            _ = delegate.textFieldShouldEndEditing?(self)
-            _ = delegate.textFieldDidEndEditing?(self)
-        }
-
-        self.sendActions(for: .editingDidEnd)
-        fleet_isFocused = false
-    }
-
-    /**
-        Focuses the text field, enters the given text, and unfocuses it, firing
-        the .EditingDidBegin, .EditingChanged, and .EditingDidEnd events
-        as appropriate. Does not manipulate first responder.
-
-        If the text field has no delegate, the text is still entered into the
-        field and the .EditingChanged event is still fired.
-
-        - Parameter text:   The text to type into the field
-
-        - Throws: `TextFieldError.DisabledTextFieldError` if the
-            text field is disabled.
-    */
-    public func enter(text: String) throws {
-        try self.focus()
-        self.type(text)
-        self.unfocus()
-    }
-
-    /**
-        Types the given text into the text field, firing the .EditingChanged
-        event once for each character, as would happen had a real user
-        typed the text into the field.
-
-        If the text field has no delegate, the text is still entered into the
-        field and the .EditingChanged event is still fired.
-
-        - Parameter text:   The text to type into the field
-    */
-    public func type(_ text: String) {
-        if fleet_isFocused == nil || !fleet_isFocused! {
-            Logger.logWarning("Attempting to type \"\(text)\" into a UITextField that was never focused")
-            return
-        }
-
-        if let delegate = delegate {
-            self.text = ""
-            for (index, char) in text.characters.enumerated() {
-                _ = delegate.textField?(self, shouldChangeCharactersIn: NSRange.init(location: index, length: 1), replacementString: String(char))
-                self.text?.append(char)
-                self.sendActions(for: .editingChanged)
+            let doesImplementShouldChangeText = delegate.responds(to: #selector(UITextFieldDelegate.textField(_:shouldChangeCharactersIn:replacementString:)))
+            var doesAllowTextChange = true
+            if doesImplementShouldChangeText {
+                doesAllowTextChange = delegate.textField!(self, shouldChangeCharactersIn: NSMakeRange(existingText.characters.count, 0), replacementString: textToPaste)
+            }
+            if doesAllowTextChange {
+                existingText += textToPaste
+                text = existingText
             }
         } else {
-            self.text = ""
-            for (_, char) in text.characters.enumerated() {
-                self.text?.append(char)
-                self.sendActions(for: .editingChanged)
+            existingText += textToPaste
+            text = existingText
+        }
+
+        return nil
+    }
+
+    public func backspace() -> FleetError? {
+        guard isFirstResponder else {
+            return FleetError(message: "Could not backspace in UITextField: Must start editing the text field before backspaces can be performed.")
+        }
+
+        var existingText = ""
+        if let unwrappedText = text {
+            existingText = unwrappedText
+        }
+        if existingText == "" {
+            if let delegate = delegate {
+                // this still gets called in this case
+                let _ = delegate.textField!(self, shouldChangeCharactersIn: NSMakeRange(0, 0), replacementString: "")
             }
+
+            return nil
         }
-    }
-
-    /**
-        Types the given text into the text field, firing the .EditingChanged
-        event just once for the entire string, as would happen had a real user
-        pasted the text into the field.
-
-        If the text field has no delegate, the text is still entered into the
-        field and the .EditingChanged event is still fired.
-
-        - Parameter text:   The text to paste into the field
-    */
-    public func paste(text: String) {
-        if fleet_isFocused == nil || !fleet_isFocused! {
-            Logger.logWarning("Attempting to paste \"\(text)\" into a UITextField that was never focused")
-            return
-        }
-
         if let delegate = delegate {
-            let length = text.characters.count
-            _ = delegate.textField?(self, shouldChangeCharactersIn: NSRange.init(location: 0, length:length), replacementString: text)
+            let location = existingText.characters.count > 0 ? existingText.characters.count - 1 : 0
+            let backspaceAmount = existingText.characters.count > 0 ? 1 : 0
+            let doesImplementShouldChangeText = delegate.responds(to: #selector(UITextFieldDelegate.textField(_:shouldChangeCharactersIn:replacementString:)))
+            var doesAllowTextChange = true
+            if doesImplementShouldChangeText {
+                doesAllowTextChange = delegate.textField!(self, shouldChangeCharactersIn: NSMakeRange(location, backspaceAmount), replacementString: "")
+            }
+            if doesAllowTextChange {
+                existingText.remove(at: existingText.index(before: existingText.endIndex))
+                text = existingText
+            }
         } else {
-            self.text = text
+            existingText.remove(at: existingText.index(before: existingText.endIndex))
+            text = existingText
         }
 
-        self.sendActions(for: .editingChanged)
+        return nil
     }
 
     /**
-        Clears all text from the text field, firing the textFieldShouldClear?
-        event as happens when the user clears the field through the UI.
+     Clears all text from the text field, firing the textFieldShouldClear?
+     event as happens when the user clears the field through the UI.
 
-        If the text field has no delegate, the text is still cleared from the
-        field.
+     If the text field has no delegate, the text is still cleared from the
+     field.
      */
     public func clearText() {
         self.text = ""

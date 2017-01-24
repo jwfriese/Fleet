@@ -63,6 +63,7 @@
 		7BA4B1981E356C580052A2A7 /* TestTextViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA4B1971E356C580052A2A7 /* TestTextViewDelegate.swift */; };
 		7BA4B19C1E35C48B0052A2A7 /* UITextField+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA4B19B1E35C48B0052A2A7 /* UITextField+Fleet.swift */; };
 		7BA4B19E1E35C4930052A2A7 /* UITextField+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA4B19D1E35C4930052A2A7 /* UITextField+FleetSpec.swift */; };
+		7BA4B1A01E35C54F0052A2A7 /* TestTextFieldDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA4B19F1E35C54F0052A2A7 /* TestTextFieldDelegate.swift */; };
 		7BA90AB71CC130990040B031 /* Fleet.h in Headers */ = {isa = PBXBuildFile; fileRef = 7BA90AB61CC130990040B031 /* Fleet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7BA90AC01CC3B6B80040B031 /* UIButton+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90ABF1CC3B6B80040B031 /* UIButton+Fleet.swift */; };
 		7BA90ACA1CC3B8950040B031 /* Fleet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BA90AB31CC130980040B031 /* Fleet.framework */; };
@@ -161,6 +162,7 @@
 		7BA4B1971E356C580052A2A7 /* TestTextViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestTextViewDelegate.swift; sourceTree = "<group>"; };
 		7BA4B19B1E35C48B0052A2A7 /* UITextField+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+Fleet.swift"; sourceTree = "<group>"; };
 		7BA4B19D1E35C4930052A2A7 /* UITextField+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+FleetSpec.swift"; sourceTree = "<group>"; };
+		7BA4B19F1E35C54F0052A2A7 /* TestTextFieldDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestTextFieldDelegate.swift; sourceTree = "<group>"; };
 		7BA90AB31CC130980040B031 /* Fleet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Fleet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7BA90AB61CC130990040B031 /* Fleet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Fleet.h; sourceTree = "<group>"; };
 		7BA90AB81CC130990040B031 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -401,6 +403,7 @@
 		7BA4B19A1E35C4400052A2A7 /* TextField */ = {
 			isa = PBXGroup;
 			children = (
+				7BA4B19F1E35C54F0052A2A7 /* TestTextFieldDelegate.swift */,
 				7BA4B19D1E35C4930052A2A7 /* UITextField+FleetSpec.swift */,
 			);
 			path = TextField;
@@ -767,6 +770,7 @@
 				7B675EA41D0DD660002E6B45 /* UIAlertAction+FleetSpec.swift in Sources */,
 				7BB14A661D772481002ABE82 /* FleetSpec.swift in Sources */,
 				7B933C291D77B48D001B98F0 /* ScreenSpec.swift in Sources */,
+				7BA4B1A01E35C54F0052A2A7 /* TestTextFieldDelegate.swift in Sources */,
 				7B29F4251DDDEA60008EA836 /* SegueDetailSpec.swift in Sources */,
 				7B933C281D77B48D001B98F0 /* VisualTreeWalkerSpec.swift in Sources */,
 				7BA90ADF1CC3F6C50040B031 /* File.swift in Sources */,

@@ -272,7 +272,6 @@ class UITextView_FleetSpec: XCTestCase {
     }
 
     func test_backspace_deletesTheLastCharacter() {
-        func test_type_typesGivenTextIntoTextView() {
             let _ = subject.startEditing()
             let _ = subject.type(text: "turtle magic")
 
@@ -282,7 +281,6 @@ class UITextView_FleetSpec: XCTestCase {
 
             expect(error).to(beNil())
             expect(self.subject.text).to(equal("turtle magi"))
-        }
     }
 
     func test_backspace_whenNotFirstResponder_returnsError() {
