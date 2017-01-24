@@ -1,5 +1,21 @@
 import UIKit
 
+extension Fleet {
+    public enum TextViewError: Error, CustomStringConvertible {
+        case controlUnavailable(String)
+        case editingFlow(String)
+
+        public var description: String {
+            switch self {
+            case .controlUnavailable(let message):
+                return "UITextView unavailable for editing: \(message)"
+            case .editingFlow(let message):
+                return "Could not edit UITextView: \(message)"
+            }
+        }
+    }
+}
+
 extension UITextView {
     /**
      Attempts to perform the following actions on the `UITextView` in sequence:
@@ -9,108 +25,94 @@ extension UITextView {
 
      It aims to be a functionally equivalent, much shorter version of the following code:
      ```
-     var error = textView.startEditing()
-     guard error == nil else { // stop }
-     error = textView.type(text: "input text")
-     guard error == nil else { // stop }
-     error = textView.stopEditing()
+     try! textView.startEditing()
+     try! textView.type(text: "input text")
+     try! textView.stopEditing()
      ```
 
-     - returns:
-     `nil` if successful, or a `FleetError` if the text view is not available because it is hidden,
+     - throws:
+     A `Fleet.TextViewError` if the text view is not available because it is hidden,
      not selectable, not editable, if grabbing first responder fails for any reason, or if resigning
      first responder fails for any reason.
      */
-    public func enter(text: String) -> FleetError? {
-        if let error = startEditing() {
-            return error
-        }
-        if let error = type(text: text) {
-            return error
-        }
-        if let error = stopEditing() {
-            return error
-        }
-
-        return nil
+    public func enter(text: String) throws {
+        try startEditing()
+        try type(text: text)
+        try stopEditing()
     }
 
     /**
      Attempts to give the `UITextView` first responder focus.
 
-     - returns:
-     `nil` if successful, or a `FleetError` if the text view is not available because it is hidden,
+     - throws:
+     A `Fleet.TextViewError` if the text view is not available because it is hidden,
      not selectable, not editable, or if grabbing first responder fails for any reason.
      */
-    public func startEditing() -> FleetError? {
+    public func startEditing() throws {
         if !isUserInteractionEnabled {
-            return FleetError(message: "Failed to start editing UITextView: User interaction is disabled.")
+            throw Fleet.TextViewError.controlUnavailable("View does not allow user interaction.")
         }
         if isFirstResponder {
-            return nil
+            return
         }
         guard !isHidden else {
-            return FleetError(message: "Failed to start editing UITextView: Control is not visible.")
+            throw Fleet.TextViewError.controlUnavailable("Text view is not visible.")
         }
         guard isSelectable else {
-            return FleetError(message: "Failed to start editing UITextView: Control is not selectable.")
+            throw Fleet.TextViewError.controlUnavailable("Text view is not selectable.")
         }
         guard isEditable else {
-            return FleetError(message: "Failed to start editing UITextView: Control is not editable.")
+            throw Fleet.TextViewError.controlUnavailable("Text view is not editable.")
         }
         if let delegate = delegate {
             let doesImplementShouldBeginEditing = delegate.responds(to: #selector(UITextViewDelegate.textViewShouldBeginEditing(_:)))
             if doesImplementShouldBeginEditing {
                 guard delegate.textViewShouldBeginEditing!(self) else {
-                    return nil
+                    return
                 }
             }
         }
         guard becomeFirstResponder() else {
-            return FleetError(message: "UITextView failed to become first responder. Make sure that the view is a part of the key window's view hierarchy.")
+            throw Fleet.TextViewError.editingFlow("Text view failed to become first responder. This can happen if the view is not part of the window's hierarchy.")
         }
-
-        return nil
     }
 
     /**
      Attempts to remove first responder focus from the `UITextView`.
 
-     - returns:
-     `nil` if successful, or a `FleetError` if the text view does not have first responder focus, or if resigning
+     - throws:
+     A `Fleet.TextViewError` if the text view does not have first responder focus, or if resigning
      first responder fails for any reason.
      */
-    public func stopEditing() -> FleetError? {
+    public func stopEditing() throws {
         guard isFirstResponder else {
-            return FleetError(message: "Could not stop editing UITextView: Must start editing the text view before you can stop editing it.")
+            throw Fleet.TextViewError.editingFlow("Must start editing the text view before you can stop editing it.")
         }
         if let delegate = delegate {
             let doesImplementShouldEndEditing = delegate.responds(to: #selector(UITextViewDelegate.textViewShouldEndEditing(_:)))
             if doesImplementShouldEndEditing {
                 guard delegate.textViewShouldEndEditing!(self) else {
-                    return nil
+                    return
                 }
             }
         }
         guard resignFirstResponder() else {
-            return FleetError(message: "UITextView failed to resign first responder. Make sure that the view is a part of the key window's view hierarchy.")
+            throw Fleet.TextViewError.editingFlow("Text view failed to resign first responder. This can happen if the view is not part of the window's hierarchy.")
         }
-
-        return nil
     }
 
     /**
      Attempts to type text into a `UITextView` with first responder focus.
 
-     - returns:
-     `nil` if successful, or a `FleetError` if the text view does not have first responder focus.
+     - throws:
+     A `Fleet.TextViewError` if the text view does not have first responder focus.
 
      - note:
      This method types the text at the end of any existing text.
      */
-    public func type(text newText: String) -> FleetError? {
+    public func type(text newText: String) throws {
         guard isFirstResponder else {
-            return FleetError(message: "Could not type text into UITextView: Must start editing the text view before text can be typed into it.")
+            throw Fleet.TextViewError.editingFlow("Must start editing the text view before text can be typed into it.")
         }
 
         for character in newText.characters {
@@ -132,22 +134,20 @@ extension UITextView {
                 text.append(character)
             }
         }
-
-        return nil
     }
 
     /**
      Attempts to paste text into a `UITextView` with first responder focus.
 
-     - returns:
-     `nil` if successful, or a `FleetError` if the text view does not have first responder focus.
+     - throws:
+     A `Fleet.TextViewError` if the text view does not have first responder focus.
 
      - note:
      This method pastes the text to the end of any existing text.
      */
-    public func paste(text textToPaste: String) -> FleetError? {
+    public func paste(text textToPaste: String) throws {
         guard isFirstResponder else {
-            return FleetError(message: "Could not paste text into UITextView: Must start editing the text view before text can be pasted into it.")
+            throw Fleet.TextViewError.editingFlow("Must start editing the text view before text can be pasted into it.")
         }
 
         var existingText = ""
@@ -167,23 +167,21 @@ extension UITextView {
         } else {
             text.append(textToPaste)
         }
-
-        return nil
     }
 
     /**
      Attempts to hit the backspace key in a `UITextView` with first responder focus.
 
-     - returns:
-     `nil` if successful, or a `FleetError` if the text view does not have first responder focus.
+     - throws:
+     A `Fleet.TextViewError` if the text view does not have first responder focus.
 
      - note:
      This method acts at the end of any existing text. That is, it will remove the last character of
      the `UITextView`'s existing text content.
      */
-    public func backspace() -> FleetError? {
+    public func backspace() throws {
         guard isFirstResponder else {
-            return FleetError(message: "Could not backspace in UITextView: Must start editing the text view before backspaces can be performed.")
+            throw Fleet.TextViewError.editingFlow("Must start editing the text view before backspaces can be performed.")
         }
 
         var existingText = ""
@@ -196,7 +194,7 @@ extension UITextView {
                 let _ = delegate.textView!(self, shouldChangeTextIn: NSMakeRange(0, 0), replacementText: "")
             }
 
-            return nil
+            return
         }
         if let delegate = delegate {
             let location = existingText.characters.count > 0 ? existingText.characters.count - 1 : 0
@@ -213,7 +211,5 @@ extension UITextView {
         } else {
             text.remove(at: text.index(before: text.endIndex))
         }
-
-        return nil
     }
 }
