@@ -17,3 +17,4 @@ Fleet extends UIKit classes in order to make it easier to test your code's inter
 - [UIAlertController](./Documentation/UIAlertController.md) - Allows specs to simply tap on alert actions in order to test their behavior
 - [UITextField](./Documentation/UITextField.md) - Provides convenience methods for entering text
 - [UISwitch](./Documentation/UISwitch.md) - Provides convenience methods for interacting with switches in test.
+- [UITextView](./Documentation/UITextView.md) - Provides convenience methods for entering text into a text view.
