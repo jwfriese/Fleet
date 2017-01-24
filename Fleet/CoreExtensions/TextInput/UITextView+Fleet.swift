@@ -43,6 +43,9 @@ extension UITextView {
      not selectable, not editable, or if grabbing first responder fails for any reason.
      */
     public func startEditing() -> FleetError? {
+        if !isUserInteractionEnabled {
+            return FleetError(message: "Failed to start editing UITextView: User interaction is disabled.")
+        }
         if isFirstResponder {
             return nil
         }

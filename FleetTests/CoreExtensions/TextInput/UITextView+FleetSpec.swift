@@ -400,4 +400,21 @@ class UITextView_FleetSpec: XCTestCase {
         expect(error).to(beNil())
         expect(textView.text).to(equal("turtle magic woo"))
     }
+
+    func test_whenUserInteractionIsDisabled_doesAbsolutelyNothingAndReturnsError() {
+        subject.isUserInteractionEnabled = false
+        let error = subject.enter(text: "turtle magic")
+
+        expect(error?.description).to(equal("Fleet error: Failed to start editing UITextView: User interaction is disabled."))
+        expect(self.subject.text).to(equal(""))
+        expect(self.delegate.textChanges).to(equal([]))
+        expect(self.delegate.textRanges.count).to(equal(0))
+        expect(self.delegate.didChangeCallCount).to(equal(0))
+        expect(self.delegate.didChangeSelectionCallCount).to(equal(0))
+        expect(self.delegate.didCallShouldBeginEditing).to(beFalse())
+        expect(self.delegate.didCallDidBeginEditing).to(beFalse())
+        expect(self.delegate.didCallShouldEndEditing).to(beFalse())
+        expect(self.delegate.didCallDidEndEditing).to(beFalse())
+        expect(self.subject.isFirstResponder).to(beFalse())
+    }
 }
