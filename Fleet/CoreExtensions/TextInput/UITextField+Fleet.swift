@@ -43,6 +43,9 @@ extension UITextField {
      not enabled, or if grabbing first responder fails for any reason.
      */
     public func startEditing() -> FleetError? {
+        if !isUserInteractionEnabled {
+            return FleetError(message: "Failed to start editing UITextField: User interaction is disabled.")
+        }
         if isFirstResponder {
             return nil
         }
