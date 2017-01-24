@@ -26,58 +26,57 @@ class UITextField_FleetSpec: XCTestCase {
         return (textField, delegate)
     }
 
-    func test_startEditing_whenTextViewIsFullyAvailable_putsFocusIntoTheTextView() {
-        let error = subject.startEditing()
+    func test_startEditing_whenTextFieldIsFullyAvailable_putsFocusIntoTheTextField() {
+        try! subject.startEditing()
 
-        expect(error).to(beNil())
         expect(self.subject.isFirstResponder).to(beTrue())
     }
 
-    func test_startEditing_whenTextFieldFailsToBecomeFirstResponder_returnsError() {
+    func test_startEditing_whenTextFieldFailsToBecomeFirstResponder_throwsError() {
         // If the text field is not in the window, it will never succeed to become first responder.
         let textFieldNotInWindow = UITextField(frame: CGRect(x: 100,y: 100,width: 100,height: 100))
 
         textFieldNotInWindow.isHidden = false
         textFieldNotInWindow.isEnabled = true
 
-        let error = textFieldNotInWindow.startEditing()
-
-        expect(error?.description).to(equal("Fleet error: UITextField failed to become first responder. Make sure that the field is a part of the key window's view hierarchy."))
+        expect { try textFieldNotInWindow.startEditing() }.to(throwError(closure: { (error: Fleet.TextFieldError) in
+            expect(error.description).to(contain("Text field failed to become first responder. This can happen if the field is not part of the window's hierarchy."))
+        }))
         expect(textFieldNotInWindow.isFirstResponder).to(beFalse())
     }
 
-    func test_startEditing_whenTextViewIsHidden_returnsError() {
+    func test_startEditing_whenTextFieldIsHidden_throwsError() {
         subject.isHidden = true
 
-        let error = subject.startEditing()
-
-        expect(error?.description).to(equal("Fleet error: Failed to start editing UITextField: Control is not visible."))
+        expect { try self.subject.startEditing() }.to(throwError(closure: { (error: Fleet.TextFieldError) in
+            expect(error.description).to(contain("Text field is not visible."))
+        }))
         expect(self.subject.isFirstResponder).to(beFalse())
     }
 
-    func test_startEditing_whenTextViewIsNotEnabled_returnsError() {
+    func test_startEditing_whenTextFieldIsNotEnabled_throwsError() {
         subject.isEnabled = false
 
-        let error = subject.startEditing()
-
-        expect(error?.description).to(equal("Fleet error: Failed to start editing UITextField: Control is not enabled."))
+        expect { try self.subject.startEditing() }.to(throwError(closure: { (error: Fleet.TextFieldError) in
+            expect(error.description).to(contain("Text field is not enabled."))
+        }))
         expect(self.subject.isFirstResponder).to(beFalse())
     }
 
     func test_startEditing_whenDelegateAllowsEditing_callsDelegateMethodsAppropriately() {
         delegate.shouldAllowBeginEditing = true
-        let error = subject.startEditing()
 
-        expect(error).to(beNil())
+        try! subject.startEditing()
+
         expect(self.delegate.didCallShouldBeginEditing).to(beTrue())
         expect(self.delegate.didCallDidBeginEditing).to(beTrue())
     }
 
     func test_startEditing_whenDelegateDoesNotAllowEditing_callsDelegateMethodsAppropriately() {
         delegate.shouldAllowBeginEditing = false
-        let error = subject.startEditing()
 
-        expect(error).to(beNil())
+        try! subject.startEditing()
+
         expect(self.delegate.didCallShouldBeginEditing).to(beTrue())
         expect(self.delegate.didCallDidBeginEditing).to(beFalse())
         expect(self.delegate.didCallShouldClear).to(beFalse())
@@ -92,12 +91,9 @@ class UITextField_FleetSpec: XCTestCase {
         otherDelegate.shouldAllowBeginEditing = true
         delegate.shouldAllowBeginEditing = true
 
-        var error = otherTextField.startEditing()
-        expect(error).to(beNil())
+        try! otherTextField.startEditing()
+        try! subject.startEditing()
 
-        error = subject.startEditing()
-
-        expect(error).to(beNil())
         expect(self.delegate.didCallShouldBeginEditing).to(beTrue())
         expect(self.delegate.didCallDidBeginEditing).to(beTrue())
         expect(otherDelegate.didCallShouldEndEditing).to(beTrue())
@@ -113,12 +109,9 @@ class UITextField_FleetSpec: XCTestCase {
         otherDelegate.shouldAllowBeginEditing = true
         delegate.shouldAllowBeginEditing = false
 
-        var error = otherTextField.startEditing()
-        expect(error).to(beNil())
+        try! otherTextField.startEditing()
+        try! subject.startEditing()
 
-        error = subject.startEditing()
-
-        expect(error).to(beNil())
         expect(self.delegate.didCallShouldBeginEditing).to(beTrue())
         expect(self.delegate.didCallDidBeginEditing).to(beFalse())
         expect(otherDelegate.didCallShouldEndEditing).to(beFalse())
@@ -128,61 +121,56 @@ class UITextField_FleetSpec: XCTestCase {
     func test_startEditing_whenAlreadyFirstResponder_doesNothing() {
         delegate.shouldAllowBeginEditing = true
 
-        var error = subject.startEditing()
-        expect(error).to(beNil())
-
+        try! subject.startEditing()
         delegate.resetState()
+        try! subject.startEditing()
 
-        error = subject.startEditing()
-        expect(error).to(beNil())
         expect(self.delegate.didCallShouldBeginEditing).to(beFalse())
     }
 
     func test_stopEditing_whenTextFieldIsFullyAvailable_removesFocusFromTheTextField() {
-        let _ = subject.startEditing()
-        let error = subject.stopEditing()
+        try! subject.startEditing()
+        try! subject.stopEditing()
 
-        expect(error).to(beNil())
         expect(self.subject.isFirstResponder).to(beFalse())
     }
 
-    func test_stopEditing_whenNotFirstResponder_returnsError() {
-        let error = subject.stopEditing()
-        expect(error?.description).to(equal("Fleet error: Could not stop editing UITextField: Must start editing the text field before you can stop editing it."))
+    func test_stopEditing_whenNotFirstResponder_throwsError() {
+        expect { try self.subject.stopEditing() }.to(throwError(closure: { (error: Fleet.TextFieldError) in
+            expect(error.description).to(contain("Must start editing the text field before you can stop editing it."))
+        }))
     }
 
     func test_stopEditing_whenDelegateAllowsEditingToEnd_callsDelegateMethodsAppropriately() {
-        let _ = subject.startEditing()
+        try! subject.startEditing()
         delegate.resetState()
         delegate.shouldAllowEndEditing = true
 
-        let error = subject.stopEditing()
+        try! subject.stopEditing()
 
-        expect(error).to(beNil())
         expect(self.delegate.didCallShouldEndEditing).to(beTrue())
         expect(self.delegate.didCallDidEndEditing).to(beTrue())
         expect(self.subject.isFirstResponder).to(beFalse())
     }
 
     func test_type_typesGivenTextIntoTextField() {
-        let _ = subject.startEditing()
-        let error = subject.type(text: "turtle magic")
+        try! subject.startEditing()
+        try! subject.type(text: "turtle magic")
 
-        expect(error).to(beNil())
         expect(self.subject.text).to(equal("turtle magic"))
     }
 
-    func test_type_whenNotFirstResponder_returnsError() {
-        let error = subject.type(text: "turtle magic")
-        expect(error?.description).to(equal("Fleet error: Could not type text into UITextField: Must start editing the text field before text can be typed into it."))
+    func test_type_whenNotFirstResponder_throwsError() {
+        expect { try self.subject.type(text: "turtle magic") }.to(throwError(closure: { (error: Fleet.TextFieldError) in
+            expect(error.description).to(contain("Must start editing the text field before text can be typed into it."))
+        }))
     }
 
     func test_type_whenDelegateAllowsTextChanges_callsDelegateMethodsAppropriately() {
         delegate.shouldAllowChangeText = true
-        let _ = subject.startEditing()
-        let error = subject.type(text: "turtle magic")
+        try! subject.startEditing()
+        try! subject.type(text: "turtle magic")
 
-        expect(error).to(beNil())
         expect(self.delegate.textChanges).to(equal(["t", "u", "r", "t", "l", "e", " ", "m", "a", "g", "i", "c"]))
         expect(self.delegate.textRanges.count).to(equal(12))
         expect(self.delegate.textRanges[0].location).to(equal(0))
@@ -193,10 +181,9 @@ class UITextField_FleetSpec: XCTestCase {
 
     func test_type_whenDelegateDoesNotAllowTextChanges_callsDelegateMethodsAppropriately() {
         delegate.shouldAllowChangeText = false
-        let _ = subject.startEditing()
-        let error = subject.type(text: "turtle magic")
+        try! subject.startEditing()
+        try! subject.type(text: "turtle magic")
 
-        expect(error).to(beNil())
         expect(self.delegate.textChanges).to(equal([]))
         expect(self.delegate.textRanges.count).to(equal(12))
         expect(self.delegate.textRanges[0].location).to(equal(0))
@@ -206,34 +193,32 @@ class UITextField_FleetSpec: XCTestCase {
         expect(self.subject.text).to(equal(""))
     }
 
-    func test_type_whenNoDelegate_typesGivenTextIntoTextView() {
-        let _ = subject.startEditing()
+    func test_type_whenNoDelegate_typesGivenTextIntoTextField() {
+        try! subject.startEditing()
         subject.delegate = nil
-        let error = subject.type(text: "turtle magic")
+        try! subject.type(text: "turtle magic")
 
-        expect(error).to(beNil())
         expect(self.subject.text).to(equal("turtle magic"))
     }
 
-    func test_paste_putsGivenTextIntoTextView() {
-        let _ = subject.startEditing()
-        let error = subject.paste(text: "turtle magic")
+    func test_paste_putsGivenTextIntoTextField() {
+        try! subject.startEditing()
+        try! subject.paste(text: "turtle magic")
 
-        expect(error).to(beNil())
         expect(self.subject.text).to(equal("turtle magic"))
     }
 
-    func test_paste_whenNotFirstResponder_returnsError() {
-        let error = subject.paste(text: "turtle magic")
-        expect(error?.description).to(equal("Fleet error: Could not paste text into UITextField: Must start editing the text field before text can be pasted into it."))
+    func test_paste_whenNotFirstResponder_throwsError() {
+        expect { try self.subject.paste(text: "turtle magic") }.to(throwError(closure: { (error: Fleet.TextFieldError) in
+            expect(error.description).to(contain("Must start editing the text field before text can be pasted into it."))
+        }))
     }
 
     func test_paste_whenDelegateAllowsTextChanges_callsDelegateMethodsAppropriately() {
         delegate.shouldAllowChangeText = true
-        let _ = subject.startEditing()
-        let error = subject.paste(text: "turtle magic")
+        try! subject.startEditing()
+        try! subject.paste(text: "turtle magic")
 
-        expect(error).to(beNil())
         expect(self.delegate.textChanges).to(equal(["turtle magic"]))
         expect(self.delegate.textRanges.count).to(equal(1))
         expect(self.delegate.textRanges[0].location).to(equal(0))
@@ -242,10 +227,9 @@ class UITextField_FleetSpec: XCTestCase {
 
     func test_paste_whenDelegateDoesNotAllowTextChanges_callsDelegateMethodsAppropriately() {
         delegate.shouldAllowChangeText = false
-        let _ = subject.startEditing()
-        let error = subject.paste(text: "turtle magic")
+        try! subject.startEditing()
+        try! subject.paste(text: "turtle magic")
 
-        expect(error).to(beNil())
         expect(self.subject.text).to(equal(""))
         expect(self.delegate.textChanges).to(equal([]))
         expect(self.delegate.textRanges.count).to(equal(1))
@@ -254,34 +238,30 @@ class UITextField_FleetSpec: XCTestCase {
     }
 
     func test_backspace_deletesTheLastCharacter() {
-        func test_type_typesGivenTextIntoTextView() {
-            let _ = subject.startEditing()
-            let _ = subject.type(text: "turtle magic")
-
+            try! subject.startEditing()
+            try! subject.type(text: "turtle magic")
             delegate.resetState()
 
-            let error = subject.backspace()
+            try! subject.backspace()
 
-            expect(error).to(beNil())
             expect(self.subject.text).to(equal("turtle magi"))
-        }
     }
 
-    func test_backspace_whenNotFirstResponder_returnsError() {
-        let error = subject.backspace()
-        expect(error?.description).to(equal("Fleet error: Could not backspace in UITextField: Must start editing the text field before backspaces can be performed."))
+    func test_backspace_whenNotFirstResponder_throwsError() {
+        expect { try self.subject.backspace() }.to(throwError(closure: { (error: Fleet.TextFieldError) in
+            expect(error.description).to(contain("Must start editing the text field before backspaces can be performed."))
+        }))
     }
 
     func test_backspace_whenDelegateAllowsTextChanges_callsDelegateMethodsAppropriately() {
         delegate.shouldAllowChangeText = true
-        let _ = subject.startEditing()
-        let _ = subject.type(text: "turtle magic")
+        try! subject.startEditing()
+        try! subject.type(text: "turtle magic")
 
         delegate.resetState()
 
-        let error = subject.backspace()
+        try! subject.backspace()
 
-        expect(error).to(beNil())
         expect(self.delegate.textChanges).to(equal([""]))
         expect(self.delegate.textRanges.count).to(equal(1))
         expect(self.delegate.textRanges[0].location).to(equal(11))
@@ -289,15 +269,14 @@ class UITextField_FleetSpec: XCTestCase {
     }
 
     func test_backspace_whenDelegateDoesNotAllowTextChanges_callsDelegateMethodsAppropriately() {
-        let _ = subject.startEditing()
-        let _ = subject.type(text: "turtle magic")
+        try! subject.startEditing()
+        try! subject.type(text: "turtle magic")
 
         delegate.resetState()
 
         delegate.shouldAllowChangeText = false
-        let error = subject.backspace()
+        try! subject.backspace()
 
-        expect(error).to(beNil())
         expect(self.delegate.textChanges).to(equal([]))
         expect(self.delegate.textRanges.count).to(equal(1))
         expect(self.delegate.textRanges[0].location).to(equal(11))
@@ -306,25 +285,23 @@ class UITextField_FleetSpec: XCTestCase {
     }
 
     func test_backspace_whenNoDelegate_deletesTheLastCharacter() {
-            let _ = subject.startEditing()
-            let _ = subject.type(text: "turtle magic")
+            try! subject.startEditing()
+            try! subject.type(text: "turtle magic")
 
             subject.delegate = nil
 
-            let error = subject.backspace()
+            try! subject.backspace()
 
-            expect(error).to(beNil())
             expect(self.subject.text).to(equal("turtle magi"))
     }
 
     func test_backspace_whenNoTextInTextField_doesNothing() {
-        let _ = subject.startEditing()
+        try! subject.startEditing()
 
         delegate.resetState()
 
-        let error = subject.backspace()
+        try! subject.backspace()
 
-        expect(error).to(beNil())
         expect(self.subject.text).to(equal(""))
         expect(self.delegate.textChanges).to(equal([""]))
         expect(self.delegate.textRanges.count).to(equal(1))
@@ -333,9 +310,8 @@ class UITextField_FleetSpec: XCTestCase {
     }
 
     func test_enter_convenienceMethod_startsEditingATextFieldTypesTextAndStopsEditingAllInOneAction() {
-        let error = subject.enter(text: "turtle magic")
+        try! subject.enter(text: "turtle magic")
 
-        expect(error).to(beNil())
         expect(self.subject.text).to(equal("turtle magic"))
         expect(self.delegate.textChanges).to(equal(["t", "u", "r", "t", "l", "e", " ", "m", "a", "g", "i", "c"]))
         expect(self.delegate.textRanges.count).to(equal(12))
@@ -353,24 +329,20 @@ class UITextField_FleetSpec: XCTestCase {
     func test_whenTextFieldClearsOnEntry_whenDelegateAllowsClearing_clearsTextWhenEditingBegins() {
         subject.clearsOnBeginEditing = true
         delegate.shouldAllowClearText = true
-        var error = subject.enter(text: "turtle magic")
-        expect(error).to(beNil())
+        try! subject.enter(text: "turtle magic")
         expect(self.subject.text).to(equal("turtle magic"))
 
-        error = subject.startEditing()
-        expect(error).to(beNil())
+        try! subject.startEditing()
         expect(self.subject.text).to(equal(""))
     }
 
     func test_whenTextFieldClearsOnEntry_whenDelegateDoesNotAllowClearing_doesNotClearTextWhenEditingBegins() {
         subject.clearsOnBeginEditing = true
         delegate.shouldAllowClearText = false
-        var error = subject.enter(text: "turtle magic")
-        expect(error).to(beNil())
+        try! subject.enter(text: "turtle magic")
         expect(self.subject.text).to(equal("turtle magic"))
 
-        error = subject.startEditing()
-        expect(error).to(beNil())
+        try! subject.startEditing()
         expect(self.subject.text).to(equal("turtle magic"))
     }
 
@@ -384,27 +356,22 @@ class UITextField_FleetSpec: XCTestCase {
         textField.delegate = minimallyImplementedDelegate
         try! Test.embedViewIntoMainApplicationWindow(textField)
 
-        var error = textField.enter(text: "turtle magic")
-        expect(error).to(beNil())
+        try! textField.enter(text: "turtle magic")
         expect(textField.text).to(equal("turtle magic"))
-
-        error = textField.startEditing()
-        expect(error).to(beNil())
-
-        error = textField.backspace()
-        expect(error).to(beNil())
+        try! textField.startEditing()
+        try!textField.backspace()
         expect(textField.text).to(equal("turtle magi"))
-
-        error = textField.paste(text: "c woo")
-        expect(error).to(beNil())
+        try! textField.paste(text: "c woo")
         expect(textField.text).to(equal("turtle magic woo"))
+        try! textField.stopEditing()
     }
 
-    func test_whenUserInteractionIsDisabled_doesAbsolutelyNothingAndReturnsError() {
+    func test_whenUserInteractionIsDisabled_doesAbsolutelyNothingAndThrowsError() {
         subject.isUserInteractionEnabled = false
-        let error = subject.enter(text: "turtle magic")
+        expect { try self.subject.enter(text: "turtle magic") }.to(throwError(closure: { (error: Fleet.TextFieldError) in
+            expect(error.description).to(contain("View does not allow user interaction."))
+        }))
 
-        expect(error?.description).to(equal("Fleet error: Failed to start editing UITextField: User interaction is disabled."))
         expect(self.subject.text).to(equal(""))
         expect(self.delegate.textChanges).to(equal([]))
         expect(self.delegate.textRanges.count).to(equal(0))

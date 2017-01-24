@@ -1,5 +1,21 @@
 import UIKit
 
+extension Fleet {
+    public enum TextFieldError: Error, CustomStringConvertible {
+        case controlUnavailable(String)
+        case editingFlow(String)
+
+        public var description: String {
+            switch self {
+            case .controlUnavailable(let message):
+                return "UITextField unavailable for editing: \(message)"
+            case .editingFlow(let message):
+                return "Could not edit UITextField: \(message)"
+            }
+        }
+    }
+}
+
 extension UITextField {
     /**
      Attempts to perform the following actions on the `UITextField` in sequence:
@@ -16,98 +32,86 @@ extension UITextField {
      error = textField.stopEditing()
      ```
 
-     - returns:
-     `nil` if successful, or a `FleetError` if the text field is not available because it is hidden,
+     - throws:
+     A `Fleet.TextFieldError` if the text field is not available because it is hidden,
      not enabled, if grabbing first responder fails for any reason, or if resigning first responder
      fails for any reason.
      */
-    public func enter(text: String) -> FleetError? {
-        if let error = startEditing() {
-            return error
-        }
-        if let error = type(text: text) {
-            return error
-        }
-        if let error = stopEditing() {
-            return error
-        }
-
-        return nil
+    public func enter(text: String) throws {
+        try startEditing()
+        try type(text: text)
+        try stopEditing()
     }
 
     /**
      Attempts to give the `UITextField` first responder focus.
 
-     - returns:
-     `nil` if successful, or a `FleetError` if the text view is not available because it is hidden,
+     - throws:
+     A `Fleet.TextFieldError` if the text view is not available because it is hidden,
      not enabled, or if grabbing first responder fails for any reason.
      */
-    public func startEditing() -> FleetError? {
+    public func startEditing() throws {
         if !isUserInteractionEnabled {
-            return FleetError(message: "Failed to start editing UITextField: User interaction is disabled.")
+            throw Fleet.TextFieldError.controlUnavailable("View does not allow user interaction.")
         }
         if isFirstResponder {
-            return nil
+            return
         }
         guard !isHidden else {
-            return FleetError(message: "Failed to start editing UITextField: Control is not visible.")
+            throw Fleet.TextFieldError.controlUnavailable("Text field is not visible.")
         }
         guard isEnabled else {
-            return FleetError(message: "Failed to start editing UITextField: Control is not enabled.")
+            throw Fleet.TextFieldError.controlUnavailable("Text field is not enabled.")
         }
         if let delegate = delegate {
             let doesImplementShouldBeginEditing = delegate.responds(to: #selector(UITextFieldDelegate.textFieldShouldBeginEditing(_:)))
             if doesImplementShouldBeginEditing {
                 guard delegate.textFieldShouldBeginEditing!(self) else {
-                    return nil
+                    return
                 }
             }
         }
         guard becomeFirstResponder() else {
-            return FleetError(message: "UITextField failed to become first responder. Make sure that the field is a part of the key window's view hierarchy.")
+            throw Fleet.TextFieldError.editingFlow("Text field failed to become first responder. This can happen if the field is not part of the window's hierarchy.")
         }
-
-        return nil
     }
 
     /**
      Attempts to remove first responder focus from the `UITextField`.
 
-     - returns:
-     `nil` if successful, or a `FleetError` if the text field does not have first responder focus, or if resigning
+     - throws:
+     A `Fleet.TextFieldError` if the text field does not have first responder focus, or if resigning
      first responder fails for any reason.
      */
-    public func stopEditing() -> FleetError? {
+    public func stopEditing() throws {
         guard isFirstResponder else {
-            return FleetError(message: "Could not stop editing UITextField: Must start editing the text field before you can stop editing it.")
+            throw Fleet.TextFieldError.editingFlow("Must start editing the text field before you can stop editing it.")
         }
         if let delegate = delegate {
             let doesImplementShouldEndEditing = delegate.responds(to: #selector(UITextFieldDelegate.textFieldShouldEndEditing(_:)))
             if doesImplementShouldEndEditing {
                 guard delegate.textFieldShouldEndEditing!(self) else {
-                    return nil
+                    return
                 }
             }
         }
         guard resignFirstResponder() else {
-            return FleetError(message: "UITextField failed to resign first responder. Make sure that the field is a part of the key window's view hierarchy.")
+            throw Fleet.TextFieldError.editingFlow("Text field failed to resign first responder. This can happen if the field is not part of the window's hierarchy.")
         }
-
-        return nil
     }
 
     /**
      Attempts to type text into a `UITextField` with first responder focus.
 
-     - returns:
-     `nil` if successful, or a `FleetError` if the text field does not have first responder focus.
+     - throws:
+     A `Fleet.TextFieldError` if the text field does not have first responder focus.
 
      - note:
      This method types the text at the end of any existing text.
      */
-    public func type(text newText: String) -> FleetError? {
+    public func type(text newText: String) throws {
         guard isFirstResponder else {
-            return FleetError(message: "Could not type text into UITextField: Must start editing the text field before text can be typed into it.")
+            throw Fleet.TextFieldError.editingFlow("Must start editing the text field before text can be typed into it.")
         }
 
         for character in newText.characters {
@@ -130,22 +134,20 @@ extension UITextField {
                 text = existingText
             }
         }
-
-        return nil
     }
 
     /**
      Attempts to paste text into a `UITextField` with first responder focus.
 
-     - returns:
-     `nil` if successful, or a `FleetError` if the text field does not have first responder focus.
+     - throws:
+     A `Fleet.TextFieldError` if the text field does not have first responder focus.
 
      - note:
      This method pastes the text to the end of any existing text.
      */
-    public func paste(text textToPaste: String) -> FleetError? {
+    public func paste(text textToPaste: String) throws {
         guard isFirstResponder else {
-            return FleetError(message: "Could not paste text into UITextField: Must start editing the text field before text can be pasted into it.")
+            throw Fleet.TextFieldError.editingFlow("Must start editing the text field before text can be pasted into it.")
         }
 
         var existingText = ""
@@ -166,23 +168,21 @@ extension UITextField {
             existingText += textToPaste
             text = existingText
         }
-
-        return nil
     }
 
     /**
      Attempts to hit the backspace key in a `UITextField` with first responder focus.
 
-     - returns:
-     `nil` if successful, or a `FleetError` if the text field does not have first responder focus.
+     - throws:
+     A `Fleet.TextFieldError` if the text field does not have first responder focus.
 
      - note:
      This method acts at the end of any existing text. That is, it will remove the last character of
      the `UITextField`'s existing text content.
      */
-    public func backspace() -> FleetError? {
+    public func backspace() throws {
         guard isFirstResponder else {
-            return FleetError(message: "Could not backspace in UITextField: Must start editing the text field before backspaces can be performed.")
+            throw Fleet.TextFieldError.editingFlow("Must start editing the text field before backspaces can be performed.")
         }
 
         var existingText = ""
@@ -195,7 +195,7 @@ extension UITextField {
                 let _ = delegate.textField!(self, shouldChangeCharactersIn: NSMakeRange(0, 0), replacementString: "")
             }
 
-            return nil
+            return
         }
         if let delegate = delegate {
             let location = existingText.characters.count > 0 ? existingText.characters.count - 1 : 0
@@ -213,8 +213,6 @@ extension UITextField {
             existingText.remove(at: existingText.index(before: existingText.endIndex))
             text = existingText
         }
-
-        return nil
     }
 
     /**

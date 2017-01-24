@@ -15,7 +15,7 @@ When you want to enter some text into the controller's `textField`, simply do th
 
 ```swift
 let controller = getControllerUnderTest() as? ControllerUnderTest
-let _ = controller.textField?.enter(text: "text")
+try! controller.textField?.enter(text: "text")
 
 // Any delegate attached to the text view will automatically receive all
 // events that you would expect to receive had a real user interacted
@@ -34,21 +34,21 @@ let _ = controller.textField?.enter(text: "text")
 You can also get more granular control with the `startEditing()`, `endEditing()`, `type(text:)`, `paste(text:)`, and `backspace()` methods.
 
 ```swift
-let _ = textField.startEditing()
+try! textField.startEditing()
 
 // Sends should begin and did begin events to the delegate.
 ```
 
 ```swift
-let _ = textField.endEditing()
+try! textField.endEditing()
 
 // Sends should end and did end events to the delegate if textField previously
 // had startEditing() called on it.
 ```
 
 ```swift
-let _ = textField.type(text: "text")
-let _ = textField.paste(text: "text")
+try! textField.type(text: "text")
+try! textField.paste(text: "text")
 
 // Sends the appropriate editing changed methods to the delegate. The
 // difference between the two is that type(text:) triggers the
@@ -58,12 +58,12 @@ let _ = textField.paste(text: "text")
 ```
 
 ```swift
-let _ = textField.backspace()
+try! textField.backspace()
 
 // Sends the appropriate methods to the delegate while removing the last character of content
 // from the text field.
 ```
 
-All the methods return `FleetError` error objects that communicate errors that occur when attempting to perform
-the various operations. For example, the `UITextField.type(text:)` method will return an error when it is called
+All the methods throw `Fleet.TextFieldError` error objects that communicate errors that occur when attempting to perform
+the various operations. For example, the `UITextField.type(text:)` method will throw an error when it is called
 on a text field that does not have first responder focus.
