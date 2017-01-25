@@ -10,8 +10,7 @@ class UITableView_SelectCellActionSpec: XCTestCase {
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         Fleet.setApplicationWindowRootViewController(viewController)
 
-        let error = viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0))
-        expect(error).to(beNil())
+        try! viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0))
 
         var didPresentAlert = false
         let assertAlertPresentedWithCorrectData: () -> Bool = {
@@ -33,7 +32,7 @@ class UITableView_SelectCellActionSpec: XCTestCase {
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
 
-        let _ = viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0))
+        try! viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0))
         expect(viewController.willBeginEditingRowCallArgs.count).to(equal(1))
         expect(viewController.willBeginEditingRowCallArgs.first).to(equal(IndexPath(row: 10, section: 0)))
     }
@@ -43,79 +42,76 @@ class UITableView_SelectCellActionSpec: XCTestCase {
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
 
-        let _ = viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0))
+        try! viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0))
         expect(viewController.didEndEditingRowCallArgs.count).to(equal(1))
         expect(viewController.didEndEditingRowCallArgs.first).to(equal(IndexPath(row: 10, section: 0)))
     }
 
-    func test_selectCellAction_whenTheActionDoesNotExist_returnsAnError() {
+    func test_selectCellAction_whenTheActionDoesNotExist_throwsAnError() {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
 
-        let error = viewController.birdsTableView?.selectCellAction(withTitle: "Four", at: IndexPath(row: 10, section: 0))
-        expect(String(describing: error!)).to(equal("Fleet error: Could not find edit action with title 'Four' at row 10 in section 0"))
+        expect { try viewController.birdsTableView?.selectCellAction(withTitle: "Four", at: IndexPath(row: 10, section: 0)) }.to(throwError(closure: { (error: Fleet.TableViewError) in
+            expect(error.description).to(equal("Could not find edit action with title 'Four' at row 10 in section 0."))
+            })
+        )
     }
 
-    func test_selectCellAction_whenNoCellExistsAtThatIndexPath_whenInvalidSectionInIndexPath_returnsAnError() {
+    func test_selectCellAction_whenNoCellExistsAtThatIndexPath_whenInvalidSectionInIndexPath_throwsAnError() {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
-        let error = viewController.birdsTableView?.selectCellAction(withTitle: "One", at: IndexPath(row: 1, section: 1))
 
-        expect(error).toNot(beNil())
-        expect(String(describing: error!)).to(equal("Fleet error: Invalid index path: Table view has no section 1 (section count in table view == 1)"))
+        expect { try viewController.birdsTableView?.selectCellAction(withTitle: "One", at: IndexPath(row: 1, section: 1)) }.to(throwError(closure: { (error: Fleet.TableViewError) in
+            expect(error.description).to(equal("Table view has no section 1."))
+        }))
     }
 
-    func test_selectCellAction_whenNoCellExistsAtThatIndexPath_whenInvalidRowInIndexPath_returnsAnError() {
+    func test_selectCellAction_whenNoCellExistsAtThatIndexPath_whenInvalidRowInIndexPath_throwsAnError() {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
-        let error = viewController.birdsTableView?.selectCellAction(withTitle: "One", at: IndexPath(row: 100, section: 0))
 
-        expect(error).toNot(beNil())
-        expect(String(describing: error!)).to(equal("Fleet error: Invalid index path: Section 0 does not have row 100 (row count in section 0 == 21)"))
+        expect { try viewController.birdsTableView?.selectCellAction(withTitle: "One", at: IndexPath(row: 100, section: 0)) }.to(throwError(closure: { (error: Fleet.TableViewError) in
+            expect(error.description).to(equal("Table view has no row 100 in section 0."))
+        }))
     }
 
-    func test_selectCellAction_whenDataSourceSaysThatIndexPathCannotBeEdited_returnsAnError() {
+    func test_selectCellAction_whenDataSourceSaysThatIndexPathCannotBeEdited_throwsAnError() {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
 
         // The fourth row in the table view is not editable
-        let errorOpt = viewController.birdsTableView?.selectCellAction(withTitle: "One", at: IndexPath(row: 3, section: 0))
-
-        guard let error = errorOpt else {
-            fail("Failed to return any FleetError")
-            return
-        }
-
-        expect(String(describing: error)).to(equal("Fleet error: Editing of row 3 in section 0 is not allowed by the table view's data source"))
+        expect { try viewController.birdsTableView?.selectCellAction(withTitle: "One", at: IndexPath(row: 3, section: 0)) }.to(throwError(closure: { (error: Fleet.TableViewError) in
+            expect(error.description).to(equal("Interaction with row 3 in section 0 rejected: Table view data source does not allow editing of that row."))
+        }))
     }
 
-    func test_selectCellAction_whenTableViewDoesNotHaveDataSource_returnsAnError() {
+    func test_selectCellAction_whenTableViewDoesNotHaveDataSource_throwsAnError() {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
         viewController.birdsTableView?.dataSource = nil
 
-        let error = viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0))
-        expect(error).toNot(beNil())
-        expect(String(describing: error!)).to(equal("Fleet error: Attempted to select cell action on table view without a data source"))
+        expect { try viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0)) }.to(throwError(closure: { (error: Fleet.TableViewError) in
+            expect(error.description).to(equal("UITableViewDataSource required to select cell action."))
+        }))
     }
 
-    func test_selectCellAction_whenNoDelegateSet_returnsAnError() {
+    func test_selectCellAction_whenNoDelegateSet_throwsAnError() {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
         viewController.birdsTableView?.delegate = nil
 
-        let error = viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0))
-        expect(error).toNot(beNil())
-        expect(String(describing: error!)).to(equal("Fleet error: UITableViewDelegate required for cells to perform actions"))
+        expect { try viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0)) }.to(throwError(closure: { (error: Fleet.TableViewError) in
+            expect(error.description).to(equal("UITableViewDelegate required to select cell action."))
+        }))
     }
 
-    func test_selectCellAction_whenDelegateDoesNotImplementEditActionsMethod_returnsAnError() {
+    func test_selectCellAction_whenDelegateDoesNotImplementEditActionsMethod_throwsAnError() {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
@@ -126,8 +122,8 @@ class UITableView_SelectCellActionSpec: XCTestCase {
         let minimalDelegate = MinimalDelegate()
         viewController.birdsTableView?.delegate = minimalDelegate
 
-        let error = viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0))
-        expect(error).toNot(beNil())
-        expect(String(describing: error!)).to(equal("Fleet error: Delegate must implement `UITableViewDelegate.editActionsForRowAt:` method to use cell actions"))
+        expect { try viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0)) }.to(throwError(closure: { (error: Fleet.TableViewError) in
+            expect(error.description).to(equal("Delegate must implement UITableViewDelegate.tableView(_:editActionsForRowAt:) to select cell action."))
+        }))
     }
 }

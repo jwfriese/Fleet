@@ -82,6 +82,7 @@
 		7BBEF7F91E33BD8A0038F0FA /* UISwitch+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBEF7F81E33BD8A0038F0FA /* UISwitch+FleetSpec.swift */; };
 		7BBEF7FB1E33BE1A0038F0FA /* UISwitch+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBEF7FA1E33BE1A0038F0FA /* UISwitch+Fleet.swift */; };
 		7BEE35B51E15434A00302991 /* UITableView+SelectRowMinimalDelegateImplSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BEE35B41E15434A00302991 /* UITableView+SelectRowMinimalDelegateImplSpec.swift */; };
+		7BF913981E384A4E00019CF2 /* TableViewError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF913971E384A4E00019CF2 /* TableViewError.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -183,6 +184,7 @@
 		7BBEF7F81E33BD8A0038F0FA /* UISwitch+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UISwitch+FleetSpec.swift"; sourceTree = "<group>"; };
 		7BBEF7FA1E33BE1A0038F0FA /* UISwitch+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UISwitch+Fleet.swift"; sourceTree = "<group>"; };
 		7BEE35B41E15434A00302991 /* UITableView+SelectRowMinimalDelegateImplSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+SelectRowMinimalDelegateImplSpec.swift"; sourceTree = "<group>"; };
+		7BF913971E384A4E00019CF2 /* TableViewError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableViewError.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -275,6 +277,7 @@
 		7B29F41B1DDCABDD008EA836 /* TableView */ = {
 			isa = PBXGroup;
 			children = (
+				7BF913971E384A4E00019CF2 /* TableViewError.swift */,
 				7B29F41E1DDCAC76008EA836 /* UITableView+SelectCellAction.swift */,
 				7B29F41C1DDCABF5008EA836 /* UITableView+SelectRow.swift */,
 			);
@@ -732,6 +735,7 @@
 				7B8F2B261DE12CC700B6F4C2 /* MockFor.swift in Sources */,
 				7B2D724A1E292A1F0046EDFC /* StoryboardBindingError.swift in Sources */,
 				7BA4B1B21E36F7A10052A2A7 /* UITextView+Fleet.swift in Sources */,
+				7BF913981E384A4E00019CF2 /* TableViewError.swift in Sources */,
 				7BB14A6F1D77B425002ABE82 /* VisualTreeWalker.swift in Sources */,
 				7B675EA01D0DCA38002E6B45 /* UIAlertController+Fleet.swift in Sources */,
 				7B29F41D1DDCABF5008EA836 /* UITableView+SelectRow.swift in Sources */,
