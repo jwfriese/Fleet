@@ -9,7 +9,7 @@ class UITableView_SelectRowSpec: XCTestCase {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
-        let _ = viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
+        try! viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
 
         guard let selectedIndexPath = viewController.birdsTableView?.indexPathForSelectedRow else {
             fail("Failed to select row at index path (\(IndexPath(row: 1, section: 0)))")
@@ -23,8 +23,8 @@ class UITableView_SelectRowSpec: XCTestCase {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
-        let _ = viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
-        let _ = viewController.birdsTableView?.selectRow(at: IndexPath(row: 4, section: 0))
+        try! viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
+        try! viewController.birdsTableView?.selectRow(at: IndexPath(row: 4, section: 0))
 
         guard let selectedIndexPaths = viewController.birdsTableView?.indexPathsForSelectedRows else {
             fail("Failed to select any rows")
@@ -39,9 +39,8 @@ class UITableView_SelectRowSpec: XCTestCase {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
-        let error = viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
+        try! viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
 
-        expect(error).to(beNil())
         expect(viewController.willSelectRowCallCount).to(equal(1))
         expect(viewController.willSelectRowCallArgs[0]).to(equal(IndexPath(row: 1, section: 0)))
         expect(viewController.didSelectRowCallCount).to(equal(1))
@@ -52,10 +51,9 @@ class UITableView_SelectRowSpec: XCTestCase {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
-        let _ = viewController.birdsTableView?.selectRow(at: IndexPath(row: 10, section: 0))
-        let error = viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
+        try! viewController.birdsTableView?.selectRow(at: IndexPath(row: 10, section: 0))
+        try! viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
 
-        expect(error).to(beNil())
         expect(viewController.willDeselectRowCallCount).to(equal(1))
         expect(viewController.willDeselectRowCallArgs[0]).to(equal(IndexPath(row: 10, section: 0)))
         expect(viewController.didDeselectRowCallCount).to(equal(1))
@@ -68,9 +66,8 @@ class UITableView_SelectRowSpec: XCTestCase {
         let _ = viewController.view
 
         // The controller does not allow the first row to be selected.
-        let error = viewController.birdsTableView?.selectRow(at: IndexPath(row: 0, section: 0))
+        try! viewController.birdsTableView?.selectRow(at: IndexPath(row: 0, section: 0))
 
-        expect(error).to(beNil())
         expect(viewController.willSelectRowCallCount).to(equal(1))
         expect(viewController.didSelectRowCallCount).to(equal(0))
     }
@@ -81,10 +78,9 @@ class UITableView_SelectRowSpec: XCTestCase {
         let _ = viewController.view
 
         // The controller does not allow the fifth row to be deselected.
-        let _ = viewController.birdsTableView?.selectRow(at: IndexPath(row: 4, section: 0))
-        let error = viewController.birdsTableView?.selectRow(at: IndexPath(row: 8, section: 0))
+        try! viewController.birdsTableView?.selectRow(at: IndexPath(row: 4, section: 0))
+        try! viewController.birdsTableView?.selectRow(at: IndexPath(row: 8, section: 0))
 
-        expect(error).to(beNil())
         expect(viewController.willDeselectRowCallCount).to(equal(1))
         expect(viewController.didDeselectRowCallCount).to(equal(0))
     }
@@ -95,9 +91,8 @@ class UITableView_SelectRowSpec: XCTestCase {
         let _ = viewController.view
 
         // The controller reroutes selection of the third row to the second row.
-        let error = viewController.birdsTableView?.selectRow(at: IndexPath(row: 2, section: 0))
+        try! viewController.birdsTableView?.selectRow(at: IndexPath(row: 2, section: 0))
 
-        expect(error).to(beNil())
         expect(viewController.willSelectRowCallCount).to(equal(1))
         expect(viewController.willSelectRowCallArgs[0]).to(equal(IndexPath(row: 2, section: 0)))
         expect(viewController.didSelectRowCallCount).to(equal(1))
@@ -110,10 +105,9 @@ class UITableView_SelectRowSpec: XCTestCase {
         let _ = viewController.view
 
         // The controller reroutes selection of the seventh row to the sixth row.
-        let _ = viewController.birdsTableView?.selectRow(at: IndexPath(row: 6, section: 0))
-        let error = viewController.birdsTableView?.selectRow(at: IndexPath(row: 10, section: 0))
+        try! viewController.birdsTableView?.selectRow(at: IndexPath(row: 6, section: 0))
+        try! viewController.birdsTableView?.selectRow(at: IndexPath(row: 10, section: 0))
 
-        expect(error).to(beNil())
         expect(viewController.willDeselectRowCallCount).to(equal(1))
         expect(viewController.willDeselectRowCallArgs[0]).to(equal(IndexPath(row: 6, section: 0)))
         expect(viewController.didDeselectRowCallCount).to(equal(1))
@@ -124,20 +118,20 @@ class UITableView_SelectRowSpec: XCTestCase {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
-        let error = viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 1))
 
-        expect(error).toNot(beNil())
-        expect(String(describing: error!)).to(equal("Fleet error: Invalid index path: Table view has no section 1 (section count in table view == 1)"))
+        expect { try viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 1)) }.to(throwError(closure: { (error: Fleet.TableViewError) in
+            expect(error.description).to(equal("Table view has no section 1."))
+        }))
     }
 
     func test_selectRow_whenNoCellExistsAtThatIndexPath_whenInvalidRowInIndexPath_returnsAnError() {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
-        let error = viewController.birdsTableView?.selectRow(at: IndexPath(row: 100, section: 0))
 
-        expect(error).toNot(beNil())
-        expect(String(describing: error!)).to(equal("Fleet error: Invalid index path: Section 0 does not have row 100 (row count in section 0 == 21)"))
+        expect { try viewController.birdsTableView?.selectRow(at: IndexPath(row: 100, section: 0)) }.to(throwError(closure: { (error: Fleet.TableViewError) in
+            expect(error.description).to(equal("Table view has no row 100 in section 0."))
+        }))
     }
 
     func test_selectRow_whenSelectionIsValid_postsUITableViewSelectionDidChangeNotification() {
@@ -161,31 +155,31 @@ class UITableView_SelectRowSpec: XCTestCase {
                                        object: nil
         )
 
-        let _ = viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
+        try! viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
 
         expect(listener.callCount).to(equal(1))
-    }
-
-    func test_selectRow_whenTableViewDoesNotAllowSelection_returnsAnError() {
-        let storyboard = UIStoryboard(name: "Birds", bundle: nil)
-        let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
-        let _ = viewController.view
-        viewController.birdsTableView?.dataSource = nil
-
-        let error = viewController.birdsTableView?.selectRow(at: IndexPath(row: 0, section: 0))
-        expect(error).toNot(beNil())
-        expect(String(describing: error!)).to(equal("Fleet error: Attempted to select row on table view without a data source"))
     }
 
     func test_selectRow_whenTableViewDoesNotHaveDataSource_returnsAnError() {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
+        viewController.birdsTableView?.dataSource = nil
+
+        expect { try viewController.birdsTableView?.selectRow(at: IndexPath(row: 0, section: 0)) }.to(throwError(closure: { (error: Fleet.TableViewError) in
+            expect(error.description).to(equal("UITableViewDataSource required to select cell row."))
+        }))
+    }
+
+    func test_selectRow_whenTableViewDoesNotAllowSelection_returnsAnError() {
+        let storyboard = UIStoryboard(name: "Birds", bundle: nil)
+        let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
+        let _ = viewController.view
         viewController.birdsTableView?.allowsSelection = false
 
-        let error = viewController.birdsTableView?.selectRow(at: IndexPath(row: 0, section: 0))
-        expect(error).toNot(beNil())
-        expect(String(describing: error!)).to(equal("Fleet error: Attempted to select row on table view with 'allowsSelection' == false"))
+        expect { try viewController.birdsTableView?.selectRow(at: IndexPath(row: 0, section: 0)) }.to(throwError(closure: { (error: Fleet.TableViewError) in
+            expect(error.description).to(equal("Interaction with row 0 in section 0 rejected: Table view does not allow selection."))
+        }))
     }
 
     func test_selectRow_whenTableViewDoesNotHaveDelegate_stillSelectsTheRow() {
@@ -193,7 +187,7 @@ class UITableView_SelectRowSpec: XCTestCase {
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
         viewController.birdsTableView?.delegate = nil
-        let _ = viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
+        try! viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
 
         guard let selectedIndexPath = viewController.birdsTableView?.indexPathForSelectedRow else {
             fail("Failed to select row at index path (\(IndexPath(row: 1, section: 0)))")

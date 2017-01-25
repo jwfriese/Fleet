@@ -1,6 +1,6 @@
 import UIKit
 
-public extension UITableView {
+extension UITableView {
     /**
      Mimic a user tap on the cell at the given index path in the table view.
      Unlike UITableView's selectRow(at:animated:scrollPosition:) method, this
@@ -10,27 +10,27 @@ public extension UITableView {
      - parameters:
      - at: The index path to attempt to tap
 
-     - returns:
-     Nil if selection is successful, otherwise a FleetError if there is no cell at the given index path
+     - throws:
+     A `Fleet.TableViewError` if there is no cell at the given index path
      or if the table view does not allow selection ('allowsSelection' == false)
      */
-    public func selectRow(at indexPath: IndexPath) -> FleetError? {
+    public func selectRow(at indexPath: IndexPath) throws {
         guard let _ = self.dataSource else {
-            return FleetError(message: "Attempted to select row on table view without a data source")
+            throw Fleet.TableViewError.dataSourceRequired(userAction: "select cell row")
         }
 
         guard allowsSelection else {
-            return FleetError(message: "Attempted to select row on table view with 'allowsSelection' == false")
+            throw Fleet.TableViewError.rejectedAction(at: indexPath, reason: "Table view does not allow selection.")
         }
 
         let sectionCount = numberOfSections
         if indexPath.section >= sectionCount {
-            return FleetError(message: "Invalid index path: Table view has no section \(indexPath.section) (section count in table view == \(sectionCount))")
+            throw Fleet.TableViewError.sectionDoesNotExist(sectionNumber: indexPath.section)
         }
 
         let rowCount = numberOfRows(inSection: indexPath.section)
         if indexPath.row >= rowCount {
-            return FleetError(message: "Invalid index path: Section \(indexPath.section) does not have row \(indexPath.row) (row count in section \(indexPath.section) == \(rowCount))")
+            throw Fleet.TableViewError.rowDoesNotExist(at: indexPath)
         }
 
         let hasDelegate = delegate != nil
@@ -44,7 +44,7 @@ public extension UITableView {
         if doesDelegateImplementWillSelect {
             let indexPathToSelectOptional = delegate!.tableView!(self, willSelectRowAt: indexPath)
             guard let unwrappedIndexPathToSelect = indexPathToSelectOptional else {
-                return nil
+                return
             }
 
             indexPathToSelect = unwrappedIndexPathToSelect
@@ -54,7 +54,6 @@ public extension UITableView {
         NotificationCenter.default.post(name: NSNotification.Name.UITableViewSelectionDidChange, object: nil)
 
         delegate?.tableView?(self, didSelectRowAt: indexPathToSelect)
-        return nil
     }
 
     private func deselectPreviouslySelectedRow() {
