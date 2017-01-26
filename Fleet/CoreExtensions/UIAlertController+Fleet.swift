@@ -1,33 +1,47 @@
-import Foundation
+import UIKit
 
-public extension UIAlertController {
+extension Fleet {
+    public enum AlertError: Error, CustomStringConvertible {
+        case titleNotFound(title: String)
+
+        public var description: String {
+            get {
+                switch self {
+                case .titleNotFound(let title):
+                    return "No action with title '\(title)' found on alert."
+                }
+            }
+        }
+    }
+}
+
+extension UIAlertController {
     /**
-        Mimics a tap on the alert item with the given title,
-        firing any associated behavior.
+     Mimics a tap on the alert item with the given title,
+     firing any associated behavior.
 
-        - Parameter title:  The title of the action to tap
-    */
-    public func tapAlertAction(withTitle title: String) {
+     - parameters:
+        - title:  The title of the action to tap
+
+     - throws:
+     A `Fleet.AlertError` if an alert action with the given title cannot be found.
+     */
+    public func tapAlertAction(withTitle title: String) throws {
         let filteredActions = actions.filter { action in
             return action.title == title
         }
 
         var completionHandler: (() -> ())?
         if let actionWithTitle = filteredActions.first {
-            let isCancelStyle = actionWithTitle.style == .cancel
             if let handler = actionWithTitle.handler {
                 completionHandler = {
                     handler(actionWithTitle)
-                }
-            } else {
-                if !isCancelStyle {
-                    Logger.logWarning("Action with title \"\(title)\" has no handler and is not Cancel style")
                 }
             }
 
             presentingViewController?.dismiss(animated: true, completion: completionHandler)
         } else {
-            Logger.logWarning("No action with title \"\(title)\" found on alert")
+            throw Fleet.AlertError.titleNotFound(title: title)
         }
     }
 }
