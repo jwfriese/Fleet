@@ -28,7 +28,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
         var threwError = false
         do {
             let _ = try turtlesAndFriendsStoryboard.mockIdentifier("WatermelonViewController", usingMockFor: UIViewController.self)
-        } catch StoryboardBindingError.invalidViewControllerIdentifier(let message) {
+        } catch Fleet.StoryboardError.invalidViewControllerIdentifier(let message) {
             threwError = true
             expect(message).to(equal("Could not find identifier WatermelonViewController on storyboard with name TurtlesAndFriendsStoryboard"))
         } catch { }
@@ -42,7 +42,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
         var threwError = false
         do {
             let _ = try turtlesAndFriendsStoryboard.mockIdentifier("CrabViewController", usingMockFor: CrabViewController.self)
-        } catch StoryboardBindingError.invalidViewControllerIdentifier(let message) {
+        } catch Fleet.StoryboardError.invalidViewControllerIdentifier(let message) {
             threwError = true
             expect(message).to(equal("Could not find identifier CrabViewController on storyboard with name TurtlesAndFriendsStoryboard, but found this identifier on an external storyboard reference. Use UIStoryboard.bind(viewController:toIdentifier:forReferencedStoryboardWithName:) to bind to external references"))
         } catch { }
@@ -70,7 +70,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
         var threwError = false
         do {
             let _ = try turtlesAndFriendsStoryboard.mockIdentifier("WatermelonViewController", forReferencedStoryboardWithName: "CrabStoryboard", usingMockFor: CrabViewController.self)
-        } catch StoryboardBindingError.invalidExternalStoryboardReference(let message) {
+        } catch Fleet.StoryboardError.invalidExternalStoryboardReference(let message) {
             threwError = true
             expect(message).to(equal("Could not find identifier WatermelonViewController (external storyboard reference: CrabStoryboard) on storyboard TurtlesAndFriendsStoryboard"))
         } catch { }
@@ -98,7 +98,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
         var threwError = false
         do {
             let _ = try turtlesAndFriendsStoryboard.mockInitialViewController(forReferencedStoryboardWithName: "WatermelonStoryboard", usingMockFor: UIViewController.self)
-        } catch StoryboardBindingError.invalidExternalStoryboardReference(let message) {
+        } catch Fleet.StoryboardError.invalidExternalStoryboardReference(let message) {
             threwError = true
             expect(message).to(equal("Could not find reference to an external storyboard with name WatermelonStoryboard on storyboard TurtlesAndFriendsStoryboard"))
         }catch { }
@@ -121,7 +121,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
         let whateverViewController = UIViewController()
         do {
             try turtlesAndFriendsStoryboard.bind(viewController: whateverViewController, toIdentifier: "WhateverViewController")
-        } catch StoryboardBindingError.invalidViewControllerIdentifier(let message) {
+        } catch Fleet.StoryboardError.invalidViewControllerIdentifier(let message) {
             threwError = true
             expect(message).to(equal("Could not find identifier WhateverViewController on storyboard with name TurtlesAndFriendsStoryboard"))
         } catch { }
@@ -136,7 +136,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
         let whateverViewController = UIViewController()
         do {
             try turtlesAndFriendsStoryboard.bind(viewController: whateverViewController, toIdentifier: "CrabViewController")
-        } catch StoryboardBindingError.invalidViewControllerIdentifier(let message) {
+        } catch Fleet.StoryboardError.invalidViewControllerIdentifier(let message) {
             threwError = true
             expect(message).to(equal("Could not find identifier CrabViewController on storyboard with name TurtlesAndFriendsStoryboard, but found this identifier on an external storyboard reference. Use UIStoryboard.bind(viewController:toIdentifier:forReferencedStoryboardWithName:) to bind to external references"))
         } catch { }
@@ -152,7 +152,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
         preloadedViewController.viewDidLoad()
         do {
             try turtlesAndFriendsStoryboard.bind(viewController: preloadedViewController, toIdentifier: "BoxTurtleViewController")
-        } catch StoryboardBindingError.invalidViewControllerState(let message) {
+        } catch Fleet.StoryboardError.invalidViewControllerState(let message) {
             threwError = true
             expect(message).to(equal("Attempted to bind a view controller whose view has already been loaded to storyboard identifier 'BoxTurtleViewController'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."))
         } catch { }
@@ -181,7 +181,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
         let whateverViewController = UIViewController()
         do {
             try turtlesAndFriendsStoryboard.bind(viewController: whateverViewController, toIdentifier: "WhateverViewController", forReferencedStoryboardWithName: "CrabStoryboard")
-        } catch StoryboardBindingError.invalidExternalStoryboardReference(let message) {
+        } catch Fleet.StoryboardError.invalidExternalStoryboardReference(let message) {
             threwError = true
             expect(message).to(equal("Could not find identifier WhateverViewController (external storyboard reference: CrabStoryboard) on storyboard TurtlesAndFriendsStoryboard"))
         } catch { }
@@ -197,7 +197,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
         preloadedViewController.viewDidLoad()
         do {
             try turtlesAndFriendsStoryboard.bind(viewController: preloadedViewController, toIdentifier: "CrabViewController", forReferencedStoryboardWithName: "CrabStoryboard")
-        } catch StoryboardBindingError.invalidViewControllerState(let message) {
+        } catch Fleet.StoryboardError.invalidViewControllerState(let message) {
             threwError = true
             expect(message).to(equal("Attempted to bind a view controller whose view has already been loaded to view controller identifier 'CrabViewController' on storyboard 'CrabStoryboard'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."))
         } catch { }
@@ -227,7 +227,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
         let whateverViewController = UIViewController()
         do {
             try turtlesAndFriendsStoryboard.bind(viewController: whateverViewController, asInitialViewControllerForReferencedStoryboardWithName: "WhateverStoryboard")
-        } catch StoryboardBindingError.invalidExternalStoryboardReference {
+        } catch Fleet.StoryboardError.invalidExternalStoryboardReference {
             pass = true
         } catch { }
 
@@ -242,7 +242,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
         preloadedViewController.viewDidLoad()
         do {
             try turtlesAndFriendsStoryboard.bind(viewController: preloadedViewController, asInitialViewControllerForReferencedStoryboardWithName: "PuppyStoryboard")
-        } catch StoryboardBindingError.invalidViewControllerState(let message) {
+        } catch Fleet.StoryboardError.invalidViewControllerState(let message) {
             threwError = true
             expect(message).to(equal("Attempted to bind a view controller whose view has already been loaded to initial view controller of storyboard 'PuppyStoryboard'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."))
         } catch { }
