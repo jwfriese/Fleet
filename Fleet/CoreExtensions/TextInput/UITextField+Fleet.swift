@@ -4,6 +4,7 @@ extension Fleet {
     public enum TextFieldError: Error, CustomStringConvertible {
         case controlUnavailable(String)
         case editingFlow(String)
+        case cannotClear(reason: String)
 
         public var description: String {
             switch self {
@@ -11,6 +12,8 @@ extension Fleet {
                 return "UITextField unavailable for editing: \(message)"
             case .editingFlow(let message):
                 return "Could not edit UITextField: \(message)"
+            case .cannotClear(let reason):
+                return "Could not clear text from UITextField: \(reason)"
             }
         }
     }
@@ -216,13 +219,39 @@ extension UITextField {
     }
 
     /**
-     Clears all text from the text field, firing the textFieldShouldClear?
-     event as happens when the user clears the field through the UI.
+     Clears all text from the text field, firing the `textFieldShouldClear(_:)`
+     delegate method as happens when the user clears the field through the UI.
 
      If the text field has no delegate, the text is still cleared from the
      field.
+
+     - throws:
+     A `Fleet.TextFieldError` if an attempt is made to clear a text field while it is in a
+     state that does not allow clearing, if the text field is not enabled, or if it is not
+     visible.
      */
-    public func clearText() {
+    public func clearText() throws {
+        guard !isHidden else {
+            throw Fleet.TextFieldError.controlUnavailable("Text field is not visible.")
+        }
+        guard isEnabled else {
+            throw Fleet.TextFieldError.controlUnavailable("Text field is not enabled.")
+        }
+        switch clearButtonMode {
+        case .never:
+            throw Fleet.TextFieldError.cannotClear(reason: "Clear button is never displayed.")
+        case.whileEditing:
+            guard isFirstResponder else {
+                throw Fleet.TextFieldError.cannotClear(reason: "Clear button is hidden when not editing.")
+            }
+        case.unlessEditing:
+            if isFirstResponder {
+                throw Fleet.TextFieldError.cannotClear(reason: "Clear button is hidden when editing.")
+            }
+        case .always:
+            break
+        }
+
         self.text = ""
         if let delegate = delegate {
             let _ = delegate.textFieldShouldClear?(self)

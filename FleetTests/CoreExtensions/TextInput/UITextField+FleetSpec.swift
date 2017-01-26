@@ -309,6 +309,120 @@ class UITextField_FleetSpec: XCTestCase {
         expect(self.delegate.textRanges[0].length).to(equal(0))
     }
 
+    func test_clearText_whenTextFieldDisplaysClearButtonAlways_clearsTextWhetherEditingFieldOrNot() {
+        subject.clearButtonMode = .always
+        try! subject.enter(text: "turtle magic")
+
+        try! subject.clearText() // Without trying to edit first
+
+        expect(self.subject.text).to(equal(""))
+        expect(self.delegate.didCallShouldClear).to(beTrue())
+
+        delegate.resetState()
+
+        try! subject.startEditing()
+        try! subject.type(text: "turtle magic")
+        try! subject.clearText() // While in edit mode
+
+        expect(self.subject.text).to(equal(""))
+        expect(self.delegate.didCallShouldClear).to(beTrue())
+    }
+
+    func test_clearText_whenTextFieldDisplaysClearButtonNever_throwsError() {
+        subject.clearButtonMode = .never
+        try! subject.enter(text: "turtle magic")
+
+        // Without trying to edit first
+        expect { try self.subject.clearText() }.to(throwError { (error: Fleet.TextFieldError) in
+            expect(error.description).to(equal("Could not clear text from UITextField: Clear button is never displayed."))
+        })
+
+        expect(self.subject.text).to(equal("turtle magic"))
+        expect(self.delegate.didCallShouldClear).to(beFalse())
+
+        delegate.resetState()
+
+        try! subject.startEditing()
+        try! subject.type(text: "++")
+
+        // While in edit mode
+        expect { try self.subject.clearText() }.to(throwError { (error: Fleet.TextFieldError) in
+
+            expect(error.description).to(equal("Could not clear text from UITextField: Clear button is never displayed."))
+        })
+
+        expect(self.subject.text).to(equal("turtle magic++"))
+        expect(self.delegate.didCallShouldClear).to(beFalse())
+    }
+
+    func test_clearText_whenTextFieldDisplaysClearButtonOnlyDuringEditing() {
+        subject.clearButtonMode = .whileEditing
+        try! subject.enter(text: "turtle magic")
+
+        // Without trying to edit first
+        expect { try self.subject.clearText() }.to(throwError { (error: Fleet.TextFieldError) in
+            expect(error.description).to(equal("Could not clear text from UITextField: Clear button is hidden when not editing."))
+        })
+
+        expect(self.subject.text).to(equal("turtle magic"))
+        expect(self.delegate.didCallShouldClear).to(beFalse())
+
+        delegate.resetState()
+
+        try! subject.startEditing()
+        try! subject.type(text: "++")
+
+        // While in edit mode
+        try! subject.clearText()
+
+        expect(self.subject.text).to(equal(""))
+        expect(self.delegate.didCallShouldClear).to(beTrue())
+    }
+
+    func test_clearText_whenTextFieldDisplaysClearButtonUnlessEditing() {
+        subject.clearButtonMode = .unlessEditing
+        try! subject.enter(text: "turtle magic")
+
+        // Without trying to edit first
+        try! subject.clearText()
+
+        expect(self.subject.text).to(equal(""))
+        expect(self.delegate.didCallShouldClear).to(beTrue())
+
+        delegate.resetState()
+
+        try! subject.startEditing()
+        try! subject.type(text: "++")
+
+        // While in edit mode
+        expect { try self.subject.clearText() }.to(throwError { (error: Fleet.TextFieldError) in
+            expect(error.description).to(equal("Could not clear text from UITextField: Clear button is hidden when editing."))
+        })
+
+        expect(self.subject.text).to(equal("++"))
+        expect(self.delegate.didCallShouldClear).to(beFalse())
+    }
+
+    func test_clearText_whenTextFieldIsHidden_throwsError() {
+        subject.isHidden = true
+        subject.clearButtonMode = .always
+
+        expect { try self.subject.clearText() }.to(throwError(closure: { (error: Fleet.TextFieldError) in
+            expect(error.description).to(contain("Text field is not visible."))
+        }))
+        expect(self.delegate.didCallShouldClear).to(beFalse())
+    }
+
+    func test_clearText_whenTextFieldIsNotEnabled_throwsError() {
+        subject.isEnabled = false
+        subject.clearButtonMode = .always
+
+        expect { try self.subject.clearText() }.to(throwError(closure: { (error: Fleet.TextFieldError) in
+            expect(error.description).to(contain("Text field is not enabled."))
+        }))
+        expect(self.delegate.didCallShouldClear).to(beFalse())
+    }
+
     func test_enter_convenienceMethod_startsEditingATextFieldTypesTextAndStopsEditingAllInOneAction() {
         try! subject.enter(text: "turtle magic")
 
