@@ -58,9 +58,8 @@ extension UIStoryboard {
         var mock: T? = nil
         do {
             mock = try Fleet.mockFor(classToMock)
-        } catch let error {
-            let fleetError = error as! FleetError
-            throw Fleet.StoryboardError.invalidMockType(fleetError.description)
+        } catch let error as Fleet.MockError {
+            throw Fleet.StoryboardError.invalidMockType(error.description)
         }
 
         try bind(viewController: mock!, toIdentifier: identifier)
@@ -93,9 +92,8 @@ extension UIStoryboard {
         var mock: T? = nil
         do {
             mock = try Fleet.mockFor(classToMock)
-        } catch let error {
-            let fleetError = error as! FleetError
-            throw Fleet.StoryboardError.invalidMockType(fleetError.description)
+        } catch let error as Fleet.MockError {
+            throw Fleet.StoryboardError.invalidMockType(error.description)
         }
 
         try bind(viewController: mock!, toIdentifier: identifier, forReferencedStoryboardWithName: referencedStoryboardName)
@@ -130,9 +128,8 @@ extension UIStoryboard {
         var mock: T? = nil
         do {
             mock = try Fleet.mockFor(classToMock)
-        } catch let error {
-            let fleetError = error as! FleetError
-            throw Fleet.StoryboardError.invalidMockType(fleetError.description)
+        } catch let error as Fleet.MockError {
+            throw Fleet.StoryboardError.invalidMockType(error.description)
         }
 
         try bind(viewController: mock!, asInitialViewControllerForReferencedStoryboardWithName: name)
