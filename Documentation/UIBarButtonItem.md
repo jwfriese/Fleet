@@ -16,12 +16,12 @@ someBarButtonItem.target?.perform(someBarButtonItem.action, with: someBarButtonI
 Instead, you can use the Fleet extension `tap` like so:
 
 ```swift
-// Extremely simple to understand, and also prints descriptive console output for the
-// various ways it could go wrong not related to the action implementation:
+// Simple to understand, and also throws an error when something goes wrong not
+// related to the action implementation:
 // 1) target improperly hooked up
 // 2) action improperly hooked up
 // 3) The button is not enabled
 let someBarButtonItem = viewControllerWithNavBar.rightBarButton
-someBarButtonItem.tap()
+try! someBarButtonItem.tap()
 ```
 

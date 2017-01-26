@@ -1,23 +1,43 @@
 import UIKit
 
-public extension UIBarButtonItem {
-    /**
-        Mimic a user tap on the bar button, firing any associated events.
-    */
-    public func tap() {
-        if isEnabled {
-            if action != nil {
-                if let target = target {
-                    let _ = target.perform(action, with: self)
-                } else {
-                    Logger.logWarning("Tapped a UIBarButtonItem (title: \(self.safeTitle)) with no associated target")
-                }
-            } else {
-                Logger.logWarning("Tapped a UIBarButtonItem (title: \(self.safeTitle)) with no associated action")
+extension Fleet {
+    public enum BarButtonItemError: Error, CustomStringConvertible {
+        case controlUnavailable(message: String)
+        case noTarget(title: String)
+        case noAction(title: String)
+
+        public var description: String {
+            switch self {
+            case .controlUnavailable(let message):
+                return "Cannot tap UIBarButtonItem: \(message)"
+            case .noTarget(let title):
+                return "Attempted to tap UIBarButtonItem (title='\(title)') with no associated target."
+            case .noAction(let title):
+                return "Attempted to tap UIBarButtonItem (title='\(title)') with no associated action."
             }
-        } else {
-            Logger.logWarning("Attempted to tap a disabled UIBarButtonItem (title: \(self.safeTitle))")
         }
+    }
+}
+
+extension UIBarButtonItem {
+
+    /**
+     Mimic a user tap on the bar button, firing any associated events.
+     */
+    public func tap() throws {
+        guard isEnabled else {
+            throw Fleet.BarButtonItemError.controlUnavailable(message: "Control is not enabled.")
+        }
+
+        guard let target = target else {
+            throw Fleet.BarButtonItemError.noTarget(title: safeTitle)
+        }
+
+        guard let action = action else {
+            throw Fleet.BarButtonItemError.noAction(title: safeTitle)
+        }
+
+        let _ = target.perform(action, with: self)
     }
 
     fileprivate var safeTitle: String {
