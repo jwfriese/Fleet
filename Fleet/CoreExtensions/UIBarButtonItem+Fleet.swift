@@ -23,6 +23,10 @@ extension UIBarButtonItem {
 
     /**
      Mimic a user tap on the bar button, firing any associated events.
+
+     - throws:
+     A `Fleet.BarButtonItemError` if the bar button is not enabled, if it does not have
+     a target, or if it does not have an action.
      */
     public func tap() throws {
         guard isEnabled else {
