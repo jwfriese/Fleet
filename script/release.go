@@ -55,19 +55,29 @@ func main() {
 	if fetchCurrentErr != nil {
 		log.Fatal(fetchCurrentErr)
 	}
-	isNewVersionErr := verifyNewerThanCurrentVersion(newVersion, currentVersion)
-	if isNewVersionErr != nil {
+
+	if isNewVersionErr := verifyNewerThanCurrentVersion(newVersion, currentVersion); isNewVersionErr != nil {
 		log.Fatal(isNewVersionErr)
 	}
 
-	bumpVersionErr := bumpVersionTo(newVersion, currentVersion)
-	if bumpVersionErr != nil {
+	if bumpVersionErr := bumpVersionTo(newVersion, currentVersion); bumpVersionErr != nil {
 		log.Fatal(bumpVersionErr)
 	}
 
-	commitErr := commitRelease(newVersion)
-	if commitErr != nil {
+	if commitErr := commitRelease(newVersion); commitErr != nil {
 		log.Fatal(commitErr)
+	}
+
+	if pushErr := pushRelease(); pushErr != nil {
+		log.Fatal(pushErr)
+	}
+
+	if tagErr := tagRelease(); tagErr != nil {
+		log.Fatal(tagErr)
+	}
+
+	if podPushErr := updateCocoapod(); podPushErr != nil {
+		log.Fatal(podPushErr)
 	}
 }
 
@@ -214,5 +224,25 @@ func commitRelease(newVersion string) error {
 
 func addToCommit(fileName string) error {
 	_, err := exec.Command("git", "add", fileName).Output()
+	return err
+}
+
+func pushRelease() error {
+	_, err := exec.Command("git", "push", "origin", "head").Output()
+	return err
+}
+
+func tagRelease(newVersion string) error {
+	_, tagErr := exec.Command("git", "tag", newVersion).Output()
+	if tagErr != nil {
+		return tagErr
+	}
+
+	_, pushErr := exec.Command("git", "push", "--tags").Output()
+	return pushErr
+}
+
+func updateCocoapod() error {
+	_, err := exec.Command("pod", "trunk", "push", "Fleet.podspec").Output()
 	return err
 }
