@@ -64,6 +64,11 @@ func main() {
 	if bumpVersionErr != nil {
 		log.Fatal(bumpVersionErr)
 	}
+
+	commitErr := commitRelease(newVersion)
+	if commitErr != nil {
+		log.Fatal(commitErr)
+	}
 }
 
 func verifyNewerThanCurrentVersion(newVersionString string, currentVersionString string) error {
@@ -167,20 +172,12 @@ func bumpVersionTo(newVersion string, currentVersion string) error {
 
 func agvBumpVersion(newVersion string) error {
 	_, err := exec.Command("agvtool", "new-version", newVersion).Output()
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 func bumpInfoPlistVersion(newVersion string) error {
 	_, err := exec.Command("plutil", "-replace", "CFBundleShortVersionString", "-string", newVersion, "Fleet/Info.plist").Output()
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 func bumpPodspec(newVersion string, currentVersion string) error {
@@ -197,4 +194,25 @@ func bumpPodspec(newVersion string, currentVersion string) error {
 	}
 
 	return nil
+}
+
+func commitRelease(newVersion string) error {
+	if addProjectErr := addToCommit("Fleet.xcodeproj/"); addProjectErr != nil {
+		return addProjectErr
+	}
+	if addInfoPlistErr := addToCommit("Fleet/Info.plist"); addInfoPlistErr != nil {
+		return addInfoPlistErr
+	}
+	if addPodspecErr := addToCommit("Fleet.podspec"); addPodspecErr != nil {
+		return addPodspecErr
+	}
+
+	releaseCommitMessage := fmt.Sprintf("Bump version to %s", newVersion)
+	_, commitErr := exec.Command("git", "commit", "-m", releaseCommitMessage).Output()
+	return commitErr
+}
+
+func addToCommit(fileName string) error {
+	_, err := exec.Command("git", "add", fileName).Output()
+	return err
 }
