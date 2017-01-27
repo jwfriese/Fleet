@@ -80,3 +80,6 @@ test
 
 # The binary produced for trimming
 trim
+
+# The binary produced for releasing
+release
