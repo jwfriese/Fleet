@@ -10,7 +10,7 @@ class SegueDetailSpec: XCTestCase {
         try! storyboard.bind(viewController: corgiViewController, toIdentifier: "CorgiViewController")
 
         let navigationController = storyboard.instantiateInitialViewController() as! UINavigationController
-        Fleet.setApplicationWindowRootViewController(navigationController)
+        Fleet.setAsAppWindowRoot(navigationController)
 
         guard let puppyViewController = navigationController.topViewController as? PuppyListViewController else {
             fail("Failed to properly set up controller for segue detail test")
@@ -28,7 +28,7 @@ class SegueDetailSpec: XCTestCase {
         try! storyboard.bind(viewController: corgiViewController, toIdentifier: "CorgiViewController")
 
         let navigationController = storyboard.instantiateInitialViewController() as! UINavigationController
-        Fleet.setApplicationWindowRootViewController(navigationController)
+        Fleet.setAsAppWindowRoot(navigationController)
 
         guard let puppyViewController = navigationController.topViewController as? PuppyListViewController else {
             fail("Failed to properly set up controller for segue detail test")
@@ -46,7 +46,7 @@ class SegueDetailSpec: XCTestCase {
         try! storyboard.bind(viewController: corgiViewController, toIdentifier: "CorgiViewController")
 
         let navigationController = storyboard.instantiateInitialViewController() as! UINavigationController
-        Fleet.setApplicationWindowRootViewController(navigationController)
+        Fleet.setAsAppWindowRoot(navigationController)
 
         guard let puppyViewController = navigationController.topViewController as? PuppyListViewController else {
             fail("Failed to properly set up controller for segue detail test")

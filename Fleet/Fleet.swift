@@ -32,8 +32,26 @@ public class Fleet {
      - note:
      This will kick off the given view controller's lifecycle.
      */
-    public static func setApplicationWindowRootViewController(_ viewController: UIViewController) {
+    public static func setAsAppWindowRoot(_ viewController: UIViewController) {
         UIApplication.shared.keyWindow?.rootViewController = viewController
+        RunLoop.current.run(mode: RunLoopMode.defaultRunLoopMode, before: Date(timeIntervalSinceNow: 1))
+    }
+
+    /**
+     Sets up a `UINavigationController` as the root view controller of the main application window, and sets
+     the the given `UIViewController` as the root view controller of that navigation controller.
+
+     - note:
+     This will kick off the given view controller's lifecycle.
+
+     - returns:
+     The `UINavigationController` that is now the root view controller of the main app window.
+     */
+    public static func setInAppWindowRootNavigation(_ viewController: UIViewController) -> UINavigationController {
+        let navigationController = UINavigationController(rootViewController: viewController)
+        UIApplication.shared.keyWindow?.rootViewController = navigationController
+        RunLoop.current.run(mode: RunLoopMode.defaultRunLoopMode, before: Date(timeIntervalSinceNow: 1))
+        return navigationController
     }
 
     /**

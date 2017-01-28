@@ -5,6 +5,7 @@ class BoxTurtleViewController: UIViewController {
     @IBOutlet weak var leftBarButtonItem: UIBarButtonItem?
     @IBOutlet weak var rightBarButtonItem: UIBarButtonItem?
     @IBOutlet weak var informationLabel: UILabel?
+    @IBOutlet weak var textField: UITextField?
 
     @IBAction func onLeftBarButtonItemTapped() {
         informationLabel?.text = "box turtle stop party..."

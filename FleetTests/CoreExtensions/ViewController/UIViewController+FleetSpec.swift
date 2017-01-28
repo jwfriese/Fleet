@@ -14,7 +14,7 @@ class UIViewController_FleetSpec: XCTestCase {
 
     func test_presentViewController_immediatelyPresentsTheViewController() {
         let bottom = UIViewController()
-        Fleet.setApplicationWindowRootViewController(bottom)
+        Fleet.setAsAppWindowRoot(bottom)
         let top = UIViewController()
 
         bottom.present(top, animated: true, completion: nil)
@@ -24,7 +24,7 @@ class UIViewController_FleetSpec: XCTestCase {
 
     func test_presentViewController_executesTheGivenCompletionHandlerAfterPresentationFinishes() {
         let bottom = UIViewController()
-        Fleet.setApplicationWindowRootViewController(bottom)
+        Fleet.setAsAppWindowRoot(bottom)
         let top = UIViewController()
 
         var didCompletionHandlerFireAfterPresenting = false
@@ -41,7 +41,7 @@ class UIViewController_FleetSpec: XCTestCase {
 
     func test_dismissViewController_dismissesThePresentedViewControllerAndFiresExecutionHandlerAfterDismiss() {
         let bottom = UIViewController()
-        Fleet.setApplicationWindowRootViewController(bottom)
+        Fleet.setAsAppWindowRoot(bottom)
         let top = UIViewController()
 
         var didPresentSuccessfully = false
@@ -63,7 +63,7 @@ class UIViewController_FleetSpec: XCTestCase {
 
     func test_showViewController_immediatelyPresentsTheViewController() {
         let bottom = UIViewController()
-        Fleet.setApplicationWindowRootViewController(bottom)
+        Fleet.setAsAppWindowRoot(bottom)
         let top = UIViewController()
 
         bottom.show(top, sender: nil)
@@ -73,7 +73,7 @@ class UIViewController_FleetSpec: XCTestCase {
 
     func test_presentViewController_immediatelyLoadsThePresentedViewController() {
         let bottom = UIViewController()
-        Fleet.setApplicationWindowRootViewController(bottom)
+        Fleet.setAsAppWindowRoot(bottom)
         let top = TestViewController()
 
         bottom.present(top, animated: true, completion: nil)
@@ -82,7 +82,7 @@ class UIViewController_FleetSpec: XCTestCase {
 
     func test_presentViewController_doesNotLoadPresentedViewControllerMultipleTimes() {
         let bottom = UIViewController()
-        Fleet.setApplicationWindowRootViewController(bottom)
+        Fleet.setAsAppWindowRoot(bottom)
         let top = TestViewController()
 
         bottom.present(top, animated: true, completion: nil)

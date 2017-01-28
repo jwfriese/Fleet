@@ -23,7 +23,7 @@ class UIBarButtonItem_FleetSpec: XCTestCase {
         testTarget = TestTarget()
         subject = UIBarButtonItem(title: "turtles", style: .plain, target: testTarget, action: #selector(TestTarget.action))
         navigationController.navigationItem.rightBarButtonItem = subject
-        Fleet.setApplicationWindowRootViewController(navigationController)
+        Fleet.setAsAppWindowRoot(navigationController)
     }
 
     func test_tap_performsButtonAction() {

@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2657" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="LH8-wq-NZ5">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="LH8-wq-NZ5">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11524"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -42,15 +43,24 @@
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="lRV-il-fV3">
+                                <rect key="frame" x="94" y="597" width="187.5" height="30"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="2a0-7e-bho" firstAttribute="centerX" secondItem="Vkn-Ya-rKb" secondAttribute="centerX" id="0De-p7-Q0T"/>
+                            <constraint firstItem="Mj0-SA-XrW" firstAttribute="top" secondItem="lRV-il-fV3" secondAttribute="bottom" constant="40" id="1vE-9O-rFe"/>
                             <constraint firstItem="cHB-zx-EgI" firstAttribute="top" secondItem="zgq-Oy-J04" secondAttribute="bottom" constant="72" id="G01-n7-ioD"/>
                             <constraint firstItem="zgq-Oy-J04" firstAttribute="centerX" secondItem="Vkn-Ya-rKb" secondAttribute="centerX" id="bXX-c1-glS"/>
                             <constraint firstItem="cHB-zx-EgI" firstAttribute="centerX" secondItem="zgq-Oy-J04" secondAttribute="centerX" id="faA-aM-aKn"/>
                             <constraint firstItem="zgq-Oy-J04" firstAttribute="top" secondItem="ZZD-fF-TAk" secondAttribute="bottom" constant="24" id="mEN-Ul-ALO"/>
+                            <constraint firstItem="lRV-il-fV3" firstAttribute="width" secondItem="Vkn-Ya-rKb" secondAttribute="width" multiplier="0.5" id="rTF-wA-gKi"/>
                             <constraint firstItem="2a0-7e-bho" firstAttribute="top" secondItem="cHB-zx-EgI" secondAttribute="bottom" constant="48" id="sft-Ex-mpZ"/>
+                            <constraint firstItem="lRV-il-fV3" firstAttribute="centerX" secondItem="Vkn-Ya-rKb" secondAttribute="centerX" id="uDh-FD-U68"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="m2r-NY-PPJ" userLabel="Navigation Item">
@@ -70,6 +80,7 @@
                         <outlet property="informationLabel" destination="2a0-7e-bho" id="0oO-QJ-DNe"/>
                         <outlet property="leftBarButtonItem" destination="Vf6-Vt-Cyb" id="1TS-hY-o3t"/>
                         <outlet property="rightBarButtonItem" destination="3qW-LF-BzZ" id="0aR-Ne-Jke"/>
+                        <outlet property="textField" destination="lRV-il-fV3" id="Dhf-jh-iQA"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="w4n-px-463" userLabel="First Responder" sceneMemberID="firstResponder"/>

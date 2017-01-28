@@ -8,7 +8,7 @@ class UITableView_SelectCellActionSpec: XCTestCase {
     func test_selectCellAction_whenTheActionExists_performsTheAction() {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
-        Fleet.setApplicationWindowRootViewController(viewController)
+        Fleet.setAsAppWindowRoot(viewController)
 
         try! viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0))
 

@@ -11,7 +11,7 @@ class UIViewController_FleetInternalSpec: XCTestCase {
 
     func test_viewDidLoadCallCountProperty_onceTheViewLoads_returns1() {
         let viewController = UIViewController()
-        Fleet.setApplicationWindowRootViewController(viewController)
+        Fleet.setAsAppWindowRoot(viewController)
         expect(viewController.viewDidLoadCallCount).to(equal(1))
     }
 

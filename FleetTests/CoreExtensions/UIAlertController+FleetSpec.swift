@@ -7,7 +7,7 @@ import Fleet
 class UIAlertController_FleetSpec: XCTestCase {
     func test_tapAlertActionWithTitle_whenActionWithThatTitleExistsOnAlert_executesTheActionHandlerAfterDismissingAlert() {
         let rootViewController = UIViewController()
-        Fleet.setApplicationWindowRootViewController(rootViewController)
+        Fleet.setAsAppWindowRoot(rootViewController)
 
         let alert = UIAlertController(title: "title", message: "message", preferredStyle: .alert)
         var didCallHandlerAfterDismissingAlert = false
@@ -29,7 +29,7 @@ class UIAlertController_FleetSpec: XCTestCase {
 
     func test_tapAlertActionWithTitle_whenActionWithThatTitleExistsOnAlert_whenActionIsCancelStyle_executesTheActionHandlerAfterDismissingAlert() {
         let rootViewController = UIViewController()
-        Fleet.setApplicationWindowRootViewController(rootViewController)
+        Fleet.setAsAppWindowRoot(rootViewController)
 
         let alert = UIAlertController(title: "title", message: "message", preferredStyle: .alert)
         var didCallHandlerAfterDismissingAlert = false
@@ -51,7 +51,7 @@ class UIAlertController_FleetSpec: XCTestCase {
 
     func test_tapAlertActionWithTitle_whenNoActionWithThatTitleExists_throwsError() {
         let rootViewController = UIViewController()
-        Fleet.setApplicationWindowRootViewController(rootViewController)
+        Fleet.setAsAppWindowRoot(rootViewController)
 
         let alert = UIAlertController(title: "title", message: "message", preferredStyle: .alert)
 
@@ -68,7 +68,7 @@ class UIAlertController_FleetSpec: XCTestCase {
 
     func test_tapAlertActionWithTitle_callsUIKitMethodsOnMainThread() {
         let rootViewController = UIViewController()
-        Fleet.setApplicationWindowRootViewController(rootViewController)
+        Fleet.setAsAppWindowRoot(rootViewController)
 
         let alert = UIAlertController(title: "title", message: "message", preferredStyle: .alert)
         var didCallOnMainThread = false

@@ -58,7 +58,7 @@ class MockForSpec: XCTestCase {
     func test_mockFor_whenTheMockIsPresentedInAWindow_itDoesNotExecuteItsMockedClassViewDidLoadMethod() {
         let mock = try! Fleet.mockFor(MockForSpecViewController.self)
 
-        Fleet.setApplicationWindowRootViewController(mock)
+        Fleet.setAsAppWindowRoot(mock)
         expect(mock.didCallViewDidLoad).to(beFalse())
     }
 
