@@ -11,6 +11,8 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+
+	"github.com/fatih/color"
 )
 
 type SemanticVersion struct {
@@ -43,6 +45,20 @@ func compare(lhs int, rhs int) int {
 	return 1
 }
 
+func printInfo(str string) {
+	color.Yellow(str)
+}
+
+func printYay(str string) {
+	color.Green(str)
+	fmt.Println("")
+}
+
+func printError(err error) {
+	message := fmt.Sprintf("Error: %s", err.Error())
+	color.Red(message)
+}
+
 func main() {
 	programCall := os.Args
 	if len(programCall) < 2 {
@@ -51,34 +67,64 @@ func main() {
 
 	args := programCall[1:]
 	newVersion := args[0]
+	printInfo("Fetching current version string...")
 	currentVersion, fetchCurrentErr := fetchCurrentVersionString()
 	if fetchCurrentErr != nil {
-		log.Fatal(fetchCurrentErr)
+		printError(fetchCurrentErr)
+		return
 	}
+	foundCurrentVersion := fmt.Sprintf("Found current version: %s", currentVersion)
+	printYay(foundCurrentVersion)
 
+	printInfo("Verifying new version is greater than current version...")
 	if isNewVersionErr := verifyNewerThanCurrentVersion(newVersion, currentVersion); isNewVersionErr != nil {
-		log.Fatal(isNewVersionErr)
+		printError(isNewVersionErr)
+		return
 	}
+	confirmIsNewVersionMessage := fmt.Sprintf("Confirmed: %s > %s", newVersion, currentVersion)
+	printYay(confirmIsNewVersionMessage)
 
+	bumpingVersionMessage := fmt.Sprintf("Bumping Fleet version to %s", newVersion)
+	printInfo(bumpingVersionMessage)
 	if bumpVersionErr := bumpVersionTo(newVersion, currentVersion); bumpVersionErr != nil {
-		log.Fatal(bumpVersionErr)
+		printError(bumpVersionErr)
+		return
 	}
+	didBumpVersionMessage := fmt.Sprintf("Finished setting Fleet version to %s", newVersion)
+	printYay(didBumpVersionMessage)
 
+	printInfo("Committing new release...")
 	if commitErr := commitRelease(newVersion); commitErr != nil {
-		log.Fatal(commitErr)
+		printError(commitErr)
+		return
 	}
+	printYay("Committed")
 
+	printInfo("Pushing new release to Github...")
 	if pushErr := pushRelease(); pushErr != nil {
-		log.Fatal(pushErr)
+		printError(pushErr)
+		return
 	}
+	printYay("Pushed")
 
+	printInfo("Tagging new release and pushing tags...")
 	if tagErr := tagRelease(); tagErr != nil {
-		log.Fatal(tagErr)
+		printError(tagErr)
+		return
 	}
+	tagMessage := fmt.Sprintf("Created and pushed tag %s", newVersion)
+	printYay(tagMessage)
 
+	printInfo("Updating Cocoapod...")
 	if podPushErr := updateCocoapod(); podPushErr != nil {
-		log.Fatal(podPushErr)
+		printError(podPushErr)
+		return
 	}
+	updatedPodMessage := fmt.Sprintf("Cocoapod updated to version %s", newVersion)
+	printYay(updatedPodMessage)
+
+	successMessage := fmt.Sprintf("Finished successfully updating Fleet to version %s", newVersion)
+	printYay(successMessage)
 }
 
 func verifyNewerThanCurrentVersion(newVersionString string, currentVersionString string) error {
