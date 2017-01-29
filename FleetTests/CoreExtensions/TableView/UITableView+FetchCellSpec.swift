@@ -73,7 +73,6 @@ class UITableView_FetchCellSpec: XCTestCase {
     }
 
     func test_fetchCellAsType_whenTheCellExists_returnsTheCellTypedCorrectly() {
-        subject.reloadData()
         expect { try self.subject.fetchCell(at: IndexPath(row: 1, section: 0), asType: TestTableViewCell.self) }.toNot(throwError())
     }
 
