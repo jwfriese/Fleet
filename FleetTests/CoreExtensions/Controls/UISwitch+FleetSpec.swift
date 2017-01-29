@@ -53,23 +53,19 @@ class UISwitch_FleetSpec: XCTestCase {
         expect(subject.isOn).to(beFalse())
     }
 
-    fileprivate class SwitchCallbackTarget: NSObject {
-        var capturedSwitch: UISwitch?
-
-        func onSwitchValueChanged(sender: UISwitch) {
-            capturedSwitch = sender
-        }
-    }
-
-    func test_flip_callsActionsBoundToControlEvent() {
+    func test_flip_callsActionsBoundToControlEvents() {
         let subject = UISwitch()
         subject.isHidden = false
         subject.isEnabled = true
 
-        let callbackTarget = SwitchCallbackTarget()
-        subject.addTarget(callbackTarget, action: #selector(SwitchCallbackTarget.onSwitchValueChanged(sender:)), for: .valueChanged)
+        let recorder = UIControlEventRecorder()
+        recorder.registerAllEvents(for: subject)
 
         try! subject.flip()
-        expect(callbackTarget.capturedSwitch).to(beIdenticalTo(subject))
+        expect(recorder.recordedEvents).to(equal([
+                .valueChanged,
+                .touchUpInside,
+                .allTouchEvents
+        ]))
     }
 }

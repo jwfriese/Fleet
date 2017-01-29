@@ -15,7 +15,7 @@ extension Fleet {
 
 extension UISwitch {
     /**
-     Toggles the switch value and fires the `.valueChanged` control event.
+     Toggles the switch value and fires the appropriate control events.
 
      - throws:
      A `Fleet.SwitchError` if the switch is hidden, disabled, or if user interaction is disabled.
@@ -33,5 +33,6 @@ extension UISwitch {
 
         setOn(!isOn, animated: false)
         sendActions(for: .valueChanged)
+        sendActions(for: .touchUpInside)
     }
 }
