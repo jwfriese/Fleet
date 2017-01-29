@@ -42,3 +42,6 @@ Fleet.setInAppWindowRootNavigation(_:)
 
 Fleet highly recommends that all view controller tests be run inside the test host's key window using one of the above
 methods.
+
+### FAQ
+- [Does Fleet do lots of swizzling to provide its features?](./Documentation.FAQ.md#does-fleet-do-lots-of-swizzling-to-provide-its-features)
