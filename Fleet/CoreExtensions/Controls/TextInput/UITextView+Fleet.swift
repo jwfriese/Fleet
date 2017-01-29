@@ -214,11 +214,10 @@ extension UITextView {
                 doesAllowTextChange = delegate.textView!(self, shouldChangeTextIn: NSMakeRange(location, backspaceAmount), replacementText: "")
             }
             if doesAllowTextChange {
-                delegate.textViewDidChange?(self)
-                text.remove(at: text.index(before: text.endIndex))
+                deleteBackward()
             }
         } else {
-            text.remove(at: text.index(before: text.endIndex))
+            deleteBackward()
         }
     }
 }
