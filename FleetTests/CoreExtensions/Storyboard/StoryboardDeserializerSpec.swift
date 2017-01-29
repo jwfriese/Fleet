@@ -11,7 +11,7 @@ class StoryboardDeserializerSpec: XCTestCase {
             let _ = try deserializer.deserializeStoryboard(withName: "garbage")
         } catch Fleet.StoryboardError.internalInconsistency(let message) {
             threwError = true
-            expect(message).to(equal("Failed to build storyboard reference map for storyboard with name garbage. Either this storyboard does not exist or Fleet is not set up for storyboard binding. Check the documentation to ensure that you have set up Fleet correctly for storyboard testing"))
+            expect(message).to(equal("Failed to build storyboard reference map for storyboard with name 'garbage'. Either this storyboard does not exist or Fleet is not set up for storyboard binding and mocking. Check the documentation to ensure that you have set up Fleet correctly to use its storyboard features."))
         } catch { }
 
         if !threwError {
