@@ -27,6 +27,7 @@ try! controller.textField?.enter(text: "text")
 //   input the text themselves
 // - appropriate focus handoff callbacks in the case that another element had focus
 // - should end/did end editing events
+// - all the correct `UIControlEvents`, in order
 // - and of course, the text in the text field will update appropriately
 //
 ```
