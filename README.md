@@ -45,4 +45,4 @@ methods.
 
 ## FAQ
 - [Does Fleet do lots of swizzling to provide its features?](./Documentation/FAQ.md#does-fleet-do-lots-of-swizzling-to-provide-its-features)
-- [I could accomplish the same thing by calling all the delegate methods and events myself, right?](./Documentation/FAQ.md)
+- [I could accomplish the same thing by calling all the delegate methods and events myself, right?](./Documentation/FAQ.md#i-could-accomplish-the-same-thing-by-calling-all-the-delegate-methods-and-events-myself-right)
