@@ -7,6 +7,7 @@ extension Fleet {
         case rowDoesNotExist(at: IndexPath)
         case sectionDoesNotExist(sectionNumber: Int)
         case cellActionDoesNotExist(at: IndexPath, title: String)
+        case mismatchedCellType(at: IndexPath, foundType: AnyClass, requestedType: AnyClass)
 
         public var description: String {
             switch self {
@@ -24,6 +25,8 @@ extension Fleet {
                 return "Table view has no section \(sectionNumber)."
             case .cellActionDoesNotExist(let indexPath, let title):
                 return "Could not find edit action with title '\(title)' at row \(indexPath.row) in section \(indexPath.section)."
+            case .mismatchedCellType(let indexPath, let foundType, let requestedType):
+                return "Cell at row \(indexPath.row) in section \(indexPath.section) is of type `\(foundType)` (wanted `\(requestedType)`)."
             }
         }
     }
