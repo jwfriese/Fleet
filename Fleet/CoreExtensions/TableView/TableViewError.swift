@@ -12,9 +12,9 @@ extension Fleet {
         public var description: String {
             switch self {
             case .dataSourceRequired(let userAction):
-                return "UITableViewDataSource required to \(userAction)."
+                return "Data source required to \(userAction)."
             case .delegateRequired(let userAction):
-                return "UITableViewDelegate required to \(userAction)."
+                return "Delegate required to \(userAction)."
             case .incompleteDelegate(let required, let userAction):
                 return "Delegate must implement \(required) to \(userAction)."
             case .rejectedAction(let indexPath, let reason):

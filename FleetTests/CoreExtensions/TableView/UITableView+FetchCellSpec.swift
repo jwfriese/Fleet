@@ -50,7 +50,7 @@ class UITableView_FetchCellSpec: XCTestCase {
     func test_fetchCell_whenNoDataSource_throwsError() {
         subject.dataSource = nil
         expect { try self.subject.fetchCell(at: IndexPath(row: 0, section: 0)) }.to(throwError { (error: Fleet.TableViewError) in
-            expect(error.description).to(equal("UITableViewDataSource required to fetch cells."))
+            expect(error.description).to(equal("Data source required to fetch cells."))
         })
     }
 
@@ -79,7 +79,7 @@ class UITableView_FetchCellSpec: XCTestCase {
     func test_fetchCellAsType_whenNoDataSource_throwsError() {
         subject.dataSource = nil
         expect { try self.subject.fetchCell(at: IndexPath(row: 1, section: 0), asType: TestTableViewCell.self) }.to(throwError { (error: Fleet.TableViewError) in
-            expect(error.description).to(equal("UITableViewDataSource required to fetch cells."))
+            expect(error.description).to(equal("Data source required to fetch cells."))
         })
     }
 

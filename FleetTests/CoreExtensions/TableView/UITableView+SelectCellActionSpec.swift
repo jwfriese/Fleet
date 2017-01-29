@@ -96,7 +96,7 @@ class UITableView_SelectCellActionSpec: XCTestCase {
         viewController.birdsTableView?.dataSource = nil
 
         expect { try viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0)) }.to(throwError(closure: { (error: Fleet.TableViewError) in
-            expect(error.description).to(equal("UITableViewDataSource required to select cell action."))
+            expect(error.description).to(equal("Data source required to select cell action."))
         }))
     }
 
@@ -107,7 +107,7 @@ class UITableView_SelectCellActionSpec: XCTestCase {
         viewController.birdsTableView?.delegate = nil
 
         expect { try viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0)) }.to(throwError(closure: { (error: Fleet.TableViewError) in
-            expect(error.description).to(equal("UITableViewDelegate required to select cell action."))
+            expect(error.description).to(equal("Delegate required to select cell action."))
         }))
     }
 

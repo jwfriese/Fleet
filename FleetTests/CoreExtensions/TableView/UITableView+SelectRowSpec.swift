@@ -167,7 +167,7 @@ class UITableView_SelectRowSpec: XCTestCase {
         viewController.birdsTableView?.dataSource = nil
 
         expect { try viewController.birdsTableView?.selectRow(at: IndexPath(row: 0, section: 0)) }.to(throwError(closure: { (error: Fleet.TableViewError) in
-            expect(error.description).to(equal("UITableViewDataSource required to select cell row."))
+            expect(error.description).to(equal("Data source required to select cell row."))
         }))
     }
 
