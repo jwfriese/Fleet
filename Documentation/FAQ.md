@@ -52,7 +52,9 @@ framework's UIKit extensions.
 
 ## Why does Fleet throw errors for almost all its interactions with UIKit?
 The Fleet team has two general goals in mind as the framework develops:
+
 1) To enable simpler, more thorough testing of production code interactions with UIKit.
+
 2) To provide better signalling when something goes wrong.
 
 Most of Fleet's API throws, and #2 is the reason. Fleet throws when something is wrong and needs to be
