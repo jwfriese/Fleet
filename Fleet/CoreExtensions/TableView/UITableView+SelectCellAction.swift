@@ -6,8 +6,8 @@ extension UITableView {
      the table view.
 
      - parameters:
-     - title: The title of the edit action to take
-     - at: The index path at which to attempt to take this action
+        - title: The title of the edit action to take
+        - at: The index path at which to attempt to take this action
 
      - throws:
      A `Fleet.TableViewError` is there is no cell at the given index path, if the data source

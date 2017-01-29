@@ -35,6 +35,9 @@ extension UITextField {
      error = textField.stopEditing()
      ```
 
+     - parameters:
+        - text: The text to enter
+
      - throws:
      A `Fleet.TextFieldError` if the text field is not available because it is hidden,
      not enabled, if grabbing first responder fails for any reason, or if resigning first responder
@@ -106,6 +109,9 @@ extension UITextField {
     /**
      Attempts to type text into a `UITextField` with first responder focus.
 
+     - parameters:
+        - newText: The text to type into the text field
+
      - throws:
      A `Fleet.TextFieldError` if the text field does not have first responder focus.
 
@@ -141,6 +147,9 @@ extension UITextField {
 
     /**
      Attempts to paste text into a `UITextField` with first responder focus.
+
+     - parameters:
+        - textToPaste: The text to paste into the text field
 
      - throws:
      A `Fleet.TextFieldError` if the text field does not have first responder focus.

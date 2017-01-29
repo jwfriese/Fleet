@@ -30,6 +30,9 @@ extension UITextView {
      try! textView.stopEditing()
      ```
 
+     - parameters:
+        - text: The text to enter into the text view
+
      - throws:
      A `Fleet.TextViewError` if the text view is not available because it is hidden,
      not selectable, not editable, if grabbing first responder fails for any reason, or if resigning
@@ -104,6 +107,9 @@ extension UITextView {
     /**
      Attempts to type text into a `UITextView` with first responder focus.
 
+     - parameters:
+        - newText: The text to type into the text view
+
      - throws:
      A `Fleet.TextViewError` if the text view does not have first responder focus.
 
@@ -138,6 +144,9 @@ extension UITextView {
 
     /**
      Attempts to paste text into a `UITextView` with first responder focus.
+
+     - parameters:
+        - textToPaste: The text to paste into the text view
 
      - throws:
      A `Fleet.TextViewError` if the text view does not have first responder focus.

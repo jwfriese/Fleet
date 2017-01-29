@@ -40,8 +40,8 @@ extension UIStoryboard {
      the view controller with the given identifier.
 
      - parameters:
-     - identifier: The storyboard identifier of the view controller to mock
-     - classToMock: The class for which a mock should be created and returned
+        - identifier: The storyboard identifier of the view controller to mock
+        - classToMock: The class for which a mock should be created and returned
 
      - returns:
      The view controller instance that will be used as the view controller returned
@@ -73,9 +73,9 @@ extension UIStoryboard {
      identifier.
 
      - parameters:
-     - identifier: The storyboard identifier of the view controller to mock
-     - referencedStoryboardName: The name of the storyboard associated with the external reference
-     - classToMock: The class for which a mock should be created and returned
+        - identifier: The storyboard identifier of the view controller to mock
+        - referencedStoryboardName: The name of the storyboard associated with the external reference
+        - classToMock: The class for which a mock should be created and returned
 
      - returns:
      The view controller instance that will be used as the view controller returned
@@ -110,8 +110,8 @@ extension UIStoryboard {
      of a real instantiated view controller.
 
      - parameters:
-     - name: The name of the storyboard associated with the external reference
-     - classToMock: The class for which a mock should be created and returned
+        - name: The name of the storyboard associated with the external reference
+        - classToMock: The class for which a mock should be created and returned
 
      - returns:
      The view controller instance that will be used as the initial view controller of
@@ -142,8 +142,8 @@ extension UIStoryboard {
      bound identifier is used to instantiate a view controller, even in segues.
 
      - parameters:
-     - viewController: The view controller to bind
-     - identifier: The identifier whose reference should have the view controller bound to it
+        - viewController: The view controller to bind
+        - identifier: The identifier whose reference should have the view controller bound to it
 
      - throws:
      A `Fleet.StoryboardError.invalidViewControllerIdentifier` if there is no
@@ -172,9 +172,9 @@ extension UIStoryboard {
      references.
 
      - parameters:
-     - viewController: The view controller to bind
-     - identifier: The identifier whose reference should have the view controller bound to it
-     - referencedStoryboardName: The name of the storyboard to which the external reference is associated
+        - viewController: The view controller to bind
+        - identifier: The identifier whose reference should have the view controller bound to it
+        - referencedStoryboardName: The name of the storyboard to which the external reference is associated
 
      - throws:
      A `Fleet.StoryboardError.invalidExternalStoryboardReference` if there is no
@@ -205,8 +205,8 @@ extension UIStoryboard {
      references that instantiate the external storyboard's initial view controller.
 
      - parameters:
-     - viewController: The view controller to bind
-     - referencedStoryboardName: The name of the storyboard to which the external reference is associated
+        - viewController: The view controller to bind
+        - referencedStoryboardName: The name of the storyboard to which the external reference is associated
 
      - throws:
      A `Fleet.StoryboardError.invalidExternalStoryboardReference` if there is no external storyboard view controller

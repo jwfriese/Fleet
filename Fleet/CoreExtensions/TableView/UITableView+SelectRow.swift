@@ -8,7 +8,7 @@ extension UITableView {
      notification.
 
      - parameters:
-     - at: The index path to attempt to tap
+        - at: The index path to attempt to tap
 
      - throws:
      A `Fleet.TableViewError` if there is no cell at the given index path
