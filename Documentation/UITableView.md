@@ -58,6 +58,37 @@ when attempting to take the selection action, such as:
 - Attempting to select an index path that does not exist in the table
 - Attempting to select an index path that does not allow selection
 
+### Fetching a cell
+Fetching a cell in test requires a surprising amount of work:
+```swift
+// Get it and make sure it is not nil
+var cell = subject.tableView(subject.teamPipelinesTableView!, cellForRowAt: IndexPath(row: 0, section: 0))
+expect(cellOne).toNot(beNil())
+
+// Optionally cast it to the kind of cell you want
+// cell = cell as? KindOfCellIWant
+
+// Now you can start doing assertions
+```
+
+The above code could condense into one line. Even then, error messaging from UIKit does not make it obvious
+why a fetch failed. Fleet provides an extension to help address these difficulties:
+```swift
+try! let cell = subject.tableView.fetchCell(at: IndexPath(row: 0, section: 0)
+// Now you can start doing assertions -- the cell that comes back is not an optional.
+```
+
+The test code can also cast as part of the call:
+```swift
+try! let cell = subject.tableView.fetchCell(at: IndexPath(row: 0, section: 0, asType: KindOfCellIWant.self)
+// Now you can start doing assertions -- `cell` above is of type `KindOfCellIWant`
+```
+
+Functionally, this is the same as appending your own `as! KindOfCellIWant` at the end of the call to `fetchCell(at:)`,
+except Fleet's version tries to give a more descriptive error message.
+
+These methods throw errors that attempt to describe specifically why the fetch failed.
+
 ### Selecting a custom table view cell edit action
 Fleet also provides a helper method for selecting custom edit actions on a row:
 ```swift
