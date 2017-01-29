@@ -136,14 +136,10 @@ extension UITextField {
                     doesAllowTextChange = delegate.textField!(self, shouldChangeCharactersIn: NSMakeRange(existingText.characters.count, 0), replacementString: String(character))
                 }
                 if doesAllowTextChange {
-                    existingText += String(character)
-                    text = existingText
-                    sendActions(for: .editingChanged)
+                    insertText(String(character))
                 }
             } else {
-                existingText += String(character)
-                text = existingText
-                sendActions(for: .editingChanged)
+                insertText(String(character))
             }
         }
     }
@@ -176,14 +172,10 @@ extension UITextField {
                 doesAllowTextChange = delegate.textField!(self, shouldChangeCharactersIn: NSMakeRange(existingText.characters.count, 0), replacementString: textToPaste)
             }
             if doesAllowTextChange {
-                existingText += textToPaste
-                text = existingText
-                sendActions(for: .editingChanged)
+                insertText(textToPaste)
             }
         } else {
-            existingText += textToPaste
-            text = existingText
-            sendActions(for: .editingChanged)
+            insertText(textToPaste)
         }
     }
 
