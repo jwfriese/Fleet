@@ -36,7 +36,7 @@ func main() {
 
 	iosVersionNumber := strings.Trim(iosVersion, "iOS ")
 	destinationString := fmt.Sprintf("platform=iOS Simulator,OS=%s,name=%s", iosVersionNumber, deviceVersion)
-	unitTestCommand := exec.Command("xcodebuild", "test", "-workspace", "Fleet.xcworkspace", "-scheme", "Fleet", "-destination", destinationString)
+	unitTestCommand := exec.Command("xcodebuild", "test", "-workspace", "Fleet.xcworkspace", "-scheme", "Tests", "-destination", destinationString)
 	xcprettyCommand := exec.Command("xcpretty")
 	xcprettyCommand.Stdin, err = unitTestCommand.StdoutPipe()
 	if err != nil {
