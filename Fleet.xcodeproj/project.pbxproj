@@ -67,7 +67,6 @@
 		7BB14A5D1D7479C4002ABE82 /* KittensNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A5C1D7479C4002ABE82 /* KittensNavigationController.swift */; };
 		7BB14A5F1D75065E002ABE82 /* UINavigationController+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A5E1D75065E002ABE82 /* UINavigationController+FleetSpec.swift */; };
 		7BB14A611D75091B002ABE82 /* UINavigationController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A601D75091B002ABE82 /* UINavigationController+Fleet.swift */; };
-		7BB14A641D770D5C002ABE82 /* ContainObjectSatisfying.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A631D770D5C002ABE82 /* ContainObjectSatisfying.swift */; };
 		7BB14A661D772481002ABE82 /* FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A651D772481002ABE82 /* FleetSpec.swift */; };
 		7BB14A701D77B425002ABE82 /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A6D1D77B425002ABE82 /* Screen.swift */; };
 		7BB14A711D77B425002ABE82 /* FLTScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A6E1D77B425002ABE82 /* FLTScreen.swift */; };
@@ -166,7 +165,6 @@
 		7BB14A5C1D7479C4002ABE82 /* KittensNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KittensNavigationController.swift; sourceTree = "<group>"; };
 		7BB14A5E1D75065E002ABE82 /* UINavigationController+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UINavigationController+FleetSpec.swift"; sourceTree = "<group>"; };
 		7BB14A601D75091B002ABE82 /* UINavigationController+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UINavigationController+Fleet.swift"; sourceTree = "<group>"; };
-		7BB14A631D770D5C002ABE82 /* ContainObjectSatisfying.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainObjectSatisfying.swift; sourceTree = "<group>"; };
 		7BB14A651D772481002ABE82 /* FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FleetSpec.swift; sourceTree = "<group>"; };
 		7BB14A6D1D77B425002ABE82 /* Screen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Screen.swift; sourceTree = "<group>"; };
 		7BB14A6E1D77B425002ABE82 /* FLTScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FLTScreen.swift; sourceTree = "<group>"; };
@@ -475,7 +473,6 @@
 		7BA90ADD1CC3F6B50040B031 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				7BB14A621D770CBD002ABE82 /* NimbleExtensions */,
 				7BA4B1931E3565020052A2A7 /* EmbedView.swift */,
 				7BA90ADE1CC3F6C50040B031 /* File.swift */,
 				7BA4B1951E35652A0052A2A7 /* Test.swift */,
@@ -490,14 +487,6 @@
 				7BB14A5C1D7479C4002ABE82 /* KittensNavigationController.swift */,
 			);
 			path = Kittens;
-			sourceTree = "<group>";
-		};
-		7BB14A621D770CBD002ABE82 /* NimbleExtensions */ = {
-			isa = PBXGroup;
-			children = (
-				7BB14A631D770D5C002ABE82 /* ContainObjectSatisfying.swift */,
-			);
-			path = NimbleExtensions;
 			sourceTree = "<group>";
 		};
 		7BB14A6B1D77B410002ABE82 /* Screen */ = {
@@ -768,7 +757,6 @@
 				7BA90ADF1CC3F6C50040B031 /* File.swift in Sources */,
 				7BB14A5F1D75065E002ABE82 /* UINavigationController+FleetSpec.swift in Sources */,
 				7B9458141D4D7F0300F16A64 /* StoryboardDeserializerSpec.swift in Sources */,
-				7BB14A641D770D5C002ABE82 /* ContainObjectSatisfying.swift in Sources */,
 				7B8F2B3F1DE259B400B6F4C2 /* MockForSpec.swift in Sources */,
 				7BF9145F1E3CF77A00019CF2 /* UITableView+FetchCellSpec.swift in Sources */,
 				7BA4B1AE1E36F7960052A2A7 /* UITextView+FleetSpec.swift in Sources */,

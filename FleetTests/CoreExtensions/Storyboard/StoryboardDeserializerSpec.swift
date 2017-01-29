@@ -24,28 +24,28 @@ class StoryboardDeserializerSpec: XCTestCase {
         let reference = try! deserializer.deserializeStoryboard(withName: "TurtlesAndFriendsStoryboard")
         expect(reference.externalReferences.count).to(equal(5))
 
-        expect(reference.externalReferences).to(containObjectSatisfying({ reference in
+        expect(reference.externalReferences).to(containElementSatisfying({ reference in
             let identifiersEqual = reference.connectedViewControllerIdentifier == "UIViewController-s4q-fa-MbE"
             let externalIdentifiersEqual = reference.externalViewControllerIdentifier == "CrabViewController"
             let storyboardNamesEqual = reference.externalStoryboardName == "CrabStoryboard"
             return identifiersEqual && externalIdentifiersEqual && storyboardNamesEqual
         }))
 
-        expect(reference.externalReferences).to(containObjectSatisfying({ reference in
+        expect(reference.externalReferences).to(containElementSatisfying({ reference in
             let identifiersEqual = reference.connectedViewControllerIdentifier == "UIViewController-fVV-aN-iXJ"
             let externalIdentifiersEqual = reference.externalViewControllerIdentifier == ""
             let storyboardNamesEqual = reference.externalStoryboardName == "PuppyStoryboard"
             return identifiersEqual && externalIdentifiersEqual && storyboardNamesEqual
         }))
 
-        expect(reference.externalReferences).to(containObjectSatisfying({ reference in
+        expect(reference.externalReferences).to(containElementSatisfying({ reference in
             let identifiersEqual = reference.connectedViewControllerIdentifier == "UIViewController-pfk-wd-JTs"
             let externalIdentifiersEqual = reference.externalViewControllerIdentifier == ""
             let storyboardNamesEqual = reference.externalStoryboardName == "KittensStoryboard"
             return identifiersEqual && externalIdentifiersEqual && storyboardNamesEqual
         }))
 
-        expect(reference.externalReferences).to(containObjectSatisfying({ reference in
+        expect(reference.externalReferences).to(containElementSatisfying({ reference in
             let identifiersEqual = reference.connectedViewControllerIdentifier == "UIViewController-gcW-ev-w5z"
             let externalIdentifiersEqual = reference.externalViewControllerIdentifier == "CrabViewController"
             let storyboardNamesEqual = reference.externalStoryboardName == "CrabStoryboard"
