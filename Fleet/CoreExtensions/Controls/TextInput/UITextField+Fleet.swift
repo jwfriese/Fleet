@@ -223,14 +223,10 @@ extension UITextField {
                 doesAllowTextChange = delegate.textField!(self, shouldChangeCharactersIn: NSMakeRange(location, backspaceAmount), replacementString: "")
             }
             if doesAllowTextChange {
-                existingText.remove(at: existingText.index(before: existingText.endIndex))
-                text = existingText
-                sendActions(for: .editingChanged)
+                deleteBackward()
             }
         } else {
-            existingText.remove(at: existingText.index(before: existingText.endIndex))
-            text = existingText
-            sendActions(for: .editingChanged)
+            deleteBackward()
         }
     }
 
