@@ -32,6 +32,7 @@ extension UIButton {
             throw Fleet.ButtonError.controlUnavailable("Control is not visible.")
         }
 
+        sendActions(for: .touchDown)
         sendActions(for: .touchUpInside)
     }
 }
