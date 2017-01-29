@@ -49,3 +49,38 @@ try! myTableView.selectRow(at: myIndexPath)
 
 The principles laid out above for just one of Fleet's `UITableView` extensions apply to all of the
 framework's UIKit extensions.
+
+## Why does Fleet throw errors for almost all its interactions with UIKit?
+The Fleet team has two general goals in mind as the framework develops:
+1) To enable simpler, more thorough testing of production code interactions with UIKit.
+2) To provide better signalling when something goes wrong.
+
+Most of Fleet's API throws, and #2 is the reason. Fleet throws when something is wrong and needs to be
+addressed. Swift's error mechanisms are nice to work with, and so you and your team have options for
+how to handle Fleet's throw-heavy API:
+
+1) `try!` calls to the Fleet API
+
+This is the recommended method of working with Fleet in your test code. During the normal course of
+development, if you work one test at a time, or even just one flow at a time, you'll want quick, clear
+feedback when something goes wrong.
+
+2) `try?` calls to the Fleet API
+
+If you decide that you'd rather not halt everything when Fleet sees an error in setup or expectation,
+ignoring the errors will allow control to fall through to the rest of your test code. Your other
+assertions should catch any misbehavior resulting from the bad state that Fleet would have alerted you
+to through the ignored error.
+
+3) Catch any errors thrown by the Fleet API
+
+Fleet documents the types of errors thrown by all of its API methods, allowing you to easily wrap calls
+in a `do-catch` block. For example:
+
+```swift
+do {
+	try myTextField.enter("some text")
+} catch let error: Fleet.TextFieldError {
+	// Do any recovery here
+}
+```
