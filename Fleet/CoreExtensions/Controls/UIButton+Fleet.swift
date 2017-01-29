@@ -16,7 +16,7 @@ extension Fleet {
 extension UIButton {
 
     /**
-     Mimics a user tap on the button, firing the `.touchUpInside` control event.
+     Mimics a user tap on the button, firing all appropriate control events.
 
      - throws:
      A `Fleet.ButtonError` if the button is hidden, disabled, or does not allow user interaction.
