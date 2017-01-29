@@ -26,7 +26,8 @@ try! controller?.someSwitch?.flip()
 ```
 
 `flip` on `UISwitch` toggles the switch without animating it, doing the work of setting the switch with the
-correct value and ensuring that all relevant control events get sent.
+correct value and ensuring that all relevant control events get sent in exactly the order that UIKit sends
+them in production code.
 
 Additionally, it throws an error in the following situations:
 1) The `UISwitch` is not visible
