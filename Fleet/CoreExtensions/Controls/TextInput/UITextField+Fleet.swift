@@ -69,6 +69,7 @@ extension UITextField {
         guard isEnabled else {
             throw Fleet.TextFieldError.controlUnavailable("Text field is not enabled.")
         }
+        sendActions(for: .touchDown)
         if let delegate = delegate {
             let doesImplementShouldBeginEditing = delegate.responds(to: #selector(UITextFieldDelegate.textFieldShouldBeginEditing(_:)))
             if doesImplementShouldBeginEditing {
@@ -137,10 +138,12 @@ extension UITextField {
                 if doesAllowTextChange {
                     existingText += String(character)
                     text = existingText
+                    sendActions(for: .editingChanged)
                 }
             } else {
                 existingText += String(character)
                 text = existingText
+                sendActions(for: .editingChanged)
             }
         }
     }
@@ -175,10 +178,12 @@ extension UITextField {
             if doesAllowTextChange {
                 existingText += textToPaste
                 text = existingText
+                sendActions(for: .editingChanged)
             }
         } else {
             existingText += textToPaste
             text = existingText
+            sendActions(for: .editingChanged)
         }
     }
 
@@ -220,10 +225,12 @@ extension UITextField {
             if doesAllowTextChange {
                 existingText.remove(at: existingText.index(before: existingText.endIndex))
                 text = existingText
+                sendActions(for: .editingChanged)
             }
         } else {
             existingText.remove(at: existingText.index(before: existingText.endIndex))
             text = existingText
+            sendActions(for: .editingChanged)
         }
     }
 
@@ -261,9 +268,17 @@ extension UITextField {
             break
         }
 
-        self.text = ""
+        var shouldClear = true
         if let delegate = delegate {
-            let _ = delegate.textFieldShouldClear?(self)
+            let doesImplementShouldClearText = delegate.responds(to: #selector(UITextFieldDelegate.textFieldShouldClear(_:)))
+            if doesImplementShouldClearText {
+                shouldClear = delegate.textFieldShouldClear!(self)
+            }
+        }
+
+        if shouldClear {
+            self.text = ""
+            sendActions(for: .editingChanged)
         }
     }
 }

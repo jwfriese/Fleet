@@ -5,6 +5,7 @@ import Fleet
 class UITextField_FleetSpec: XCTestCase {
     var subject: UITextField!
     var delegate: TestTextFieldDelegate!
+    var recorder: UIControlEventRecorder!
 
     override func setUp() {
         super.setUp()
@@ -12,6 +13,8 @@ class UITextField_FleetSpec: XCTestCase {
         let tuple = createCompleteTextFieldAndDelegate()
         subject = tuple.textField
         delegate = tuple.delegate
+        recorder = UIControlEventRecorder()
+        recorder.registerAllEvents(for: subject)
         try! Test.embedViewIntoMainApplicationWindow(subject)
     }
 
@@ -30,6 +33,18 @@ class UITextField_FleetSpec: XCTestCase {
         try! subject.startEditing()
 
         expect(self.subject.isFirstResponder).to(beTrue())
+    }
+
+    func test_startEditing_whenTextFieldIsFullyAvailable_sendsControlEventsAppropriately() {
+        try! subject.startEditing()
+
+        expect(self.subject.isFirstResponder).to(beTrue())
+        expect(self.recorder.recordedEvents).to(equal([
+            .touchDown,
+            .allTouchEvents,
+            .editingDidBegin,
+            .allEditingEvents
+        ]))
     }
 
     func test_startEditing_whenTextFieldFailsToBecomeFirstResponder_throwsError() {
@@ -82,6 +97,17 @@ class UITextField_FleetSpec: XCTestCase {
         expect(self.delegate.didCallShouldClear).to(beFalse())
     }
 
+    func test_startEditing_whenDelegateDoesNotAllowEditing_stillSendsTouchDownControlEvent() {
+        delegate.shouldAllowBeginEditing = false
+
+        try! subject.startEditing()
+
+        expect(self.recorder.recordedEvents).to(equal([
+            .touchDown,
+            .allTouchEvents
+        ]))
+    }
+
     func test_startEditing_whenAnotherTextFieldWasSelected_whenDelegateAllowsEditing_callsDelegateMethodsAppropriately() {
         let tuple = createCompleteTextFieldAndDelegate()
         let otherTextField = tuple.textField
@@ -98,6 +124,26 @@ class UITextField_FleetSpec: XCTestCase {
         expect(self.delegate.didCallDidBeginEditing).to(beTrue())
         expect(otherDelegate.didCallShouldEndEditing).to(beTrue())
         expect(otherDelegate.didCallDidEndEditing).to(beTrue())
+    }
+
+    func test_startEditing_whenAnotherTextFieldWasSelected_whenDelegateAllowsEditing_sendsAllControlEvents() {
+        let tuple = createCompleteTextFieldAndDelegate()
+        let otherTextField = tuple.textField
+        let otherDelegate = tuple.delegate
+        try! Test.embedViewIntoMainApplicationWindow(otherTextField)
+
+        otherDelegate.shouldAllowBeginEditing = true
+        delegate.shouldAllowBeginEditing = true
+
+        try! otherTextField.startEditing()
+        try! subject.startEditing()
+
+        expect(self.recorder.recordedEvents).to(equal([
+            .touchDown,
+            .allTouchEvents,
+            .editingDidBegin,
+            .allEditingEvents
+        ]))
     }
 
     func test_startEditing_whenAnotherTextFieldWasSelected_whenDelegateDoesNotAllowEditing_callsDelegateMethodsAppropriately() {
@@ -135,6 +181,17 @@ class UITextField_FleetSpec: XCTestCase {
         expect(self.subject.isFirstResponder).to(beFalse())
     }
 
+    func test_stopEditing_whenTextFieldIsFullyAvailable_sendsControlEvents() {
+        try! subject.startEditing()
+        recorder.erase()
+        try! subject.stopEditing()
+
+        expect(self.recorder.recordedEvents).to(equal([
+            .editingDidEnd,
+            .allEditingEvents
+        ]))
+    }
+
     func test_stopEditing_whenNotFirstResponder_throwsError() {
         expect { try self.subject.stopEditing() }.to(throwError(closure: { (error: Fleet.TextFieldError) in
             expect(error.description).to(contain("Must start editing the text field before you can stop editing it."))
@@ -158,6 +215,24 @@ class UITextField_FleetSpec: XCTestCase {
         try! subject.type(text: "turtle magic")
 
         expect(self.subject.text).to(equal("turtle magic"))
+    }
+
+    func test_type_sendsControlEvents() {
+        try! subject.startEditing()
+        recorder.erase()
+        try! subject.type(text: "four")
+
+        // One `.editingChanged` event for each letter typed.
+        expect(self.recorder.recordedEvents).to(equal([
+            .editingChanged,
+            .allEditingEvents,
+            .editingChanged,
+            .allEditingEvents,
+            .editingChanged,
+            .allEditingEvents,
+            .editingChanged,
+            .allEditingEvents
+        ]))
     }
 
     func test_type_whenNotFirstResponder_throwsError() {
@@ -193,6 +268,15 @@ class UITextField_FleetSpec: XCTestCase {
         expect(self.subject.text).to(equal(""))
     }
 
+    func test_type_whenDelegateDoesNotAllowTextChanges_sendsNoEvents() {
+        delegate.shouldAllowChangeText = false
+        try! subject.startEditing()
+        recorder.erase()
+        try! subject.type(text: "turtle magic")
+
+        expect(self.recorder.recordedEvents).to(equal([]))
+    }
+
     func test_type_whenNoDelegate_typesGivenTextIntoTextField() {
         try! subject.startEditing()
         subject.delegate = nil
@@ -201,11 +285,41 @@ class UITextField_FleetSpec: XCTestCase {
         expect(self.subject.text).to(equal("turtle magic"))
     }
 
+    func test_type_whenNoDelegate_sendsControlEvents() {
+        try! subject.startEditing()
+        subject.delegate = nil
+        recorder.erase()
+        try! subject.type(text: "four")
+
+        // One `.editingChanged` event for each letter typed.
+        expect(self.recorder.recordedEvents).to(equal([
+            .editingChanged,
+            .allEditingEvents,
+            .editingChanged,
+            .allEditingEvents,
+            .editingChanged,
+            .allEditingEvents,
+            .editingChanged,
+            .allEditingEvents
+        ]))
+    }
+
     func test_paste_putsGivenTextIntoTextField() {
         try! subject.startEditing()
         try! subject.paste(text: "turtle magic")
 
         expect(self.subject.text).to(equal("turtle magic"))
+    }
+
+    func test_paste_sendsControlEvents() {
+        try! subject.startEditing()
+        recorder.erase()
+        try! subject.paste(text: "turtle magic")
+
+        expect(self.recorder.recordedEvents).to(equal([
+            .editingChanged,
+            .allEditingEvents
+        ]))
     }
 
     func test_paste_whenNotFirstResponder_throwsError() {
@@ -237,14 +351,50 @@ class UITextField_FleetSpec: XCTestCase {
         expect(self.delegate.textRanges[0].length).to(equal(0))
     }
 
+    func test_paste_whenDelegateDoesNotAllowTextChanges_sendsNoEvents() {
+        delegate.shouldAllowChangeText = false
+        try! subject.startEditing()
+        recorder.erase()
+        try! subject.paste(text: "turtle magic")
+
+        expect(self.recorder.recordedEvents).to(equal([]))
+    }
+
+    func test_paste_whenNoDelegate_sendsControlEvents() {
+        try! subject.startEditing()
+        subject.delegate = nil
+        recorder.erase()
+        try! subject.paste(text: "turtle magic")
+
+        // One `.editingChanged` event for each letter typed.
+        expect(self.recorder.recordedEvents).to(equal([
+            .editingChanged,
+            .allEditingEvents
+        ]))
+    }
+
     func test_backspace_deletesTheLastCharacter() {
-            try! subject.startEditing()
-            try! subject.type(text: "turtle magic")
-            delegate.resetState()
+        try! subject.startEditing()
+        try! subject.type(text: "turtle magic")
+        delegate.resetState()
 
-            try! subject.backspace()
+        try! subject.backspace()
 
-            expect(self.subject.text).to(equal("turtle magi"))
+        expect(self.subject.text).to(equal("turtle magi"))
+    }
+
+    func test_backspace_sendsControlEvents() {
+        try! subject.startEditing()
+        try! subject.type(text: "turtle magic")
+        delegate.resetState()
+        recorder.erase()
+
+        try! subject.backspace()
+
+        expect(self.recorder.recordedEvents).to(equal([
+            .editingChanged,
+            .allEditingEvents
+        ]))
     }
 
     func test_backspace_whenNotFirstResponder_throwsError() {
@@ -285,14 +435,29 @@ class UITextField_FleetSpec: XCTestCase {
     }
 
     func test_backspace_whenNoDelegate_deletesTheLastCharacter() {
-            try! subject.startEditing()
-            try! subject.type(text: "turtle magic")
+        try! subject.startEditing()
+        try! subject.type(text: "turtle magic")
 
-            subject.delegate = nil
+        subject.delegate = nil
 
-            try! subject.backspace()
+        try! subject.backspace()
 
-            expect(self.subject.text).to(equal("turtle magi"))
+        expect(self.subject.text).to(equal("turtle magi"))
+    }
+
+    func test_backspace_whenNoDelegate_sendsControlEvents() {
+        try! subject.startEditing()
+        try! subject.type(text: "turtle magic")
+        recorder.erase()
+
+        subject.delegate = nil
+
+        try! subject.backspace()
+
+        expect(self.recorder.recordedEvents).to(equal([
+            .editingChanged,
+            .allEditingEvents
+        ]))
     }
 
     func test_backspace_whenNoTextInTextField_doesNothing() {
@@ -423,6 +588,30 @@ class UITextField_FleetSpec: XCTestCase {
         expect(self.delegate.didCallShouldClear).to(beFalse())
     }
 
+    func test_clearText_whenItWorks_sendsControlEvents() {
+        subject.clearButtonMode = .always
+        try! subject.enter(text: "turtle magic")
+        recorder.erase()
+        try! subject.clearText()
+
+        expect(self.recorder.recordedEvents).to(equal([
+            .editingChanged,
+            .allEditingEvents
+        ]))
+    }
+
+    func test_clearText_whenDelegateDoesNotAllowClearing_doesNotClear() {
+        subject.clearButtonMode = .always
+        try! subject.enter(text: "turtle magic")
+        delegate.shouldAllowClearText = false
+        recorder.erase()
+        try! subject.clearText()
+
+        expect(self.subject.text).to(equal("turtle magic"))
+        expect(self.delegate.didCallShouldClear).to(beTrue())
+        expect(self.recorder.recordedEvents).to(equal([]))
+    }
+
     func test_enter_convenienceMethod_startsEditingATextFieldTypesTextAndStopsEditingAllInOneAction() {
         try! subject.enter(text: "turtle magic")
 
@@ -438,6 +627,27 @@ class UITextField_FleetSpec: XCTestCase {
         expect(self.delegate.didCallShouldEndEditing).to(beTrue())
         expect(self.delegate.didCallDidEndEditing).to(beTrue())
         expect(self.subject.isFirstResponder).to(beFalse())
+    }
+
+    func test_enter_convenienceMethod_sendsControlEvents() {
+        try! subject.enter(text: "four")
+
+        expect(self.recorder.recordedEvents).to(equal([
+            .touchDown,
+            .allTouchEvents,
+            .editingDidBegin,
+            .allEditingEvents,
+            .editingChanged,
+            .allEditingEvents,
+            .editingChanged,
+            .allEditingEvents,
+            .editingChanged,
+            .allEditingEvents,
+            .editingChanged,
+            .allEditingEvents,
+            .editingDidEnd,
+            .allEditingEvents
+        ]))
     }
 
     func test_whenTextFieldClearsOnEntry_whenDelegateAllowsClearing_clearsTextWhenEditingBegins() {
