@@ -133,11 +133,10 @@ extension UITextView {
                     doesAllowTextChange = delegate.textView!(self, shouldChangeTextIn: NSMakeRange(existingText.characters.count, 0), replacementText: String(character))
                 }
                 if doesAllowTextChange {
-                    delegate.textViewDidChange?(self)
-                    text.append(character)
+                    insertText(String(character))
                 }
             } else {
-                text.append(character)
+                insertText(String(character))
             }
         }
     }
@@ -170,11 +169,10 @@ extension UITextView {
                 doesAllowTextChange = delegate.textView!(self, shouldChangeTextIn: NSMakeRange(existingText.characters.count, 0), replacementText: textToPaste)
             }
             if doesAllowTextChange {
-                delegate.textViewDidChange?(self)
-                text.append(textToPaste)
+                insertText(textToPaste)
             }
         } else {
-            text.append(textToPaste)
+            insertText(textToPaste)
         }
     }
 
