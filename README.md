@@ -9,7 +9,7 @@ See the [Installation section](./Documentation/Installation.md) for details abou
 
 ### Storyboard injection and mocking
 Fleet allows test code to inject into and pull mocks from storyboards. This gives you the best of both worlds -- ability to test
-your view controllers and their interactions with each exactly as they are in production code without compromising the ability
+your view controllers and their interactions with each other exactly as they are in production code without compromising the ability
 to isolate any particular view controller for unit testing purposes.
 
 Read more about using Fleet's storyboard features in the [Documentation section](./Documentation/UIStoryboard.md).
