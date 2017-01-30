@@ -100,16 +100,16 @@ field is not in the view hierarchy. Views can only participate in the responder 
 view hierarchy.
 
 Another example of this is presenting a controller on top of another controller. If the presenting view
-controller's view does not live in the window hierarchy, you see a message that looks something like the
+controller's view does not live in the window hierarchy, UIKit prints a message that looks something like the
 following:
 
 ```
 Attempt to present UIAlertController: 0x727a2b40 on TurtleViewController: 0x897ac100 whose view is not in the window hierarchy!
 ```
 
-If your production code did this, you would never see your view controller. If this is unacceptable in production
-code, why accept it in your test code? Moreover, it's _possible_ that it has no behavioral effect on your view
-controller, but you can never know for sure. Your tests exist to make you confident about production code -- a
+If the production code does this, the view controller never shows up on the screen. Fundamentally, it is misbehavior, and exposes
+the test code to subtle errors that could prove tough to track down. It's at best _possible_ that it has no behavioral effect, and
+test run to test run you can never know for sure. Tests exist to increase confidence in the behavior of production code -- a
 little detail like this should not compromise that.
 
 Fleet makes it easy to ensure your view controllers are in the key window hierarchy:
