@@ -108,7 +108,7 @@ func main() {
 	printYay("Pushed")
 
 	printInfo("Tagging new release and pushing tags...")
-	if tagErr := tagRelease(); tagErr != nil {
+	if tagErr := tagRelease(newVersion); tagErr != nil {
 		printError(tagErr)
 		return
 	}
