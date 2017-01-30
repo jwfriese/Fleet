@@ -86,3 +86,38 @@ do {
 	// Do any recovery here
 }
 ```
+
+## Why should I make sure all `UIViewController` tests happen in a `UIWindow`?
+Fleet recommends that all view controller tests happen specifically in the `UIWindow` object that is
+the key window of your test host's app delegate. Whether you create your own for test or use the
+production app delegate, it should host the view controller under test.
+
+The primary reason for this is that plenty of UIKit functionality expects that the UI elements it
+operates with live in a view hierarchy. An example of this can be found within the test code for Fleet
+itself: the unit tests for `UITextField` embed the text field under test in the view hierarchy in the setup
+code. This is because the text field's attempts to call `becomeFirstResponder()` always fail if the text
+field is not in the view hierarchy. Views can only participate in the responder chain if they live in a
+view hierarchy.
+
+Another example of this is presenting a controller on top of another controller. If the presenting view
+controller's view does not live in the window hierarchy, you see a message that looks something like the
+following:
+
+```
+Attempt to present UIAlertController: 0x727a2b40 on TurtleViewController: 0x897ac100 whose view is not in the window hierarchy!
+```
+
+If your production code did this, you would never see your view controller. If this is unacceptable in production
+code, why accept it in your test code? Moreover, it's _possible_ that it has no behavioral effect on your view
+controller, but you can never know for sure. Your tests exist to make you confident about production code -- a
+little detail like this should not compromise that.
+
+Fleet makes it easy to ensure your view controllers are in the key window hierarchy:
+```swift
+// Takes a `UIViewController`,  makes it the test app key window's root, and kicks off its lifecycle.
+Fleet.setAsAppRootWindow(_:)
+
+// Takes a `UIViewController`,  makes it the root of a navigation stack, kicks off the lifecycle, and
+// returns the navigation controller that hosts that view controller.
+Fleet.setInAppWindowRootNavigation(_:)
+```
