@@ -33,7 +33,7 @@ class UITextView_FleetSpec: XCTestCase {
         expect(self.subject.isFirstResponder).to(beTrue())
     }
 
-    func test_startEditing_whenTextViewFailsToBecomeFirstResponder_throwsError() {
+    func test_startEditing_whenTextViewFailsToBecomeFirstResponder_raisesException() {
         // If the text view is not in the window, it will never succeed to become first responder.
         let textViewNotInWindow = UITextView(frame: CGRect(x: 100,y: 100,width: 100,height: 100))
 
@@ -41,37 +41,37 @@ class UITextView_FleetSpec: XCTestCase {
         textViewNotInWindow.isEditable = true
         textViewNotInWindow.isSelectable = true
 
-        expect { try textViewNotInWindow.startEditing() }.to(throwError(closure: { (error: Fleet.TextViewError) in
-            expect(error.description).to(contain("Text view failed to become first responder. This can happen if the view is not part of the window's hierarchy."))
-        }))
+        expect { try textViewNotInWindow.startEditing() }.to(
+            raiseException(named: "Fleet.TextViewError", reason: "Could not edit UITextView: Text view failed to become first responder. This can happen if the view is not part of the window's hierarchy.", userInfo: nil, closure: nil)
+        )
 
         expect(textViewNotInWindow.isFirstResponder).to(beFalse())
     }
 
-    func test_startEditing_whenTextViewIsHidden_throwsError() {
+    func test_startEditing_whenTextViewIsHidden_raisesException() {
         subject.isHidden = true
 
-        expect { try self.subject.startEditing() }.to(throwError(closure: { (error: Fleet.TextViewError) in
-            expect(error.description).to(contain("Text view is not visible."))
-        }))
+        expect { try self.subject.startEditing() }.to(
+            raiseException(named: "Fleet.TextViewError", reason: "UITextView unavailable for editing: Text view is not visible.", userInfo: nil, closure: nil)
+        )
         expect(self.subject.isFirstResponder).to(beFalse())
     }
 
-    func test_startEditing_whenTextViewIsNotSelectable_throwsError() {
+    func test_startEditing_whenTextViewIsNotSelectable_raisesException() {
         subject.isSelectable = false
 
-        expect { try self.subject.startEditing() }.to(throwError(closure: { (error: Fleet.TextViewError) in
-            expect(error.description).to(contain("Text view is not selectable."))
-        }))
+        expect { try self.subject.startEditing() }.to(
+            raiseException(named: "Fleet.TextViewError", reason: "UITextView unavailable for editing: Text view is not selectable.", userInfo: nil, closure: nil)
+        )
         expect(self.subject.isFirstResponder).to(beFalse())
     }
 
-    func test_startEditing_whenTextViewIsNotEditable_throwsError() {
+    func test_startEditing_whenTextViewIsNotEditable_raisesException() {
         subject.isEditable = false
 
-        expect { try self.subject.startEditing() }.to(throwError(closure: { (error: Fleet.TextViewError) in
-            expect(error.description).to(contain("Text view is not editable."))
-        }))
+        expect { try self.subject.startEditing() }.to(
+            raiseException(named: "Fleet.TextViewError", reason: "UITextView unavailable for editing: Text view is not editable.", userInfo: nil, closure: nil)
+        )
         expect(self.subject.isFirstResponder).to(beFalse())
     }
 
@@ -144,10 +144,10 @@ class UITextView_FleetSpec: XCTestCase {
         expect(self.subject.isFirstResponder).to(beFalse())
     }
 
-    func test_stopEditing_whenNotFirstResponder_throwsError() {
-        expect { try self.subject.stopEditing() }.to(throwError(closure: { (error: Fleet.TextViewError) in
-            expect(error.description).to(contain("Must start editing the text view before you can stop editing it."))
-        }))
+    func test_stopEditing_whenNotFirstResponder_raisesException() {
+        expect { try self.subject.stopEditing() }.to(
+            raiseException(named: "Fleet.TextViewError", reason: "Could not edit UITextView: Must start editing the text view before you can stop editing it.", userInfo: nil, closure: nil)
+        )
     }
 
     func test_stopEditing_whenDelegateAllowsEditingToEnd_callsDelegateMethodsAppropriately() {
@@ -169,10 +169,10 @@ class UITextView_FleetSpec: XCTestCase {
         expect(self.subject.text).to(equal("turtle magic"))
     }
 
-    func test_type_whenNotFirstResponder_throwsError() {
-        expect { try self.subject.type(text: "turtle magic") }.to(throwError(closure: { (error: Fleet.TextViewError) in
-            expect(error.description).to(contain("Must start editing the text view before text can be typed into it."))
-        }))
+    func test_type_whenNotFirstResponder_raisesException() {
+        expect { try self.subject.type(text: "turtle magic") }.to(
+            raiseException(named: "Fleet.TextViewError", reason: "Could not edit UITextView: Must start editing the text view before text can be typed into it.", userInfo: nil, closure: nil)
+        )
     }
 
     func test_type_whenDelegateAllowsTextChanges_callsDelegateMethodsAppropriately() {
@@ -221,10 +221,10 @@ class UITextView_FleetSpec: XCTestCase {
         expect(self.subject.text).to(equal("turtle magic"))
     }
 
-    func test_paste_whenNotFirstResponder_throwsError() {
-        expect { try self.subject.paste(text: "turtle magic") }.to(throwError(closure: { (error: Fleet.TextViewError) in
-            expect(error.description).to(contain("Must start editing the text view before text can be pasted into it."))
-        }))
+    func test_paste_whenNotFirstResponder_raisesException() {
+        expect { try self.subject.paste(text: "turtle magic") }.to(
+            raiseException(named: "Fleet.TextViewError", reason: "Could not edit UITextView: Must start editing the text view before text can be pasted into it.", userInfo: nil, closure: nil)
+        )
     }
 
     func test_paste_whenDelegateAllowsTextChanges_callsDelegateMethodsAppropriately() {
@@ -265,10 +265,10 @@ class UITextView_FleetSpec: XCTestCase {
             expect(self.subject.text).to(equal("turtle magi"))
     }
 
-    func test_backspace_whenNotFirstResponder_throwsError() {
-        expect { try self.subject.backspace() }.to(throwError(closure: { (error: Fleet.TextViewError) in
-            expect(error.description).to(contain("Must start editing the text view before backspaces can be performed."))
-        }))
+    func test_backspace_whenNotFirstResponder_raisesException() {
+        expect { try self.subject.backspace() }.to(
+            raiseException(named: "Fleet.TextViewError", reason: "Could not edit UITextView: Must start editing the text view before backspaces can be performed.", userInfo: nil, closure: nil)
+        )
     }
 
     func test_backspace_whenDelegateAllowsTextChanges_callsDelegateMethodsAppropriately() {
@@ -373,9 +373,9 @@ class UITextView_FleetSpec: XCTestCase {
 
     func test_whenUserInteractionIsDisabled_doesAbsolutelyNothingAndThrowsError() {
         subject.isUserInteractionEnabled = false
-        expect { try self.subject.enter(text: "turtle magic") }.to(throwError(closure: { (error: Fleet.TextViewError) in
-            expect(error.description).to(contain("View does not allow user interaction."))
-        }))
+        expect { try self.subject.enter(text: "turtle magic") }.to(
+            raiseException(named: "Fleet.TextViewError", reason: "UITextView unavailable for editing: View does not allow user interaction.", userInfo: nil, closure: nil)
+        )
 
         expect(self.subject.text).to(equal(""))
         expect(self.delegate.textChanges).to(equal([]))
