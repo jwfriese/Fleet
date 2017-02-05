@@ -31,17 +31,24 @@ class UIBarButtonItem_FleetSpec: XCTestCase {
         expect(self.testTarget.didCallAction).to(beTrue())
     }
 
-    func test_tap_whenNotEnabled_throwsError() {
+    func test_tap_whenNotEnabled_raisesException() {
         subject.isEnabled = false
-        expect { try self.subject.tap() }.to(throwError { (error: Fleet.BarButtonItemError) in
-            expect(error.description).to(equal("Cannot tap UIBarButtonItem: Control is not enabled."))
-        })
+        expect { try self.subject.tap() }.to(
+            raiseException(named: "Fleet.BarButtonItemError", reason: "Cannot tap UIBarButtonItem: Control is not enabled.", userInfo: nil, closure: nil)
+        )
     }
 
-    func test_tap_whenNoTarget_throwsError() {
+    func test_tap_whenNoTarget_raisesException() {
         subject.target = nil
-        expect { try self.subject.tap() }.to(throwError { (error: Fleet.BarButtonItemError) in
-            expect(error.description).to(equal("Attempted to tap UIBarButtonItem (title='turtles') with no associated target."))
-        })
+        expect { try self.subject.tap() }.to(
+            raiseException(named: "Fleet.BarButtonItemError", reason: "Attempted to tap UIBarButtonItem (title='turtles') with no associated target.", userInfo: nil, closure: nil)
+        )
+    }
+
+    func test_tap_whenNoAction_raisesException() {
+        subject.action = nil
+        expect { try self.subject.tap() }.to(
+            raiseException(named: "Fleet.BarButtonItemError", reason: "Attempted to tap UIBarButtonItem (title='turtles') with no associated action.", userInfo: nil, closure: nil)
+        )
     }
 }

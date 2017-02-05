@@ -60,6 +60,7 @@
 		7BB14A661D772481002ABE82 /* FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A651D772481002ABE82 /* FleetSpec.swift */; };
 		7BB14A701D77B425002ABE82 /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A6D1D77B425002ABE82 /* Screen.swift */; };
 		7BB14A711D77B425002ABE82 /* FLTScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A6E1D77B425002ABE82 /* FLTScreen.swift */; };
+		7BDB63B31E47725600515C22 /* FleetError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDB63B21E47725600515C22 /* FleetError.swift */; };
 		7BEE35B51E15434A00302991 /* UITableView+SelectRowMinimalDelegateImplSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BEE35B41E15434A00302991 /* UITableView+SelectRowMinimalDelegateImplSpec.swift */; };
 		7BF913981E384A4E00019CF2 /* TableViewError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF913971E384A4E00019CF2 /* TableViewError.swift */; };
 		7BF913AE1E3A4BA800019CF2 /* UIViewController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF913AD1E3A4BA800019CF2 /* UIViewController+Fleet.swift */; };
@@ -160,6 +161,7 @@
 		7BB14A651D772481002ABE82 /* FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FleetSpec.swift; sourceTree = "<group>"; };
 		7BB14A6D1D77B425002ABE82 /* Screen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Screen.swift; sourceTree = "<group>"; };
 		7BB14A6E1D77B425002ABE82 /* FLTScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FLTScreen.swift; sourceTree = "<group>"; };
+		7BDB63B21E47725600515C22 /* FleetError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FleetError.swift; sourceTree = "<group>"; };
 		7BEE35B41E15434A00302991 /* UITableView+SelectRowMinimalDelegateImplSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+SelectRowMinimalDelegateImplSpec.swift"; sourceTree = "<group>"; };
 		7BF913971E384A4E00019CF2 /* TableViewError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableViewError.swift; sourceTree = "<group>"; };
 		7BF913AD1E3A4BA800019CF2 /* UIViewController+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Fleet.swift"; sourceTree = "<group>"; };
@@ -388,6 +390,7 @@
 				7BA90AB81CC130990040B031 /* Info.plist */,
 				7B675E931D0DA7EA002E6B45 /* Fleet.swift */,
 				7BA90AB61CC130990040B031 /* Fleet.h */,
+				7BDB63B11E47723300515C22 /* Error */,
 				7B9458171D4E470C00F16A64 /* Script */,
 				7B675E871D0C5AEE002E6B45 /* Logging */,
 				7BA90ABE1CC3B5E30040B031 /* CoreExtensions */,
@@ -476,6 +479,14 @@
 				7BB14A6E1D77B425002ABE82 /* FLTScreen.swift */,
 			);
 			path = Screen;
+			sourceTree = "<group>";
+		};
+		7BDB63B11E47723300515C22 /* Error */ = {
+			isa = PBXGroup;
+			children = (
+				7BDB63B21E47725600515C22 /* FleetError.swift */,
+			);
+			path = Error;
 			sourceTree = "<group>";
 		};
 		7BF913AC1E3A4B9500019CF2 /* ViewController */ = {
@@ -747,6 +758,7 @@
 				7B29F41F1DDCAC76008EA836 /* UITableView+SelectCellAction.swift in Sources */,
 				7BB14A701D77B425002ABE82 /* Screen.swift in Sources */,
 				7B675E891D0C5AFB002E6B45 /* Logger.swift in Sources */,
+				7BDB63B31E47725600515C22 /* FleetError.swift in Sources */,
 				7B675EA21D0DD64D002E6B45 /* UIAlertAction+Fleet.swift in Sources */,
 				7B8F2B261DE12CC700B6F4C2 /* MockFor.swift in Sources */,
 				7B2D724A1E292A1F0046EDFC /* StoryboardBindingError.swift in Sources */,
