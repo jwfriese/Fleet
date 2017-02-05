@@ -1,15 +1,17 @@
 import UIKit
 
 extension Fleet {
-    public enum ButtonError: Error {
+    enum ButtonError: FleetErrorDefinition {
         case controlUnavailable(String)
 
-        public var description: String {
+        var errorMessage: String {
             switch self {
             case .controlUnavailable(let message):
                 return "Cannot tap UIButton: \(message)"
             }
         }
+
+        var name: NSExceptionName { get { return NSExceptionName("Fleet.ButtonError") } }
     }
 }
 
@@ -19,17 +21,20 @@ extension UIButton {
      Mimics a user tap on the button, firing all appropriate control events.
 
      - throws:
-     A `Fleet.ButtonError` if the button is hidden, disabled, or does not allow user interaction.
+     A `FleetError` if the button is hidden, disabled, or does not allow user interaction.
      */
     public func tap() throws {
         if !isUserInteractionEnabled {
-            throw Fleet.TextViewError.controlUnavailable("View does not allow user interaction.")
+            FleetError(Fleet.ButtonError.controlUnavailable("View does not allow user interaction.")).raise()
+            return
         }
         guard isEnabled else {
-            throw Fleet.ButtonError.controlUnavailable("Control is not enabled.")
+            FleetError(Fleet.ButtonError.controlUnavailable("Control is not enabled.")).raise()
+            return
         }
         guard !isHidden else {
-            throw Fleet.ButtonError.controlUnavailable("Control is not visible.")
+            FleetError(Fleet.ButtonError.controlUnavailable("Control is not visible.")).raise()
+            return
         }
 
         sendActions(for: .touchDown)

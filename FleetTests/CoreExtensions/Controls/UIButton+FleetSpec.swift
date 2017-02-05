@@ -20,7 +20,7 @@ class UIButton_FleetSpec: XCTestCase {
         ]))
     }
 
-    func test_tap_whenButtonIsNotVisible_doesNothingAndThrowsError() {
+    func test_tap_whenButtonIsNotVisible_doesNothingAndRaisesException() {
         let subject = UIButton()
         subject.isHidden = true
         subject.isEnabled = true
@@ -28,13 +28,13 @@ class UIButton_FleetSpec: XCTestCase {
         let recorder = UIControlEventRecorder()
         recorder.registerAllEvents(for: subject)
 
-        expect { try subject.tap() }.to(throwError { (error: Fleet.ButtonError) in
-            expect(error.description).to(equal("Cannot tap UIButton: Control is not visible."))
-        })
+        expect { try subject.tap() }.to(
+            raiseException(named: "Fleet.ButtonError", reason: "Cannot tap UIButton: Control is not visible.", userInfo: nil, closure: nil)
+        )
         expect(recorder.recordedEvents).to(equal([]))
     }
 
-    func test_tap_whenButtonIsNotEnabled_doesNothingAndThrowsError() {
+    func test_tap_whenButtonIsNotEnabled_doesNothingAndRaisesException() {
         let subject = UIButton()
         subject.isHidden = false
         subject.isEnabled = false
@@ -42,13 +42,13 @@ class UIButton_FleetSpec: XCTestCase {
         let recorder = UIControlEventRecorder()
         recorder.registerAllEvents(for: subject)
 
-        expect { try subject.tap() }.to(throwError { (error: Fleet.ButtonError) in
-            expect(error.description).to(equal("Cannot tap UIButton: Control is not enabled."))
-        })
+        expect { try subject.tap() }.to(
+            raiseException(named: "Fleet.ButtonError", reason: "Cannot tap UIButton: Control is not enabled.", userInfo: nil, closure: nil)
+        )
         expect(recorder.recordedEvents).to(equal([]))
     }
 
-    func test_tap_whenButtonDoesNotAllowUserInteraction_doesNothingAndThrowsError() {
+    func test_tap_whenButtonDoesNotAllowUserInteraction_doesNothingAndRaisesException() {
         let subject = UIButton()
         subject.isHidden = false
         subject.isEnabled = true
@@ -57,9 +57,9 @@ class UIButton_FleetSpec: XCTestCase {
         let recorder = UIControlEventRecorder()
         recorder.registerAllEvents(for: subject)
 
-        expect { try subject.tap() }.to(throwError { (error: Fleet.ButtonError) in
-            expect(error.description).to(equal("Cannot tap UIButton: View does not allow user interaction."))
-        })
+        expect { try subject.tap() }.to(
+            raiseException(named: "Fleet.ButtonError", reason: "Cannot tap UIButton: View does not allow user interaction.", userInfo: nil, closure: nil)
+        )
         expect(recorder.recordedEvents).to(equal([]))
     }
 }
