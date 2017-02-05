@@ -16,40 +16,40 @@ class UISwitch_FleetSpec: XCTestCase {
         expect(subject.isOn).to(beFalse())
     }
 
-    func test_flip_whenUserInteractionIsNotEnabled_doesNotChangeTheSwitchAndThrowsError() {
+    func test_flip_whenUserInteractionIsNotEnabled_doesNotChangeTheSwitchAndRaisesException() {
         let subject = UISwitch()
         subject.isHidden = false
         subject.isEnabled = true
         subject.isUserInteractionEnabled = false
         expect(subject.isOn).to(beFalse())
 
-        expect { try subject.flip() }.to(throwError { (error: Fleet.SwitchError) in
-            expect(error.description).to(equal("Cannot flip UISwitch: View does not allow user interaction."))
-        })
+        expect { try subject.flip() }.to(
+            raiseException(named: "Fleet.SwitchError", reason: "Cannot flip UISwitch: View does not allow user interaction.", userInfo: nil, closure: nil)
+        )
         expect(subject.isOn).to(beFalse())
     }
 
-    func test_flip_whenSwitchIsNotVisible_doesNotChangeTheSwitchAndThrowsError() {
+    func test_flip_whenSwitchIsNotVisible_doesNotChangeTheSwitchAndRaisesException() {
         let subject = UISwitch()
         subject.isHidden = true
         subject.isEnabled = true
         expect(subject.isOn).to(beFalse())
 
-        expect { try subject.flip() }.to(throwError { (error: Fleet.SwitchError) in
-            expect(error.description).to(equal("Cannot flip UISwitch: Control is not visible."))
-        })
+        expect { try subject.flip() }.to(
+            raiseException(named: "Fleet.SwitchError", reason: "Cannot flip UISwitch: Control is not visible.", userInfo: nil, closure: nil)
+        )
         expect(subject.isOn).to(beFalse())
     }
 
-    func test_flip_whenSwitchIsNotEnabled_doesNotChangeTheSwitchAndThrowsError() {
+    func test_flip_whenSwitchIsNotEnabled_doesNotChangeTheSwitchAndRaisesException() {
         let subject = UISwitch()
         subject.isHidden = false
         subject.isEnabled = false
         expect(subject.isOn).to(beFalse())
 
-        expect { try subject.flip() }.to(throwError { (error: Fleet.SwitchError) in
-            expect(error.description).to(equal("Cannot flip UISwitch: Control is not enabled."))
-        })
+        expect { try subject.flip() }.to(
+            raiseException(named: "Fleet.SwitchError", reason: "Cannot flip UISwitch: Control is not enabled.", userInfo: nil, closure: nil)
+        )
         expect(subject.isOn).to(beFalse())
     }
 

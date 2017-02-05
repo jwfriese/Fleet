@@ -1,15 +1,17 @@
 import UIKit
 
 extension Fleet {
-    public enum SwitchError: Error, CustomStringConvertible {
+    enum SwitchError: FleetErrorDefinition {
         case controlUnavailable(message: String)
 
-        public var description: String {
+        var errorMessage: String {
             switch self {
             case .controlUnavailable(let message):
                 return "Cannot flip UISwitch: \(message)"
             }
         }
+
+        var name: NSExceptionName { get { return NSExceptionName(rawValue: "Fleet.SwitchError") } }
     }
 }
 
@@ -18,17 +20,20 @@ extension UISwitch {
      Toggles the switch value and fires the appropriate control events.
 
      - throws:
-     A `Fleet.SwitchError` if the switch is hidden, disabled, or if user interaction is disabled.
+     A `FleetError` if the switch is hidden, disabled, or if user interaction is disabled.
     */
     public func flip() throws {
         guard isUserInteractionEnabled else {
-            throw Fleet.SwitchError.controlUnavailable(message: "View does not allow user interaction.")
+            FleetError(Fleet.SwitchError.controlUnavailable(message: "View does not allow user interaction.")).raise()
+            return
         }
         guard isEnabled else {
-            throw Fleet.SwitchError.controlUnavailable(message: "Control is not enabled.")
+            FleetError(Fleet.SwitchError.controlUnavailable(message: "Control is not enabled.")).raise()
+            return
         }
         guard !isHidden else {
-            throw Fleet.SwitchError.controlUnavailable(message: "Control is not visible.")
+            FleetError(Fleet.SwitchError.controlUnavailable(message: "Control is not visible.")).raise()
+            return
         }
 
         setOn(!isOn, animated: false)
