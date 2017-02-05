@@ -10,37 +10,43 @@ extension UITableView {
         - at: The index path at which to attempt to take this action
 
      - throws:
-     A `Fleet.TableViewError` is there is no cell at the given index path, if the data source
+     A `FleetError` is there is no cell at the given index path, if the data source
      does not allow editing of the given index path, or if there is no edit action with the
      given title on the cell.
      */
     public func selectCellAction(withTitle title: String, at indexPath: IndexPath) throws {
         guard let dataSource = dataSource else {
-            throw Fleet.TableViewError.dataSourceRequired(userAction: "select cell action")
+            FleetError(Fleet.TableViewError.dataSourceRequired(userAction: "select cell action")).raise()
+            return
         }
 
         guard let delegate = delegate else {
-            throw Fleet.TableViewError.delegateRequired(userAction: "select cell action")
+            FleetError(Fleet.TableViewError.delegateRequired(userAction: "select cell action")).raise()
+            return
         }
 
         if !delegate.responds(to: #selector(UITableViewDelegate.tableView(_:editActionsForRowAt:))) {
-            throw Fleet.TableViewError.incompleteDelegate(required: "UITableViewDelegate.tableView(_:editActionsForRowAt:)", userAction: "select cell action")
+            FleetError(Fleet.TableViewError.incompleteDelegate(required: "UITableViewDelegate.tableView(_:editActionsForRowAt:)", userAction: "select cell action")).raise()
+            return
         }
 
         let sectionCount = numberOfSections
         if indexPath.section >= sectionCount {
-            throw Fleet.TableViewError.sectionDoesNotExist(sectionNumber: indexPath.section)
+            FleetError(Fleet.TableViewError.sectionDoesNotExist(sectionNumber: indexPath.section)).raise()
+            return
         }
 
         let rowCount = numberOfRows(inSection: indexPath.section)
         if indexPath.row >= rowCount {
-            throw Fleet.TableViewError.rowDoesNotExist(at: indexPath)
+            FleetError(Fleet.TableViewError.rowDoesNotExist(at: indexPath)).raise()
+            return
         }
 
         let doesDataSourceImplementCanEditRow = dataSource.responds(to: #selector(UITableViewDataSource.tableView(_:canEditRowAt:)))
         let canEditCell = doesDataSourceImplementCanEditRow && dataSource.tableView!(self, canEditRowAt: indexPath)
         if !canEditCell {
-            throw Fleet.TableViewError.rejectedAction(at: indexPath, reason: "Table view data source does not allow editing of that row.")
+            FleetError(Fleet.TableViewError.rejectedAction(at: indexPath, reason: "Table view data source does not allow editing of that row.")).raise()
+            return
         }
 
         let editActions = delegate.tableView!(self, editActionsForRowAt: indexPath)
@@ -49,7 +55,8 @@ extension UITableView {
         }
 
         guard let action = actionOpt else {
-            throw Fleet.TableViewError.cellActionDoesNotExist(at: indexPath, title: title)
+            FleetError(Fleet.TableViewError.cellActionDoesNotExist(at: indexPath, title: title)).raise()
+            return
         }
 
         delegate.tableView?(self, willBeginEditingRowAt: indexPath)

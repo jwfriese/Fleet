@@ -114,24 +114,24 @@ class UITableView_SelectRowSpec: XCTestCase {
         expect(viewController.didDeselectRowCallArgs[0]).to(equal(IndexPath(row: 5, section: 0)))
     }
 
-    func test_selectRow_whenNoCellExistsAtThatIndexPath_whenInvalidSectionInIndexPath_returnsAnError() {
+    func test_selectRow_whenNoCellExistsAtThatIndexPath_whenInvalidSectionInIndexPath_raisesException() {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
 
-        expect { try viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 1)) }.to(throwError(closure: { (error: Fleet.TableViewError) in
-            expect(error.description).to(equal("Table view has no section 1."))
-        }))
+        expect { try viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 1)) }.to(
+            raiseException(named: "Fleet.TableViewError", reason: "Table view has no section 1.", userInfo: nil, closure: nil)
+        )
     }
 
-    func test_selectRow_whenNoCellExistsAtThatIndexPath_whenInvalidRowInIndexPath_returnsAnError() {
+    func test_selectRow_whenNoCellExistsAtThatIndexPath_whenInvalidRowInIndexPath_raisesException() {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
 
-        expect { try viewController.birdsTableView?.selectRow(at: IndexPath(row: 100, section: 0)) }.to(throwError(closure: { (error: Fleet.TableViewError) in
-            expect(error.description).to(equal("Table view has no row 100 in section 0."))
-        }))
+        expect { try viewController.birdsTableView?.selectRow(at: IndexPath(row: 100, section: 0)) }.to(
+            raiseException(named: "Fleet.TableViewError", reason: "Table view has no row 100 in section 0.", userInfo: nil, closure: nil)
+        )
     }
 
     func test_selectRow_whenSelectionIsValid_postsUITableViewSelectionDidChangeNotification() {
@@ -160,26 +160,26 @@ class UITableView_SelectRowSpec: XCTestCase {
         expect(listener.callCount).to(equal(1))
     }
 
-    func test_selectRow_whenTableViewDoesNotHaveDataSource_returnsAnError() {
+    func test_selectRow_whenTableViewDoesNotHaveDataSource_raisesException() {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
         viewController.birdsTableView?.dataSource = nil
 
-        expect { try viewController.birdsTableView?.selectRow(at: IndexPath(row: 0, section: 0)) }.to(throwError(closure: { (error: Fleet.TableViewError) in
-            expect(error.description).to(equal("Data source required to select cell row."))
-        }))
+        expect { try viewController.birdsTableView?.selectRow(at: IndexPath(row: 0, section: 0)) }.to(
+            raiseException(named: "Fleet.TableViewError", reason: "Data source required to select cell row.", userInfo: nil, closure: nil)
+        )
     }
 
-    func test_selectRow_whenTableViewDoesNotAllowSelection_returnsAnError() {
+    func test_selectRow_whenTableViewDoesNotAllowSelection_raisesException() {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
         viewController.birdsTableView?.allowsSelection = false
 
-        expect { try viewController.birdsTableView?.selectRow(at: IndexPath(row: 0, section: 0)) }.to(throwError(closure: { (error: Fleet.TableViewError) in
-            expect(error.description).to(equal("Interaction with row 0 in section 0 rejected: Table view does not allow selection."))
-        }))
+        expect { try viewController.birdsTableView?.selectRow(at: IndexPath(row: 0, section: 0)) }.to(
+            raiseException(named: "Fleet.TableViewError", reason: "Interaction with row 0 in section 0 rejected: Table view does not allow selection.", userInfo: nil, closure: nil)
+        )
     }
 
     func test_selectRow_whenTableViewDoesNotHaveDelegate_stillSelectsTheRow() {

@@ -1,5 +1,5 @@
 extension Fleet {
-    public enum TableViewError: Error, CustomStringConvertible {
+    enum TableViewError: FleetErrorDefinition {
         case dataSourceRequired(userAction: String)
         case delegateRequired(userAction: String)
         case incompleteDelegate(required: String, userAction: String)
@@ -9,7 +9,7 @@ extension Fleet {
         case cellActionDoesNotExist(at: IndexPath, title: String)
         case mismatchedCellType(at: IndexPath, foundType: AnyClass, requestedType: AnyClass)
 
-        public var description: String {
+        var errorMessage: String {
             switch self {
             case .dataSourceRequired(let userAction):
                 return "Data source required to \(userAction)."
@@ -29,5 +29,7 @@ extension Fleet {
                 return "Cell at row \(indexPath.row) in section \(indexPath.section) is of type `\(foundType)` (wanted `\(requestedType)`)."
             }
         }
+
+        var name: NSExceptionName { get { return NSExceptionName(rawValue: "Fleet.TableViewError") } }
     }
 }

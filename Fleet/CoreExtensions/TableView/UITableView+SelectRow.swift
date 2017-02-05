@@ -11,26 +11,30 @@ extension UITableView {
         - at: The index path to attempt to tap
 
      - throws:
-     A `Fleet.TableViewError` if there is no cell at the given index path
+     A `FleetError` if there is no cell at the given index path
      or if the table view does not allow selection ('allowsSelection' == false)
      */
     public func selectRow(at indexPath: IndexPath) throws {
         guard let _ = self.dataSource else {
-            throw Fleet.TableViewError.dataSourceRequired(userAction: "select cell row")
+            FleetError(Fleet.TableViewError.dataSourceRequired(userAction: "select cell row")).raise()
+            return
         }
 
         guard allowsSelection else {
-            throw Fleet.TableViewError.rejectedAction(at: indexPath, reason: "Table view does not allow selection.")
+            FleetError(Fleet.TableViewError.rejectedAction(at: indexPath, reason: "Table view does not allow selection.")).raise()
+            return
         }
 
         let sectionCount = numberOfSections
         if indexPath.section >= sectionCount {
-            throw Fleet.TableViewError.sectionDoesNotExist(sectionNumber: indexPath.section)
+            FleetError(Fleet.TableViewError.sectionDoesNotExist(sectionNumber: indexPath.section)).raise()
+            return
         }
 
         let rowCount = numberOfRows(inSection: indexPath.section)
         if indexPath.row >= rowCount {
-            throw Fleet.TableViewError.rowDoesNotExist(at: indexPath)
+            FleetError(Fleet.TableViewError.rowDoesNotExist(at: indexPath)).raise()
+            return
         }
 
         let hasDelegate = delegate != nil
