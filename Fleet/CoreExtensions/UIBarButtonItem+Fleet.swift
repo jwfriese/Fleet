@@ -1,12 +1,12 @@
 import UIKit
 
 extension Fleet {
-    public enum BarButtonItemError: FleetErrorDefinition {
+    enum BarButtonItemError: FleetErrorDefinition {
         case controlUnavailable(message: String)
         case noTarget(title: String)
         case noAction(title: String)
 
-        public var errorMessage: String {
+        var errorMessage: String {
             switch self {
             case .controlUnavailable(let message):
                 return "Cannot tap UIBarButtonItem: \(message)"
