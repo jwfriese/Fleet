@@ -4,13 +4,15 @@ class StoryboardDeserializer {
     func deserializeStoryboard(withName name: String) throws -> StoryboardReferenceMap {
         guard let testBundle = Fleet.currentTestBundle else {
             let message = "Could not find test bundle to load storyboard with name \(name)"
-            throw Fleet.StoryboardError.internalInconsistency(message)
+            FleetError(Fleet.StoryboardError.internalInconsistency(message)).raise()
+            return StoryboardReferenceMap()
         }
 
         let storyboardPath = testBundle.bundlePath + "/StoryboardInfo/\(name)/Info.plist"
         guard FileManager.default.fileExists(atPath: storyboardPath) else {
             let message = "Failed to build storyboard reference map for storyboard with name '\(name)'. Either this storyboard does not exist or Fleet is not set up for storyboard binding and mocking. Check the documentation to ensure that you have set up Fleet correctly to use its storyboard features."
-            throw Fleet.StoryboardError.internalInconsistency(message)
+            FleetError(Fleet.StoryboardError.internalInconsistency(message)).raise()
+            return StoryboardReferenceMap()
         }
 
         var reference = StoryboardReferenceMap()

@@ -1,14 +1,14 @@
 import Foundation
 
 extension Fleet {
-    public enum StoryboardError: Error, CustomStringConvertible {
+    enum StoryboardError: FleetErrorDefinition {
         case invalidViewControllerIdentifier(String)
         case invalidExternalStoryboardReference(String)
         case internalInconsistency(String)
         case invalidViewControllerState(String)
         case invalidMockType(String)
 
-        public var description: String {
+        var errorMessage: String {
             get {
                 var description = ""
 
@@ -28,5 +28,7 @@ extension Fleet {
                 return description
             }
         }
+
+        var name: NSExceptionName { get { return NSExceptionName(rawValue: "Fleet.StoryboardError") } }
     }
 }

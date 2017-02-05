@@ -4,19 +4,11 @@ import Nimble
 @testable import FleetTestApp
 
 class StoryboardDeserializerSpec: XCTestCase {
-    func test_deserializingStoryboard_whenStoryboardWithNameInBundleCannotBeFound_throwsError() {
+    func test_deserializingStoryboard_whenStoryboardWithNameInBundleCannotBeFound_raisesException() {
         let deserializer = StoryboardDeserializer()
-        var threwError = false
-        do {
-            let _ = try deserializer.deserializeStoryboard(withName: "garbage")
-        } catch Fleet.StoryboardError.internalInconsistency(let message) {
-            threwError = true
-            expect(message).to(equal("Failed to build storyboard reference map for storyboard with name 'garbage'. Either this storyboard does not exist or Fleet is not set up for storyboard binding and mocking. Check the documentation to ensure that you have set up Fleet correctly to use its storyboard features."))
-        } catch { }
-
-        if !threwError {
-            fail("Expected to throw InternalInconsistency error")
-        }
+        expect { _ = try deserializer.deserializeStoryboard(withName: "garbage") }.to(
+            raiseException(named: "Fleet.StoryboardError", reason: "Failed to build storyboard reference map for storyboard with name 'garbage'. Either this storyboard does not exist or Fleet is not set up for storyboard binding and mocking. Check the documentation to ensure that you have set up Fleet correctly to use its storyboard features.", userInfo: nil, closure: nil)
+        )
     }
 
     func test_deserializingStoryboard_whenStoryboardExists_deserializesIntoStoryboardReferenceMap() {
