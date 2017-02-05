@@ -1,12 +1,12 @@
 import UIKit
 
 extension Fleet {
-    public enum TextFieldError: Error, CustomStringConvertible {
+    enum TextFieldError: FleetErrorDefinition {
         case controlUnavailable(String)
         case editingFlow(String)
         case cannotClear(reason: String)
 
-        public var description: String {
+        var errorMessage: String {
             switch self {
             case .controlUnavailable(let message):
                 return "UITextField unavailable for editing: \(message)"
@@ -16,6 +16,8 @@ extension Fleet {
                 return "Could not clear text from UITextField: \(reason)"
             }
         }
+
+        var name: NSExceptionName { get { return NSExceptionName(rawValue: "Fleet.TextFieldError") } }
     }
 }
 
@@ -39,7 +41,7 @@ extension UITextField {
         - text: The text to enter
 
      - throws:
-     A `Fleet.TextFieldError` if the text field is not available because it is hidden,
+     A `FleetError` if the text field is not available because it is hidden,
      not enabled, if grabbing first responder fails for any reason, or if resigning first responder
      fails for any reason.
      */
@@ -53,21 +55,24 @@ extension UITextField {
      Attempts to give the `UITextField` first responder focus.
 
      - throws:
-     A `Fleet.TextFieldError` if the text view is not available because it is hidden,
+     A `FleetError` if the text view is not available because it is hidden,
      not enabled, or if grabbing first responder fails for any reason.
      */
     public func startEditing() throws {
         if !isUserInteractionEnabled {
-            throw Fleet.TextFieldError.controlUnavailable("View does not allow user interaction.")
+            FleetError(Fleet.TextFieldError.controlUnavailable("View does not allow user interaction.")).raise()
+            return
         }
         if isFirstResponder {
             return
         }
         guard !isHidden else {
-            throw Fleet.TextFieldError.controlUnavailable("Text field is not visible.")
+            FleetError(Fleet.TextFieldError.controlUnavailable("Text field is not visible.")).raise()
+            return
         }
         guard isEnabled else {
-            throw Fleet.TextFieldError.controlUnavailable("Text field is not enabled.")
+            FleetError(Fleet.TextFieldError.controlUnavailable("Text field is not enabled.")).raise()
+            return
         }
         sendActions(for: .touchDown)
         if let delegate = delegate {
@@ -79,7 +84,8 @@ extension UITextField {
             }
         }
         guard becomeFirstResponder() else {
-            throw Fleet.TextFieldError.editingFlow("Text field failed to become first responder. This can happen if the field is not part of the window's hierarchy.")
+            FleetError(Fleet.TextFieldError.editingFlow("Text field failed to become first responder. This can happen if the field is not part of the window's hierarchy.")).raise()
+            return
         }
     }
 
@@ -87,12 +93,13 @@ extension UITextField {
      Attempts to remove first responder focus from the `UITextField`.
 
      - throws:
-     A `Fleet.TextFieldError` if the text field does not have first responder focus, or if resigning
+     A `FleetError` if the text field does not have first responder focus, or if resigning
      first responder fails for any reason.
      */
     public func stopEditing() throws {
         guard isFirstResponder else {
-            throw Fleet.TextFieldError.editingFlow("Must start editing the text field before you can stop editing it.")
+            FleetError(Fleet.TextFieldError.editingFlow("Must start editing the text field before you can stop editing it.")).raise()
+            return
         }
         if let delegate = delegate {
             let doesImplementShouldEndEditing = delegate.responds(to: #selector(UITextFieldDelegate.textFieldShouldEndEditing(_:)))
@@ -103,7 +110,8 @@ extension UITextField {
             }
         }
         guard resignFirstResponder() else {
-            throw Fleet.TextFieldError.editingFlow("Text field failed to resign first responder. This can happen if the field is not part of the window's hierarchy.")
+            FleetError(Fleet.TextFieldError.editingFlow("Text field failed to resign first responder. This can happen if the field is not part of the window's hierarchy.")).raise()
+            return
         }
     }
 
@@ -114,14 +122,15 @@ extension UITextField {
         - newText: The text to type into the text field
 
      - throws:
-     A `Fleet.TextFieldError` if the text field does not have first responder focus.
+     A `FleetError` if the text field does not have first responder focus.
 
      - note:
      This method types the text at the end of any existing text.
      */
     public func type(text newText: String) throws {
         guard isFirstResponder else {
-            throw Fleet.TextFieldError.editingFlow("Must start editing the text field before text can be typed into it.")
+            FleetError(Fleet.TextFieldError.editingFlow("Must start editing the text field before text can be typed into it.")).raise()
+            return
         }
 
         for character in newText.characters {
@@ -151,14 +160,15 @@ extension UITextField {
         - textToPaste: The text to paste into the text field
 
      - throws:
-     A `Fleet.TextFieldError` if the text field does not have first responder focus.
+     A `FleetError` if the text field does not have first responder focus.
 
      - note:
      This method pastes the text to the end of any existing text.
      */
     public func paste(text textToPaste: String) throws {
         guard isFirstResponder else {
-            throw Fleet.TextFieldError.editingFlow("Must start editing the text field before text can be pasted into it.")
+            FleetError(Fleet.TextFieldError.editingFlow("Must start editing the text field before text can be pasted into it.")).raise()
+            return
         }
 
         var existingText = ""
@@ -183,7 +193,7 @@ extension UITextField {
      Attempts to hit the backspace key in a `UITextField` with first responder focus.
 
      - throws:
-     A `Fleet.TextFieldError` if the text field does not have first responder focus.
+     A `FleetError` if the text field does not have first responder focus.
 
      - note:
      This method acts at the end of any existing text. That is, it will remove the last character of
@@ -191,7 +201,8 @@ extension UITextField {
      */
     public func backspace() throws {
         guard isFirstResponder else {
-            throw Fleet.TextFieldError.editingFlow("Must start editing the text field before backspaces can be performed.")
+            FleetError(Fleet.TextFieldError.editingFlow("Must start editing the text field before backspaces can be performed.")).raise()
+            return
         }
 
         var existingText = ""
@@ -230,27 +241,32 @@ extension UITextField {
      field.
 
      - throws:
-     A `Fleet.TextFieldError` if an attempt is made to clear a text field while it is in a
+     A `FleetError` if an attempt is made to clear a text field while it is in a
      state that does not allow clearing, if the text field is not enabled, or if it is not
      visible.
      */
     public func clearText() throws {
         guard !isHidden else {
-            throw Fleet.TextFieldError.controlUnavailable("Text field is not visible.")
+            FleetError(Fleet.TextFieldError.controlUnavailable("Text field is not visible.")).raise()
+            return
         }
         guard isEnabled else {
-            throw Fleet.TextFieldError.controlUnavailable("Text field is not enabled.")
+            FleetError(Fleet.TextFieldError.controlUnavailable("Text field is not enabled.")).raise()
+            return
         }
         switch clearButtonMode {
         case .never:
-            throw Fleet.TextFieldError.cannotClear(reason: "Clear button is never displayed.")
+            FleetError(Fleet.TextFieldError.cannotClear(reason: "Clear button is never displayed.")).raise()
+            return
         case.whileEditing:
             guard isFirstResponder else {
-                throw Fleet.TextFieldError.cannotClear(reason: "Clear button is hidden when not editing.")
+                FleetError(Fleet.TextFieldError.cannotClear(reason: "Clear button is hidden when not editing.")).raise()
+                return
             }
         case.unlessEditing:
             if isFirstResponder {
-                throw Fleet.TextFieldError.cannotClear(reason: "Clear button is hidden when editing.")
+                FleetError(Fleet.TextFieldError.cannotClear(reason: "Clear button is hidden when editing.")).raise()
+                return
             }
         case .always:
             break

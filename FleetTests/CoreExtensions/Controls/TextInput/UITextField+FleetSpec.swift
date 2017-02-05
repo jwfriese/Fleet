@@ -47,34 +47,34 @@ class UITextField_FleetSpec: XCTestCase {
         ]))
     }
 
-    func test_startEditing_whenTextFieldFailsToBecomeFirstResponder_throwsError() {
+    func test_startEditing_whenTextFieldFailsToBecomeFirstResponder_raisesException() {
         // If the text field is not in the window, it will never succeed to become first responder.
         let textFieldNotInWindow = UITextField(frame: CGRect(x: 100,y: 100,width: 100,height: 100))
 
         textFieldNotInWindow.isHidden = false
         textFieldNotInWindow.isEnabled = true
 
-        expect { try textFieldNotInWindow.startEditing() }.to(throwError(closure: { (error: Fleet.TextFieldError) in
-            expect(error.description).to(contain("Text field failed to become first responder. This can happen if the field is not part of the window's hierarchy."))
-        }))
+        expect { try textFieldNotInWindow.startEditing() }.to(
+            raiseException(named: "Fleet.TextFieldError", reason: "Could not edit UITextField: Text field failed to become first responder. This can happen if the field is not part of the window's hierarchy.", userInfo: nil, closure: nil)
+        )
         expect(textFieldNotInWindow.isFirstResponder).to(beFalse())
     }
 
-    func test_startEditing_whenTextFieldIsHidden_throwsError() {
+    func test_startEditing_whenTextFieldIsHidden_raisesException() {
         subject.isHidden = true
 
-        expect { try self.subject.startEditing() }.to(throwError(closure: { (error: Fleet.TextFieldError) in
-            expect(error.description).to(contain("Text field is not visible."))
-        }))
+        expect { try self.subject.startEditing() }.to(
+            raiseException(named: "Fleet.TextFieldError", reason: "UITextField unavailable for editing: Text field is not visible.", userInfo: nil, closure: nil)
+        )
         expect(self.subject.isFirstResponder).to(beFalse())
     }
 
-    func test_startEditing_whenTextFieldIsNotEnabled_throwsError() {
+    func test_startEditing_whenTextFieldIsNotEnabled_raisesException() {
         subject.isEnabled = false
 
-        expect { try self.subject.startEditing() }.to(throwError(closure: { (error: Fleet.TextFieldError) in
-            expect(error.description).to(contain("Text field is not enabled."))
-        }))
+        expect { try self.subject.startEditing() }.to(
+            raiseException(named: "Fleet.TextFieldError", reason: "UITextField unavailable for editing: Text field is not enabled.", userInfo: nil, closure: nil)
+        )
         expect(self.subject.isFirstResponder).to(beFalse())
     }
 
@@ -192,10 +192,10 @@ class UITextField_FleetSpec: XCTestCase {
         ]))
     }
 
-    func test_stopEditing_whenNotFirstResponder_throwsError() {
-        expect { try self.subject.stopEditing() }.to(throwError(closure: { (error: Fleet.TextFieldError) in
-            expect(error.description).to(contain("Must start editing the text field before you can stop editing it."))
-        }))
+    func test_stopEditing_whenNotFirstResponder_raisesException() {
+        expect { try self.subject.stopEditing() }.to(
+            raiseException(named: "Fleet.TextFieldError", reason: "Could not edit UITextField: Must start editing the text field before you can stop editing it.", userInfo: nil, closure: nil)
+        )
     }
 
     func test_stopEditing_whenDelegateAllowsEditingToEnd_callsDelegateMethodsAppropriately() {
@@ -235,10 +235,10 @@ class UITextField_FleetSpec: XCTestCase {
         ]))
     }
 
-    func test_type_whenNotFirstResponder_throwsError() {
-        expect { try self.subject.type(text: "turtle magic") }.to(throwError(closure: { (error: Fleet.TextFieldError) in
-            expect(error.description).to(contain("Must start editing the text field before text can be typed into it."))
-        }))
+    func test_type_whenNotFirstResponder_raisesException() {
+        expect { try self.subject.type(text: "turtle magic") }.to(
+            raiseException(named: "Fleet.TextFieldError", reason: "Could not edit UITextField: Must start editing the text field before text can be typed into it.", userInfo: nil, closure: nil)
+        )
     }
 
     func test_type_whenDelegateAllowsTextChanges_callsDelegateMethodsAppropriately() {
@@ -322,10 +322,10 @@ class UITextField_FleetSpec: XCTestCase {
         ]))
     }
 
-    func test_paste_whenNotFirstResponder_throwsError() {
-        expect { try self.subject.paste(text: "turtle magic") }.to(throwError(closure: { (error: Fleet.TextFieldError) in
-            expect(error.description).to(contain("Must start editing the text field before text can be pasted into it."))
-        }))
+    func test_paste_whenNotFirstResponder_raisesException() {
+        expect { try self.subject.paste(text: "turtle magic") }.to(
+            raiseException(named: "Fleet.TextFieldError", reason: "Could not edit UITextField: Must start editing the text field before text can be pasted into it.", userInfo: nil, closure: nil)
+        )
     }
 
     func test_paste_whenDelegateAllowsTextChanges_callsDelegateMethodsAppropriately() {
@@ -397,10 +397,10 @@ class UITextField_FleetSpec: XCTestCase {
         ]))
     }
 
-    func test_backspace_whenNotFirstResponder_throwsError() {
-        expect { try self.subject.backspace() }.to(throwError(closure: { (error: Fleet.TextFieldError) in
-            expect(error.description).to(contain("Must start editing the text field before backspaces can be performed."))
-        }))
+    func test_backspace_whenNotFirstResponder_raisesException() {
+        expect { try self.subject.backspace() }.to(
+            raiseException(named: "Fleet.TextFieldError", reason: "Could not edit UITextField: Must start editing the text field before backspaces can be performed.", userInfo: nil, closure: nil)
+        )
     }
 
     func test_backspace_whenDelegateAllowsTextChanges_callsDelegateMethodsAppropriately() {
@@ -493,14 +493,14 @@ class UITextField_FleetSpec: XCTestCase {
         expect(self.delegate.didCallShouldClear).to(beTrue())
     }
 
-    func test_clearText_whenTextFieldDisplaysClearButtonNever_throwsError() {
+    func test_clearText_whenTextFieldDisplaysClearButtonNever_raisesException() {
         subject.clearButtonMode = .never
         try! subject.enter(text: "turtle magic")
 
         // Without trying to edit first
-        expect { try self.subject.clearText() }.to(throwError { (error: Fleet.TextFieldError) in
-            expect(error.description).to(equal("Could not clear text from UITextField: Clear button is never displayed."))
-        })
+        expect { try self.subject.clearText() }.to(
+            raiseException(named: "Fleet.TextFieldError", reason: "Could not clear text from UITextField: Clear button is never displayed.", userInfo: nil, closure: nil)
+        )
 
         expect(self.subject.text).to(equal("turtle magic"))
         expect(self.delegate.didCallShouldClear).to(beFalse())
@@ -511,10 +511,9 @@ class UITextField_FleetSpec: XCTestCase {
         try! subject.type(text: "++")
 
         // While in edit mode
-        expect { try self.subject.clearText() }.to(throwError { (error: Fleet.TextFieldError) in
-
-            expect(error.description).to(equal("Could not clear text from UITextField: Clear button is never displayed."))
-        })
+        expect { try self.subject.clearText() }.to(
+            raiseException(named: "Fleet.TextFieldError", reason: "Could not clear text from UITextField: Clear button is never displayed.", userInfo: nil, closure: nil)
+        )
 
         expect(self.subject.text).to(equal("turtle magic++"))
         expect(self.delegate.didCallShouldClear).to(beFalse())
@@ -525,9 +524,9 @@ class UITextField_FleetSpec: XCTestCase {
         try! subject.enter(text: "turtle magic")
 
         // Without trying to edit first
-        expect { try self.subject.clearText() }.to(throwError { (error: Fleet.TextFieldError) in
-            expect(error.description).to(equal("Could not clear text from UITextField: Clear button is hidden when not editing."))
-        })
+        expect { try self.subject.clearText() }.to(
+            raiseException(named: "Fleet.TextFieldError", reason: "Could not clear text from UITextField: Clear button is hidden when not editing.", userInfo: nil, closure: nil)
+        )
 
         expect(self.subject.text).to(equal("turtle magic"))
         expect(self.delegate.didCallShouldClear).to(beFalse())
@@ -560,31 +559,31 @@ class UITextField_FleetSpec: XCTestCase {
         try! subject.type(text: "++")
 
         // While in edit mode
-        expect { try self.subject.clearText() }.to(throwError { (error: Fleet.TextFieldError) in
-            expect(error.description).to(equal("Could not clear text from UITextField: Clear button is hidden when editing."))
-        })
+        expect { try self.subject.clearText() }.to(
+            raiseException(named: "Fleet.TextFieldError", reason: "Could not clear text from UITextField: Clear button is hidden when editing.", userInfo: nil, closure: nil)
+        )
 
         expect(self.subject.text).to(equal("++"))
         expect(self.delegate.didCallShouldClear).to(beFalse())
     }
 
-    func test_clearText_whenTextFieldIsHidden_throwsError() {
+    func test_clearText_whenTextFieldIsHidden_raisesException() {
         subject.isHidden = true
         subject.clearButtonMode = .always
 
-        expect { try self.subject.clearText() }.to(throwError(closure: { (error: Fleet.TextFieldError) in
-            expect(error.description).to(contain("Text field is not visible."))
-        }))
+        expect { try self.subject.clearText() }.to(
+            raiseException(named: "Fleet.TextFieldError", reason: "UITextField unavailable for editing: Text field is not visible.", userInfo: nil, closure: nil)
+        )
         expect(self.delegate.didCallShouldClear).to(beFalse())
     }
 
-    func test_clearText_whenTextFieldIsNotEnabled_throwsError() {
+    func test_clearText_whenTextFieldIsNotEnabled_raisesException() {
         subject.isEnabled = false
         subject.clearButtonMode = .always
 
-        expect { try self.subject.clearText() }.to(throwError(closure: { (error: Fleet.TextFieldError) in
-            expect(error.description).to(contain("Text field is not enabled."))
-        }))
+        expect { try self.subject.clearText() }.to(
+            raiseException(named: "Fleet.TextFieldError", reason: "UITextField unavailable for editing: Text field is not enabled.", userInfo: nil, closure: nil)
+        )
         expect(self.delegate.didCallShouldClear).to(beFalse())
     }
 
@@ -690,11 +689,11 @@ class UITextField_FleetSpec: XCTestCase {
         try! textField.stopEditing()
     }
 
-    func test_whenUserInteractionIsDisabled_doesAbsolutelyNothingAndThrowsError() {
+    func test_whenUserInteractionIsDisabled_doesAbsolutelyNothingAndRaisesException() {
         subject.isUserInteractionEnabled = false
-        expect { try self.subject.enter(text: "turtle magic") }.to(throwError(closure: { (error: Fleet.TextFieldError) in
-            expect(error.description).to(contain("View does not allow user interaction."))
-        }))
+        expect { try self.subject.enter(text: "turtle magic") }.to(
+            raiseException(named: "Fleet.TextFieldError", reason: "UITextField unavailable for editing: View does not allow user interaction.", userInfo: nil, closure: nil)
+        )
 
         expect(self.subject.text).to(equal(""))
         expect(self.delegate.textChanges).to(equal([]))
