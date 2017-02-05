@@ -61,9 +61,9 @@ class UIAlertController_FleetSpec: XCTestCase {
 
         expect(Fleet.getApplicationScreen()?.topmostViewController).to(beIdenticalTo(alert))
 
-        expect { try alert.tapAlertAction(withTitle: "banana shoes") }.to(throwError { (error: Fleet.AlertError) in
-            expect(error.description).to(equal("No action with title 'banana shoes' found on alert."))
-        })
+        expect { try alert.tapAlertAction(withTitle: "banana shoes") }.to(
+            raiseException(named: "Fleet.AlertError", reason: "No action with title 'banana shoes' found on alert.", userInfo: nil, closure: nil)
+        )
     }
 
     func test_tapAlertActionWithTitle_callsUIKitMethodsOnMainThread() {

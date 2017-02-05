@@ -1,10 +1,10 @@
 import UIKit
 
 extension Fleet {
-    public enum AlertError: Error, CustomStringConvertible {
+    enum AlertError: FleetErrorDefinition {
         case titleNotFound(title: String)
 
-        public var description: String {
+        var errorMessage: String {
             get {
                 switch self {
                 case .titleNotFound(let title):
@@ -12,6 +12,8 @@ extension Fleet {
                 }
             }
         }
+
+        var name: NSExceptionName { get { return NSExceptionName(rawValue: "Fleet.AlertError") } }
     }
 }
 
@@ -24,7 +26,7 @@ extension UIAlertController {
         - title:  The title of the action to tap
 
      - throws:
-     A `Fleet.AlertError` if an alert action with the given title cannot be found.
+     A `FleetError` if an alert action with the given title cannot be found.
      */
     public func tapAlertAction(withTitle title: String) throws {
         let filteredActions = actions.filter { action in
@@ -41,7 +43,7 @@ extension UIAlertController {
 
             presentingViewController?.dismiss(animated: true, completion: completionHandler)
         } else {
-            throw Fleet.AlertError.titleNotFound(title: title)
+            FleetError(Fleet.AlertError.titleNotFound(title: title)).raise()
         }
     }
 }
