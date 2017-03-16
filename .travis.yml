@@ -11,7 +11,6 @@ before_install:
 - mkdir ~/go
 - export GOPATH=~/go
 - brew update
-- brew install carthage
 - gem install xcpretty --user-install -n~/bin
 install:
 - xcrun simctl list
