@@ -5,7 +5,7 @@ import Fleet
 
 @testable import FleetExamples
 
-class AlertPageViewControllerSpec: QuickSpec {
+class AlertPageViewControllerQuickSpec: QuickSpec {
     override func spec() {
         var subject: AlertPageViewController!
 

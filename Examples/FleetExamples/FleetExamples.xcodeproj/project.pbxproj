@@ -16,9 +16,10 @@
 		7B673E5F1E7A2B4E00CAC921 /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B673E5C1E7A2B4E00CAC921 /* Nimble.framework */; };
 		7B673E601E7A2B4E00CAC921 /* Quick.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B673E5D1E7A2B4E00CAC921 /* Quick.framework */; };
 		7B673E621E7A320700CAC921 /* AlertPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B673E611E7A320700CAC921 /* AlertPageViewController.swift */; };
-		7B673E641E7A4AC900CAC921 /* AlertPageViewControllerSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B673E631E7A4AC900CAC921 /* AlertPageViewControllerSpec.swift */; };
 		7B673E671E7AE42C00CAC921 /* HomeScreenViewControllerSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B673E661E7AE42C00CAC921 /* HomeScreenViewControllerSpec.swift */; };
 		7B673E691E7AE5D200CAC921 /* HomeScreenViewControllerQuickSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B673E681E7AE5D200CAC921 /* HomeScreenViewControllerQuickSpec.swift */; };
+		7B673E6B1E7AE66000CAC921 /* AlertPageViewControllerSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B673E6A1E7AE66000CAC921 /* AlertPageViewControllerSpec.swift */; };
+		7B673E6D1E7AE6B100CAC921 /* AlertPageViewControllerQuickSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B673E6C1E7AE6B100CAC921 /* AlertPageViewControllerQuickSpec.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,9 +46,10 @@
 		7B673E5C1E7A2B4E00CAC921 /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = Carthage/Build/iOS/Nimble.framework; sourceTree = "<group>"; };
 		7B673E5D1E7A2B4E00CAC921 /* Quick.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quick.framework; path = Carthage/Build/iOS/Quick.framework; sourceTree = "<group>"; };
 		7B673E611E7A320700CAC921 /* AlertPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertPageViewController.swift; sourceTree = "<group>"; };
-		7B673E631E7A4AC900CAC921 /* AlertPageViewControllerSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertPageViewControllerSpec.swift; sourceTree = "<group>"; };
 		7B673E661E7AE42C00CAC921 /* HomeScreenViewControllerSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeScreenViewControllerSpec.swift; sourceTree = "<group>"; };
 		7B673E681E7AE5D200CAC921 /* HomeScreenViewControllerQuickSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeScreenViewControllerQuickSpec.swift; sourceTree = "<group>"; };
+		7B673E6A1E7AE66000CAC921 /* AlertPageViewControllerSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertPageViewControllerSpec.swift; sourceTree = "<group>"; };
+		7B673E6C1E7AE6B100CAC921 /* AlertPageViewControllerQuickSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertPageViewControllerQuickSpec.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,7 +120,7 @@
 			isa = PBXGroup;
 			children = (
 				7B673E681E7AE5D200CAC921 /* HomeScreenViewControllerQuickSpec.swift */,
-				7B673E631E7A4AC900CAC921 /* AlertPageViewControllerSpec.swift */,
+				7B673E6C1E7AE6B100CAC921 /* AlertPageViewControllerQuickSpec.swift */,
 			);
 			path = WithQuick;
 			sourceTree = "<group>";
@@ -137,6 +139,7 @@
 			isa = PBXGroup;
 			children = (
 				7B673E661E7AE42C00CAC921 /* HomeScreenViewControllerSpec.swift */,
+				7B673E6A1E7AE66000CAC921 /* AlertPageViewControllerSpec.swift */,
 			);
 			path = WithXCTest;
 			sourceTree = "<group>";
@@ -294,7 +297,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B673E671E7AE42C00CAC921 /* HomeScreenViewControllerSpec.swift in Sources */,
-				7B673E641E7A4AC900CAC921 /* AlertPageViewControllerSpec.swift in Sources */,
+				7B673E6D1E7AE6B100CAC921 /* AlertPageViewControllerQuickSpec.swift in Sources */,
+				7B673E6B1E7AE66000CAC921 /* AlertPageViewControllerSpec.swift in Sources */,
 				7B673E691E7AE5D200CAC921 /* HomeScreenViewControllerQuickSpec.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
