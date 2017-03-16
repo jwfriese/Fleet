@@ -61,6 +61,34 @@ class AlertPageViewControllerSpec: QuickSpec {
 
                         expect(assertAlertContent()).toEventually(beTrue())
                     }
+
+                    describe("Tapping the 'OK' button on the presented alert") {
+                        it("dismisses the alert") {
+                            // Normally, testing the behavior of a button on the alert is a pain, because
+                            // UIKit does not really give you easy access to actions on an alert. Fleet takes
+                            // that pain away.
+                            var didTapOK = false
+                            let assertOKTappedBehavior = { () -> Bool in
+                                if didTapOK {
+                                    return Fleet.getApplicationScreen()?.topmostViewController === subject
+                                }
+
+                                if let alert = Fleet.getApplicationScreen()?.topmostViewController as? UIAlertController {
+
+                                    // Tapping an alert action with the text 'OK' takes one line once you
+                                    // have the alert in hand.
+                                    try! alert.tapAlertAction(withTitle: "OK")
+
+
+                                    didTapOK = true
+                                }
+
+                                return false
+                            }
+
+                            expect(assertOKTappedBehavior()).toEventually(beTrue())
+                        }
+                    }
                 }
             }
         }

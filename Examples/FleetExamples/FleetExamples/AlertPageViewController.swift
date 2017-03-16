@@ -9,6 +9,13 @@ class AlertPageViewController: UIViewController {
             message: "An alert has appeared",
             preferredStyle: .alert
         )
+        alert.addAction(
+            UIAlertAction(
+                title: "OK",
+                style: .cancel,
+                handler: nil
+            )
+        )
 
         self.present(alert, animated: true, completion: nil)
     }
