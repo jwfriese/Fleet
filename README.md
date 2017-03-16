@@ -50,7 +50,7 @@ methods. For more discussion on why, go to [the relevant section in the FAQ](./D
 - [Why should I make sure all UIViewController unit tests happen in a UIWindow?](./Documentation/FAQ.md#why-should-i-make-sure-all-uiviewcontroller-tests-happen-in-a-uiwindow)
 
 ## Examples
-To get you started with Fleet, we've created a real, working project that is fully test-driven with the help of Fleet, and which
+To get you started with Fleet, we've created a [real, working project](./Examples/FleetExamples) that is fully test-driven with the help of Fleet, and which
 contains many examples of basic tests that you'll likely write in any Swift iOS application.
 
 For more complicated, larger-scale projects that use Fleet, check out the following projects:
