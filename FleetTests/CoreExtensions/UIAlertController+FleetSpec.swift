@@ -49,7 +49,7 @@ class UIAlertController_FleetSpec: XCTestCase {
         expect(didCallHandlerAfterDismissingAlert).toEventually(beTrue())
     }
 
-    func test_tapAlertActionWithTitle_whenNoActionWithThatTitleExists_throwsError() {
+    func test_tapAlertActionWithTitle_whenNoActionWithThatTitleExists_raisesException() {
         let rootViewController = UIViewController()
         Fleet.setAsAppWindowRoot(rootViewController)
 
