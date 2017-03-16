@@ -16,6 +16,8 @@
 		7B673E5E1E7A2B4E00CAC921 /* Fleet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B673E5B1E7A2B4E00CAC921 /* Fleet.framework */; };
 		7B673E5F1E7A2B4E00CAC921 /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B673E5C1E7A2B4E00CAC921 /* Nimble.framework */; };
 		7B673E601E7A2B4E00CAC921 /* Quick.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B673E5D1E7A2B4E00CAC921 /* Quick.framework */; };
+		7B673E621E7A320700CAC921 /* AlertPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B673E611E7A320700CAC921 /* AlertPageViewController.swift */; };
+		7B673E641E7A4AC900CAC921 /* AlertPageViewControllerSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B673E631E7A4AC900CAC921 /* AlertPageViewControllerSpec.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,6 +44,8 @@
 		7B673E5B1E7A2B4E00CAC921 /* Fleet.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Fleet.framework; path = Carthage/Build/iOS/Fleet.framework; sourceTree = "<group>"; };
 		7B673E5C1E7A2B4E00CAC921 /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = Carthage/Build/iOS/Nimble.framework; sourceTree = "<group>"; };
 		7B673E5D1E7A2B4E00CAC921 /* Quick.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quick.framework; path = Carthage/Build/iOS/Quick.framework; sourceTree = "<group>"; };
+		7B673E611E7A320700CAC921 /* AlertPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertPageViewController.swift; sourceTree = "<group>"; };
+		7B673E631E7A4AC900CAC921 /* AlertPageViewControllerSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertPageViewControllerSpec.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +92,7 @@
 			isa = PBXGroup;
 			children = (
 				7B673E351E7A251900CAC921 /* AppDelegate.swift */,
+				7B673E611E7A320700CAC921 /* AlertPageViewController.swift */,
 				7B673E371E7A251900CAC921 /* HomeScreenViewController.swift */,
 				7B673E391E7A251900CAC921 /* Main.storyboard */,
 				7B673E3C1E7A251900CAC921 /* Assets.xcassets */,
@@ -110,6 +115,7 @@
 			isa = PBXGroup;
 			children = (
 				7B673E581E7A28C400CAC921 /* HomeScreenViewControllerSpec.swift */,
+				7B673E631E7A4AC900CAC921 /* AlertPageViewControllerSpec.swift */,
 			);
 			path = WithQuick;
 			sourceTree = "<group>";
@@ -268,6 +274,7 @@
 			files = (
 				7B673E381E7A251900CAC921 /* HomeScreenViewController.swift in Sources */,
 				7B673E361E7A251900CAC921 /* AppDelegate.swift in Sources */,
+				7B673E621E7A320700CAC921 /* AlertPageViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -276,6 +283,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B673E591E7A28C400CAC921 /* HomeScreenViewControllerSpec.swift in Sources */,
+				7B673E641E7A4AC900CAC921 /* AlertPageViewControllerSpec.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

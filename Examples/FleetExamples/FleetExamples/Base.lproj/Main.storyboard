@@ -50,10 +50,10 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TLY-gL-zni">
-                                <rect key="frame" x="123" y="264" width="128" height="30"/>
-                                <state key="normal" title="Make Alert Appear"/>
+                                <rect key="frame" x="130.5" y="264" width="113" height="30"/>
+                                <state key="normal" title="Go to Alert Page"/>
                                 <connections>
-                                    <action selector="makeAlertAppear" destination="bAa-eD-SoE" eventType="touchUpInside" id="5H7-pE-wRq"/>
+                                    <action selector="goToAlertPage" destination="bAa-eD-SoE" eventType="touchUpInside" id="kBE-LR-eMj"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -69,13 +69,48 @@
                     </view>
                     <navigationItem key="navigationItem" id="gZJ-3Q-e0w"/>
                     <connections>
+                        <outlet property="goToAlertPageButton" destination="TLY-gL-zni" id="DIM-FZ-fmK"/>
                         <outlet property="loadingStatusLabel" destination="rMm-CD-YeZ" id="zY8-NJ-p3w"/>
-                        <outlet property="makeAlertAppearButton" destination="TLY-gL-zni" id="gEh-oS-C6u"/>
+                        <segue destination="2SE-ZA-vXu" kind="show" identifier="ShowAlertPage" id="EbN-BU-mSi"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="q1b-fR-Loz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="740" y="572.56371814092961"/>
+        </scene>
+        <!--Alert Page View Controller-->
+        <scene sceneID="ABB-Dl-xWZ">
+            <objects>
+                <viewController storyboardIdentifier="AlertPageViewController" id="2SE-ZA-vXu" customClass="AlertPageViewController" customModule="FleetExamples" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="nNe-RY-7mA"/>
+                        <viewControllerLayoutGuide type="bottom" id="z6E-41-aCd"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="QaC-QW-qTJ">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cn4-yb-skq" userLabel="Show Alert">
+                                <rect key="frame" x="149.5" y="180" width="75" height="30"/>
+                                <state key="normal" title="Show Alert"/>
+                                <connections>
+                                    <action selector="showAlert" destination="2SE-ZA-vXu" eventType="touchUpInside" id="M4L-7K-PeU"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="cn4-yb-skq" firstAttribute="centerX" secondItem="QaC-QW-qTJ" secondAttribute="centerX" id="RKt-gV-D7g"/>
+                            <constraint firstItem="cn4-yb-skq" firstAttribute="top" secondItem="nNe-RY-7mA" secondAttribute="bottom" constant="116" id="fiM-3z-zTV"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="showAlertButton" destination="cn4-yb-skq" id="hAJ-fv-KM2"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="vrw-sq-68A" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1692" y="573"/>
         </scene>
     </scenes>
 </document>
