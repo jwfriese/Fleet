@@ -54,5 +54,7 @@ To get you started with Fleet, we've created a real, working project that is ful
 contains many examples of basic tests that you'll likely write in any Swift iOS application.
 
 For more complicated, larger-scale projects that use Fleet, check out the following projects:
+
 [FrequentFlyer](https://github.com/jwfriese/FrequentFlyer)
+
 [GetDoRepeat](https://github.com/jwfriese/GetDoRepeat)
