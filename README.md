@@ -48,3 +48,11 @@ methods. For more discussion on why, go to [the relevant section in the FAQ](./D
 - [I could accomplish the same thing by calling all the delegate methods and events myself, right?](./Documentation/FAQ.md#i-could-accomplish-the-same-thing-by-calling-all-the-delegate-methods-and-events-myself-right)
 - [Why does Fleet throw errors for almost all its interactions with UIKit?](./Documentation/FAQ.md#why-does-fleet-throw-errors-for-almost-all-its-interactions-with-uikit)
 - [Why should I make sure all UIViewController unit tests happen in a UIWindow?](./Documentation/FAQ.md#why-should-i-make-sure-all-uiviewcontroller-tests-happen-in-a-uiwindow)
+
+## Examples
+To get you started with Fleet, we've created a real, working project that is fully test-driven with the help of Fleet, and which
+contains many examples of basic tests that you'll likely write in any Swift iOS application.
+
+For more complicated, larger-scale projects that use Fleet, check out the following projects:
+[FrequentFlyer](https://github.com/jwfriese/FrequentFlyer)
+[GetDoRepeat](https://github.com/jwfriese/GetDoRepeat)

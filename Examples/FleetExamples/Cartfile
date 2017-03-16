@@ -1,0 +1,3 @@
+git "https://github.com/Quick/Quick" "b441ba9d4abdc87fc153c55de947834b737bbe04"
+git "https://github.com/Quick/Nimble" "f32a236b0a54e4003b675a63da9f79e28bc2e7a0"
+git "https://github.com/jwfriese/Fleet" "3.0.0"
