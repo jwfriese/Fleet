@@ -5,7 +5,7 @@ import Fleet
 
 @testable import FleetExamples
 
-class HomeScreenViewControllerSpec: QuickSpec {
+class HomeScreenViewControllerQuickSpec: QuickSpec {
     override func spec() {
         describe("HomeScreenViewController") {
             var subject: HomeScreenViewController!
