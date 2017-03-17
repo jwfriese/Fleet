@@ -12,8 +12,6 @@ import (
 )
 
 func main() {
-	stdOut := os.Stdout
-	stdErr := os.Stderr
 	programCall := os.Args
 	if len(programCall) < 3 {
 		log.Fatal(errors.New("Usage: ./test <runtime> <device type>"))
@@ -24,7 +22,7 @@ func main() {
 	deviceVersion := args[1]
 
 	testInitReport := fmt.Sprintf("Running Fleet unit tests with iOS version '%s' on  device type '%s'\n", iosVersion, deviceVersion)
-	_, err := stdOut.Write([]byte(testInitReport))
+	_, err := os.Stdout.Write([]byte(testInitReport))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -42,8 +40,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	xcprettyCommand.Stdout = stdOut
-	xcprettyCommand.Stderr = stdErr
+	xcprettyCommand.Stdout = os.Stdout
+	xcprettyCommand.Stderr = os.Stderr
 	err = xcprettyCommand.Start()
 	if err != nil {
 		log.Fatal(err)
@@ -59,7 +57,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	_, err = stdOut.Write([]byte("Fleet unit tests passed...\n"))
+	_, err = os.Stdout.Write([]byte("Fleet unit tests passed...\n"))
 	if err != nil {
 		log.Fatal(err)
 	}
