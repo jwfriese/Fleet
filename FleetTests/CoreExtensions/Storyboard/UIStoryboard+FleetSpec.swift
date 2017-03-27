@@ -26,13 +26,13 @@ class UIStoryboard_FleetSpec: XCTestCase {
 
     func test_mockIdentifier_whenInvalidIdentifier_raisesException() {
         expect { _ = try self.turtlesAndFriendsStoryboard.mockIdentifier("WatermelonViewController", usingMockFor: UIViewController.self) }.to(
-            raiseException(named: "Fleet.StoryboardError", reason: "Could not find identifier WatermelonViewController on storyboard with name TurtlesAndFriendsStoryboard", userInfo: nil, closure: nil)
+            raiseException(named: "Fleet.StoryboardError", reason: "Could not find identifier 'WatermelonViewController' on storyboard with name 'TurtlesAndFriendsStoryboard'", userInfo: nil, closure: nil)
         )
     }
 
     func test_mockIdentifier_whenIdentifierExistsOnlyOnStoryboardRef_raisesException() {
         expect { _ = try self.turtlesAndFriendsStoryboard.mockIdentifier("CrabViewController", usingMockFor: CrabViewController.self) }.to(
-            raiseException(named: "Fleet.StoryboardError", reason: "Could not find identifier CrabViewController on storyboard with name TurtlesAndFriendsStoryboard, but found this identifier on an external storyboard reference. Use UIStoryboard.bind(viewController:toIdentifier:forReferencedStoryboardWithName:) to bind to external references", userInfo: nil, closure: nil)
+            raiseException(named: "Fleet.StoryboardError", reason: "Could not find identifier 'CrabViewController' on storyboard with name 'TurtlesAndFriendsStoryboard', but found this identifier on an external storyboard reference. Use UIStoryboard.bind(viewController:toIdentifier:forReferencedStoryboardWithName:) to bind to external references", userInfo: nil, closure: nil)
         )
     }
 
@@ -52,7 +52,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
 
     func test_mockIdentifierForReferenceToAnotherStoryboard_whenInvalidIdentifier_raisesException() {
         expect { _ = try self.turtlesAndFriendsStoryboard.mockIdentifier("WatermelonViewController", forReferencedStoryboardWithName: "CrabStoryboard", usingMockFor: CrabViewController.self) }.to(
-            raiseException(named: "Fleet.StoryboardError", reason: "Could not find identifier WatermelonViewController (external storyboard reference: CrabStoryboard) on storyboard TurtlesAndFriendsStoryboard", userInfo: nil, closure: nil)
+            raiseException(named: "Fleet.StoryboardError", reason: "Could not find identifier 'WatermelonViewController' (external storyboard reference: 'CrabStoryboard') on storyboard 'TurtlesAndFriendsStoryboard'", userInfo: nil, closure: nil)
         )
     }
 
@@ -72,7 +72,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
 
     func test_mockInitialViewControllerOfReferenceToAnotherStoryboard_whenInvalidIdentifier_raisesException() {
         expect { _ = try self.turtlesAndFriendsStoryboard.mockInitialViewController(forReferencedStoryboardWithName: "WatermelonStoryboard", usingMockFor: UIViewController.self) }.to(
-            raiseException(named: "Fleet.StoryboardError", reason: "Could not find reference to an external storyboard with name WatermelonStoryboard on storyboard TurtlesAndFriendsStoryboard", userInfo: nil, closure: nil)
+            raiseException(named: "Fleet.StoryboardError", reason: "Could not find reference to an external storyboard with name 'WatermelonStoryboard' on storyboard 'TurtlesAndFriendsStoryboard'", userInfo: nil, closure: nil)
         )
     }
 
@@ -87,14 +87,14 @@ class UIStoryboard_FleetSpec: XCTestCase {
     func test_bindingViewController_whenInvalidIdentifier_raisesException() {
         let whateverViewController = UIViewController()
         expect { try self.turtlesAndFriendsStoryboard.bind(viewController: whateverViewController, toIdentifier: "WhateverViewController") }.to(
-            raiseException(named: "Fleet.StoryboardError", reason: "Could not find identifier WhateverViewController on storyboard with name TurtlesAndFriendsStoryboard", userInfo: nil, closure: nil)
+            raiseException(named: "Fleet.StoryboardError", reason: "Could not find identifier 'WhateverViewController' on storyboard with name 'TurtlesAndFriendsStoryboard'", userInfo: nil, closure: nil)
         )
     }
 
     func test_bindingViewController_whenIdentifierExistsOnlyOnStoryboardRef_raisesException() {
         let whateverViewController = UIViewController()
         expect { try self.turtlesAndFriendsStoryboard.bind(viewController: whateverViewController, toIdentifier: "CrabViewController") }.to(
-            raiseException(named: "Fleet.StoryboardError", reason: "Could not find identifier CrabViewController on storyboard with name TurtlesAndFriendsStoryboard, but found this identifier on an external storyboard reference. Use UIStoryboard.bind(viewController:toIdentifier:forReferencedStoryboardWithName:) to bind to external references", userInfo: nil, closure: nil)
+            raiseException(named: "Fleet.StoryboardError", reason: "Could not find identifier 'CrabViewController' on storyboard with name 'TurtlesAndFriendsStoryboard', but found this identifier on an external storyboard reference. Use UIStoryboard.bind(viewController:toIdentifier:forReferencedStoryboardWithName:) to bind to external references", userInfo: nil, closure: nil)
         )
     }
 
@@ -123,7 +123,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
     func test_bindingViewControllerToIdentifierReferenceToAnotherStoryboard_whenInvalidIdentifier_raisesException() {
         let whateverViewController = UIViewController()
         expect { try self.turtlesAndFriendsStoryboard.bind(viewController: whateverViewController, toIdentifier: "WhateverViewController", forReferencedStoryboardWithName: "CrabStoryboard") }.to(
-            raiseException(named: "Fleet.StoryboardError", reason: "Could not find identifier WhateverViewController (external storyboard reference: CrabStoryboard) on storyboard TurtlesAndFriendsStoryboard", userInfo: nil, closure: nil)
+            raiseException(named: "Fleet.StoryboardError", reason: "Could not find identifier 'WhateverViewController' (external storyboard reference: 'CrabStoryboard') on storyboard 'TurtlesAndFriendsStoryboard'", userInfo: nil, closure: nil)
         )
     }
 
@@ -153,7 +153,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
     func test_bindingViewControllerToInitialViewControllerOfReferenceToAnotherStoryboard_whenInvalidIdentifier_raisesException() {
         let whateverViewController = UIViewController()
         expect { try self.turtlesAndFriendsStoryboard.bind(viewController: whateverViewController, asInitialViewControllerForReferencedStoryboardWithName: "WhateverStoryboard") }.to(
-            raiseException(named: "Fleet.StoryboardError", reason: "Could not find reference to an external storyboard with name WhateverStoryboard on storyboard TurtlesAndFriendsStoryboard", userInfo: nil, closure: nil)
+            raiseException(named: "Fleet.StoryboardError", reason: "Could not find reference to an external storyboard with name 'WhateverStoryboard' on storyboard 'TurtlesAndFriendsStoryboard'", userInfo: nil, closure: nil)
         )
     }
 

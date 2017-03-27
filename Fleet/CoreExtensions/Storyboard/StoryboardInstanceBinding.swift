@@ -20,9 +20,9 @@ internal final class StoryboardInstanceBinding {
             if !storyboardReferenceMap.viewControllerIdentifiers.contains(identifier) {
                 var message = ""
                 if storyboardReferenceMap.hasExternalReference(withIdentifier: identifier) {
-                    message = "Could not find identifier \(identifier) on storyboard with name \(storyboardName), but found this identifier on an external storyboard reference. Use UIStoryboard.bind(viewController:toIdentifier:forReferencedStoryboardWithName:) to bind to external references"
+                    message = "Could not find identifier '\(identifier)' on storyboard with name '\(storyboardName)', but found this identifier on an external storyboard reference. Use UIStoryboard.bind(viewController:toIdentifier:forReferencedStoryboardWithName:) to bind to external references"
                 } else {
-                    message = "Could not find identifier \(identifier) on storyboard with name \(storyboardName)"
+                    message = "Could not find identifier '\(identifier)' on storyboard with name '\(storyboardName)'"
                 }
 
                 FleetError(Fleet.StoryboardError.invalidViewControllerIdentifier(message)).raise()
@@ -48,7 +48,7 @@ internal final class StoryboardInstanceBinding {
         }
 
         if !referenceExists {
-            FleetError(Fleet.StoryboardError.invalidExternalStoryboardReference("Could not find identifier \(identifier) (external storyboard reference: \(name)) on storyboard \(storyboardName)")).raise()
+            FleetError(Fleet.StoryboardError.invalidExternalStoryboardReference("Could not find identifier '\(identifier)' (external storyboard reference: '\(name)') on storyboard '\(storyboardName)'")).raise()
         }
     }
 
@@ -66,7 +66,7 @@ internal final class StoryboardInstanceBinding {
         }
 
         if !referenceExists {
-            FleetError(Fleet.StoryboardError.invalidExternalStoryboardReference("Could not find reference to an external storyboard with name \(name) on storyboard \(storyboardName)")).raise()
+            FleetError(Fleet.StoryboardError.invalidExternalStoryboardReference("Could not find reference to an external storyboard with name '\(name)' on storyboard '\(storyboardName)'")).raise()
         }
     }
 

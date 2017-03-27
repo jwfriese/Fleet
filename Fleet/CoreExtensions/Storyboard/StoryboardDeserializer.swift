@@ -3,7 +3,7 @@ import Foundation
 class StoryboardDeserializer {
     func deserializeStoryboard(withName name: String) throws -> StoryboardReferenceMap {
         guard let testBundle = Fleet.currentTestBundle else {
-            let message = "Could not find test bundle to load storyboard with name \(name)"
+            let message = "Could not find test bundle to load storyboard with name '\(name)'"
             FleetError(Fleet.StoryboardError.internalInconsistency(message)).raise()
             return StoryboardReferenceMap()
         }
