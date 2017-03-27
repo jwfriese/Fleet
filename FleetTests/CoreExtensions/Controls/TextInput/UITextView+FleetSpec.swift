@@ -332,6 +332,76 @@ class UITextView_FleetSpec: XCTestCase {
         expect(self.delegate.didChangeSelectionCallCount).to(equal(0))
     }
 
+    func test_backspaceAll_deletesAllTextInTheField() {
+        try! subject.startEditing()
+        try! subject.type(text: "turtle magic")
+        delegate.resetState()
+
+        try! subject.backspaceAll()
+
+        expect(self.subject.text).to(equal(""))
+    }
+
+    func test_backspaceAll_whenNotFirstResponder_raisesException() {
+        expect { try self.subject.backspaceAll() }.to(
+            raiseException(named: "Fleet.TextViewError", reason: "Could not edit UITextView: Must start editing the text view before backspaces can be performed.", userInfo: nil, closure: nil)
+        )
+    }
+
+    func test_backspaceAll_whenDelegateAllowsTextChanges_callsDelegateMethodsAppropriately() {
+        delegate.shouldAllowTextChanges = true
+        try! subject.startEditing()
+        try! subject.type(text: "turtle")
+
+        delegate.resetState()
+
+        try! subject.backspaceAll()
+
+        expect(self.delegate.textChanges).to(equal(["","","","","",""]))
+        expect(self.delegate.textRanges.count).to(equal(6))
+        expect(self.delegate.textRanges[0].location).to(equal(5))
+        expect(self.delegate.textRanges[0].length).to(equal(1))
+    }
+
+    func test_backspaceAll_whenDelegateDoesNotAllowTextChanges_callsDelegateMethodsAppropriately() {
+        try! subject.startEditing()
+        try! subject.type(text: "turtle magic")
+
+        delegate.resetState()
+
+        delegate.shouldAllowTextChanges = false
+        try! subject.backspaceAll()
+
+        expect(self.delegate.textChanges).to(equal([]))
+        expect(self.delegate.textRanges.count).to(equal(12))
+        expect(self.delegate.textRanges[0].location).to(equal(11))
+        expect(self.delegate.textRanges[0].length).to(equal(1))
+        expect(self.subject.text).to(equal("turtle magic"))
+    }
+
+    func test_backspaceAll_whenNoDelegate_deletesEveryCharacter() {
+        try! subject.startEditing()
+        try! subject.type(text: "turtle magic")
+
+        subject.delegate = nil
+
+        try! subject.backspaceAll()
+
+        expect(self.subject.text).to(equal(""))
+    }
+
+    func test_backspaceAll_whenNoTextInTextField_doesNothing() {
+        try! subject.startEditing()
+
+        delegate.resetState()
+
+        try! subject.backspaceAll()
+
+        expect(self.subject.text).to(equal(""))
+        expect(self.delegate.textChanges).to(equal([]))
+        expect(self.delegate.textRanges.count).to(equal(0))
+    }
+
     func test_enter_convenienceMethod_startsEditingATextViewTypesTextAndStopsEditingAllInOneAction() {
         try! subject.enter(text: "turtle magic")
 

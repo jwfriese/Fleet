@@ -230,4 +230,27 @@ extension UITextView {
             deleteBackward()
         }
     }
+
+    /**
+     Deletes all text from the text view, as though the user hit the backspace button once for each
+     character in the text view.
+
+     - throws:
+     A `FleetError` if the text view does not have first responder focus.
+     */
+    public func backspaceAll() throws {
+        guard isFirstResponder else {
+            FleetError(Fleet.TextViewError.editingFlow("Must start editing the text view before backspaces can be performed.")).raise()
+            return
+        }
+
+        var characterCount = 0
+        if let unwrappedText = text {
+            characterCount = unwrappedText.characters.count
+        }
+
+        for _ in 0..<characterCount {
+            try backspace()
+        }
+    }
 }

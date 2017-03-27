@@ -232,6 +232,7 @@ extension UITextField {
             deleteBackward()
         }
     }
+
     /**
      Deletes all text from the text field, as though the user hit the backspace button once for each
      character in the text field.
