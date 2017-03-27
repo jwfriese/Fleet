@@ -232,6 +232,28 @@ extension UITextField {
             deleteBackward()
         }
     }
+    /**
+     Deletes all text from the text field, as though the user hit the backspace button once for each
+     character in the text field.
+
+     - throws:
+     A `FleetError` if the text field does not have first responder focus.
+     */
+    public func backspaceAll() throws {
+        guard isFirstResponder else {
+            FleetError(Fleet.TextFieldError.editingFlow("Must start editing the text field before backspaces can be performed.")).raise()
+            return
+        }
+
+        var characterCount = 0
+        if let unwrappedText = text {
+            characterCount = unwrappedText.characters.count
+        }
+
+        for _ in 0..<characterCount {
+            try backspace()
+        }
+    }
 
     /**
      Clears all text from the text field, firing the `textFieldShouldClear(_:)`

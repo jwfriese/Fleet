@@ -9,6 +9,7 @@ class UITextField_FleetSpec: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        continueAfterFailure = false
 
         let tuple = createCompleteTextFieldAndDelegate()
         subject = tuple.textField
@@ -472,6 +473,113 @@ class UITextField_FleetSpec: XCTestCase {
         expect(self.delegate.textRanges.count).to(equal(1))
         expect(self.delegate.textRanges[0].location).to(equal(0))
         expect(self.delegate.textRanges[0].length).to(equal(0))
+    }
+
+    func test_backspaceAll_deletesAllTextInTheField() {
+        try! subject.startEditing()
+        try! subject.type(text: "turtle magic")
+        delegate.resetState()
+
+        try! subject.backspaceAll()
+
+        expect(self.subject.text).to(equal(""))
+    }
+
+    func test_backspaceAll_sendsControlEvents() {
+        try! subject.startEditing()
+        try! subject.type(text: "tur")
+        delegate.resetState()
+        recorder.erase()
+
+        try! subject.backspaceAll()
+
+        expect(self.recorder.recordedEvents).to(equal([
+            .editingChanged,
+            .allEditingEvents,
+            .editingChanged,
+            .allEditingEvents,
+            .editingChanged,
+            .allEditingEvents
+            ]))
+    }
+
+    func test_backspaceAll_whenNotFirstResponder_raisesException() {
+        expect { try self.subject.backspaceAll() }.to(
+            raiseException(named: "Fleet.TextFieldError", reason: "Could not edit UITextField: Must start editing the text field before backspaces can be performed.", userInfo: nil, closure: nil)
+        )
+    }
+
+    func test_backspaceAll_whenDelegateAllowsTextChanges_callsDelegateMethodsAppropriately() {
+        delegate.shouldAllowChangeText = true
+        try! subject.startEditing()
+        try! subject.type(text: "turtle")
+
+        delegate.resetState()
+
+        try! subject.backspaceAll()
+
+        expect(self.delegate.textChanges).to(equal(["","","","","",""]))
+        expect(self.delegate.textRanges.count).to(equal(6))
+        expect(self.delegate.textRanges[0].location).to(equal(5))
+        expect(self.delegate.textRanges[0].length).to(equal(1))
+    }
+
+    func test_backspaceAll_whenDelegateDoesNotAllowTextChanges_callsDelegateMethodsAppropriately() {
+        try! subject.startEditing()
+        try! subject.type(text: "turtle magic")
+
+        delegate.resetState()
+
+        delegate.shouldAllowChangeText = false
+        try! subject.backspaceAll()
+
+        expect(self.delegate.textChanges).to(equal([]))
+        expect(self.delegate.textRanges.count).to(equal(12))
+        expect(self.delegate.textRanges[0].location).to(equal(11))
+        expect(self.delegate.textRanges[0].length).to(equal(1))
+        expect(self.subject.text).to(equal("turtle magic"))
+    }
+
+    func test_backspaceAll_whenNoDelegate_deletesEveryCharacter() {
+        try! subject.startEditing()
+        try! subject.type(text: "turtle magic")
+
+        subject.delegate = nil
+
+        try! subject.backspaceAll()
+
+        expect(self.subject.text).to(equal(""))
+    }
+
+    func test_backspaceAll_whenNoDelegate_sendsControlEvents() {
+        try! subject.startEditing()
+        try! subject.type(text: "tur")
+        recorder.erase()
+
+        subject.delegate = nil
+
+        try! subject.backspaceAll()
+
+        expect(self.recorder.recordedEvents).to(equal([
+            .editingChanged,
+            .allEditingEvents,
+            .editingChanged,
+            .allEditingEvents,
+            .editingChanged,
+            .allEditingEvents
+            ]))
+    }
+
+    func test_backspaceAll_whenNoTextInTextField_doesNothing() {
+        try! subject.startEditing()
+
+        delegate.resetState()
+
+        try! subject.backspaceAll()
+
+        expect(self.subject.text).to(equal(""))
+        expect(self.delegate.textChanges).to(equal([]))
+        expect(self.delegate.textRanges.count).to(equal(0))
     }
 
     func test_clearText_whenTextFieldDisplaysClearButtonAlways_clearsTextWhetherEditingFieldOrNot() {
