@@ -46,6 +46,8 @@ let returnedBoxTurtleViewController = turtleStoryboard.instantiateViewController
 // At this point, returnedBoxTurtleViewController will be the same instance as mockBoxTurtleViewController
 ```
 
+This technique works for any reference to a view controller, even embedded view controllers.
+
 #### Storyboard references
 
 Fleet's binding supports storyboard references as well. Suppose TurtlesStoryboard has a reference to another storyboard, called "PuppiesStoryboard". And suppose that TurtlesStoryboard segues into a PuppiesStoryboard view controller with the Storyboard Id "CorgiViewController". We can bind a view controller instance to this storyboard reference by using `bind(viewController:toIdentifier:forReferencedStoryboardWithName:)`. For example,
