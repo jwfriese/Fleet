@@ -63,6 +63,8 @@
 		7BDF61F01E935B7500990588 /* UIAlertAction+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDF61EE1E935B7500990588 /* UIAlertAction+FleetSpec.swift */; };
 		7BDF61F11E935B7500990588 /* UIAlertController+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDF61EF1E935B7500990588 /* UIAlertController+FleetSpec.swift */; };
 		7BDF61F31E935C2A00990588 /* UIViewController+Fleet.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BDF61F21E935C2A00990588 /* UIViewController+Fleet.m */; };
+		7BDF61F81E93671600990588 /* UINavigationController+Fleet.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BDF61F71E93671600990588 /* UINavigationController+Fleet.m */; };
+		7BDF61FA1E93685800990588 /* FleetSwizzle.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BDF61F91E93685800990588 /* FleetSwizzle.m */; };
 		7BEE35B51E15434A00302991 /* UITableView+SelectRowMinimalDelegateImplSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BEE35B41E15434A00302991 /* UITableView+SelectRowMinimalDelegateImplSpec.swift */; };
 		7BF913981E384A4E00019CF2 /* TableViewError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF913971E384A4E00019CF2 /* TableViewError.swift */; };
 		7BF913AE1E3A4BA800019CF2 /* UIViewController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF913AD1E3A4BA800019CF2 /* UIViewController+Fleet.swift */; };
@@ -167,6 +169,8 @@
 		7BDF61EF1E935B7500990588 /* UIAlertController+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertController+FleetSpec.swift"; sourceTree = "<group>"; };
 		7BDF61F21E935C2A00990588 /* UIViewController+Fleet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Fleet.m"; sourceTree = "<group>"; };
 		7BDF61F61E9363D000990588 /* FleetSwizzle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FleetSwizzle.h; sourceTree = "<group>"; };
+		7BDF61F71E93671600990588 /* UINavigationController+Fleet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+Fleet.m"; sourceTree = "<group>"; };
+		7BDF61F91E93685800990588 /* FleetSwizzle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FleetSwizzle.m; sourceTree = "<group>"; };
 		7BEE35B41E15434A00302991 /* UITableView+SelectRowMinimalDelegateImplSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+SelectRowMinimalDelegateImplSpec.swift"; sourceTree = "<group>"; };
 		7BF913971E384A4E00019CF2 /* TableViewError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableViewError.swift; sourceTree = "<group>"; };
 		7BF913AD1E3A4BA800019CF2 /* UIViewController+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Fleet.swift"; sourceTree = "<group>"; };
@@ -333,6 +337,7 @@
 				7B8F2B391DE2592C00B6F4C2 /* FleetObjC.h */,
 				7B8F2B3A1DE2592C00B6F4C2 /* FleetObjC.m */,
 				7BDF61F61E9363D000990588 /* FleetSwizzle.h */,
+				7BDF61F91E93685800990588 /* FleetSwizzle.m */,
 			);
 			path = ObjC;
 			sourceTree = "<group>";
@@ -416,6 +421,7 @@
 				7B0D3B391CFA76200096DBC2 /* Storyboard */,
 				7BF913AC1E3A4B9500019CF2 /* ViewController */,
 				7B675E811D0C5372002E6B45 /* UIBarButtonItem+Fleet.swift */,
+				7BDF61F71E93671600990588 /* UINavigationController+Fleet.m */,
 				7BB14A601D75091B002ABE82 /* UINavigationController+Fleet.swift */,
 			);
 			path = CoreExtensions;
@@ -780,6 +786,8 @@
 				7BDF61EB1E935B4600990588 /* UIAlertAction+Fleet.m in Sources */,
 				7B8F2B3C1DE2592C00B6F4C2 /* FleetObjC.m in Sources */,
 				7BFABD5C1E3DA2CD002823B3 /* UIButton+Fleet.swift in Sources */,
+				7BDF61F81E93671600990588 /* UINavigationController+Fleet.m in Sources */,
+				7BDF61FA1E93685800990588 /* FleetSwizzle.m in Sources */,
 				7B0D3B3F1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift in Sources */,
 				7B29F41F1DDCAC76008EA836 /* UITableView+SelectCellAction.swift in Sources */,
 				7BB14A701D77B425002ABE82 /* Screen.swift in Sources */,

@@ -1,20 +1,7 @@
 import UIKit
 
-fileprivate var didSwizzle = false
-
 extension UINavigationController {
-    open override class func initialize() {
-        super.initialize()
-        if !didSwizzle {
-            swizzlePushViewController()
-            swizzlePopViewController()
-            swizzlePopToViewController()
-            swizzlePopToRootViewControllerAnimated()
-            didSwizzle = true
-        }
-    }
-
-    fileprivate class func swizzlePushViewController() {
+    @objc class func swizzlePushViewController() {
         let originalSelector = #selector(UINavigationController.pushViewController(_:animated:))
         let swizzledSelector = #selector(UINavigationController.fleet_pushViewController(_:animated:))
 
@@ -31,7 +18,7 @@ extension UINavigationController {
         let _ = viewController.view
     }
 
-    fileprivate class func swizzlePopViewController() {
+    @objc class func swizzlePopViewController() {
         let originalSelector = #selector(UINavigationController.popViewController(animated:))
         let swizzledSelector = #selector(UINavigationController.fleet_popViewControllerAnimated(_:))
 
@@ -48,7 +35,7 @@ extension UINavigationController {
         return poppedViewController
     }
 
-    fileprivate class func swizzlePopToViewController() {
+    @objc class func swizzlePopToViewController() {
         let originalSelector = #selector(UINavigationController.popToViewController(_:animated:))
         let swizzledSelector = #selector(UINavigationController.fleet_popToViewController(_:animated:))
 
@@ -62,7 +49,7 @@ extension UINavigationController {
         return fleet_popToViewController(viewController, animated: false)
     }
 
-    fileprivate class func swizzlePopToRootViewControllerAnimated() {
+    @objc class func swizzlePopToRootViewControllerAnimated() {
         let originalSelector = #selector(UINavigationController.popToRootViewController(animated:))
         let swizzledSelector = #selector(UINavigationController.fleet_popToRootViewControllerAnimated(_:))
 
