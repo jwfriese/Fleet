@@ -8,16 +8,6 @@ private var viewDidLoadCallCountAssociatedKey: UInt = 0
 fileprivate var didSwizzle = false
 
 extension UIViewController {
-    open override class func initialize() {
-        super.initialize()
-        if !didSwizzle {
-            swizzleViewDidLoad()
-            swizzlePresent()
-            swizzleDismiss()
-            didSwizzle = true
-        }
-    }
-
     var viewDidLoadCallCount: Int {
         get {
             return fleet_property_viewDidLoadCallCount
@@ -44,7 +34,7 @@ extension UIViewController {
         }
     }
 
-    fileprivate class func swizzleViewDidLoad() {
+    @objc class func swizzleViewDidLoad() {
         let originalSelector = #selector(UIViewController.viewDidLoad)
         let swizzledSelector = #selector(UIViewController.fleet_viewDidLoad)
 
@@ -59,7 +49,7 @@ extension UIViewController {
         viewDidLoadCallCount += 1
     }
 
-    fileprivate class func swizzlePresent() {
+    @objc class func swizzlePresent() {
         let originalSelector = #selector(UIViewController.present(_:animated:completion:))
         let swizzledSelector = #selector(UIViewController.fleet_present(viewController:animated:completion:))
 
@@ -73,7 +63,7 @@ extension UIViewController {
         fleet_present(viewController: viewController, animated: false, completion: completion)
     }
 
-    fileprivate class func swizzleDismiss() {
+    @objc class func swizzleDismiss() {
         let originalSelector = #selector(UIViewController.dismiss(animated:completion:))
         let swizzledSelector = #selector(UIViewController.fleet_dismiss(animated:completion:))
 
