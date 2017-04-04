@@ -27,7 +27,7 @@ func visit(path string, info os.FileInfo, err error) error {
 		return nil
 	}
 
-	if !(strings.HasSuffix(path, ".swift") || strings.HasSuffix(path, ".h") || strings.HasSuffix(path, ".md")) {
+	if !(strings.HasSuffix(path, ".swift") || strings.HasSuffix(path, ".h") || strings.HasSuffix(path, ".md") || strings.HasSuffix(path, ".m")) {
 		return nil
 	}
 
