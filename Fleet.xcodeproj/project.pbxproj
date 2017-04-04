@@ -26,6 +26,7 @@
 		7B29F4211DDCAC8A008EA836 /* UITableView+SelectCellActionSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B29F4201DDCAC8A008EA836 /* UITableView+SelectCellActionSpec.swift */; };
 		7B29F4231DDCACA5008EA836 /* UITableView+SelectRowSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B29F4221DDCACA5008EA836 /* UITableView+SelectRowSpec.swift */; };
 		7B29F4251DDDEA60008EA836 /* SegueDetailSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B29F4241DDDEA60008EA836 /* SegueDetailSpec.swift */; };
+		7B2D35AB1E92DD6400B94271 /* UIAlertAction+Fleet.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B2D35AA1E92DD6400B94271 /* UIAlertAction+Fleet.m */; };
 		7B2D724A1E292A1F0046EDFC /* StoryboardBindingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B2D72491E292A1F0046EDFC /* StoryboardBindingError.swift */; };
 		7B3AD20D1D5BC4F500CA2897 /* PuppyStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B3AD20B1D5BC4F500CA2897 /* PuppyStoryboard.storyboard */; };
 		7B3AD20E1D5BC4F500CA2897 /* PuppyListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B3AD20C1D5BC4F500CA2897 /* PuppyListViewController.swift */; };
@@ -36,7 +37,6 @@
 		7B675E941D0DA7EA002E6B45 /* Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E931D0DA7EA002E6B45 /* Fleet.swift */; };
 		7B675E9E1D0DCA1D002E6B45 /* UIAlertController+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E9D1D0DCA1D002E6B45 /* UIAlertController+FleetSpec.swift */; };
 		7B675EA01D0DCA38002E6B45 /* UIAlertController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E9F1D0DCA38002E6B45 /* UIAlertController+Fleet.swift */; };
-		7B675EA21D0DD64D002E6B45 /* UIAlertAction+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675EA11D0DD64D002E6B45 /* UIAlertAction+Fleet.swift */; };
 		7B675EA41D0DD660002E6B45 /* UIAlertAction+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675EA31D0DD660002E6B45 /* UIAlertAction+FleetSpec.swift */; };
 		7B8F2B261DE12CC700B6F4C2 /* MockFor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8F2B251DE12CC700B6F4C2 /* MockFor.swift */; };
 		7B8F2B381DE258EB00B6F4C2 /* IsClassKindOfSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8F2B371DE258EB00B6F4C2 /* IsClassKindOfSpec.swift */; };
@@ -61,6 +61,7 @@
 		7BB14A701D77B425002ABE82 /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A6D1D77B425002ABE82 /* Screen.swift */; };
 		7BB14A711D77B425002ABE82 /* FLTScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A6E1D77B425002ABE82 /* FLTScreen.swift */; };
 		7BDB63B31E47725600515C22 /* FleetError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDB63B21E47725600515C22 /* FleetError.swift */; };
+		7BDF61E51E9357D300990588 /* UIAlertAction+Fleet.h in Headers */ = {isa = PBXBuildFile; fileRef = 7BDF61E41E9356A800990588 /* UIAlertAction+Fleet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7BEE35B51E15434A00302991 /* UITableView+SelectRowMinimalDelegateImplSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BEE35B41E15434A00302991 /* UITableView+SelectRowMinimalDelegateImplSpec.swift */; };
 		7BF913981E384A4E00019CF2 /* TableViewError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF913971E384A4E00019CF2 /* TableViewError.swift */; };
 		7BF913AE1E3A4BA800019CF2 /* UIViewController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF913AD1E3A4BA800019CF2 /* UIViewController+Fleet.swift */; };
@@ -125,6 +126,7 @@
 		7B29F4201DDCAC8A008EA836 /* UITableView+SelectCellActionSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+SelectCellActionSpec.swift"; sourceTree = "<group>"; };
 		7B29F4221DDCACA5008EA836 /* UITableView+SelectRowSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+SelectRowSpec.swift"; sourceTree = "<group>"; };
 		7B29F4241DDDEA60008EA836 /* SegueDetailSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SegueDetailSpec.swift; sourceTree = "<group>"; };
+		7B2D35AA1E92DD6400B94271 /* UIAlertAction+Fleet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIAlertAction+Fleet.m"; sourceTree = "<group>"; };
 		7B2D72491E292A1F0046EDFC /* StoryboardBindingError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryboardBindingError.swift; sourceTree = "<group>"; };
 		7B3AD20B1D5BC4F500CA2897 /* PuppyStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = PuppyStoryboard.storyboard; sourceTree = "<group>"; };
 		7B3AD20C1D5BC4F500CA2897 /* PuppyListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PuppyListViewController.swift; sourceTree = "<group>"; };
@@ -135,7 +137,6 @@
 		7B675E931D0DA7EA002E6B45 /* Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Fleet.swift; sourceTree = "<group>"; };
 		7B675E9D1D0DCA1D002E6B45 /* UIAlertController+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertController+FleetSpec.swift"; sourceTree = "<group>"; };
 		7B675E9F1D0DCA38002E6B45 /* UIAlertController+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Fleet.swift"; sourceTree = "<group>"; };
-		7B675EA11D0DD64D002E6B45 /* UIAlertAction+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertAction+Fleet.swift"; sourceTree = "<group>"; };
 		7B675EA31D0DD660002E6B45 /* UIAlertAction+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertAction+FleetSpec.swift"; sourceTree = "<group>"; };
 		7B8F2B251DE12CC700B6F4C2 /* MockFor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockFor.swift; sourceTree = "<group>"; };
 		7B8F2B371DE258EB00B6F4C2 /* IsClassKindOfSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IsClassKindOfSpec.swift; sourceTree = "<group>"; };
@@ -162,6 +163,7 @@
 		7BB14A6D1D77B425002ABE82 /* Screen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Screen.swift; sourceTree = "<group>"; };
 		7BB14A6E1D77B425002ABE82 /* FLTScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FLTScreen.swift; sourceTree = "<group>"; };
 		7BDB63B21E47725600515C22 /* FleetError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FleetError.swift; sourceTree = "<group>"; };
+		7BDF61E41E9356A800990588 /* UIAlertAction+Fleet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIAlertAction+Fleet.h"; sourceTree = "<group>"; };
 		7BEE35B41E15434A00302991 /* UITableView+SelectRowMinimalDelegateImplSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+SelectRowMinimalDelegateImplSpec.swift"; sourceTree = "<group>"; };
 		7BF913971E384A4E00019CF2 /* TableViewError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableViewError.swift; sourceTree = "<group>"; };
 		7BF913AD1E3A4BA800019CF2 /* UIViewController+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Fleet.swift"; sourceTree = "<group>"; };
@@ -410,8 +412,9 @@
 				7BF913AC1E3A4B9500019CF2 /* ViewController */,
 				7B675E811D0C5372002E6B45 /* UIBarButtonItem+Fleet.swift */,
 				7B675E9F1D0DCA38002E6B45 /* UIAlertController+Fleet.swift */,
-				7B675EA11D0DD64D002E6B45 /* UIAlertAction+Fleet.swift */,
 				7BB14A601D75091B002ABE82 /* UINavigationController+Fleet.swift */,
+				7BDF61E41E9356A800990588 /* UIAlertAction+Fleet.h */,
+				7B2D35AA1E92DD6400B94271 /* UIAlertAction+Fleet.m */,
 			);
 			path = CoreExtensions;
 			sourceTree = "<group>";
@@ -557,6 +560,7 @@
 			files = (
 				7BA90AB71CC130990040B031 /* Fleet.h in Headers */,
 				7B8F2B3B1DE2592C00B6F4C2 /* FleetObjC.h in Headers */,
+				7BDF61E51E9357D300990588 /* UIAlertAction+Fleet.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -753,13 +757,13 @@
 				7B675E941D0DA7EA002E6B45 /* Fleet.swift in Sources */,
 				7B9458101D4D7DFA00F16A64 /* StoryboardDeserializer.swift in Sources */,
 				7B8F2B3C1DE2592C00B6F4C2 /* FleetObjC.m in Sources */,
+				7B2D35AB1E92DD6400B94271 /* UIAlertAction+Fleet.m in Sources */,
 				7BFABD5C1E3DA2CD002823B3 /* UIButton+Fleet.swift in Sources */,
 				7B0D3B3F1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift in Sources */,
 				7B29F41F1DDCAC76008EA836 /* UITableView+SelectCellAction.swift in Sources */,
 				7BB14A701D77B425002ABE82 /* Screen.swift in Sources */,
 				7B675E891D0C5AFB002E6B45 /* Logger.swift in Sources */,
 				7BDB63B31E47725600515C22 /* FleetError.swift in Sources */,
-				7B675EA21D0DD64D002E6B45 /* UIAlertAction+Fleet.swift in Sources */,
 				7B8F2B261DE12CC700B6F4C2 /* MockFor.swift in Sources */,
 				7B2D724A1E292A1F0046EDFC /* StoryboardBindingError.swift in Sources */,
 				7BF9145D1E3CF59700019CF2 /* UITableView+FetchCell.swift in Sources */,

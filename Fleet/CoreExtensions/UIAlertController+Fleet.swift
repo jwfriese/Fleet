@@ -1,4 +1,5 @@
 import UIKit
+import ObjectiveC
 
 extension Fleet {
     enum AlertError: FleetErrorDefinition {

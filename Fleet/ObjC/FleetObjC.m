@@ -68,9 +68,9 @@ const char * getViewDidDisappearTypes(Class klass) {
         class_addMethod(mockClass, @selector(viewDidDisappear:), createViewDidDisappearImpl(), getViewDidDisappearTypes(mockClass));
         objc_registerClassPair(mockClass);
     }
-    
+
     id instance = [[mockClass alloc] init];
-    
+
     return instance;
 }
 
@@ -78,16 +78,16 @@ const char * getViewDidDisappearTypes(Class klass) {
     if (klass == superclass) {
         return YES;
     }
-    
+
     Class currentClass = class_getSuperclass(klass);
     while (currentClass != nil) {
         if (currentClass == superclass) {
             return YES;
         }
-        
+
         currentClass = class_getSuperclass(currentClass);
     }
-    
+
     return NO;
 }
 
