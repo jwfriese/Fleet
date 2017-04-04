@@ -226,14 +226,7 @@ extension UIStoryboard {
         }
     }
 
-    open override class func initialize() {
-        if !didSwizzle {
-            swizzleViewControllerInstantiationMethod()
-            didSwizzle = true
-        }
-    }
-
-    class func swizzleViewControllerInstantiationMethod() {
+    @objc class func swizzleViewControllerInstantiationMethod() {
         let originalSelector = #selector(UIStoryboard.instantiateViewController(withIdentifier:))
         let swizzledSelector = #selector(UIStoryboard.fleet_instantiateViewController(withIdentifier:))
 
