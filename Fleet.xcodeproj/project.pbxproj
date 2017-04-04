@@ -65,6 +65,7 @@
 		7BDF61F31E935C2A00990588 /* UIViewController+Fleet.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BDF61F21E935C2A00990588 /* UIViewController+Fleet.m */; };
 		7BDF61F81E93671600990588 /* UINavigationController+Fleet.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BDF61F71E93671600990588 /* UINavigationController+Fleet.m */; };
 		7BDF61FA1E93685800990588 /* FleetSwizzle.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BDF61F91E93685800990588 /* FleetSwizzle.m */; };
+		7BDF61FC1E93691200990588 /* UITableViewRowAction+Fleet.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BDF61FB1E93691200990588 /* UITableViewRowAction+Fleet.m */; };
 		7BEE35B51E15434A00302991 /* UITableView+SelectRowMinimalDelegateImplSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BEE35B41E15434A00302991 /* UITableView+SelectRowMinimalDelegateImplSpec.swift */; };
 		7BF913981E384A4E00019CF2 /* TableViewError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF913971E384A4E00019CF2 /* TableViewError.swift */; };
 		7BF913AE1E3A4BA800019CF2 /* UIViewController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF913AD1E3A4BA800019CF2 /* UIViewController+Fleet.swift */; };
@@ -171,6 +172,7 @@
 		7BDF61F61E9363D000990588 /* FleetSwizzle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FleetSwizzle.h; sourceTree = "<group>"; };
 		7BDF61F71E93671600990588 /* UINavigationController+Fleet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+Fleet.m"; sourceTree = "<group>"; };
 		7BDF61F91E93685800990588 /* FleetSwizzle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FleetSwizzle.m; sourceTree = "<group>"; };
+		7BDF61FB1E93691200990588 /* UITableViewRowAction+Fleet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITableViewRowAction+Fleet.m"; sourceTree = "<group>"; };
 		7BEE35B41E15434A00302991 /* UITableView+SelectRowMinimalDelegateImplSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+SelectRowMinimalDelegateImplSpec.swift"; sourceTree = "<group>"; };
 		7BF913971E384A4E00019CF2 /* TableViewError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableViewError.swift; sourceTree = "<group>"; };
 		7BF913AD1E3A4BA800019CF2 /* UIViewController+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Fleet.swift"; sourceTree = "<group>"; };
@@ -289,6 +291,7 @@
 			children = (
 				7BF913971E384A4E00019CF2 /* TableViewError.swift */,
 				7BF9145C1E3CF59700019CF2 /* UITableView+FetchCell.swift */,
+				7BDF61FB1E93691200990588 /* UITableViewRowAction+Fleet.m */,
 				7B29F41E1DDCAC76008EA836 /* UITableView+SelectCellAction.swift */,
 				7B29F41C1DDCABF5008EA836 /* UITableView+SelectRow.swift */,
 				7BFABD6D1E3DA3EA002823B3 /* UITableViewRowAction+Fleet.swift */,
@@ -793,6 +796,7 @@
 				7BB14A701D77B425002ABE82 /* Screen.swift in Sources */,
 				7B675E891D0C5AFB002E6B45 /* Logger.swift in Sources */,
 				7BDB63B31E47725600515C22 /* FleetError.swift in Sources */,
+				7BDF61FC1E93691200990588 /* UITableViewRowAction+Fleet.m in Sources */,
 				7B8F2B261DE12CC700B6F4C2 /* MockFor.swift in Sources */,
 				7B2D724A1E292A1F0046EDFC /* StoryboardBindingError.swift in Sources */,
 				7BF9145D1E3CF59700019CF2 /* UITableView+FetchCell.swift in Sources */,

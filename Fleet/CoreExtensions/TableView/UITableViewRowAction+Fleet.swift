@@ -3,8 +3,6 @@ import ObjectiveC
 
 private var handlerAssociatedKey: UInt = 0
 
-fileprivate var didSwizzle = false
-
 @objc private class ObjectifiedBlock: NSObject {
     var block: ((UITableViewRowAction, IndexPath) -> Void)?
 
@@ -20,14 +18,6 @@ extension UITableViewRowAction {
         }
     }
 
-    override open class func initialize() {
-        super.initialize()
-        if !didSwizzle {
-            swizzleInit()
-            didSwizzle = true
-        }
-    }
-
     fileprivate var fleet_property_handler: ((UITableViewRowAction, IndexPath) -> Void)? {
         get {
             let block = objc_getAssociatedObject(self, &handlerAssociatedKey) as? ObjectifiedBlock
@@ -40,7 +30,7 @@ extension UITableViewRowAction {
         }
     }
 
-    fileprivate class func swizzleInit() {
+    @objc class func swizzleInit() {
         let originalSelector = Selector(("_initWithStyle:title:handler:"))
         let swizzledSelector = #selector(UITableViewRowAction.fleet_init(withStyle:title:handler:))
 
