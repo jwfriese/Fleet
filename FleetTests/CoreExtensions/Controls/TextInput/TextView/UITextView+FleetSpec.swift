@@ -21,7 +21,6 @@ class UITextView_FleetSpec: XCTestCase {
         textView.delegate = delegate
 
         textView.isHidden = false
-        textView.isEditable = true
         textView.isSelectable = true
 
         return (textView, delegate)
@@ -38,7 +37,6 @@ class UITextView_FleetSpec: XCTestCase {
         let textViewNotInWindow = UITextView(frame: CGRect(x: 100,y: 100,width: 100,height: 100))
 
         textViewNotInWindow.isHidden = false
-        textViewNotInWindow.isEditable = true
         textViewNotInWindow.isSelectable = true
 
         expect { try textViewNotInWindow.startEditing() }.to(
@@ -62,15 +60,6 @@ class UITextView_FleetSpec: XCTestCase {
 
         expect { try self.subject.startEditing() }.to(
             raiseException(named: "Fleet.TextViewError", reason: "UITextView unavailable for editing: Text view is not selectable.", userInfo: nil, closure: nil)
-        )
-        expect(self.subject.isFirstResponder).to(beFalse())
-    }
-
-    func test_startEditing_whenTextViewIsNotEditable_raisesException() {
-        subject.isEditable = false
-
-        expect { try self.subject.startEditing() }.to(
-            raiseException(named: "Fleet.TextViewError", reason: "UITextView unavailable for editing: Text view is not editable.", userInfo: nil, closure: nil)
         )
         expect(self.subject.isFirstResponder).to(beFalse())
     }

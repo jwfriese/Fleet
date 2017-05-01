@@ -1,7 +1,12 @@
 import XCTest
 import Fleet
 import Nimble
-@testable import FleetTestApp
+
+#if os(iOS)
+    @testable import FleetTestApp
+#elseif os(tvOS)
+    @testable import FleetTestApp_tvOS
+#endif
 
 class SegueDetailSpec: XCTestCase {
     func test_bindingViewControllersInSegues_doesNotCallViewDidLoadBeforePrepareForSegue() {

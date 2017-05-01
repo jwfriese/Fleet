@@ -2,8 +2,11 @@ import XCTest
 import Fleet
 import Nimble
 
-@testable import FleetTestApp
-import UIKit
+#if os(iOS)
+    @testable import FleetTestApp
+#elseif os(tvOS)
+    @testable import FleetTestApp_tvOS
+#endif
 
 fileprivate class MinimallyImplementedDelegate: NSObject {}
 extension MinimallyImplementedDelegate: UITableViewDelegate {}
