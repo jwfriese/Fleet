@@ -1,7 +1,12 @@
 import XCTest
 import Fleet
 import Nimble
-@testable import FleetTestApp
+
+#if os(iOS)
+    @testable import FleetTestApp
+#elseif os(tvOS)
+    @testable import FleetTestApp_tvOS
+#endif
 
 class UIStoryboard_FleetSpec: XCTestCase {
     var turtlesAndFriendsStoryboard: UIStoryboard!

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder.AppleTV.Storyboard" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="AppleTV" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="aXc-py-Bt8">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="tvOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Navigation Controller-->
+        <scene sceneID="uKz-X2-AeL">
+            <objects>
+                <navigationController id="aXc-py-Bt8" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="UU0-nB-9ZK">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="LlJ-1j-x7M" kind="relationship" relationship="rootViewController" id="HDG-eM-cKY"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ajh-H5-Jt1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-3638" y="-603"/>
+        </scene>
+        <!--Puppy List View Controller-->
+        <scene sceneID="Flu-h1-D67">
+            <objects>
+                <viewController storyboardIdentifier="PuppyListViewController" id="LlJ-1j-x7M" customClass="PuppyListViewController" customModule="FleetTestApp_tvOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="oIV-CY-CBg"/>
+                        <viewControllerLayoutGuide type="bottom" id="Zfg-rQ-DUu"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="3G5-Vr-Fw0">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="55w-VU-4Ul" userLabel="Show Puppies List Button">
+                                <rect key="frame" x="66" y="217" width="243" height="58"/>
+                                <state key="normal" title="Show Puppies"/>
+                                <connections>
+                                    <action selector="showPuppiesList" destination="LlJ-1j-x7M" eventType="touchUpInside" id="gvD-2U-tD5"/>
+                                </connections>
+                            </button>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Da2-su-0jh">
+                                <rect key="frame" x="141" y="347" width="93" height="58"/>
+                                <state key="normal" title="Corgi"/>
+                                <connections>
+                                    <segue destination="aVp-Cv-lci" kind="show" identifier="ShowCorgi" id="QS1-Mo-9Dg"/>
+                                </connections>
+                            </button>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dec-Vd-bXa">
+                                <rect key="frame" x="119" y="453" width="136" height="58"/>
+                                <state key="normal" title="Maltese"/>
+                            </button>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bWM-LO-3j2">
+                                <rect key="frame" x="58" y="559" width="258" height="58"/>
+                                <state key="normal" title="French Bulldog"/>
+                            </button>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aXf-xK-g5x">
+                                <rect key="frame" x="126" y="665" width="123" height="58"/>
+                                <state key="normal" title="Basenji"/>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="55w-VU-4Ul" firstAttribute="top" secondItem="oIV-CY-CBg" secondAttribute="bottom" constant="72" id="EKf-hG-TTT"/>
+                            <constraint firstItem="55w-VU-4Ul" firstAttribute="centerX" secondItem="3G5-Vr-Fw0" secondAttribute="centerX" id="Gek-Jv-b67"/>
+                            <constraint firstItem="aXf-xK-g5x" firstAttribute="top" secondItem="bWM-LO-3j2" secondAttribute="bottom" constant="48" id="IHf-hQ-nGf"/>
+                            <constraint firstItem="aXf-xK-g5x" firstAttribute="centerX" secondItem="bWM-LO-3j2" secondAttribute="centerX" id="X97-9z-Lcw"/>
+                            <constraint firstItem="Da2-su-0jh" firstAttribute="top" secondItem="55w-VU-4Ul" secondAttribute="bottom" constant="72" id="XRq-XW-Ybu"/>
+                            <constraint firstItem="bWM-LO-3j2" firstAttribute="centerX" secondItem="dec-Vd-bXa" secondAttribute="centerX" id="Ylb-ac-o03"/>
+                            <constraint firstItem="bWM-LO-3j2" firstAttribute="top" secondItem="dec-Vd-bXa" secondAttribute="bottom" constant="48" id="Z3l-OH-Hr7"/>
+                            <constraint firstItem="dec-Vd-bXa" firstAttribute="top" secondItem="Da2-su-0jh" secondAttribute="bottom" constant="48" id="iQx-nY-QiI"/>
+                            <constraint firstItem="Da2-su-0jh" firstAttribute="centerX" secondItem="55w-VU-4Ul" secondAttribute="centerX" id="mQA-T2-8vb"/>
+                            <constraint firstItem="dec-Vd-bXa" firstAttribute="centerX" secondItem="Da2-su-0jh" secondAttribute="centerX" id="mfz-OI-ZC6"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="9Fb-qM-NdB"/>
+                    <connections>
+                        <outlet property="basenjiButton" destination="aXf-xK-g5x" id="LQK-AF-EKA"/>
+                        <outlet property="corgiButton" destination="Da2-su-0jh" id="R9q-pw-ScB"/>
+                        <outlet property="frenchBulldogButton" destination="bWM-LO-3j2" id="CKI-pH-nAJ"/>
+                        <outlet property="malteseButton" destination="dec-Vd-bXa" id="vWv-53-8dD"/>
+                        <outlet property="showPuppiesListButton" destination="55w-VU-4Ul" id="rGu-T2-tOh"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ug9-rY-Wda" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-684" y="-603"/>
+        </scene>
+        <!--Corgi View Controller-->
+        <scene sceneID="Rcx-0U-2LG">
+            <objects>
+                <viewController storyboardIdentifier="CorgiViewController" id="aVp-Cv-lci" customClass="CorgiViewController" customModule="FleetTestApp_tvOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="lRA-7M-9vG"/>
+                        <viewControllerLayoutGuide type="bottom" id="jGp-ha-iMm"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="nmp-bh-zk2">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="It's a Corgi!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nSI-vO-ibA">
+                                <rect key="frame" x="144" y="323" width="87" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="1qr-HW-FVX">
+                                <rect key="frame" x="52" y="217" width="271" height="70"/>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="s5w-4F-6pH">
+                                <rect key="frame" x="80" y="408" width="172" height="58"/>
+                                <state key="normal" title="Corgi One"/>
+                                <connections>
+                                    <action selector="showCorgiOne" destination="aVp-Cv-lci" eventType="touchUpInside" id="pyx-QY-atL"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Dcb-Ib-eMd">
+                                <rect key="frame" x="226" y="422" width="69" height="30"/>
+                                <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="15"/>
+                                <state key="normal" title="Corgi Two"/>
+                                <connections>
+                                    <action selector="showCorgiTwo" destination="aVp-Cv-lci" eventType="touchUpInside" id="9vz-zo-wS7"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="1qr-HW-FVX" firstAttribute="top" secondItem="lRA-7M-9vG" secondAttribute="bottom" constant="72" id="3oL-mr-UMf"/>
+                            <constraint firstItem="nSI-vO-ibA" firstAttribute="centerY" secondItem="nmp-bh-zk2" secondAttribute="centerY" id="4eP-QJ-XLh"/>
+                            <constraint firstItem="nSI-vO-ibA" firstAttribute="top" secondItem="1qr-HW-FVX" secondAttribute="bottom" constant="36" id="EH4-D9-Oku"/>
+                            <constraint firstItem="s5w-4F-6pH" firstAttribute="leading" secondItem="nmp-bh-zk2" secondAttribute="leadingMargin" constant="64" id="G33-MO-Kze"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="1qr-HW-FVX" secondAttribute="trailing" constant="36" id="GCE-qy-lC5"/>
+                            <constraint firstItem="Dcb-Ib-eMd" firstAttribute="centerY" secondItem="s5w-4F-6pH" secondAttribute="centerY" id="IJg-1D-ZTu"/>
+                            <constraint firstItem="1qr-HW-FVX" firstAttribute="leading" secondItem="nmp-bh-zk2" secondAttribute="leadingMargin" constant="36" id="T8g-ML-aMe"/>
+                            <constraint firstItem="s5w-4F-6pH" firstAttribute="top" secondItem="nSI-vO-ibA" secondAttribute="bottom" constant="64" id="TWB-Hb-Agg"/>
+                            <constraint firstItem="nSI-vO-ibA" firstAttribute="centerX" secondItem="nmp-bh-zk2" secondAttribute="centerX" id="ZZL-3Y-tgF"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="Dcb-Ib-eMd" secondAttribute="trailing" constant="64" id="oB9-hY-NG9"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="corgiImageView" destination="1qr-HW-FVX" id="Zax-nU-jgh"/>
+                        <outlet property="showCorgiOneButton" destination="s5w-4F-6pH" id="Lbj-E9-KjZ"/>
+                        <outlet property="showCorgiTwoButton" destination="Dcb-Ib-eMd" id="SG8-xL-R8b"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="osR-BD-Q1B" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2199" y="-603"/>
+        </scene>
+    </scenes>
+</document>

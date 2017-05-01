@@ -1,7 +1,12 @@
 import XCTest
 import Nimble
 @testable import Fleet
-@testable import FleetTestApp
+
+#if os(iOS)
+    @testable import FleetTestApp
+#elseif os(tvOS)
+    @testable import FleetTestApp_tvOS
+#endif
 
 class StoryboardDeserializerSpec: XCTestCase {
     func test_deserializingStoryboard_whenStoryboardWithNameInBundleCannotBeFound_raisesException() {

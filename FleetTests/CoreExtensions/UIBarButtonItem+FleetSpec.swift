@@ -2,7 +2,11 @@ import XCTest
 import Fleet
 import Nimble
 
-@testable import FleetTestApp
+#if os(iOS)
+    @testable import FleetTestApp
+#elseif os(tvOS)
+    @testable import FleetTestApp_tvOS
+#endif
 
 fileprivate class TestTarget: NSObject {
     var didCallAction = false
