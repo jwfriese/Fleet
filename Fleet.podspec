@@ -11,4 +11,10 @@ Pod::Spec.new do |s|
   s.source_files            = "Fleet/**/*.{swift,h,m}"
   s.public_header_files     = ["Fleet/Fleet.h", "Fleet/ObjC/FleetObjC.h"]
   s.preserve_paths          = "Fleet/Script/copy_storyboard_info_files.sh"
+
+  s.tvos.exclude_files = [
+    "Fleet/CoreExtensions/TableView/UITableViewRowAction+Fleet.m",
+    "Fleet/CoreExtensions/TableView/UITableView+SelectCellAction.swift",
+    "Fleet/CoreExtensions/TableView/UITableViewRowAction+Fleet.swift",
+  ]
 end
