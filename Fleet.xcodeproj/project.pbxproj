@@ -92,6 +92,7 @@
 		7B0D3B641CFB2E120096DBC2 /* SpottedTurtleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B321CFA74870096DBC2 /* SpottedTurtleViewController.swift */; };
 		7B0D3B651CFB2E230096DBC2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B471CFB29B40096DBC2 /* AppDelegate.swift */; };
 		7B0D3B661CFB2E280096DBC2 /* CrabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B301CFA74070096DBC2 /* CrabViewController.swift */; };
+		7B104A691EB9987B00D97A14 /* copy_storyboard_info_files.sh in Resources */ = {isa = PBXBuildFile; fileRef = 7B9458181D4E474B00F16A64 /* copy_storyboard_info_files.sh */; };
 		7B13BA141DD4ABF100C9098C /* BirdsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B13BA131DD4ABF100C9098C /* BirdsViewController.swift */; };
 		7B13BA161DD4AC4000C9098C /* Birds.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B13BA151DD4AC4000C9098C /* Birds.storyboard */; };
 		7B29F41D1DDCABF5008EA836 /* UITableView+SelectRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B29F41C1DDCABF5008EA836 /* UITableView+SelectRow.swift */; };
@@ -991,6 +992,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7B104A691EB9987B00D97A14 /* copy_storyboard_info_files.sh in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
