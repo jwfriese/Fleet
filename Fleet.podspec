@@ -16,5 +16,7 @@ Pod::Spec.new do |s|
     "Fleet/CoreExtensions/TableView/UITableViewRowAction+Fleet.m",
     "Fleet/CoreExtensions/TableView/UITableView+SelectCellAction.swift",
     "Fleet/CoreExtensions/TableView/UITableViewRowAction+Fleet.swift",
+    "Fleet/CoreExtensions/Controls/TextInput/UITextField+Fleet.swift",
+    "Fleet/CoreExtensions/Controls/TextInput/UITextView+Fleet.swift",
   ]
 end

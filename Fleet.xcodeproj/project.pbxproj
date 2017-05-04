@@ -16,8 +16,6 @@
 		7B00821C1EB6D8DF006B8FED /* UIAlertAction+Fleet.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BDF61E81E935B4600990588 /* UIAlertAction+Fleet.m */; };
 		7B00821D1EB6D8E2006B8FED /* UIAlertAction+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDF61FF1E936BFB00990588 /* UIAlertAction+Fleet.swift */; };
 		7B00821E1EB6D8E2006B8FED /* UIAlertController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDF61E91E935B4600990588 /* UIAlertController+Fleet.swift */; };
-		7B00821F1EB6D8EC006B8FED /* UITextField+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFABD561E3DA2C5002823B3 /* UITextField+Fleet.swift */; };
-		7B0082201EB6D8EC006B8FED /* UITextView+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFABD571E3DA2C5002823B3 /* UITextView+Fleet.swift */; };
 		7B0082211EB6D8EC006B8FED /* UIButton+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFABD5A1E3DA2CD002823B3 /* UIButton+Fleet.swift */; };
 		7B0082221EB6D8EC006B8FED /* UISwitch+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFABD5B1E3DA2CD002823B3 /* UISwitch+Fleet.swift */; };
 		7B0082231EB6D8F3006B8FED /* TableViewError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF913971E384A4E00019CF2 /* TableViewError.swift */; };
@@ -44,9 +42,6 @@
 		7B00823B1EB6DB47006B8FED /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA90ADE1CC3F6C50040B031 /* File.swift */; };
 		7B00823C1EB6DB47006B8FED /* Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BA4B1951E35652A0052A2A7 /* Test.swift */; };
 		7B00823D1EB6DB57006B8FED /* UIAlertAction+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDF61EE1E935B7500990588 /* UIAlertAction+FleetSpec.swift */; };
-		7B00823F1EB6DB57006B8FED /* TestTextFieldDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFABD5F1E3DA2EA002823B3 /* TestTextFieldDelegate.swift */; };
-		7B0082401EB6DB57006B8FED /* TestTextViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFABD601E3DA2EA002823B3 /* TestTextViewDelegate.swift */; };
-		7B0082411EB6DB57006B8FED /* UITextField+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFABD611E3DA2EA002823B3 /* UITextField+FleetSpec.swift */; };
 		7B0082431EB6DB57006B8FED /* UIControlEventRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFABD6F1E3DA493002823B3 /* UIControlEventRecorder.swift */; };
 		7B0082441EB6DB57006B8FED /* UIControlEventEqualityMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFABD711E3DA7BD002823B3 /* UIControlEventEqualityMatcher.swift */; };
 		7B0082451EB6DB57006B8FED /* UIButton+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFABD671E3DA2F1002823B3 /* UIButton+FleetSpec.swift */; };
@@ -63,7 +58,6 @@
 		7B0082541EB6DB6F006B8FED /* MockForSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8F2B3E1DE259B400B6F4C2 /* MockForSpec.swift */; };
 		7B0082551EB6DB72006B8FED /* ScreenSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B933C271D77B48D001B98F0 /* ScreenSpec.swift */; };
 		7B0082581EB6DC60006B8FED /* UITextView+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0082571EB6DC60006B8FED /* UITextView+FleetSpec.swift */; };
-		7B00825A1EB6DC78006B8FED /* UITextView+FleetSpec_iOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0082591EB6DC78006B8FED /* UITextView+FleetSpec_iOS.swift */; };
 		7B00825C1EB6E2DA006B8FED /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B00825B1EB6E2DA006B8FED /* Nimble.framework */; };
 		7B0082831EB6EAE4006B8FED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0082821EB6EAE4006B8FED /* AppDelegate.swift */; };
 		7B00828A1EB6EAE4006B8FED /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7B0082891EB6EAE4006B8FED /* Assets.xcassets */; };
@@ -200,7 +194,6 @@
 		7B0082001EB6D788006B8FED /* Fleet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Fleet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B0082081EB6D788006B8FED /* FleetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FleetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B0082571EB6DC60006B8FED /* UITextView+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextView+FleetSpec.swift"; sourceTree = "<group>"; };
-		7B0082591EB6DC78006B8FED /* UITextView+FleetSpec_iOS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextView+FleetSpec_iOS.swift"; sourceTree = "<group>"; };
 		7B00825B1EB6E2DA006B8FED /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = Carthage/Build/tvOS/Nimble.framework; sourceTree = "<group>"; };
 		7B0082801EB6EAE4006B8FED /* FleetTestApp-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "FleetTestApp-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B0082821EB6EAE4006B8FED /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -356,7 +349,6 @@
 			isa = PBXGroup;
 			children = (
 				7B0082571EB6DC60006B8FED /* UITextView+FleetSpec.swift */,
-				7B0082591EB6DC78006B8FED /* UITextView+FleetSpec_iOS.swift */,
 			);
 			path = TextView;
 			sourceTree = "<group>";
@@ -1065,8 +1057,6 @@
 				7B0082361EB6D913006B8FED /* MockFor.swift in Sources */,
 				7B0082191EB6D8C6006B8FED /* Fleet.swift in Sources */,
 				7B0082291EB6D901006B8FED /* UIStoryboard+Fleet.m in Sources */,
-				7B00821F1EB6D8EC006B8FED /* UITextField+Fleet.swift in Sources */,
-				7B0082201EB6D8EC006B8FED /* UITextView+Fleet.swift in Sources */,
 				7B0082351EB6D910006B8FED /* FleetSwizzle.m in Sources */,
 				7B00821B1EB6D8D8006B8FED /* Logger.swift in Sources */,
 				7B00822B1EB6D901006B8FED /* StoryboardBindingError.swift in Sources */,
@@ -1095,7 +1085,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				7B8586CB1EB6F265008EC4EE /* UITableView+SelectRowMinimalDelegateImplSpec.swift in Sources */,
-				7B0082401EB6DB57006B8FED /* TestTextViewDelegate.swift in Sources */,
 				7B00823D1EB6DB57006B8FED /* UIAlertAction+FleetSpec.swift in Sources */,
 				7B0082541EB6DB6F006B8FED /* MockForSpec.swift in Sources */,
 				7B00824C1EB6DB65006B8FED /* UIStoryboard+FleetSpec.swift in Sources */,
@@ -1110,12 +1099,10 @@
 				7B00823B1EB6DB47006B8FED /* File.swift in Sources */,
 				7B0082531EB6DB6B006B8FED /* IsClassKindOfSpec.swift in Sources */,
 				7B0082491EB6DB65006B8FED /* UITableView+SelectRowSpec.swift in Sources */,
-				7B0082411EB6DB57006B8FED /* UITextField+FleetSpec.swift in Sources */,
 				7B0082521EB6DB65006B8FED /* UINavigationController+FleetSpec.swift in Sources */,
 				7B0082471EB6DB65006B8FED /* UITableView+FetchCellSpec.swift in Sources */,
 				7B00824D1EB6DB65006B8FED /* StoryboardDeserializerSpec.swift in Sources */,
 				7B0082501EB6DB65006B8FED /* UIViewController+FleetSpec.swift in Sources */,
-				7B00823F1EB6DB57006B8FED /* TestTextFieldDelegate.swift in Sources */,
 				7B0082391EB6DB42006B8FED /* FleetSpec.swift in Sources */,
 				7B0082551EB6DB72006B8FED /* ScreenSpec.swift in Sources */,
 			);
@@ -1221,7 +1208,6 @@
 				7BF913B21E3A4BC300019CF2 /* UIViewController+FleetInternalSpec.swift in Sources */,
 				7B0D3B381CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift in Sources */,
 				7B8F2B381DE258EB00B6F4C2 /* IsClassKindOfSpec.swift in Sources */,
-				7B00825A1EB6DC78006B8FED /* UITextView+FleetSpec_iOS.swift in Sources */,
 				7BFABD721E3DA7BD002823B3 /* UIControlEventEqualityMatcher.swift in Sources */,
 				7B675E7D1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift in Sources */,
 				7BDF61F01E935B7500990588 /* UIAlertAction+FleetSpec.swift in Sources */,

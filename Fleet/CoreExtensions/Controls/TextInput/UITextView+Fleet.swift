@@ -69,14 +69,14 @@ extension UITextView {
             FleetError(Fleet.TextViewError.controlUnavailable("Text view is not selectable.")).raise()
             return
         }
-        
+
         #if os(iOS)
             guard isEditable else {
                 FleetError(Fleet.TextViewError.controlUnavailable("Text view is not editable.")).raise()
                 return
             }
         #endif
-        
+
         if let delegate = delegate {
             let doesImplementShouldBeginEditing = delegate.responds(to: #selector(UITextViewDelegate.textViewShouldBeginEditing(_:)))
             if doesImplementShouldBeginEditing {
