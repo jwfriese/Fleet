@@ -17,7 +17,6 @@
 		7B00821D1EB6D8E2006B8FED /* UIAlertAction+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDF61FF1E936BFB00990588 /* UIAlertAction+Fleet.swift */; };
 		7B00821E1EB6D8E2006B8FED /* UIAlertController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDF61E91E935B4600990588 /* UIAlertController+Fleet.swift */; };
 		7B0082211EB6D8EC006B8FED /* UIButton+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFABD5A1E3DA2CD002823B3 /* UIButton+Fleet.swift */; };
-		7B0082221EB6D8EC006B8FED /* UISwitch+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFABD5B1E3DA2CD002823B3 /* UISwitch+Fleet.swift */; };
 		7B0082231EB6D8F3006B8FED /* TableViewError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF913971E384A4E00019CF2 /* TableViewError.swift */; };
 		7B0082241EB6D8F3006B8FED /* UITableView+FetchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF9145C1E3CF59700019CF2 /* UITableView+FetchCell.swift */; };
 		7B0082271EB6D8F8006B8FED /* UITableView+SelectRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B29F41C1DDCABF5008EA836 /* UITableView+SelectRow.swift */; };
@@ -1067,7 +1066,6 @@
 				7B00821E1EB6D8E2006B8FED /* UIAlertController+Fleet.swift in Sources */,
 				7B00822F1EB6D907006B8FED /* UIViewController+Fleet.m in Sources */,
 				7B00821D1EB6D8E2006B8FED /* UIAlertAction+Fleet.swift in Sources */,
-				7B0082221EB6D8EC006B8FED /* UISwitch+Fleet.swift in Sources */,
 				7B0082231EB6D8F3006B8FED /* TableViewError.swift in Sources */,
 				7B0082311EB6D90A006B8FED /* UIBarButtonItem+Fleet.swift in Sources */,
 				7B0082331EB6D90A006B8FED /* UINavigationController+Fleet.swift in Sources */,
