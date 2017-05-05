@@ -15,7 +15,8 @@ before_install:
 install:
 - xcrun simctl list
 - carthage update --platform 'iOS' 
+- carthage update --platform 'tvOS' 
 - go get github.com/jwfriese/iossimulator
 script:
 - go build script/test.go
-- ./test 'iOS 10.0' 'iPhone 6'
+- ./test
