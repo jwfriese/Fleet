@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder.AppleTV.Storyboard" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="AppleTV" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="LH8-wq-NZ5">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="tvOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Box Turtle View Controller-->
+        <scene sceneID="f7y-LT-m69">
+            <objects>
+                <viewController storyboardIdentifier="BoxTurtleViewController" id="cmp-ko-Xwn" userLabel="Box Turtle View Controller" customClass="BoxTurtleViewController" customModule="FleetTestApp_tvOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="ZZD-fF-TAk"/>
+                        <viewControllerLayoutGuide type="bottom" id="Mj0-SA-XrW"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Vkn-Ya-rKb">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="BOX TURTLE" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zgq-Oy-J04">
+                                <rect key="frame" x="137" y="169" width="102" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="box_turtle" translatesAutoresizingMaskIntoConstraints="NO" id="cHB-zx-EgI">
+                                <rect key="frame" x="124" y="262" width="128" height="128"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="128" id="SWi-pU-5bf"/>
+                                    <constraint firstAttribute="width" secondItem="cHB-zx-EgI" secondAttribute="height" multiplier="1:1" id="wnl-Ok-5V4"/>
+                                </constraints>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2a0-7e-bho">
+                                <rect key="frame" x="188" y="438" width="0.0" height="0.0"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="lRV-il-fV3">
+                                <rect key="frame" x="94" y="610" width="188" height="17"/>
+                                <nil key="textColor"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="2a0-7e-bho" firstAttribute="centerX" secondItem="Vkn-Ya-rKb" secondAttribute="centerX" id="0De-p7-Q0T"/>
+                            <constraint firstItem="Mj0-SA-XrW" firstAttribute="top" secondItem="lRV-il-fV3" secondAttribute="bottom" constant="40" id="1vE-9O-rFe"/>
+                            <constraint firstItem="cHB-zx-EgI" firstAttribute="top" secondItem="zgq-Oy-J04" secondAttribute="bottom" constant="72" id="G01-n7-ioD"/>
+                            <constraint firstItem="zgq-Oy-J04" firstAttribute="centerX" secondItem="Vkn-Ya-rKb" secondAttribute="centerX" id="bXX-c1-glS"/>
+                            <constraint firstItem="cHB-zx-EgI" firstAttribute="centerX" secondItem="zgq-Oy-J04" secondAttribute="centerX" id="faA-aM-aKn"/>
+                            <constraint firstItem="zgq-Oy-J04" firstAttribute="top" secondItem="ZZD-fF-TAk" secondAttribute="bottom" constant="24" id="mEN-Ul-ALO"/>
+                            <constraint firstItem="lRV-il-fV3" firstAttribute="width" secondItem="Vkn-Ya-rKb" secondAttribute="width" multiplier="0.5" id="rTF-wA-gKi"/>
+                            <constraint firstItem="2a0-7e-bho" firstAttribute="top" secondItem="cHB-zx-EgI" secondAttribute="bottom" constant="48" id="sft-Ex-mpZ"/>
+                            <constraint firstItem="lRV-il-fV3" firstAttribute="centerX" secondItem="Vkn-Ya-rKb" secondAttribute="centerX" id="uDh-FD-U68"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="m2r-NY-PPJ" userLabel="Navigation Item">
+                        <barButtonItem key="leftBarButtonItem" title="stop" id="Vf6-Vt-Cyb">
+                            <connections>
+                                <action selector="onLeftBarButtonItemTapped" destination="cmp-ko-Xwn" id="AXZ-0p-tVc"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="DANCE" id="3qW-LF-BzZ">
+                            <connections>
+                                <action selector="onRightBarButtonItemTapped" destination="cmp-ko-Xwn" id="yvF-fQ-iWe"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="boxTurtleImage" destination="cHB-zx-EgI" id="HTT-Cf-CNL"/>
+                        <outlet property="informationLabel" destination="2a0-7e-bho" id="0oO-QJ-DNe"/>
+                        <outlet property="leftBarButtonItem" destination="Vf6-Vt-Cyb" id="1TS-hY-o3t"/>
+                        <outlet property="rightBarButtonItem" destination="3qW-LF-BzZ" id="0aR-Ne-Jke"/>
+                        <outlet property="textField" destination="lRV-il-fV3" id="Dhf-jh-iQA"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="w4n-px-463" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1247" y="-726"/>
+        </scene>
+        <!--Spotted Turtle View Controller-->
+        <scene sceneID="1pt-8m-0MX">
+            <objects>
+                <viewController storyboardIdentifier="SpottedTurtleViewController" id="MI9-bx-whb" customClass="SpottedTurtleViewController" customModule="FleetTestApp_tvOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="m01-DW-SMw"/>
+                        <viewControllerLayoutGuide type="bottom" id="aOK-zi-S7h"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Kvb-oo-Qox">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SPOTTED TURTLE" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gjE-Jh-3kv">
+                                <rect key="frame" x="116" y="169" width="143" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="spotted_turtle" translatesAutoresizingMaskIntoConstraints="NO" id="WJx-3p-MeX">
+                                <rect key="frame" x="123" y="262" width="128" height="128"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="128" id="2Mb-ZX-rd0"/>
+                                    <constraint firstAttribute="width" secondItem="WJx-3p-MeX" secondAttribute="height" multiplier="1:1" id="Jmp-Av-DbK"/>
+                                </constraints>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Juu-UN-Bni" userLabel="Spotted Turtle Alert 1">
+                                <rect key="frame" x="6" y="438" width="364" height="58"/>
+                                <state key="normal" title="Spotted Turtle Alert 1"/>
+                                <connections>
+                                    <action selector="showAlertWithAlertStyle" destination="MI9-bx-whb" eventType="touchUpInside" id="DPc-ZL-dzQ"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dNa-xj-NYG" userLabel="Spotted Turtle Alert 2">
+                                <rect key="frame" x="3" y="532" width="369" height="58"/>
+                                <state key="normal" title="Spotted Turtle Alert 2"/>
+                                <connections>
+                                    <action selector="showAlertWithActionSheetStyle" destination="MI9-bx-whb" eventType="touchUpInside" id="mvi-CV-DZ3"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="W0L-HE-O3K">
+                                <rect key="frame" x="188" y="638" width="0.0" height="0.0"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="gjE-Jh-3kv" firstAttribute="centerX" secondItem="Kvb-oo-Qox" secondAttribute="centerX" id="0H5-rI-rFD"/>
+                            <constraint firstItem="dNa-xj-NYG" firstAttribute="top" secondItem="Juu-UN-Bni" secondAttribute="bottom" constant="36" id="2kK-av-UdZ"/>
+                            <constraint firstItem="W0L-HE-O3K" firstAttribute="top" secondItem="Juu-UN-Bni" secondAttribute="bottom" constant="48" id="7jV-fb-cAi"/>
+                            <constraint firstItem="dNa-xj-NYG" firstAttribute="centerX" secondItem="Kvb-oo-Qox" secondAttribute="centerX" id="7tr-dd-Wx2"/>
+                            <constraint firstItem="W0L-HE-O3K" firstAttribute="centerX" secondItem="Kvb-oo-Qox" secondAttribute="centerX" id="IIp-ig-htG"/>
+                            <constraint firstItem="Juu-UN-Bni" firstAttribute="centerX" secondItem="Kvb-oo-Qox" secondAttribute="centerX" id="Sy8-jn-89K"/>
+                            <constraint firstItem="WJx-3p-MeX" firstAttribute="top" secondItem="gjE-Jh-3kv" secondAttribute="bottom" constant="72" id="VpM-CO-zPE"/>
+                            <constraint firstItem="Juu-UN-Bni" firstAttribute="top" secondItem="WJx-3p-MeX" secondAttribute="bottom" constant="48" id="WSs-Wz-cIs"/>
+                            <constraint firstItem="dNa-xj-NYG" firstAttribute="top" secondItem="W0L-HE-O3K" secondAttribute="bottom" constant="-12" id="Xmm-Pq-v2L"/>
+                            <constraint firstItem="dNa-xj-NYG" firstAttribute="top" secondItem="WJx-3p-MeX" secondAttribute="bottom" constant="48" id="bro-e5-XYl"/>
+                            <constraint firstItem="Juu-UN-Bni" firstAttribute="leading" secondItem="Kvb-oo-Qox" secondAttribute="leadingMargin" constant="36" id="dY7-aY-mSX"/>
+                            <constraint firstItem="gjE-Jh-3kv" firstAttribute="top" secondItem="m01-DW-SMw" secondAttribute="bottom" constant="24" id="f9P-xz-tMW"/>
+                            <constraint firstItem="WJx-3p-MeX" firstAttribute="centerX" secondItem="gjE-Jh-3kv" secondAttribute="centerX" id="oHk-hm-WgB"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="dNa-xj-NYG" secondAttribute="trailing" constant="36" id="wPc-Iq-xHM"/>
+                            <constraint firstItem="W0L-HE-O3K" firstAttribute="top" secondItem="dNa-xj-NYG" secondAttribute="bottom" constant="48" id="zhy-2Z-osJ"/>
+                        </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="dY7-aY-mSX"/>
+                                <exclude reference="Xmm-Pq-v2L"/>
+                                <exclude reference="bro-e5-XYl"/>
+                                <exclude reference="wPc-Iq-xHM"/>
+                                <exclude reference="7jV-fb-cAi"/>
+                            </mask>
+                        </variation>
+                    </view>
+                    <connections>
+                        <outlet property="alertButtonOne" destination="Juu-UN-Bni" id="Fk9-0Y-sOb"/>
+                        <outlet property="alertButtonTwo" destination="dNa-xj-NYG" id="395-06-G2g"/>
+                        <outlet property="informationalLabel" destination="W0L-HE-O3K" id="tne-ii-ZWZ"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkV-0a-GXv" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1246" y="42"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="ITF-Be-HRm">
+            <objects>
+                <navigationController id="LH8-wq-NZ5" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="uvJ-e0-nAA">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="kr1-g9-ioz" kind="relationship" relationship="rootViewController" id="Wfa-g4-zj7"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0g4-9v-c0p" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1080" y="-517"/>
+        </scene>
+        <!--Animal List View Controller-->
+        <scene sceneID="gIc-fV-N2X">
+            <objects>
+                <viewController storyboardIdentifier="AnimalListViewController" id="kr1-g9-ioz" customClass="AnimalListViewController" customModule="FleetTestApp_tvOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="hsV-oW-N0J"/>
+                        <viewControllerLayoutGuide type="bottom" id="CZK-db-uJw"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="iNi-QD-GN6">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="S9G-IJ-tbd">
+                                <rect key="frame" x="101" y="245" width="174" height="58"/>
+                                <state key="normal" title="Box Turtle"/>
+                                <connections>
+                                    <action selector="goToBoxTurtle" destination="kr1-g9-ioz" eventType="touchUpInside" id="rkf-dg-ySO"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nUc-bw-ld4">
+                                <rect key="frame" x="65" y="339" width="246" height="58"/>
+                                <state key="normal" title="Spotted Turtle"/>
+                                <connections>
+                                    <action selector="goToSpottedTurtle" destination="kr1-g9-ioz" eventType="touchUpInside" id="2bZ-bW-BuQ"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="g4Z-Qd-G7i">
+                                <rect key="frame" x="146" y="433" width="83" height="58"/>
+                                <state key="normal" title="Crab"/>
+                                <connections>
+                                    <action selector="goToCrab" destination="kr1-g9-ioz" eventType="touchUpInside" id="jIA-dY-7y4"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ROB-Ac-9ZK" userLabel="Crab 2 Button">
+                                <rect key="frame" x="131" y="527" width="114" height="58"/>
+                                <state key="normal" title="Crab 2"/>
+                                <connections>
+                                    <action selector="goToCrab2" destination="kr1-g9-ioz" eventType="touchUpInside" id="rEi-84-lkO"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RhY-4G-fqL">
+                                <rect key="frame" x="133" y="621" width="109" height="58"/>
+                                <state key="normal" title="Puppy"/>
+                                <connections>
+                                    <action selector="goToPuppy" destination="kr1-g9-ioz" eventType="touchUpInside" id="S4I-fT-rSm"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jj2-CU-ifK" userLabel="Kitten Button">
+                                <rect key="frame" x="137" y="715" width="102" height="58"/>
+                                <state key="normal" title="Kitten"/>
+                                <connections>
+                                    <segue destination="pfk-wd-JTs" kind="show" identifier="ShowKittens" id="qkX-VI-Qoa"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Z5q-Jt-Npg" userLabel="Birds Button">
+                                <rect key="frame" x="144" y="809" width="88" height="58"/>
+                                <state key="normal" title="Birds"/>
+                                <connections>
+                                    <segue destination="hNL-eJ-Dqv" kind="show" identifier="ShowBirds" id="Ldb-kw-4kW"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="knI-vk-fam" userLabel="Crab iOS Button">
+                                <rect key="frame" x="112" y="903" width="152" height="58"/>
+                                <state key="normal" title="Crab iOS"/>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="knI-vk-fam" firstAttribute="top" secondItem="Z5q-Jt-Npg" secondAttribute="bottom" constant="36" id="Hkh-xk-BOr"/>
+                            <constraint firstItem="knI-vk-fam" firstAttribute="centerX" secondItem="Z5q-Jt-Npg" secondAttribute="centerX" id="JsU-ih-N1F"/>
+                            <constraint firstItem="RhY-4G-fqL" firstAttribute="top" secondItem="ROB-Ac-9ZK" secondAttribute="bottom" constant="36" id="Kdo-Wp-Ywh"/>
+                            <constraint firstItem="g4Z-Qd-G7i" firstAttribute="centerX" secondItem="nUc-bw-ld4" secondAttribute="centerX" id="Kfu-6X-lBm"/>
+                            <constraint firstItem="S9G-IJ-tbd" firstAttribute="centerX" secondItem="iNi-QD-GN6" secondAttribute="centerX" id="N0B-3d-KfM"/>
+                            <constraint firstItem="jj2-CU-ifK" firstAttribute="top" secondItem="RhY-4G-fqL" secondAttribute="bottom" constant="36" id="Rgc-ej-Uk6"/>
+                            <constraint firstItem="nUc-bw-ld4" firstAttribute="centerX" secondItem="S9G-IJ-tbd" secondAttribute="centerX" id="SWm-k3-3A7"/>
+                            <constraint firstItem="ROB-Ac-9ZK" firstAttribute="centerX" secondItem="g4Z-Qd-G7i" secondAttribute="centerX" id="ccH-r8-Krc"/>
+                            <constraint firstItem="g4Z-Qd-G7i" firstAttribute="top" secondItem="nUc-bw-ld4" secondAttribute="bottom" constant="36" id="cww-u0-jV7"/>
+                            <constraint firstItem="ROB-Ac-9ZK" firstAttribute="top" secondItem="g4Z-Qd-G7i" secondAttribute="bottom" constant="36" id="fZ0-0k-pss"/>
+                            <constraint firstItem="nUc-bw-ld4" firstAttribute="top" secondItem="S9G-IJ-tbd" secondAttribute="bottom" constant="36" id="iTk-Je-W92"/>
+                            <constraint firstItem="RhY-4G-fqL" firstAttribute="centerX" secondItem="ROB-Ac-9ZK" secondAttribute="centerX" id="kEp-H9-1y7"/>
+                            <constraint firstItem="Z5q-Jt-Npg" firstAttribute="top" secondItem="jj2-CU-ifK" secondAttribute="bottom" constant="36" id="mga-cV-OzP"/>
+                            <constraint firstItem="jj2-CU-ifK" firstAttribute="centerX" secondItem="RhY-4G-fqL" secondAttribute="centerX" id="qG5-r0-wEy"/>
+                            <constraint firstItem="S9G-IJ-tbd" firstAttribute="top" secondItem="hsV-oW-N0J" secondAttribute="bottom" constant="100" id="rbd-7A-cIo"/>
+                            <constraint firstItem="Z5q-Jt-Npg" firstAttribute="centerX" secondItem="jj2-CU-ifK" secondAttribute="centerX" id="v71-Cr-0zJ"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="D9W-XF-ucf"/>
+                    <connections>
+                        <outlet property="boxTurtleButton" destination="S9G-IJ-tbd" id="O6E-7w-zRo"/>
+                        <outlet property="crab2Button" destination="ROB-Ac-9ZK" id="9GC-OG-GdJ"/>
+                        <outlet property="crabButton" destination="g4Z-Qd-G7i" id="mD9-mM-MJ0"/>
+                        <outlet property="puppyButton" destination="RhY-4G-fqL" id="fYX-6q-Ufd"/>
+                        <outlet property="spottedTurtleButton" destination="nUc-bw-ld4" id="7XQ-29-5xU"/>
+                        <segue destination="gcW-ev-w5z" kind="show" identifier="ShowCrab" id="onh-0v-mY0"/>
+                        <segue destination="MI9-bx-whb" kind="show" identifier="ShowSpottedTurtle" id="KAV-jV-fPs"/>
+                        <segue destination="cmp-ko-Xwn" kind="show" identifier="ShowBoxTurtle" id="Eeu-Xm-fAQ"/>
+                        <segue destination="fVV-aN-iXJ" kind="show" identifier="ShowPuppy" id="saU-Vp-UrA"/>
+                        <segue destination="s4q-fa-MbE" kind="show" identifier="ShowCrab2" id="sW3-CO-zdD"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="aCO-Da-d0Z" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-126" y="-517"/>
+        </scene>
+        <!--CrabViewController-->
+        <scene sceneID="O1e-yw-Azf">
+            <objects>
+                <viewControllerPlaceholder storyboardName="CrabStoryboard" referencedIdentifier="CrabViewController" id="s4q-fa-MbE" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Di8-w5-wtg" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-593" y="-58"/>
+        </scene>
+        <!--CrabViewController-->
+        <scene sceneID="J64-BJ-1hn">
+            <objects>
+                <viewControllerPlaceholder storyboardName="CrabStoryboard" referencedIdentifier="CrabViewController" id="gcW-ev-w5z" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="TR2-ZH-adV" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-314.5" y="-57"/>
+        </scene>
+        <!--PuppyStoryboard-->
+        <scene sceneID="qkh-zT-0ge">
+            <objects>
+                <viewControllerPlaceholder storyboardName="PuppyStoryboard" id="fVV-aN-iXJ" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ZCb-Xe-WkL" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-63" y="-58"/>
+        </scene>
+        <!--KittensStoryboard-->
+        <scene sceneID="Fco-cp-xb7">
+            <objects>
+                <viewControllerPlaceholder storyboardName="KittensStoryboard" id="pfk-wd-JTs" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="uz4-Kw-6XZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="202" y="-58"/>
+        </scene>
+        <!--BirdsViewController-->
+        <scene sceneID="Qkr-Ry-O9Y">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Birds" referencedIdentifier="BirdsViewController" id="hNL-eJ-Dqv" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="osF-6f-AIO" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="474" y="-58"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="box_turtle" width="540" height="405"/>
+        <image name="spotted_turtle" width="275" height="193"/>
+    </resources>
+</document>

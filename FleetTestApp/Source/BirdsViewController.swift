@@ -125,6 +125,7 @@ extension BirdsViewController: UITableViewDataSource {
         didEndEditingRowCallArgs.append(indexPath!)
     }
 
+#if os(iOS)
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
         let oneAction = UITableViewRowAction(style: .normal, title: "One") { action, indexPath in
             DispatchQueue.main.async {
@@ -152,6 +153,7 @@ extension BirdsViewController: UITableViewDataSource {
 
         return [oneAction, twoAction, threeAction]
     }
+#endif
 
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) { }
 

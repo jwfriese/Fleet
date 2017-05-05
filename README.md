@@ -1,9 +1,10 @@
 # Fleet [![Build Status](https://travis-ci.org/jwfriese/Fleet.svg?branch=master)](https://travis-ci.org/jwfriese/Fleet)
-Fleet is a UIKit-focused testing framework intended for use on iOS projects written in Swift.
+Fleet is a UIKit-focused testing framework intended for use on iOS and tvOS projects written in Swift.
 
 ## Installation
 
-See the [Installation section](./Documentation/Installation.md) for details about installing Fleet in your project.
+See the Installation section for details about installing Fleet in your [iOS](./Documentation/Installation/iOS.md)
+or [tvOS](./Documentation/Installation/tvOS.md) project.
 
 ## Features
 
@@ -23,9 +24,9 @@ Fleet extends UIKit classes in order to make it easier to test your code's inter
 - [UIButton](./Documentation/UIButton.md) - Provides convenience methods for interacting with buttons in test.
 - [UIBarButtonItem](./Documentation/UIBarButtonItem.md) - Provides convenience methods similar to those provided for UIButton.
 - [UIAlertController](./Documentation/UIAlertController.md) - Allows specs to simply tap on alert actions in order to test their behavior.
-- [UITextField](./Documentation/UITextField.md) - Provides convenience methods for entering text.
-- [UISwitch](./Documentation/UISwitch.md) - Provides convenience methods for interacting with switches in test.
-- [UITextView](./Documentation/UITextView.md) - Provides convenience methods for entering text into a text view.
+- [UITextField](./Documentation/UITextField.md) - Provides convenience methods for entering text. (iOS-only)
+- [UISwitch](./Documentation/UISwitch.md) - Provides convenience methods for interacting with switches in test. (iOS-only)
+- [UITextView](./Documentation/UITextView.md) - Provides convenience methods for entering text into a text view. (iOS-only)
 
 ### Setup for view controller tests
 Fleet provides another method of help in setting up view controller alongside storyboard injection and mocking. It makes it easy

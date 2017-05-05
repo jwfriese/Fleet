@@ -1,40 +1,65 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"os"
 	"os/exec"
-	"strings"
 
 	"github.com/jwfriese/iossimulator"
 )
 
 func main() {
-	programCall := os.Args
-	if len(programCall) < 3 {
-		log.Fatal(errors.New("Usage: ./test <runtime> <device type>"))
+	runTestsForiOS()
+	runTestsFortvOS()
+}
+
+func runTestsForiOS() {
+	iOSConfig := &testConfig{
+		os:         "iOS",
+		osVersion:  "10.3",
+		device:     "iPhone 7",
+		schemeName: "Fleet",
 	}
 
-	args := programCall[1:]
-	iosVersion := args[0]
-	deviceVersion := args[1]
+	runFor(iOSConfig)
+}
 
-	testInitReport := fmt.Sprintf("Running Fleet unit tests with iOS version '%s' on  device type '%s'\n", iosVersion, deviceVersion)
+func runTestsFortvOS() {
+	tvOSConfig := &testConfig{
+		os:         "tvOS",
+		osVersion:  "10.2",
+		device:     "Apple TV 1080p",
+		schemeName: "Fleet-tvOS",
+	}
+
+	runFor(tvOSConfig)
+}
+
+type testConfig struct {
+	os         string
+	osVersion  string
+	device     string
+	schemeName string
+}
+
+func runFor(config *testConfig) {
+	testInitReport := fmt.Sprintf("Running Fleet unit tests with %s version '%s' on device type '%s'\n", config.os, config.osVersion, config.device)
 	_, err := os.Stdout.Write([]byte(testInitReport))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	availabilityErr := iossimulator.IsDeviceAvailable(iosVersion, deviceVersion)
-	if availabilityErr != nil {
-		log.Fatal(availabilityErr)
+	if config.os == "iOS" {
+		iosVersion := fmt.Sprintf("iOS %s", config.osVersion)
+		availabilityErr := iossimulator.IsDeviceAvailable(iosVersion, config.device)
+		if availabilityErr != nil {
+			log.Fatal(availabilityErr)
+		}
 	}
 
-	iosVersionNumber := strings.Trim(iosVersion, "iOS ")
-	destinationString := fmt.Sprintf("platform=iOS Simulator,OS=%s,name=%s", iosVersionNumber, deviceVersion)
-	unitTestCommand := exec.Command("xcodebuild", "test", "-workspace", "Fleet.xcworkspace", "-scheme", "Fleet", "-destination", destinationString)
+	destinationString := fmt.Sprintf("platform=%s Simulator,OS=%s,name=%s", config.os, config.osVersion, config.device)
+	unitTestCommand := exec.Command("xcodebuild", "test", "-workspace", "Fleet.xcworkspace", "-scheme", config.schemeName, "-destination", destinationString)
 	xcprettyCommand := exec.Command("xcpretty")
 	xcprettyCommand.Stdin, err = unitTestCommand.StdoutPipe()
 	if err != nil {

@@ -8,7 +8,9 @@
 
 3) In your test target, navigate to the `Link Binary with Libraries` section, and add `Fleet.framework`.
 
-4) *(The following step is only necessary if you are using Fleet's storyboard-related features)*
+4) In your test target, navigate to the `Target Dependencies` section, and add `Fleet`.
+
+5) *(The following step is only necessary if you are using Fleet's storyboard-related features)*
 To your test target, add a `Run Script`. The script will run a shell script included in Fleet source. For example, if you added the submodule like this:
 
 `git submodule add http://github.com/jwfriese/Fleet Externals/Fleet`
@@ -21,6 +23,8 @@ The `Run Script` should look like this:
 
 1) Include Fleet in your `Podfile`:
 `pod 'Fleet'`
+
+Make sure to put this in the section of your `Podfile` calls for `iOS` as the platform.
 
 2) Run `pod install`
 

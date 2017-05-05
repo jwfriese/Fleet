@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder.AppleTV.Storyboard" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="AppleTV" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="dN1-he-cnP">
+    <device id="appleTV" orientation="landscape">
+        <adaptation id="light"/>
+    </device>
+    <dependencies>
+        <deployment identifier="tvOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Navigation Controller-->
+        <scene sceneID="dc0-Ob-iA6">
+            <objects>
+                <navigationController id="dN1-he-cnP" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="u1U-me-hG6">
+                        <rect key="frame" x="0.0" y="0.0" width="1920" height="145"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="oNf-Gx-gVW" kind="relationship" relationship="rootViewController" id="463-7w-x23"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="b44-3E-kr2" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1114" y="61"/>
+        </scene>
+        <!--Birds View Controller-->
+        <scene sceneID="3g9-AH-vZT">
+            <objects>
+                <viewController storyboardIdentifier="BirdsViewController" id="oNf-Gx-gVW" customClass="BirdsViewController" customModule="FleetTestApp_tvOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="aXA-2w-VIb"/>
+                        <viewControllerLayoutGuide type="bottom" id="bLh-Gp-7hb"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="bPN-cY-U9I">
+                        <rect key="frame" x="0.0" y="0.0" width="1920" height="1080"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="66" sectionHeaderHeight="66" sectionFooterHeight="66" translatesAutoresizingMaskIntoConstraints="NO" id="HN6-FP-djx">
+                                <rect key="frame" x="20" y="145" width="1880" height="790"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="oNf-Gx-gVW" id="4oe-6L-qGf"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="HN6-FP-djx" firstAttribute="top" secondItem="aXA-2w-VIb" secondAttribute="bottom" id="1QE-Sy-pan"/>
+                            <constraint firstItem="HN6-FP-djx" firstAttribute="centerX" secondItem="bPN-cY-U9I" secondAttribute="centerX" id="5ve-dj-X9z"/>
+                            <constraint firstItem="HN6-FP-djx" firstAttribute="leading" secondItem="bPN-cY-U9I" secondAttribute="leadingMargin" id="9EZ-dv-REd"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="HN6-FP-djx" secondAttribute="trailing" id="9Ze-IV-A7Q"/>
+                            <constraint firstItem="HN6-FP-djx" firstAttribute="centerY" secondItem="bPN-cY-U9I" secondAttribute="centerY" id="jJB-iO-Am6"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="8m8-AS-2dY"/>
+                    <connections>
+                        <outlet property="birdsTableView" destination="HN6-FP-djx" id="fqX-5O-LLK"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="YPH-d3-fcL" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1443" y="61"/>
+        </scene>
+    </scenes>
+</document>
