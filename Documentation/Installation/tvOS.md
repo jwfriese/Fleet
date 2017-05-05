@@ -8,7 +8,7 @@
 
 3) In your test target, navigate to the `Link Binary with Libraries` section, and add `Fleet.framework`.
 
-4) In your test target, navigate to the `Target Dependencies` section, and add `Fleet`.
+4) In your test target, navigate to the `Target Dependencies` section, and add `Fleet-tvOS`.
 
 5) *(The following step is only necessary if you are using Fleet's storyboard-related features)*
 To your test target, add a `Run Script`. The script will run a shell script included in Fleet source. For example, if you added the submodule like this:
@@ -24,7 +24,7 @@ The `Run Script` should look like this:
 1) Include Fleet in your `Podfile`:
 `pod 'Fleet'`
 
-Make sure to put this in the section of your `Podfile` calls for `iOS` as the platform.
+Make sure to put this in the section of your `Podfile` calls for `tvOS` as the platform.
 
 2) Run `pod install`
 
@@ -38,9 +38,9 @@ To your test target, add a `Run Script`. The script will run a shell script pres
 1) Include Fleet in your `Cartfile`:
 `github "jwfriese/Fleet"`
 
-2) Run `carthage update --platform 'iOS'`
+2) Run `carthage update --platform 'tvOS'`
 
-3) In your test target, navigate to the `Link Binary with Libraries` section, and add `Fleet.framework`, which you should be able to find in your `Carthage/Build/iOS` directory
+3) In your test target, navigate to the `Link Binary with Libraries` section, and add `Fleet.framework`, which you should be able to find in your `Carthage/Build/tvOS` directory
 
 4) To your test target, add a `Run Script` to call the Carthage `copy-frameworks` script:
 
@@ -48,11 +48,11 @@ To your test target, add a `Run Script`. The script will run a shell script pres
 
 Additionally, add as an input file Fleet's framework. The path probably looks something like this:
 
-`$(SRCROOT)/Carthage/Build/iOS/Fleet.framework`
+`$(SRCROOT)/Carthage/Build/tvOS/Fleet.framework`
 
 5) *(The following step is only necessary if you are using Fleet's storyboard-related features)*
 To your test target, add a `Run Script`. The script will run a shell script included in the framework. Assuming your `Carthage` directory is in your source root, your `Run Script` would look like this:
 
-`"$PROJECT_DIR/Carthage/Build/iOS/Fleet.framework/copy_storyboard_info_files.sh"`
+`"$PROJECT_DIR/Carthage/Build/tvOS/Fleet.framework/copy_storyboard_info_files.sh"`
 
 For further reference see [Carthage's documentation](https://github.com/Carthage/Carthage/blob/master/README.md).
