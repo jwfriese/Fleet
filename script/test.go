@@ -28,7 +28,7 @@ func runTestsForiOS() {
 func runTestsFortvOS() {
 	tvOSConfig := &testConfig{
 		os:         "tvOS",
-		osVersion:  "10.2",
+		osVersion:  "10.0",
 		device:     "Apple TV 1080p",
 		schemeName: "Fleet-tvOS",
 	}
