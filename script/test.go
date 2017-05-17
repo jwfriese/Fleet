@@ -17,7 +17,7 @@ func main() {
 func runTestsForiOS() {
 	iOSConfig := &testConfig{
 		os:         "iOS",
-		osVersion:  "10.3",
+		osVersion:  "10.1",
 		device:     "iPhone 7",
 		schemeName: "Fleet",
 	}
