@@ -58,5 +58,3 @@ contains many examples of basic tests that you'll likely write in any Swift iOS 
 For more complicated, larger-scale projects that use Fleet, check out the following projects:
 
 [FrequentFlyer](https://github.com/jwfriese/FrequentFlyer)
-
-[GetDoRepeat](https://github.com/jwfriese/GetDoRepeat)
