@@ -44,7 +44,7 @@ extension UIViewController {
         method_exchangeImplementations(originalMethod, swizzledMethod)
     }
 
-    func fleet_viewDidLoad() {
+    @objc func fleet_viewDidLoad() {
         fleet_viewDidLoad()
         viewDidLoadCallCount += 1
     }
@@ -59,7 +59,7 @@ extension UIViewController {
         method_exchangeImplementations(originalMethod, swizzledMethod)
     }
 
-    func fleet_present(viewController: UIViewController, animated: Bool, completion: (() -> ())?) {
+    @objc func fleet_present(viewController: UIViewController, animated: Bool, completion: (() -> ())?) {
         fleet_present(viewController: viewController, animated: false, completion: completion)
     }
 
@@ -73,7 +73,7 @@ extension UIViewController {
         method_exchangeImplementations(originalMethod, swizzledMethod)
     }
 
-    func fleet_dismiss(animated: Bool, completion: (() -> ())?) {
+    @objc func fleet_dismiss(animated: Bool, completion: (() -> ())?) {
         fleet_dismiss(animated: false, completion: completion)
     }
 }

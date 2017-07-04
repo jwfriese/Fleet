@@ -236,7 +236,7 @@ extension UIStoryboard {
         method_exchangeImplementations(originalMethod, swizzledMethod)
     }
 
-    func fleet_instantiateViewController(withIdentifier identifier: String) -> UIViewController {
+    @objc func fleet_instantiateViewController(withIdentifier identifier: String) -> UIViewController {
         if let storyboardBindingIdentifier = storyboardBindingIdentifier {
             if let storyboardInstanceBinding = storyboardInstanceBindingMap[storyboardBindingIdentifier] {
                 if let boundInstance = storyboardInstanceBinding.viewController(forIdentifier: identifier) {

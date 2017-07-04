@@ -11,7 +11,7 @@ extension UINavigationController {
         method_exchangeImplementations(originalMethod, swizzledMethod)
     }
 
-    func fleet_pushViewController(_ viewController: UIViewController, animated: Bool) {
+    @objc func fleet_pushViewController(_ viewController: UIViewController, animated: Bool) {
         var newViewControllers = self.viewControllers
         newViewControllers.append(viewController)
         self.setViewControllers(newViewControllers, animated: false)
@@ -28,7 +28,7 @@ extension UINavigationController {
         method_exchangeImplementations(originalMethod, swizzledMethod)
     }
 
-    func fleet_popViewControllerAnimated(_ animated: Bool) -> UIViewController? {
+    @objc func fleet_popViewControllerAnimated(_ animated: Bool) -> UIViewController? {
         var newViewControllers = self.viewControllers
         let poppedViewController = newViewControllers.removeLast()
         self.setViewControllers(newViewControllers, animated: false)
@@ -45,7 +45,7 @@ extension UINavigationController {
         method_exchangeImplementations(originalMethod, swizzledMethod)
     }
 
-    func fleet_popToViewController(_ viewController: UIViewController, animated: Bool) -> [UIViewController]? {
+    @objc func fleet_popToViewController(_ viewController: UIViewController, animated: Bool) -> [UIViewController]? {
         return fleet_popToViewController(viewController, animated: false)
     }
 
@@ -59,7 +59,7 @@ extension UINavigationController {
         method_exchangeImplementations(originalMethod, swizzledMethod)
     }
 
-    func fleet_popToRootViewControllerAnimated(_ animated: Bool) -> [UIViewController]? {
+    @objc func fleet_popToRootViewControllerAnimated(_ animated: Bool) -> [UIViewController]? {
         return fleet_popToRootViewControllerAnimated(false)
     }
 }

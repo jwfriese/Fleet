@@ -18,9 +18,7 @@ class StoryboardDeserializer {
         var reference = StoryboardReferenceMap()
         guard let storyboardInfoDictionary = NSDictionary(contentsOfFile: storyboardPath) else { return reference }
         if let nibNameDictionary = storyboardInfoDictionary["UIViewControllerIdentifiersToNibNames"] as? [String : String] {
-            reference.viewControllerIdentifiers = nibNameDictionary.map() { (key, value) in
-                return key
-            }
+            reference.viewControllerIdentifiers = Array(nibNameDictionary.keys)
         }
 
         let externalReferencesKey = "UIViewControllerIdentifiersToExternalStoryboardReferences"

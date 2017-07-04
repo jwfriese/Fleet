@@ -11,7 +11,7 @@ import Nimble
 fileprivate class TestTarget: NSObject {
     var didCallAction = false
 
-    func action() {
+    @objc func action() {
         didCallAction = true
     }
 }

@@ -43,7 +43,7 @@ extension UITableView {
     public func fetchCell<T>(at indexPath: IndexPath, asType type: T.Type) throws -> T where T: UITableViewCell {
         let cell = try fetchCell(at: indexPath)
         guard let castedCell = cell as? T else {
-            FleetError(Fleet.TableViewError.mismatchedCellType(at: indexPath, foundType: type(of: cell), requestedType: type)).raise()
+            FleetError(Fleet.TableViewError.mismatchedCellType(at: indexPath, foundType: Swift.type(of: cell), requestedType: type)).raise()
             return T()
         }
         return castedCell

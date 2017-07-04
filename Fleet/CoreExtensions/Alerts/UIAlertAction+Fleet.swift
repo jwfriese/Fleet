@@ -28,7 +28,7 @@ extension UIAlertAction {
         method_exchangeImplementations(originalMethod, swizzledMethod)
     }
 
-    func fleet_setHandler(_ handler: ((UIAlertAction) -> Void)?) {
+    @objc func fleet_setHandler(_ handler: ((UIAlertAction) -> Void)?) {
         fleet_property_handler = handler
         fleet_setHandler(handler)
     }

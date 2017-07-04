@@ -145,7 +145,7 @@ class UITableView_SelectRowSpec: XCTestCase {
 
         class Listener: NSObject {
             fileprivate var callCount = 0
-            func listen() {
+            @objc func listen() {
                 callCount += 1
             }
         }
