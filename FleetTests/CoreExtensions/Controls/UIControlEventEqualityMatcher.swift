@@ -1,48 +1,63 @@
 import UIKit
 import Nimble
 
-func equal(_ expectedValue: UIControlEvents?) -> NonNilMatcherFunc<UIControlEvents> {
-    return NonNilMatcherFunc { actualExpression, failureMessage in
+func equal(_ expectedValue: UIControlEvents?) -> Predicate<UIControlEvents> {
+    return Predicate { actualExpression in
         guard let expectedValue = expectedValue else {
-            failureMessage.postfixMessage = "equal <nil>"
-            failureMessage.postfixActual = " (use beNil() to match nils)"
-            return false
+            return PredicateResult(
+                status: .doesNotMatch,
+                message: .expectedTo("(use beNil() to match nils)")
+            )
         }
-        failureMessage.postfixMessage = "equal <\(expectedValue.toString())>"
+
+        let errorMessage: ExpectationMessage =
+            .expectedActualValueTo("equal <\(stringify(expectedValue))>")
         guard let actualValue = try actualExpression.evaluate() else {
-            failureMessage.postfixActual = " (use beNil() to match nils)"
-            return false
+            return PredicateResult(
+                status: .doesNotMatch,
+                message: errorMessage.appendedBeNilHint()
+            )
         }
 
         let matches = actualValue.rawValue == expectedValue.rawValue
         if !matches {
-            failureMessage.postfixActual = ", but was <\(actualValue.toString())>"
+            return PredicateResult(
+                status: .doesNotMatch,
+                message: .expectedCustomValueTo("equal \(stringify(expectedValue))", "<\(stringify(actualValue))>")
+            )
         }
 
-        return matches
-    }
+        return PredicateResult(status: .matches, message: errorMessage)
+    }.requireNonNil
 }
 
-func equal(_ expectedValue: [UIControlEvents]?) -> NonNilMatcherFunc<[UIControlEvents]> {
-    return NonNilMatcherFunc { actualExpression, failureMessage in
+func equal(_ expectedValue: [UIControlEvents]?) -> Predicate<[UIControlEvents]> {
+    return Predicate { actualExpression in
         guard let expectedValue = expectedValue else {
-            failureMessage.postfixMessage = "equal <nil>"
-            failureMessage.postfixActual = " (use beNil() to match nils)"
-            return false
+            return PredicateResult(
+                status: .doesNotMatch,
+                message: .expectedTo("(use beNil() to match nils)")
+            )
         }
-        failureMessage.postfixMessage = "equal <\(allToString(controlEvents: expectedValue))>"
+        let errorMessage: ExpectationMessage =
+            .expectedActualValueTo("equal <\(allToString(controlEvents: expectedValue))>")
         guard let actualValue = try actualExpression.evaluate() else {
-            failureMessage.postfixActual = " (use beNil() to match nils)"
-            return false
+            return PredicateResult(
+                status: .doesNotMatch,
+                message: errorMessage.appendedBeNilHint()
+            )
         }
 
         let matches = actualValue.elementsEqual(expectedValue)
 
         if !matches {
-            failureMessage.actualValue = ", but was <\(allToString(controlEvents: actualValue))>"
+            return PredicateResult(
+                status: .doesNotMatch,
+                message: .expectedCustomValueTo("equal \(stringify(expectedValue))", "<\(allToString(controlEvents: actualValue))>")
+            )
         }
 
-        return matches
+        return PredicateResult(status: .matches, message: errorMessage)
     }
 }
 
