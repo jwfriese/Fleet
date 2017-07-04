@@ -19,6 +19,11 @@ class UITextField_FleetSpec: XCTestCase {
         try! Test.embedViewIntoMainApplicationWindow(subject)
     }
 
+    override func tearDown() {
+        subject.removeFromSuperview()
+        super.tearDown()
+    }
+
     func createCompleteTextFieldAndDelegate() -> (textField: UITextField, delegate: TestTextFieldDelegate) {
         let textField = UITextField(frame: CGRect(x: 100,y: 100,width: 100,height: 100))
         let delegate = TestTextFieldDelegate()

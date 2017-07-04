@@ -15,6 +15,11 @@ class UITextView_FleetSpec: XCTestCase {
         try! Test.embedViewIntoMainApplicationWindow(subject)
     }
 
+    override func tearDown() {
+        subject.removeFromSuperview()
+        super.tearDown()
+    }
+
     func createCompleteTextViewAndDelegate() -> (textView: UITextView, delegate: TestTextViewDelegate) {
         let textView = UITextView(frame: CGRect(x: 100,y: 100,width: 100,height: 100))
         let delegate = TestTextViewDelegate()
