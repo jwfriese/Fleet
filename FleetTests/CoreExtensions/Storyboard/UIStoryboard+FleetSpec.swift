@@ -17,6 +17,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        continueAfterFailure = false
 
         turtlesAndFriendsStoryboard = UIStoryboard(name: "TurtlesAndFriendsStoryboard", bundle: nil)
     }

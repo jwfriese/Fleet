@@ -5,6 +5,11 @@ import Fleet
 @testable import FleetTestApp
 
 class UIAlertController_FleetSpec: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+    }
+
     func test_tapAlertActionWithTitle_whenActionWithThatTitleExistsOnAlert_executesTheActionHandlerAfterDismissingAlert() {
         let rootViewController = UIViewController()
         Fleet.setAsAppWindowRoot(rootViewController)

@@ -21,6 +21,9 @@ class UIBarButtonItem_FleetSpec: XCTestCase {
     fileprivate var testTarget: TestTarget!
 
     override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+
         let viewController = UIViewController()
         let navigationController = UINavigationController(rootViewController: viewController)
 

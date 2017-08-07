@@ -3,6 +3,11 @@ import Fleet
 import Nimble
 
 class UIButton_FleetSpec: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+    }
+
     func test_tap_whenButtonIsVisibleAndEnabled_tapsTheButton() {
         let subject = UIButton()
         subject.isHidden = false

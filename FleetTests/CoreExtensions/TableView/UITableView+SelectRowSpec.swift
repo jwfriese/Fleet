@@ -9,6 +9,11 @@ import Nimble
 #endif
 
 class UITableView_SelectRowSpec: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+    }
+
     func test_selectRow_whenACellExistsAtThatIndexPath_selectsTheCell() {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController

@@ -4,6 +4,11 @@ import Nimble
 @testable import Fleet
 
 class UIViewController_FleetInternalSpec: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+    }
+
     func test_viewDidLoadCallCountProperty_beforeTheViewControllerViewLoads_returns0() {
         let viewController = UIViewController()
         expect(viewController.viewDidLoadCallCount).to(equal(0))

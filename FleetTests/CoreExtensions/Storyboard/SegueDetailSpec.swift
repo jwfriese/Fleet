@@ -9,6 +9,11 @@ import Nimble
 #endif
 
 class SegueDetailSpec: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+    }
+
     func test_bindingViewControllersInSegues_doesNotCallViewDidLoadBeforePrepareForSegue() {
         let storyboard = UIStoryboard(name: "PuppyStoryboard", bundle: nil)
         let corgiViewController = CorgiViewController()

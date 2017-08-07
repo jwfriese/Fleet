@@ -5,6 +5,11 @@ import Nimble
 @testable import FleetTestApp
 
 class UITableView_SelectCellActionSpec: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+    }
+
     func test_selectCellAction_whenTheActionExists_performsTheAction() {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController

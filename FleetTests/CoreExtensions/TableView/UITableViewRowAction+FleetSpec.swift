@@ -4,6 +4,11 @@ import Nimble
 @testable import Fleet
 
 class UITableViewRowAction_FleetSpec: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+    }
+
     func test_handler_returnsTheHandlerUsedToInitializeAction() {
         var didFireHandler = false
 

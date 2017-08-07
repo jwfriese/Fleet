@@ -14,6 +14,11 @@ class UINavigationController_FleetSpec: XCTestCase {
         }
     }
 
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+    }
+
     func test_pushViewController_immediatelySetsTheViewControllerAsTheTopController() {
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)

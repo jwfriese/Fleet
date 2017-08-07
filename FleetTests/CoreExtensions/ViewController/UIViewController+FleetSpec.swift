@@ -12,6 +12,11 @@ class UIViewController_FleetSpec: XCTestCase {
         }
     }
 
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+    }
+
     func test_presentViewController_immediatelyPresentsTheViewController() {
         let bottom = UIViewController()
         Fleet.setAsAppWindowRoot(bottom)

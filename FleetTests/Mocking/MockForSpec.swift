@@ -33,6 +33,11 @@ fileprivate class MockForSpecViewController: UIViewController {
 }
 
 class MockForSpec: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+    }
+
     func test_mockFor_whenGivenAViewControllerClass_returnsMockThatIsASubclassOfTheGivenClass() {
         let mock = try! Fleet.mockFor(MockForSpecViewController.self)
         expect(mock).toNot(beNil())

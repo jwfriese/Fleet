@@ -29,6 +29,7 @@ class UITableView_FetchCellSpec: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        continueAfterFailure = false
 
         dataSource = TestTableViewDataSource()
 

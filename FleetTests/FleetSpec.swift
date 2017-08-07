@@ -18,6 +18,7 @@ class FleetSpec: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        continueAfterFailure = false
 
         appWindowRootViewController = UIViewController()
         Fleet.setAsAppWindowRoot(appWindowRootViewController)

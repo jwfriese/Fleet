@@ -7,6 +7,11 @@ fileprivate class ChildClassUIViewController: UIViewController {}
 fileprivate class GrandchildClassUIViewController: ChildClassUIViewController {}
 
 class IsClassKindOfSpec: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+    }
+
     func test_isClassKindOf_whenFirstArgClassIsIdentifcalToSecondArgClass_returnsTrue() {
         expect(FleetObjC._isClass(UIViewController.self, kindOf: UIViewController.self)).to(beTrue())
     }

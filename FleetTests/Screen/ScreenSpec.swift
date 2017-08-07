@@ -9,6 +9,11 @@ import Nimble
 #endif
 
 class ScreenSpec: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+    }
+
     func test_topmostViewController_returnsTopmostViewController() {
         let window = UIWindow()
         let rootViewController = UIViewController()

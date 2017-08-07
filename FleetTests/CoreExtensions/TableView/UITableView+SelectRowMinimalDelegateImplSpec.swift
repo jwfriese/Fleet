@@ -21,6 +21,11 @@ extension MinimallyImplementedDelegate: UITableViewDataSource {
 }
 
 class UITableView_SelectRowMinimalDelegateImplSpec: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+    }
+
     func test_selectRow_whenTheDelegateDoesNotImplementWillSelect_stillSelectsRow() {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController

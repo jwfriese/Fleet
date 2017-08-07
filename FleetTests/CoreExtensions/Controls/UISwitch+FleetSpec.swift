@@ -3,6 +3,11 @@ import Fleet
 import Nimble
 
 class UISwitch_FleetSpec: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+    }
+
     func test_flip_whenSwitchIsVisibleAndEnabled_togglesTheValueOfTheSwitch() {
         let subject = UISwitch()
         subject.isHidden = false

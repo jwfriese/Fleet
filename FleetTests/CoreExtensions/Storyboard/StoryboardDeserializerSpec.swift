@@ -9,6 +9,11 @@ import Nimble
 #endif
 
 class StoryboardDeserializerSpec: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+    }
+
     func test_deserializingStoryboard_whenStoryboardWithNameInBundleCannotBeFound_raisesException() {
         let deserializer = StoryboardDeserializer()
         expect { _ = try deserializer.deserializeStoryboard(withName: "garbage") }.to(
