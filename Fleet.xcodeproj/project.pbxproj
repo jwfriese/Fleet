@@ -99,6 +99,7 @@
 		7B4957531EB99E3900F00977 /* KittensStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B49574C1EB99E3900F00977 /* KittensStoryboard.storyboard */; };
 		7B4957541EB99E3900F00977 /* PuppyStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B49574D1EB99E3900F00977 /* PuppyStoryboard.storyboard */; };
 		7B4957551EB99E3900F00977 /* TurtlesAndFriendsStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B49574E1EB99E3900F00977 /* TurtlesAndFriendsStoryboard.storyboard */; };
+		7B6724901F3B4562008FE29E /* NotificationListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B67248F1F3B4562008FE29E /* NotificationListener.swift */; };
 		7B675E7D1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E7C1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift */; };
 		7B675E821D0C5372002E6B45 /* UIBarButtonItem+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E811D0C5372002E6B45 /* UIBarButtonItem+Fleet.swift */; };
 		7B675E891D0C5AFB002E6B45 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E881D0C5AFB002E6B45 /* Logger.swift */; };
@@ -233,6 +234,7 @@
 		7B49574C1EB99E3900F00977 /* KittensStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = KittensStoryboard.storyboard; sourceTree = "<group>"; };
 		7B49574D1EB99E3900F00977 /* PuppyStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = PuppyStoryboard.storyboard; sourceTree = "<group>"; };
 		7B49574E1EB99E3900F00977 /* TurtlesAndFriendsStoryboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = TurtlesAndFriendsStoryboard.storyboard; sourceTree = "<group>"; };
+		7B67248F1F3B4562008FE29E /* NotificationListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationListener.swift; sourceTree = "<group>"; };
 		7B675E7C1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIBarButtonItem+FleetSpec.swift"; sourceTree = "<group>"; };
 		7B675E811D0C5372002E6B45 /* UIBarButtonItem+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIBarButtonItem+Fleet.swift"; sourceTree = "<group>"; };
 		7B675E881D0C5AFB002E6B45 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
@@ -623,6 +625,7 @@
 			children = (
 				7BA4B1931E3565020052A2A7 /* EmbedView.swift */,
 				7BA90ADE1CC3F6C50040B031 /* File.swift */,
+				7B67248F1F3B4562008FE29E /* NotificationListener.swift */,
 				7BA4B1951E35652A0052A2A7 /* Test.swift */,
 			);
 			path = Helpers;
@@ -1189,6 +1192,7 @@
 				7BFABD641E3DA2EA002823B3 /* TestTextViewDelegate.swift in Sources */,
 				7B29F4251DDDEA60008EA836 /* SegueDetailSpec.swift in Sources */,
 				7BF913B31E3A4BC300019CF2 /* UIViewController+FleetSpec.swift in Sources */,
+				7B6724901F3B4562008FE29E /* NotificationListener.swift in Sources */,
 				7BA90ADF1CC3F6C50040B031 /* File.swift in Sources */,
 				7BB14A5F1D75065E002ABE82 /* UINavigationController+FleetSpec.swift in Sources */,
 				7BFABD6A1E3DA2F1002823B3 /* UISwitch+FleetSpec.swift in Sources */,

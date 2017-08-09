@@ -164,25 +164,18 @@ class UITableView_SelectRowSpec: XCTestCase {
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
 
-        class Listener: NSObject {
-            fileprivate var callCount = 0
-            @objc func listen() {
-                callCount += 1
-            }
-        }
-
-        let listener = Listener()
+        let listener = NotificationListener()
 
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(listener,
-                                       selector: #selector(Listener.listen),
+                                       selector: #selector(NotificationListener.listenFor(notification:)),
                                        name: NSNotification.Name.UITableViewSelectionDidChange,
                                        object: nil
         )
 
         try! viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
 
-        expect(listener.callCount).to(equal(1))
+        expect(listener.callCount(for: NSNotification.Name.UITableViewSelectionDidChange)).to(equal(1))
     }
 
     func test_selectRow_whenTableViewDoesNotHaveDataSource_raisesException() {
