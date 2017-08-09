@@ -94,6 +94,22 @@ class UITableView_SelectRowSpec: XCTestCase {
         expect(viewController.didDeselectRowCallCount).to(equal(0))
     }
 
+    func test_selectRow_whenTheDelegateChangesSelectionToAnotherIndexPath_selectsTheCellWithOtherIndexPath() {
+        let storyboard = UIStoryboard(name: "Birds", bundle: nil)
+        let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
+        let _ = viewController.view
+
+        // The controller reroutes selection of the third row to the second row.
+        try! viewController.birdsTableView?.selectRow(at: IndexPath(row: 2, section: 0))
+
+        guard let selectedIndexPath = viewController.birdsTableView?.indexPathForSelectedRow else {
+            fail("Failed to select row at index path (\(IndexPath(row: 2, section: 0))), which should have been rerouted")
+            return
+        }
+
+        expect(selectedIndexPath).to(equal(IndexPath(row: 1, section: 0)))
+    }
+
     func test_selectRow_whenTheDelegateChangesSelectionToAnotherIndexPath_callsDidSelectMethodWithOtherIndexPath() {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController

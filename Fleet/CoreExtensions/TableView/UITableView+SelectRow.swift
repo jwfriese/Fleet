@@ -54,7 +54,7 @@ extension UITableView {
             indexPathToSelect = unwrappedIndexPathToSelect
         }
 
-        selectRow(at: indexPath, animated: false, scrollPosition: .none)
+        selectRow(at: indexPathToSelect, animated: false, scrollPosition: .none)
         NotificationCenter.default.post(name: NSNotification.Name.UITableViewSelectionDidChange, object: nil)
 
         delegate?.tableView?(self, didSelectRowAt: indexPathToSelect)
