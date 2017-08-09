@@ -1,21 +1,15 @@
 import Foundation
 
 class NotificationListener: NSObject {
-    private var notificationsReceived: [Notification.Name : Int] = [:]
+    private(set) var notificationsReceived: [Notification.Name] = []
 
-    @objc func listenFor(notification: Notification) {
-        incrementCallCount(for: notification.name)
+    @objc func listenTo(notification: Notification) {
+        notificationsReceived.append(notification.name)
     }
 
     func callCount(for notificationType: Notification.Name) -> Int {
-        if let callCount = notificationsReceived[notificationType] {
-            return callCount
-        }
-
-        return 0
-    }
-
-    private func incrementCallCount(for notificationType: Notification.Name) {
-        notificationsReceived[notificationType] = (callCount(for: notificationType) + 1)
+        return notificationsReceived
+            .filter { $0 == notificationType }
+            .count
     }
 }

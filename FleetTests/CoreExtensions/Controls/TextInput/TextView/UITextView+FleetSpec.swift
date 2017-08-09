@@ -39,6 +39,31 @@ class UITextView_FleetSpec: XCTestCase {
         expect(self.subject.isFirstResponder).to(beTrue())
     }
 
+    func test_startEditing_postsToNotificationCenter() {
+        let notificationListener = NotificationListener()
+        NotificationCenter.default.addObserver(
+            notificationListener,
+            selector: #selector(NotificationListener.listenTo(notification:)),
+            name: NSNotification.Name.UIKeyboardWillShow,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            notificationListener,
+            selector: #selector(NotificationListener.listenTo(notification:)),
+            name: NSNotification.Name.UIKeyboardDidShow,
+            object: nil
+        )
+
+        try! subject.startEditing()
+
+        let expectedNotificationsInOrder = [
+            NSNotification.Name.UIKeyboardWillShow,
+            NSNotification.Name.UIKeyboardDidShow
+        ]
+
+        expect(notificationListener.notificationsReceived).toEventually(equal(expectedNotificationsInOrder))
+    }
+
     func test_startEditing_whenTextViewFailsToBecomeFirstResponder_raisesException() {
         // If the text view is not in the window, it will never succeed to become first responder.
         let textViewNotInWindow = UITextView(frame: CGRect(x: 100,y: 100,width: 100,height: 100))
@@ -165,6 +190,32 @@ class UITextView_FleetSpec: XCTestCase {
         expect(self.delegate.didCallShouldEndEditing).to(beTrue())
         expect(self.delegate.didCallDidEndEditing).to(beTrue())
         expect(self.subject.isFirstResponder).to(beFalse())
+    }
+    
+    func test_stopEditing_postsToNotificationCenter() {
+        let notificationListener = NotificationListener()
+        NotificationCenter.default.addObserver(
+            notificationListener,
+            selector: #selector(NotificationListener.listenTo(notification:)),
+            name: NSNotification.Name.UIKeyboardWillHide,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            notificationListener,
+            selector: #selector(NotificationListener.listenTo(notification:)),
+            name: NSNotification.Name.UIKeyboardDidHide,
+            object: nil
+        )
+        
+        try! subject.startEditing()
+        try! subject.stopEditing()
+        
+        let expectedNotificationsInOrder = [
+            NSNotification.Name.UIKeyboardWillHide,
+            NSNotification.Name.UIKeyboardDidHide
+        ]
+        
+        expect(notificationListener.notificationsReceived).toEventually(equal(expectedNotificationsInOrder))
     }
 
     func test_type_typesGivenTextIntoTextView() {

@@ -168,7 +168,7 @@ class UITableView_SelectRowSpec: XCTestCase {
 
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(listener,
-                                       selector: #selector(NotificationListener.listenFor(notification:)),
+                                       selector: #selector(NotificationListener.listenTo(notification:)),
                                        name: NSNotification.Name.UITableViewSelectionDidChange,
                                        object: nil
         )
