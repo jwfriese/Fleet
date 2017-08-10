@@ -19,20 +19,11 @@ extension UIAlertAction {
     }
 
     @objc class func swizzleHandlerSetter() {
-        let originalSelector = Selector(("setHandler:"))
-        let swizzledSelector = #selector(UIAlertAction.fleet_setHandler(_:))
-
-        guard let originalMethod = class_getInstanceMethod(self, originalSelector) else {
-            FleetError(Fleet.InternalError.unrecoverable(details: "Failed to swizzle on class \(UIAlertAction.self) - Original selector: \(originalSelector); New selector: \(swizzledSelector)")).raise()
-            return
-        }
-
-        guard let swizzledMethod = class_getInstanceMethod(self, swizzledSelector) else {
-            FleetError(Fleet.InternalError.unrecoverable(details: "Failed to swizzle on class \(UIAlertAction.self) - Original selector: \(originalSelector); New selector: \(swizzledSelector)")).raise()
-            return
-        }
-
-        method_exchangeImplementations(originalMethod, swizzledMethod)
+        Fleet.swizzle(
+            originalSelector: Selector(("setHandler:")),
+            swizzledSelector: #selector(UIAlertAction.fleet_setHandler(_:)),
+            forClass: self
+        )
     }
 
     @objc func fleet_setHandler(_ handler: ((UIAlertAction) -> Void)?) {

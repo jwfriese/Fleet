@@ -227,19 +227,11 @@ extension UIStoryboard {
     }
 
     @objc class func swizzleViewControllerInstantiationMethod() {
-        let originalSelector = #selector(UIStoryboard.instantiateViewController(withIdentifier:))
-        let swizzledSelector = #selector(UIStoryboard.fleet_instantiateViewController(withIdentifier:))
-
-        guard let originalMethod = class_getInstanceMethod(self, originalSelector) else {
-            FleetError(Fleet.InternalError.unrecoverable(details: "Failed to swizzle on class \(UIStoryboard.self) - Original selector: \(originalSelector); New selector: \(swizzledSelector)")).raise()
-            return
-        }
-        guard let swizzledMethod = class_getInstanceMethod(self, swizzledSelector) else {
-            FleetError(Fleet.InternalError.unrecoverable(details: "Failed to swizzle on class \(UIStoryboard.self) - Original selector: \(originalSelector); New selector: \(swizzledSelector)")).raise()
-            return
-        }
-
-        method_exchangeImplementations(originalMethod, swizzledMethod)
+        Fleet.swizzle(
+            originalSelector: #selector(UIStoryboard.instantiateViewController(withIdentifier:)),
+            swizzledSelector: #selector(UIStoryboard.fleet_instantiateViewController(withIdentifier:)),
+            forClass: self
+        )
     }
 
     @objc func fleet_instantiateViewController(withIdentifier identifier: String) -> UIViewController {

@@ -35,19 +35,11 @@ extension UIViewController {
     }
 
     @objc class func swizzleViewDidLoad() {
-        let originalSelector = #selector(UIViewController.viewDidLoad)
-        let swizzledSelector = #selector(UIViewController.fleet_viewDidLoad)
-
-        guard let originalMethod = class_getInstanceMethod(self, originalSelector) else {
-            FleetError(Fleet.InternalError.unrecoverable(details: "Failed to swizzle on class \(UIViewController.self) - Original selector: \(originalSelector); New selector: \(swizzledSelector)")).raise()
-            return
-        }
-        guard let swizzledMethod = class_getInstanceMethod(self, swizzledSelector) else {
-            FleetError(Fleet.InternalError.unrecoverable(details: "Failed to swizzle on class \(UIViewController.self) - Original selector: \(originalSelector); New selector: \(swizzledSelector)")).raise()
-            return
-        }
-
-        method_exchangeImplementations(originalMethod, swizzledMethod)
+        Fleet.swizzle(
+            originalSelector: #selector(UIViewController.viewDidLoad),
+            swizzledSelector: #selector(UIViewController.fleet_viewDidLoad),
+            forClass: self
+        )
     }
 
     @objc func fleet_viewDidLoad() {
@@ -56,19 +48,11 @@ extension UIViewController {
     }
 
     @objc class func swizzlePresent() {
-        let originalSelector = #selector(UIViewController.present(_:animated:completion:))
-        let swizzledSelector = #selector(UIViewController.fleet_present(viewController:animated:completion:))
-
-        guard let originalMethod = class_getInstanceMethod(self, originalSelector) else {
-            FleetError(Fleet.InternalError.unrecoverable(details: "Failed to swizzle on class \(UIViewController.self) - Original selector: \(originalSelector); New selector: \(swizzledSelector)")).raise()
-            return
-        }
-        guard let swizzledMethod = class_getInstanceMethod(self, swizzledSelector) else {
-            FleetError(Fleet.InternalError.unrecoverable(details: "Failed to swizzle on class \(UIViewController.self) - Original selector: \(originalSelector); New selector: \(swizzledSelector)")).raise()
-            return
-        }
-
-        method_exchangeImplementations(originalMethod, swizzledMethod)
+        Fleet.swizzle(
+            originalSelector: #selector(UIViewController.present(_:animated:completion:)),
+            swizzledSelector: #selector(UIViewController.fleet_present(viewController:animated:completion:)),
+            forClass: self
+        )
     }
 
     @objc func fleet_present(viewController: UIViewController, animated: Bool, completion: (() -> ())?) {
@@ -76,19 +60,11 @@ extension UIViewController {
     }
 
     @objc class func swizzleDismiss() {
-        let originalSelector = #selector(UIViewController.dismiss(animated:completion:))
-        let swizzledSelector = #selector(UIViewController.fleet_dismiss(animated:completion:))
-
-        guard let originalMethod = class_getInstanceMethod(self, originalSelector) else {
-            FleetError(Fleet.InternalError.unrecoverable(details: "Failed to swizzle on class \(UIViewController.self) - Original selector: \(originalSelector); New selector: \(swizzledSelector)")).raise()
-            return
-        }
-        guard let swizzledMethod = class_getInstanceMethod(self, swizzledSelector) else {
-            FleetError(Fleet.InternalError.unrecoverable(details: "Failed to swizzle on class \(UIViewController.self) - Original selector: \(originalSelector); New selector: \(swizzledSelector)")).raise()
-            return
-        }
-
-        method_exchangeImplementations(originalMethod, swizzledMethod)
+        Fleet.swizzle(
+            originalSelector: #selector(UIViewController.dismiss(animated:completion:)),
+            swizzledSelector: #selector(UIViewController.fleet_dismiss(animated:completion:)),
+            forClass: self
+        )
     }
 
     @objc func fleet_dismiss(animated: Bool, completion: (() -> ())?) {

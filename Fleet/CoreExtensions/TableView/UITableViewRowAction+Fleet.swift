@@ -31,19 +31,11 @@ extension UITableViewRowAction {
     }
 
     @objc class func swizzleInit() {
-        let originalSelector = Selector(("_initWithStyle:title:handler:"))
-        let swizzledSelector = #selector(UITableViewRowAction.fleet_init(withStyle:title:handler:))
-
-        guard let originalMethod = class_getInstanceMethod(self, originalSelector) else {
-            FleetError(Fleet.InternalError.unrecoverable(details: "Failed to swizzle on class \(UITableViewRowAction.self) - Original selector: \(originalSelector); New selector: \(swizzledSelector)")).raise()
-            return
-        }
-        guard let swizzledMethod = class_getInstanceMethod(self, swizzledSelector) else {
-            FleetError(Fleet.InternalError.unrecoverable(details: "Failed to swizzle on class \(UITableViewRowAction.self) - Original selector: \(originalSelector); New selector: \(swizzledSelector)")).raise()
-            return
-        }
-
-        method_exchangeImplementations(originalMethod, swizzledMethod)
+        Fleet.swizzle(
+            originalSelector: Selector(("_initWithStyle:title:handler:")),
+            swizzledSelector: #selector(UITableViewRowAction.fleet_init(withStyle:title:handler:)),
+            forClass: self
+        )
     }
 
     @objc func fleet_init(withStyle style: UITableViewRowActionStyle, title: String?, handler: @escaping ((UITableViewRowAction, IndexPath) -> Swift.Void)) -> UITableViewRowAction {
