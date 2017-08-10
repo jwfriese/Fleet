@@ -5,8 +5,14 @@ extension UINavigationController {
         let originalSelector = #selector(UINavigationController.pushViewController(_:animated:))
         let swizzledSelector = #selector(UINavigationController.fleet_pushViewController(_:animated:))
 
-        let originalMethod = class_getInstanceMethod(self, originalSelector)
-        let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
+        guard let originalMethod = class_getInstanceMethod(self, originalSelector) else {
+            FleetError(Fleet.InternalError.unrecoverable(details: "Failed to swizzle on class \(UINavigationController.self) - Original selector: \(originalSelector); New selector: \(swizzledSelector)")).raise()
+            return
+        }
+        guard let swizzledMethod = class_getInstanceMethod(self, swizzledSelector) else {
+            FleetError(Fleet.InternalError.unrecoverable(details: "Failed to swizzle on class \(UINavigationController.self) - Original selector: \(originalSelector); New selector: \(swizzledSelector)")).raise()
+            return
+        }
 
         method_exchangeImplementations(originalMethod, swizzledMethod)
     }
@@ -22,8 +28,14 @@ extension UINavigationController {
         let originalSelector = #selector(UINavigationController.popViewController(animated:))
         let swizzledSelector = #selector(UINavigationController.fleet_popViewControllerAnimated(_:))
 
-        let originalMethod = class_getInstanceMethod(self, originalSelector)
-        let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
+        guard let originalMethod = class_getInstanceMethod(self, originalSelector) else {
+            FleetError(Fleet.InternalError.unrecoverable(details: "Failed to swizzle on class \(UINavigationController.self) - Original selector: \(originalSelector); New selector: \(swizzledSelector)")).raise()
+            return
+        }
+        guard let swizzledMethod = class_getInstanceMethod(self, swizzledSelector) else {
+            FleetError(Fleet.InternalError.unrecoverable(details: "Failed to swizzle on class \(UINavigationController.self) - Original selector: \(originalSelector); New selector: \(swizzledSelector)")).raise()
+            return
+        }
 
         method_exchangeImplementations(originalMethod, swizzledMethod)
     }
@@ -39,8 +51,14 @@ extension UINavigationController {
         let originalSelector = #selector(UINavigationController.popToViewController(_:animated:))
         let swizzledSelector = #selector(UINavigationController.fleet_popToViewController(_:animated:))
 
-        let originalMethod = class_getInstanceMethod(self, originalSelector)
-        let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
+        guard let originalMethod = class_getInstanceMethod(self, originalSelector) else {
+            FleetError(Fleet.InternalError.unrecoverable(details: "Failed to swizzle on class \(UINavigationController.self) - Original selector: \(originalSelector); New selector: \(swizzledSelector)")).raise()
+            return
+        }
+        guard let swizzledMethod = class_getInstanceMethod(self, swizzledSelector) else {
+            FleetError(Fleet.InternalError.unrecoverable(details: "Failed to swizzle on class \(UINavigationController.self) - Original selector: \(originalSelector); New selector: \(swizzledSelector)")).raise()
+            return
+        }
 
         method_exchangeImplementations(originalMethod, swizzledMethod)
     }
@@ -53,8 +71,14 @@ extension UINavigationController {
         let originalSelector = #selector(UINavigationController.popToRootViewController(animated:))
         let swizzledSelector = #selector(UINavigationController.fleet_popToRootViewControllerAnimated(_:))
 
-        let originalMethod = class_getInstanceMethod(self, originalSelector)
-        let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
+        guard let originalMethod = class_getInstanceMethod(self, originalSelector) else {
+            FleetError(Fleet.InternalError.unrecoverable(details: "Failed to swizzle on class \(UINavigationController.self) - Original selector: \(originalSelector); New selector: \(swizzledSelector)")).raise()
+            return
+        }
+        guard let swizzledMethod = class_getInstanceMethod(self, swizzledSelector) else {
+            FleetError(Fleet.InternalError.unrecoverable(details: "Failed to swizzle on class \(UINavigationController.self) - Original selector: \(originalSelector); New selector: \(swizzledSelector)")).raise()
+            return
+        }
 
         method_exchangeImplementations(originalMethod, swizzledMethod)
     }

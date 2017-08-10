@@ -230,8 +230,14 @@ extension UIStoryboard {
         let originalSelector = #selector(UIStoryboard.instantiateViewController(withIdentifier:))
         let swizzledSelector = #selector(UIStoryboard.fleet_instantiateViewController(withIdentifier:))
 
-        let originalMethod = class_getInstanceMethod(self, originalSelector)
-        let swizzledMethod = class_getInstanceMethod(self, swizzledSelector)
+        guard let originalMethod = class_getInstanceMethod(self, originalSelector) else {
+            FleetError(Fleet.InternalError.unrecoverable(details: "Failed to swizzle on class \(UIStoryboard.self) - Original selector: \(originalSelector); New selector: \(swizzledSelector)")).raise()
+            return
+        }
+        guard let swizzledMethod = class_getInstanceMethod(self, swizzledSelector) else {
+            FleetError(Fleet.InternalError.unrecoverable(details: "Failed to swizzle on class \(UIStoryboard.self) - Original selector: \(originalSelector); New selector: \(swizzledSelector)")).raise()
+            return
+        }
 
         method_exchangeImplementations(originalMethod, swizzledMethod)
     }

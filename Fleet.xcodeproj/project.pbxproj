@@ -105,6 +105,8 @@
 		7B675E891D0C5AFB002E6B45 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E881D0C5AFB002E6B45 /* Logger.swift */; };
 		7B675E941D0DA7EA002E6B45 /* Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E931D0DA7EA002E6B45 /* Fleet.swift */; };
 		7B8586CB1EB6F265008EC4EE /* UITableView+SelectRowMinimalDelegateImplSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BEE35B41E15434A00302991 /* UITableView+SelectRowMinimalDelegateImplSpec.swift */; };
+		7B8DBD491F3BF9E000508E58 /* FleetInternalError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8DBD481F3BF9E000508E58 /* FleetInternalError.swift */; };
+		7B8DBD4A1F3BF9E000508E58 /* FleetInternalError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8DBD481F3BF9E000508E58 /* FleetInternalError.swift */; };
 		7B8F2B261DE12CC700B6F4C2 /* MockFor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8F2B251DE12CC700B6F4C2 /* MockFor.swift */; };
 		7B8F2B381DE258EB00B6F4C2 /* IsClassKindOfSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8F2B371DE258EB00B6F4C2 /* IsClassKindOfSpec.swift */; };
 		7B8F2B3B1DE2592C00B6F4C2 /* FleetObjC.h in Headers */ = {isa = PBXBuildFile; fileRef = 7B8F2B391DE2592C00B6F4C2 /* FleetObjC.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -239,6 +241,7 @@
 		7B675E811D0C5372002E6B45 /* UIBarButtonItem+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIBarButtonItem+Fleet.swift"; sourceTree = "<group>"; };
 		7B675E881D0C5AFB002E6B45 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		7B675E931D0DA7EA002E6B45 /* Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Fleet.swift; sourceTree = "<group>"; };
+		7B8DBD481F3BF9E000508E58 /* FleetInternalError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FleetInternalError.swift; sourceTree = "<group>"; };
 		7B8F2B251DE12CC700B6F4C2 /* MockFor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockFor.swift; sourceTree = "<group>"; };
 		7B8F2B371DE258EB00B6F4C2 /* IsClassKindOfSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IsClassKindOfSpec.swift; sourceTree = "<group>"; };
 		7B8F2B391DE2592C00B6F4C2 /* FleetObjC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FleetObjC.h; sourceTree = "<group>"; };
@@ -644,6 +647,7 @@
 			isa = PBXGroup;
 			children = (
 				7BDB63B21E47725600515C22 /* FleetError.swift */,
+				7B8DBD481F3BF9E000508E58 /* FleetInternalError.swift */,
 			);
 			path = Error;
 			sourceTree = "<group>";
@@ -1072,6 +1076,7 @@
 				7B0082231EB6D8F3006B8FED /* TableViewError.swift in Sources */,
 				7B0082311EB6D90A006B8FED /* UIBarButtonItem+Fleet.swift in Sources */,
 				7B0082331EB6D90A006B8FED /* UINavigationController+Fleet.swift in Sources */,
+				7B8DBD4A1F3BF9E000508E58 /* FleetInternalError.swift in Sources */,
 				7B00822A1EB6D901006B8FED /* UIStoryboard+Fleet.swift in Sources */,
 				7B00822E1EB6D901006B8FED /* StoryboardReferenceMap.swift in Sources */,
 				7B00821C1EB6D8DF006B8FED /* UIAlertAction+Fleet.m in Sources */,
@@ -1150,6 +1155,7 @@
 				7B9458101D4D7DFA00F16A64 /* StoryboardDeserializer.swift in Sources */,
 				7BDF62001E936BFB00990588 /* UIAlertAction+Fleet.swift in Sources */,
 				7BDF61EB1E935B4600990588 /* UIAlertAction+Fleet.m in Sources */,
+				7B8DBD491F3BF9E000508E58 /* FleetInternalError.swift in Sources */,
 				7B8F2B3C1DE2592C00B6F4C2 /* FleetObjC.m in Sources */,
 				7BFABD5C1E3DA2CD002823B3 /* UIButton+Fleet.swift in Sources */,
 				7BDF61F81E93671600990588 /* UINavigationController+Fleet.m in Sources */,
