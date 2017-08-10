@@ -56,12 +56,12 @@ class UITextView_FleetSpec: XCTestCase {
 
         try! subject.startEditing()
 
-        let expectedNotificationsInOrder = [
+        let expectedNotifications = [
             NSNotification.Name.UIKeyboardWillShow,
             NSNotification.Name.UIKeyboardDidShow
         ]
 
-        expect(notificationListener.notificationsReceived).toEventually(equal(expectedNotificationsInOrder))
+        expect(notificationListener.notificationsReceived).to(contain(expectedNotifications))
     }
 
     func test_startEditing_whenTextViewFailsToBecomeFirstResponder_raisesException() {
@@ -191,7 +191,7 @@ class UITextView_FleetSpec: XCTestCase {
         expect(self.delegate.didCallDidEndEditing).to(beTrue())
         expect(self.subject.isFirstResponder).to(beFalse())
     }
-    
+
     func test_stopEditing_postsToNotificationCenter() {
         let notificationListener = NotificationListener()
         NotificationCenter.default.addObserver(
@@ -206,16 +206,16 @@ class UITextView_FleetSpec: XCTestCase {
             name: NSNotification.Name.UIKeyboardDidHide,
             object: nil
         )
-        
+
         try! subject.startEditing()
         try! subject.stopEditing()
-        
-        let expectedNotificationsInOrder = [
+
+        let expectedNotifications = [
             NSNotification.Name.UIKeyboardWillHide,
             NSNotification.Name.UIKeyboardDidHide
         ]
-        
-        expect(notificationListener.notificationsReceived).toEventually(equal(expectedNotificationsInOrder))
+
+        expect(notificationListener.notificationsReceived).to(contain(expectedNotifications))
     }
 
     func test_type_typesGivenTextIntoTextView() {
