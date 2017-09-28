@@ -8,15 +8,12 @@ before_install:
 - export XCODEBUILD_PATH=$(which xcodebuild)
 - export PATH=$PATH:$XCODEBUILD_PATH
 - export PATH=$PATH:~/bin
-- mkdir ~/go
-- export GOPATH=~/go
 - brew update
-- gem install xcpretty --user-install -n~/bin
+- gem install xcpretty --user-install --no-rdoc --no-ri-n~/bin
+- gem install fastlane --no-rdoc --no-ri --user-install -n~/bin
 install:
 - xcrun simctl list
 - carthage update --platform 'iOS' 
 - carthage update --platform 'tvOS' 
-- go get github.com/jwfriese/iossimulator
 script:
-- go build script/test.go
 - ./test
