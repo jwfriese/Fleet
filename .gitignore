@@ -65,6 +65,7 @@ playground.xcworkspace
 
 fastlane/report.xml
 fastlane/screenshots
+test_output
 
 # The project maintains a Golang ecosystem, which we want to ignore most of. The only things to 
 # include are the files for the Go lib that this project is developing.
@@ -73,9 +74,6 @@ Testing/bin
 
 Testing/src/*
 !Testing/src/simulator
-
-# The binary produced for running tests
-test
 
 # The binary produced for trimming
 trim
