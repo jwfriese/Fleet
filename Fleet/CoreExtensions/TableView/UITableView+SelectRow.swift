@@ -14,7 +14,7 @@ extension UITableView {
      A `FleetError` if there is no cell at the given index path
      or if the table view does not allow selection ('allowsSelection' == false)
      */
-    public func selectRow(at indexPath: IndexPath) throws {
+    public func selectRow(at indexPath: IndexPath) {
         guard let _ = self.dataSource else {
             FleetError(Fleet.TableViewError.dataSourceRequired(userAction: "select cell row")).raise()
             return

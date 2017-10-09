@@ -11,7 +11,7 @@ extension UITableView {
      A `FleetError` if the table view does not have a data source or if the given
      index path does not exist on the table view.
      */
-    public func fetchCell(at indexPath: IndexPath) throws -> UITableViewCell {
+    public func fetchCell(at indexPath: IndexPath) -> UITableViewCell {
         guard let dataSource = self.dataSource else {
             FleetError(Fleet.TableViewError.dataSourceRequired(userAction: "fetch cells")).raise()
             return UITableViewCell()
@@ -40,8 +40,8 @@ extension UITableView {
      A `FleetError` if the table view does not have a data source, if the given
      index path does not exist on the table view, or if the cast to the given type fails.
      */
-    public func fetchCell<T>(at indexPath: IndexPath, asType type: T.Type) throws -> T where T: UITableViewCell {
-        let cell = try fetchCell(at: indexPath)
+    public func fetchCell<T>(at indexPath: IndexPath, asType type: T.Type) -> T where T: UITableViewCell {
+        let cell = fetchCell(at: indexPath)
         guard let castedCell = cell as? T else {
             FleetError(Fleet.TableViewError.mismatchedCellType(at: indexPath, foundType: Swift.type(of: cell), requestedType: type)).raise()
             return T()

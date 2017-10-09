@@ -14,10 +14,10 @@ class UISwitch_FleetSpec: XCTestCase {
         subject.isEnabled = true
         expect(subject.isOn).to(beFalse())
 
-        try! subject.flip()
+        subject.flip()
         expect(subject.isOn).to(beTrue())
 
-        try! subject.flip()
+        subject.flip()
         expect(subject.isOn).to(beFalse())
     }
 
@@ -28,7 +28,7 @@ class UISwitch_FleetSpec: XCTestCase {
         subject.isUserInteractionEnabled = false
         expect(subject.isOn).to(beFalse())
 
-        expect { try subject.flip() }.to(
+        expect { subject.flip() }.to(
             raiseException(named: "Fleet.SwitchError", reason: "Cannot flip UISwitch: View does not allow user interaction.", userInfo: nil, closure: nil)
         )
         expect(subject.isOn).to(beFalse())
@@ -40,7 +40,7 @@ class UISwitch_FleetSpec: XCTestCase {
         subject.isEnabled = true
         expect(subject.isOn).to(beFalse())
 
-        expect { try subject.flip() }.to(
+        expect { subject.flip() }.to(
             raiseException(named: "Fleet.SwitchError", reason: "Cannot flip UISwitch: Control is not visible.", userInfo: nil, closure: nil)
         )
         expect(subject.isOn).to(beFalse())
@@ -52,7 +52,7 @@ class UISwitch_FleetSpec: XCTestCase {
         subject.isEnabled = false
         expect(subject.isOn).to(beFalse())
 
-        expect { try subject.flip() }.to(
+        expect { subject.flip() }.to(
             raiseException(named: "Fleet.SwitchError", reason: "Cannot flip UISwitch: Control is not enabled.", userInfo: nil, closure: nil)
         )
         expect(subject.isOn).to(beFalse())
@@ -66,7 +66,7 @@ class UISwitch_FleetSpec: XCTestCase {
         let recorder = UIControlEventRecorder()
         recorder.registerAllEvents(for: subject)
 
-        try! subject.flip()
+        subject.flip()
         expect(recorder.recordedEvents).to(equal([
                 .valueChanged,
                 .touchUpInside,

@@ -30,7 +30,7 @@ extension UIBarButtonItem {
      A `FleetError` if the bar button is not enabled, if it does not have
      a target, or if it does not have an action.
      */
-    public func tap() throws {
+    public func tap() {
         guard isEnabled else {
             FleetError(Fleet.BarButtonItemError.controlUnavailable(message: "Control is not enabled.")).raise()
             return

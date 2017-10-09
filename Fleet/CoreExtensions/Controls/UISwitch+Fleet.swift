@@ -22,7 +22,7 @@ extension UISwitch {
      - throws:
      A `FleetError` if the switch is hidden, disabled, or if user interaction is disabled.
     */
-    public func flip() throws {
+    public func flip() {
         guard isUserInteractionEnabled else {
             FleetError(Fleet.SwitchError.controlUnavailable(message: "View does not allow user interaction.")).raise()
             return

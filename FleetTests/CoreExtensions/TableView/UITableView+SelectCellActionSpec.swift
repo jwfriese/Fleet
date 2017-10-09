@@ -15,7 +15,7 @@ class UITableView_SelectCellActionSpec: XCTestCase {
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         Fleet.setAsAppWindowRoot(viewController)
 
-        try! viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0))
+        viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0))
 
         var didPresentAlert = false
         let assertAlertPresentedWithCorrectData: () -> Bool = {
@@ -37,7 +37,7 @@ class UITableView_SelectCellActionSpec: XCTestCase {
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
 
-        try! viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0))
+        viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0))
         expect(viewController.willBeginEditingRowCallArgs.count).to(equal(1))
         expect(viewController.willBeginEditingRowCallArgs.first).to(equal(IndexPath(row: 10, section: 0)))
     }
@@ -47,7 +47,7 @@ class UITableView_SelectCellActionSpec: XCTestCase {
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
 
-        try! viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0))
+        viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0))
         expect(viewController.didEndEditingRowCallArgs.count).to(equal(1))
         expect(viewController.didEndEditingRowCallArgs.first).to(equal(IndexPath(row: 10, section: 0)))
     }
@@ -57,7 +57,7 @@ class UITableView_SelectCellActionSpec: XCTestCase {
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
 
-        expect { try viewController.birdsTableView?.selectCellAction(withTitle: "Four", at: IndexPath(row: 10, section: 0)) }.to(
+        expect { viewController.birdsTableView?.selectCellAction(withTitle: "Four", at: IndexPath(row: 10, section: 0)) }.to(
             raiseException(named: "Fleet.TableViewError", reason: "Could not find edit action with title 'Four' at row 10 in section 0.", userInfo: nil, closure: nil)
         )
     }
@@ -67,7 +67,7 @@ class UITableView_SelectCellActionSpec: XCTestCase {
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
 
-        expect { try viewController.birdsTableView?.selectCellAction(withTitle: "One", at: IndexPath(row: 1, section: 1)) }.to(
+        expect { viewController.birdsTableView?.selectCellAction(withTitle: "One", at: IndexPath(row: 1, section: 1)) }.to(
             raiseException(named: "Fleet.TableViewError", reason: "Table view has no section 1.", userInfo: nil, closure: nil)
         )
     }
@@ -77,7 +77,7 @@ class UITableView_SelectCellActionSpec: XCTestCase {
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
         let _ = viewController.view
 
-        expect { try viewController.birdsTableView?.selectCellAction(withTitle: "One", at: IndexPath(row: 100, section: 0)) }.to(
+        expect { viewController.birdsTableView?.selectCellAction(withTitle: "One", at: IndexPath(row: 100, section: 0)) }.to(
             raiseException(named: "Fleet.TableViewError", reason: "Table view has no row 100 in section 0.", userInfo: nil, closure: nil)
         )
     }
@@ -88,7 +88,7 @@ class UITableView_SelectCellActionSpec: XCTestCase {
         let _ = viewController.view
 
         // The fourth row in the table view is not editable
-        expect { try viewController.birdsTableView?.selectCellAction(withTitle: "One", at: IndexPath(row: 3, section: 0)) }.to(
+        expect { viewController.birdsTableView?.selectCellAction(withTitle: "One", at: IndexPath(row: 3, section: 0)) }.to(
             raiseException(named: "Fleet.TableViewError", reason: "Interaction with row 3 in section 0 rejected: Table view data source does not allow editing of that row.", userInfo: nil, closure: nil)
         )
     }
@@ -99,7 +99,7 @@ class UITableView_SelectCellActionSpec: XCTestCase {
         let _ = viewController.view
         viewController.birdsTableView?.dataSource = nil
 
-        expect { try viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0)) }.to(
+        expect { viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0)) }.to(
             raiseException(named: "Fleet.TableViewError", reason: "Data source required to select cell action.", userInfo: nil, closure: nil)
         )
     }
@@ -110,7 +110,7 @@ class UITableView_SelectCellActionSpec: XCTestCase {
         let _ = viewController.view
         viewController.birdsTableView?.delegate = nil
 
-        expect { try viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0)) }.to(
+        expect { viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0)) }.to(
             raiseException(named: "Fleet.TableViewError", reason: "Delegate required to select cell action.", userInfo: nil, closure: nil)
         )
     }
@@ -126,7 +126,7 @@ class UITableView_SelectCellActionSpec: XCTestCase {
         let minimalDelegate = MinimalDelegate()
         viewController.birdsTableView?.delegate = minimalDelegate
 
-        expect { try viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0)) }.to(
+        expect { viewController.birdsTableView?.selectCellAction(withTitle: "Two", at: IndexPath(row: 10, section: 0)) }.to(
             raiseException(named: "Fleet.TableViewError", reason: "Delegate must implement UITableViewDelegate.tableView(_:editActionsForRowAt:) to select cell action.", userInfo: nil, closure: nil)
         )
     }

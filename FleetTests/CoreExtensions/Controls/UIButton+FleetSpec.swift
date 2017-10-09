@@ -16,7 +16,7 @@ class UIButton_FleetSpec: XCTestCase {
         let recorder = UIControlEventRecorder()
         recorder.registerAllEvents(for: subject)
 
-        try! subject.tap()
+        subject.tap()
         expect(recorder.recordedEvents).to(equal([
             .touchDown,
             .allTouchEvents,
@@ -33,7 +33,7 @@ class UIButton_FleetSpec: XCTestCase {
         let recorder = UIControlEventRecorder()
         recorder.registerAllEvents(for: subject)
 
-        expect { try subject.tap() }.to(
+        expect { subject.tap() }.to(
             raiseException(named: "Fleet.ButtonError", reason: "Cannot tap UIButton: Control is not visible.", userInfo: nil, closure: nil)
         )
         expect(recorder.recordedEvents).to(equal([]))
@@ -47,7 +47,7 @@ class UIButton_FleetSpec: XCTestCase {
         let recorder = UIControlEventRecorder()
         recorder.registerAllEvents(for: subject)
 
-        expect { try subject.tap() }.to(
+        expect { subject.tap() }.to(
             raiseException(named: "Fleet.ButtonError", reason: "Cannot tap UIButton: Control is not enabled.", userInfo: nil, closure: nil)
         )
         expect(recorder.recordedEvents).to(equal([]))
@@ -62,7 +62,7 @@ class UIButton_FleetSpec: XCTestCase {
         let recorder = UIControlEventRecorder()
         recorder.registerAllEvents(for: subject)
 
-        expect { try subject.tap() }.to(
+        expect { subject.tap() }.to(
             raiseException(named: "Fleet.ButtonError", reason: "Cannot tap UIButton: View does not allow user interaction.", userInfo: nil, closure: nil)
         )
         expect(recorder.recordedEvents).to(equal([]))

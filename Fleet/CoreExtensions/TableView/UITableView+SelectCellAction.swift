@@ -14,7 +14,7 @@ extension UITableView {
      does not allow editing of the given index path, or if there is no edit action with the
      given title on the cell.
      */
-    public func selectCellAction(withTitle title: String, at indexPath: IndexPath) throws {
+    public func selectCellAction(withTitle title: String, at indexPath: IndexPath) {
         guard let dataSource = dataSource else {
             FleetError(Fleet.TableViewError.dataSourceRequired(userAction: "select cell action")).raise()
             return

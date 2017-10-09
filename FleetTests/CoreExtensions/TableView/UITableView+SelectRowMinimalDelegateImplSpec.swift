@@ -35,7 +35,7 @@ class UITableView_SelectRowMinimalDelegateImplSpec: XCTestCase {
         viewController.birdsTableView?.delegate = delegate
         viewController.birdsTableView?.dataSource = delegate
 
-        try! viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
+        viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
 
         guard let selectedIndexPath = viewController.birdsTableView?.indexPathForSelectedRow else {
             fail("Failed to select row at index path (\(IndexPath(row: 1, section: 0)))")
@@ -54,8 +54,8 @@ class UITableView_SelectRowMinimalDelegateImplSpec: XCTestCase {
         viewController.birdsTableView?.delegate = delegate
         viewController.birdsTableView?.dataSource = delegate
 
-        try! viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
-        try! viewController.birdsTableView?.selectRow(at: IndexPath(row: 4, section: 0))
+        viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
+        viewController.birdsTableView?.selectRow(at: IndexPath(row: 4, section: 0))
 
         guard let selectedIndexPaths = viewController.birdsTableView?.indexPathsForSelectedRows else {
             fail("Failed to select any rows")

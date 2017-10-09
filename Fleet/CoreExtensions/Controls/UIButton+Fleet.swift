@@ -23,7 +23,7 @@ extension UIButton {
      - throws:
      A `FleetError` if the button is hidden, disabled, or does not allow user interaction.
      */
-    public func tap() throws {
+    public func tap() {
         if !isUserInteractionEnabled {
             FleetError(Fleet.ButtonError.controlUnavailable("View does not allow user interaction.")).raise()
             return

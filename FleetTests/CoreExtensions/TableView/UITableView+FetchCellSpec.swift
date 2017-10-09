@@ -44,68 +44,68 @@ class UITableView_FetchCellSpec: XCTestCase {
     }
 
     func test_fetchCell_whenTheCellExists_returnsTheCell() {
-        let cell = try! subject.fetchCell(at: IndexPath(row: 0, section: 0))
+        let cell = subject.fetchCell(at: IndexPath(row: 0, section: 0))
         expect(cell).to(beAnInstanceOf(UITableViewCell.self))
     }
 
     func test_fetchCell_whenNoDataSource_raisesException() {
         subject.dataSource = nil
-        expect { try self.subject.fetchCell(at: IndexPath(row: 0, section: 0)) }.to(
+        expect { self.subject.fetchCell(at: IndexPath(row: 0, section: 0)) }.to(
             raiseException(named: "Fleet.TableViewError", reason: "Data source required to fetch cells.", userInfo: nil, closure: nil)
         )
     }
 
     func test_fetchCell_whenSectionInIndexPathDoesNotExist_raisesException() {
-        expect { try self.subject.fetchCell(at: IndexPath(row: 0, section: 1)) }.to(
+        expect { self.subject.fetchCell(at: IndexPath(row: 0, section: 1)) }.to(
             raiseException(named: "Fleet.TableViewError", reason: "Table view has no section 1.", userInfo: nil, closure: nil)
         )
-        expect { try self.subject.fetchCell(at: IndexPath(row: 0, section: -1)) }.to(
+        expect { self.subject.fetchCell(at: IndexPath(row: 0, section: -1)) }.to(
             raiseException(named: "Fleet.TableViewError", reason: "Table view has no section -1.", userInfo: nil, closure: nil)
         )
     }
 
     func test_fetchCell_whenRowInIndexPathDoesNotExist_raisesException() {
-        expect { try self.subject.fetchCell(at: IndexPath(row: 2, section: 0)) }.to(
+        expect { self.subject.fetchCell(at: IndexPath(row: 2, section: 0)) }.to(
             raiseException(named: "Fleet.TableViewError", reason: "Table view has no row 2 in section 0.", userInfo: nil, closure: nil)
         )
-        expect { try self.subject.fetchCell(at: IndexPath(row: -1, section: 0)) }.to(
+        expect { self.subject.fetchCell(at: IndexPath(row: -1, section: 0)) }.to(
             raiseException(named: "Fleet.TableViewError", reason: "Table view has no row -1 in section 0.", userInfo: nil, closure: nil)
         )
     }
 
     func test_fetchCellAsType_whenTheCellExists_returnsTheCellTypedCorrectly() {
-        expect { try self.subject.fetchCell(at: IndexPath(row: 1, section: 0), asType: TestTableViewCell.self) }.toNot(
+        expect { self.subject.fetchCell(at: IndexPath(row: 1, section: 0), asType: TestTableViewCell.self) }.toNot(
             raiseException()
         )
     }
 
     func test_fetchCellAsType_whenNoDataSource_raisesException() {
         subject.dataSource = nil
-        expect { try self.subject.fetchCell(at: IndexPath(row: 1, section: 0), asType: TestTableViewCell.self) }.to(
+        expect { self.subject.fetchCell(at: IndexPath(row: 1, section: 0), asType: TestTableViewCell.self) }.to(
             raiseException(named: "Fleet.TableViewError", reason: "Data source required to fetch cells.", userInfo: nil, closure: nil)
         )
     }
 
     func test_fetchCellAsType_whenSectionInIndexPathDoesNotExist_raisesException() {
-        expect { try self.subject.fetchCell(at: IndexPath(row: 0, section: 1), asType: TestTableViewCell.self) }.to(
+        expect { self.subject.fetchCell(at: IndexPath(row: 0, section: 1), asType: TestTableViewCell.self) }.to(
             raiseException(named: "Fleet.TableViewError", reason: "Table view has no section 1.", userInfo: nil, closure: nil)
         )
-        expect { try self.subject.fetchCell(at: IndexPath(row: 0, section: -1), asType: TestTableViewCell.self) }.to(
+        expect { self.subject.fetchCell(at: IndexPath(row: 0, section: -1), asType: TestTableViewCell.self) }.to(
             raiseException(named: "Fleet.TableViewError", reason: "Table view has no section -1.", userInfo: nil, closure: nil)
         )
     }
 
     func test_fetchCellAsType_whenRowInIndexPathDoesNotExist_raisesException() {
-        expect { try self.subject.fetchCell(at: IndexPath(row: 2, section: 0), asType: TestTableViewCell.self) }.to(
+        expect { self.subject.fetchCell(at: IndexPath(row: 2, section: 0), asType: TestTableViewCell.self) }.to(
             raiseException(named: "Fleet.TableViewError", reason: "Table view has no row 2 in section 0.", userInfo: nil, closure: nil)
         )
-        expect { try self.subject.fetchCell(at: IndexPath(row: -1, section: 0), asType: TestTableViewCell.self) }.to(
+        expect { self.subject.fetchCell(at: IndexPath(row: -1, section: 0), asType: TestTableViewCell.self) }.to(
             raiseException(named: "Fleet.TableViewError", reason: "Table view has no row -1 in section 0.", userInfo: nil, closure: nil)
         )
     }
 
     func test_fetchCellAsType_whenCellAtIndexPathIsNotOfRequestedType_raisesException() {
-        expect { try self.subject.fetchCell(at: IndexPath(row: 0, section: 0), asType: TestTableViewCell.self)  }.to(
+        expect { self.subject.fetchCell(at: IndexPath(row: 0, section: 0), asType: TestTableViewCell.self)  }.to(
             raiseException()
         )
     }
