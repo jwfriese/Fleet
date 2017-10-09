@@ -4,9 +4,9 @@ import Fleet
 import Nimble
 
 class CatchErrorSpec: XCTestCase {
-    func test_catchError_allowsCatchingOfFleetErrors() {
+    func test_swallowIfErrors_allowsCatchingOfFleetErrors() {
         let alert = UIAlertController(title: "title", message: "message", preferredStyle: .alert)
-        Fleet.do {
+        Fleet.swallowAnyErrors {
             alert.tapAlertAction(withTitle: "Title That's Not There")
         }
     }

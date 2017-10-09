@@ -1,11 +1,11 @@
 extension Fleet {
-    public static func `do`(_ throwable: @escaping () -> ()) {
+    public static func swallowAnyErrors(_ throwable: @escaping () -> ()) {
         do {
             try FleetObjC._catchException {
                 throwable()
             }
         } catch {
-            print("`Fleet.do` caught an error: \(error)")
+            print("`Fleet.swallowAnyErrors` caught an error: \(error)")
         }
     }
 }
