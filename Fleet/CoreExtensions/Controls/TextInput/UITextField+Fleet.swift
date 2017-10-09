@@ -45,10 +45,10 @@ extension UITextField {
      not enabled, if grabbing first responder fails for any reason, or if resigning first responder
      fails for any reason.
      */
-    public func enter(text: String) throws {
-        try startEditing()
-        try type(text: text)
-        try stopEditing()
+    public func enter(text: String) {
+        startEditing()
+        type(text: text)
+        stopEditing()
     }
 
     /**
@@ -58,7 +58,7 @@ extension UITextField {
      A `FleetError` if the text view is not available because it is hidden,
      not enabled, or if grabbing first responder fails for any reason.
      */
-    public func startEditing() throws {
+    public func startEditing() {
         if !isUserInteractionEnabled {
             FleetError(Fleet.TextFieldError.controlUnavailable("View does not allow user interaction.")).raise()
             return
@@ -96,7 +96,7 @@ extension UITextField {
      A `FleetError` if the text field does not have first responder focus, or if resigning
      first responder fails for any reason.
      */
-    public func stopEditing() throws {
+    public func stopEditing() {
         guard isFirstResponder else {
             FleetError(Fleet.TextFieldError.editingFlow("Must start editing the text field before you can stop editing it.")).raise()
             return
@@ -127,7 +127,7 @@ extension UITextField {
      - note:
      This method types the text at the end of any existing text.
      */
-    public func type(text newText: String) throws {
+    public func type(text newText: String) {
         guard isFirstResponder else {
             FleetError(Fleet.TextFieldError.editingFlow("Must start editing the text field before text can be typed into it.")).raise()
             return
@@ -165,7 +165,7 @@ extension UITextField {
      - note:
      This method pastes the text to the end of any existing text.
      */
-    public func paste(text textToPaste: String) throws {
+    public func paste(text textToPaste: String) {
         guard isFirstResponder else {
             FleetError(Fleet.TextFieldError.editingFlow("Must start editing the text field before text can be pasted into it.")).raise()
             return
@@ -199,7 +199,7 @@ extension UITextField {
      This method acts at the end of any existing text. That is, it will remove the last character of
      the `UITextField`'s existing text content.
      */
-    public func backspace() throws {
+    public func backspace() {
         guard isFirstResponder else {
             FleetError(Fleet.TextFieldError.editingFlow("Must start editing the text field before backspaces can be performed.")).raise()
             return
@@ -240,7 +240,7 @@ extension UITextField {
      - throws:
      A `FleetError` if the text field does not have first responder focus.
      */
-    public func backspaceAll() throws {
+    public func backspaceAll() {
         guard isFirstResponder else {
             FleetError(Fleet.TextFieldError.editingFlow("Must start editing the text field before backspaces can be performed.")).raise()
             return
@@ -252,7 +252,7 @@ extension UITextField {
         }
 
         for _ in 0..<characterCount {
-            try backspace()
+            backspace()
         }
     }
 
@@ -268,7 +268,7 @@ extension UITextField {
      state that does not allow clearing, if the text field is not enabled, or if it is not
      visible.
      */
-    public func clearText() throws {
+    public func clearText() {
         guard !isHidden else {
             FleetError(Fleet.TextFieldError.controlUnavailable("Text field is not visible.")).raise()
             return

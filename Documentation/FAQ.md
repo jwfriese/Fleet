@@ -58,8 +58,8 @@ The Fleet team has two general goals in mind as the framework develops:
 2) To provide better signalling when something goes wrong.
 
 Most of Fleet's API raises exceptions when stuff goes awry, and #2 is the reason. Fleet throws when
-something is wrong and needs to be addressed. Fleet raises NSExceptions instead of throwing Swift 
-errors so that these errors show up nicely in Xcode's editor. Fleet recommends that you resolve 
+something is wrong and needs to be addressed. Fleet raises NSExceptions instead of throwing Swift
+errors so that these errors show up nicely in Xcode's editor. Fleet recommends that you resolve
 whatever causes an error to throw in one of its API calls, but if you'd like to swallow a Fleet error
 and have your test proceed, Fleet gives you a way to do that too:
 

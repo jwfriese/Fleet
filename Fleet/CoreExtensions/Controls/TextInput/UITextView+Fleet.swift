@@ -40,10 +40,10 @@ extension UITextView {
      not selectable, not editable, if grabbing first responder fails for any reason, or if resigning
      first responder fails for any reason.
      */
-    public func enter(text: String) throws {
-        try startEditing()
-        try type(text: text)
-        try stopEditing()
+    public func enter(text: String) {
+        startEditing()
+        type(text: text)
+        stopEditing()
     }
 
     /**
@@ -53,7 +53,7 @@ extension UITextView {
      A `FleetError` if the text view is not available because it is hidden,
      not selectable, not editable, or if grabbing first responder fails for any reason.
      */
-    public func startEditing() throws {
+    public func startEditing() {
         if !isUserInteractionEnabled {
             FleetError(Fleet.TextViewError.controlUnavailable("View does not allow user interaction.")).raise()
             return
@@ -98,7 +98,7 @@ extension UITextView {
      A `FleetError` if the text view does not have first responder focus, or if resigning
      first responder fails for any reason.
      */
-    public func stopEditing() throws {
+    public func stopEditing() {
         guard isFirstResponder else {
             FleetError(Fleet.TextViewError.editingFlow("Must start editing the text view before you can stop editing it.")).raise()
             return
@@ -131,7 +131,7 @@ extension UITextView {
      - note:
      This method types the text at the end of any existing text.
      */
-    public func type(text newText: String) throws {
+    public func type(text newText: String) {
         guard isFirstResponder else {
             FleetError(Fleet.TextViewError.editingFlow("Must start editing the text view before text can be typed into it.")).raise()
             return
@@ -169,7 +169,7 @@ extension UITextView {
      - note:
      This method pastes the text to the end of any existing text.
      */
-    public func paste(text textToPaste: String) throws {
+    public func paste(text textToPaste: String) {
         guard isFirstResponder else {
             FleetError(Fleet.TextViewError.editingFlow("Must start editing the text view before text can be pasted into it.")).raise()
             return
@@ -203,7 +203,7 @@ extension UITextView {
      This method acts at the end of any existing text. That is, it will remove the last character of
      the `UITextView`'s existing text content.
      */
-    public func backspace() throws {
+    public func backspace() {
         guard isFirstResponder else {
             FleetError(Fleet.TextViewError.editingFlow("Must start editing the text view before backspaces can be performed.")).raise()
             return
@@ -244,7 +244,7 @@ extension UITextView {
      - throws:
      A `FleetError` if the text view does not have first responder focus.
      */
-    public func backspaceAll() throws {
+    public func backspaceAll() {
         guard isFirstResponder else {
             FleetError(Fleet.TextViewError.editingFlow("Must start editing the text view before backspaces can be performed.")).raise()
             return
@@ -256,7 +256,7 @@ extension UITextView {
         }
 
         for _ in 0..<characterCount {
-            try backspace()
+            backspace()
         }
     }
 }

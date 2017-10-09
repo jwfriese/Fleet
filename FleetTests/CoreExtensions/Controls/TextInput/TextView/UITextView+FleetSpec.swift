@@ -34,7 +34,7 @@ class UITextView_FleetSpec: XCTestCase {
     }
 
     func test_startEditing_whenTextViewIsFullyAvailable_putsFocusIntoTheTextView() {
-        try! subject.startEditing()
+        subject.startEditing()
 
         expect(self.subject.isFirstResponder).to(beTrue())
     }
@@ -54,7 +54,7 @@ class UITextView_FleetSpec: XCTestCase {
             object: nil
         )
 
-        try! subject.startEditing()
+        subject.startEditing()
 
         let expectedNotifications = [
             NSNotification.Name.UIKeyboardWillShow,
@@ -71,7 +71,7 @@ class UITextView_FleetSpec: XCTestCase {
         textViewNotInWindow.isHidden = false
         textViewNotInWindow.isSelectable = true
 
-        expect { try textViewNotInWindow.startEditing() }.to(
+        expect { textViewNotInWindow.startEditing() }.to(
             raiseException(named: "Fleet.TextViewError", reason: "Could not edit UITextView: Text view failed to become first responder. This can happen if the view is not part of the window's hierarchy.", userInfo: nil, closure: nil)
         )
 
@@ -81,7 +81,7 @@ class UITextView_FleetSpec: XCTestCase {
     func test_startEditing_whenTextViewIsHidden_raisesException() {
         subject.isHidden = true
 
-        expect { try self.subject.startEditing() }.to(
+        expect { self.subject.startEditing() }.to(
             raiseException(named: "Fleet.TextViewError", reason: "UITextView unavailable for editing: Text view is not visible.", userInfo: nil, closure: nil)
         )
         expect(self.subject.isFirstResponder).to(beFalse())
@@ -90,7 +90,7 @@ class UITextView_FleetSpec: XCTestCase {
     func test_startEditing_whenTextViewIsNotSelectable_raisesException() {
         subject.isSelectable = false
 
-        expect { try self.subject.startEditing() }.to(
+        expect { self.subject.startEditing() }.to(
             raiseException(named: "Fleet.TextViewError", reason: "UITextView unavailable for editing: Text view is not selectable.", userInfo: nil, closure: nil)
         )
         expect(self.subject.isFirstResponder).to(beFalse())
@@ -98,7 +98,7 @@ class UITextView_FleetSpec: XCTestCase {
 
     func test_startEditing_whenDelegateAllowsEditing_callsDelegateMethodsAppropriately() {
         delegate.shouldAllowBeginEditing = true
-        try! subject.startEditing()
+        subject.startEditing()
 
         expect(self.delegate.didCallShouldBeginEditing).to(beTrue())
         expect(self.delegate.didCallDidBeginEditing).to(beTrue())
@@ -106,7 +106,7 @@ class UITextView_FleetSpec: XCTestCase {
 
     func test_startEditing_whenDelegateDoesNotAllowEditing_callsDelegateMethodsAppropriately() {
         delegate.shouldAllowBeginEditing = false
-        try! subject.startEditing()
+        subject.startEditing()
 
         expect(self.delegate.didCallShouldBeginEditing).to(beTrue())
         expect(self.delegate.didCallDidBeginEditing).to(beFalse())
@@ -115,7 +115,7 @@ class UITextView_FleetSpec: XCTestCase {
     func test_startEditing_whenTextViewIsNotEditable_raisesException() {
         subject.isEditable = false
 
-        expect { try self.subject.startEditing() }.to(
+        expect { self.subject.startEditing() }.to(
             raiseException(named: "Fleet.TextViewError", reason: "UITextView unavailable for editing: Text view is not editable.", userInfo: nil, closure: nil)
         )
         expect(self.subject.isFirstResponder).to(beFalse())
@@ -130,8 +130,8 @@ class UITextView_FleetSpec: XCTestCase {
         otherDelegate.shouldAllowBeginEditing = true
         delegate.shouldAllowBeginEditing = true
 
-        try! otherTextView.startEditing()
-        try! subject.startEditing()
+        otherTextView.startEditing()
+        subject.startEditing()
 
         expect(self.delegate.didCallShouldBeginEditing).to(beTrue())
         expect(self.delegate.didCallDidBeginEditing).to(beTrue())
@@ -148,8 +148,8 @@ class UITextView_FleetSpec: XCTestCase {
         otherDelegate.shouldAllowBeginEditing = true
         delegate.shouldAllowBeginEditing = false
 
-        try! otherTextView.startEditing()
-        try! subject.startEditing()
+        otherTextView.startEditing()
+        subject.startEditing()
 
         expect(self.delegate.didCallShouldBeginEditing).to(beTrue())
         expect(self.delegate.didCallDidBeginEditing).to(beFalse())
@@ -160,32 +160,32 @@ class UITextView_FleetSpec: XCTestCase {
     func test_startEditing_whenAlreadyFirstResponder_doesNothing() {
         delegate.shouldAllowBeginEditing = true
 
-        try! subject.startEditing()
+        subject.startEditing()
         delegate.resetState()
-        try! subject.startEditing()
+        subject.startEditing()
 
         expect(self.delegate.didCallShouldBeginEditing).to(beFalse())
     }
 
     func test_stopEditing_whenTextViewIsFullyAvailable_removesFocusFromTheTextView() {
-        try! subject.startEditing()
-        try! subject.stopEditing()
+        subject.startEditing()
+        subject.stopEditing()
 
         expect(self.subject.isFirstResponder).to(beFalse())
     }
 
     func test_stopEditing_whenNotFirstResponder_raisesException() {
-        expect { try self.subject.stopEditing() }.to(
+        expect { self.subject.stopEditing() }.to(
             raiseException(named: "Fleet.TextViewError", reason: "Could not edit UITextView: Must start editing the text view before you can stop editing it.", userInfo: nil, closure: nil)
         )
     }
 
     func test_stopEditing_whenDelegateAllowsEditingToEnd_callsDelegateMethodsAppropriately() {
-        try! subject.startEditing()
+        subject.startEditing()
         delegate.resetState()
         delegate.shouldAllowEndEditing = true
 
-        try! subject.stopEditing()
+        subject.stopEditing()
 
         expect(self.delegate.didCallShouldEndEditing).to(beTrue())
         expect(self.delegate.didCallDidEndEditing).to(beTrue())
@@ -207,8 +207,8 @@ class UITextView_FleetSpec: XCTestCase {
             object: nil
         )
 
-        try! subject.startEditing()
-        try! subject.stopEditing()
+        subject.startEditing()
+        subject.stopEditing()
 
         let expectedNotifications = [
             NSNotification.Name.UIKeyboardWillHide,
@@ -219,22 +219,22 @@ class UITextView_FleetSpec: XCTestCase {
     }
 
     func test_type_typesGivenTextIntoTextView() {
-        try! subject.startEditing()
-        try! subject.type(text: "turtle magic")
+        subject.startEditing()
+        subject.type(text: "turtle magic")
 
         expect(self.subject.text).to(equal("turtle magic"))
     }
 
     func test_type_whenNotFirstResponder_raisesException() {
-        expect { try self.subject.type(text: "turtle magic") }.to(
+        expect { self.subject.type(text: "turtle magic") }.to(
             raiseException(named: "Fleet.TextViewError", reason: "Could not edit UITextView: Must start editing the text view before text can be typed into it.", userInfo: nil, closure: nil)
         )
     }
 
     func test_type_whenDelegateAllowsTextChanges_callsDelegateMethodsAppropriately() {
         delegate.shouldAllowTextChanges = true
-        try! subject.startEditing()
-        try! subject.type(text: "turtle magic")
+        subject.startEditing()
+        subject.type(text: "turtle magic")
 
         expect(self.delegate.textChanges).to(equal(["t", "u", "r", "t", "l", "e", " ", "m", "a", "g", "i", "c"]))
         expect(self.delegate.textRanges.count).to(equal(12))
@@ -248,8 +248,8 @@ class UITextView_FleetSpec: XCTestCase {
 
     func test_type_whenDelegateDoesNotAllowTextChanges_callsDelegateMethodsAppropriately() {
         delegate.shouldAllowTextChanges = false
-        try! subject.startEditing()
-        try! subject.type(text: "turtle magic")
+        subject.startEditing()
+        subject.type(text: "turtle magic")
 
         expect(self.delegate.textChanges).to(equal([]))
         expect(self.delegate.textRanges.count).to(equal(12))
@@ -263,30 +263,30 @@ class UITextView_FleetSpec: XCTestCase {
     }
 
     func test_type_whenNoDelegate_typesGivenTextIntoTextView() {
-        try! subject.startEditing()
+        subject.startEditing()
         subject.delegate = nil
-        try! subject.type(text: "turtle magic")
+        subject.type(text: "turtle magic")
 
         expect(self.subject.text).to(equal("turtle magic"))
     }
 
     func test_paste_putsGivenTextIntoTextView() {
-        try! subject.startEditing()
-        try! subject.paste(text: "turtle magic")
+        subject.startEditing()
+        subject.paste(text: "turtle magic")
 
         expect(self.subject.text).to(equal("turtle magic"))
     }
 
     func test_paste_whenNotFirstResponder_raisesException() {
-        expect { try self.subject.paste(text: "turtle magic") }.to(
+        expect { self.subject.paste(text: "turtle magic") }.to(
             raiseException(named: "Fleet.TextViewError", reason: "Could not edit UITextView: Must start editing the text view before text can be pasted into it.", userInfo: nil, closure: nil)
         )
     }
 
     func test_paste_whenDelegateAllowsTextChanges_callsDelegateMethodsAppropriately() {
         delegate.shouldAllowTextChanges = true
-        try! subject.startEditing()
-        try! subject.paste(text: "turtle magic")
+        subject.startEditing()
+        subject.paste(text: "turtle magic")
 
         expect(self.delegate.textChanges).to(equal(["turtle magic"]))
         expect(self.delegate.textRanges.count).to(equal(1))
@@ -298,8 +298,8 @@ class UITextView_FleetSpec: XCTestCase {
 
     func test_paste_whenDelegateDoesNotAllowTextChanges_callsDelegateMethodsAppropriately() {
         delegate.shouldAllowTextChanges = false
-        try! subject.startEditing()
-        try! subject.paste(text: "turtle magic")
+        subject.startEditing()
+        subject.paste(text: "turtle magic")
 
         expect(self.subject.text).to(equal(""))
         expect(self.delegate.textChanges).to(equal([]))
@@ -311,30 +311,30 @@ class UITextView_FleetSpec: XCTestCase {
     }
 
     func test_backspace_deletesTheLastCharacter() {
-            try! subject.startEditing()
-            try! subject.type(text: "turtle magic")
+            subject.startEditing()
+            subject.type(text: "turtle magic")
 
             delegate.resetState()
 
-            try! subject.backspace()
+            subject.backspace()
 
             expect(self.subject.text).to(equal("turtle magi"))
     }
 
     func test_backspace_whenNotFirstResponder_raisesException() {
-        expect { try self.subject.backspace() }.to(
+        expect { self.subject.backspace() }.to(
             raiseException(named: "Fleet.TextViewError", reason: "Could not edit UITextView: Must start editing the text view before backspaces can be performed.", userInfo: nil, closure: nil)
         )
     }
 
     func test_backspace_whenDelegateAllowsTextChanges_callsDelegateMethodsAppropriately() {
         delegate.shouldAllowTextChanges = true
-        try! subject.startEditing()
-        try! subject.type(text: "turtle magic")
+        subject.startEditing()
+        subject.type(text: "turtle magic")
 
         delegate.resetState()
 
-        try! subject.backspace()
+        subject.backspace()
 
         expect(self.delegate.textChanges).to(equal([""]))
         expect(self.delegate.textRanges.count).to(equal(1))
@@ -346,12 +346,12 @@ class UITextView_FleetSpec: XCTestCase {
 
     func test_backspace_whenDelegateDoesNotAllowTextChanges_callsDelegateMethodsAppropriately() {
         delegate.shouldAllowTextChanges = false
-        try! subject.startEditing()
-        try! subject.type(text: "turtle magic")
+        subject.startEditing()
+        subject.type(text: "turtle magic")
 
         delegate.resetState()
 
-        try! subject.backspace()
+        subject.backspace()
 
         expect(self.delegate.textChanges).to(equal([]))
         expect(self.delegate.textRanges.count).to(equal(1))
@@ -362,22 +362,22 @@ class UITextView_FleetSpec: XCTestCase {
     }
 
     func test_backspace_whenNoDelegate_deletesTheLastCharacter() {
-        try! subject.startEditing()
-        try! subject.type(text: "turtle magic")
+        subject.startEditing()
+        subject.type(text: "turtle magic")
 
         subject.delegate = nil
 
-        try! subject.backspace()
+        subject.backspace()
 
         expect(self.subject.text).to(equal("turtle magi"))
     }
 
     func test_backspace_whenNoTextInTextView_doesNothing() {
-        try! subject.startEditing()
+        subject.startEditing()
 
         delegate.resetState()
 
-        try! subject.backspace()
+        subject.backspace()
 
         expect(self.subject.text).to(equal(""))
         expect(self.delegate.textChanges).to(equal([""]))
@@ -389,29 +389,29 @@ class UITextView_FleetSpec: XCTestCase {
     }
 
     func test_backspaceAll_deletesAllTextInTheField() {
-        try! subject.startEditing()
-        try! subject.type(text: "turtle magic")
+        subject.startEditing()
+        subject.type(text: "turtle magic")
         delegate.resetState()
 
-        try! subject.backspaceAll()
+        subject.backspaceAll()
 
         expect(self.subject.text).to(equal(""))
     }
 
     func test_backspaceAll_whenNotFirstResponder_raisesException() {
-        expect { try self.subject.backspaceAll() }.to(
+        expect { self.subject.backspaceAll() }.to(
             raiseException(named: "Fleet.TextViewError", reason: "Could not edit UITextView: Must start editing the text view before backspaces can be performed.", userInfo: nil, closure: nil)
         )
     }
 
     func test_backspaceAll_whenDelegateAllowsTextChanges_callsDelegateMethodsAppropriately() {
         delegate.shouldAllowTextChanges = true
-        try! subject.startEditing()
-        try! subject.type(text: "turtle")
+        subject.startEditing()
+        subject.type(text: "turtle")
 
         delegate.resetState()
 
-        try! subject.backspaceAll()
+        subject.backspaceAll()
 
         expect(self.delegate.textChanges).to(equal(["","","","","",""]))
         expect(self.delegate.textRanges.count).to(equal(6))
@@ -420,13 +420,13 @@ class UITextView_FleetSpec: XCTestCase {
     }
 
     func test_backspaceAll_whenDelegateDoesNotAllowTextChanges_callsDelegateMethodsAppropriately() {
-        try! subject.startEditing()
-        try! subject.type(text: "turtle magic")
+        subject.startEditing()
+        subject.type(text: "turtle magic")
 
         delegate.resetState()
 
         delegate.shouldAllowTextChanges = false
-        try! subject.backspaceAll()
+        subject.backspaceAll()
 
         expect(self.delegate.textChanges).to(equal([]))
         expect(self.delegate.textRanges.count).to(equal(12))
@@ -436,22 +436,22 @@ class UITextView_FleetSpec: XCTestCase {
     }
 
     func test_backspaceAll_whenNoDelegate_deletesEveryCharacter() {
-        try! subject.startEditing()
-        try! subject.type(text: "turtle magic")
+        subject.startEditing()
+        subject.type(text: "turtle magic")
 
         subject.delegate = nil
 
-        try! subject.backspaceAll()
+        subject.backspaceAll()
 
         expect(self.subject.text).to(equal(""))
     }
 
     func test_backspaceAll_whenNoTextInTextField_doesNothing() {
-        try! subject.startEditing()
+        subject.startEditing()
 
         delegate.resetState()
 
-        try! subject.backspaceAll()
+        subject.backspaceAll()
 
         expect(self.subject.text).to(equal(""))
         expect(self.delegate.textChanges).to(equal([]))
@@ -459,7 +459,7 @@ class UITextView_FleetSpec: XCTestCase {
     }
 
     func test_enter_convenienceMethod_startsEditingATextViewTypesTextAndStopsEditingAllInOneAction() {
-        try! subject.enter(text: "turtle magic")
+        subject.enter(text: "turtle magic")
 
         expect(self.subject.text).to(equal("turtle magic"))
         expect(self.delegate.textChanges).to(equal(["t", "u", "r", "t", "l", "e", " ", "m", "a", "g", "i", "c"]))
@@ -487,19 +487,19 @@ class UITextView_FleetSpec: XCTestCase {
         textView.delegate = minimallyImplementedDelegate
         try! Test.embedViewIntoMainApplicationWindow(textView)
 
-        try! textView.enter(text: "turtle magic")
+        textView.enter(text: "turtle magic")
         expect(textView.text).to(equal("turtle magic"))
-        try! textView.startEditing()
-        try! textView.backspace()
+        textView.startEditing()
+        textView.backspace()
         expect(textView.text).to(equal("turtle magi"))
-        try! textView.paste(text: "c woo")
+        textView.paste(text: "c woo")
         expect(textView.text).to(equal("turtle magic woo"))
-        try! textView.stopEditing()
+        textView.stopEditing()
     }
 
     func test_whenUserInteractionIsDisabled_doesAbsolutelyNothingAndThrowsError() {
         subject.isUserInteractionEnabled = false
-        expect { try self.subject.enter(text: "turtle magic") }.to(
+        expect { self.subject.enter(text: "turtle magic") }.to(
             raiseException(named: "Fleet.TextViewError", reason: "UITextView unavailable for editing: View does not allow user interaction.", userInfo: nil, closure: nil)
         )
 
