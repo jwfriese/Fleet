@@ -47,7 +47,7 @@ methods. For more discussion on why, go to [the relevant section in the FAQ](./D
 ## FAQ
 - [Does Fleet do lots of swizzling to provide its features?](./Documentation/FAQ.md#does-fleet-do-lots-of-swizzling-to-provide-its-features)
 - [I could accomplish the same thing by calling all the delegate methods and events myself, right?](./Documentation/FAQ.md#i-could-accomplish-the-same-thing-by-calling-all-the-delegate-methods-and-events-myself-right)
-- [Why does Fleet throw errors for almost all its interactions with UIKit?](./Documentation/FAQ.md#why-does-fleet-throw-errors-for-almost-all-its-interactions-with-uikit)
+- [Why does Fleet raise exceptions and how should I handle them?](./Documentation/FAQ.md#why-does-fleet-raise-exceptions-and-how-should-i-handle-them)
 - [Why should I make sure all UIViewController unit tests happen in a UIWindow?](./Documentation/FAQ.md#why-should-i-make-sure-all-uiviewcontroller-tests-happen-in-a-uiwindow)
 
 ## Examples
