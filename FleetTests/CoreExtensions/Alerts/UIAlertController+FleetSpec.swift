@@ -28,7 +28,7 @@ class UIAlertController_FleetSpec: XCTestCase {
 
         expect(Fleet.getApplicationScreen()?.topmostViewController).to(beIdenticalTo(alert))
 
-        try! alert.tapAlertAction(withTitle: "action")
+        alert.tapAlertAction(withTitle: "action")
         expect(didCallHandlerAfterDismissingAlert).toEventually(beTrue())
     }
 
@@ -50,7 +50,7 @@ class UIAlertController_FleetSpec: XCTestCase {
 
         expect(Fleet.getApplicationScreen()?.topmostViewController).to(beIdenticalTo(alert))
 
-        try! alert.tapAlertAction(withTitle: "cancel")
+        alert.tapAlertAction(withTitle: "cancel")
         expect(didCallHandlerAfterDismissingAlert).toEventually(beTrue())
     }
 
@@ -66,7 +66,7 @@ class UIAlertController_FleetSpec: XCTestCase {
 
         expect(Fleet.getApplicationScreen()?.topmostViewController).to(beIdenticalTo(alert))
 
-        expect { try alert.tapAlertAction(withTitle: "banana shoes") }.to(
+        expect { alert.tapAlertAction(withTitle: "banana shoes") }.to(
             raiseException(named: "Fleet.AlertError", reason: "No action with title 'banana shoes' found on alert.", userInfo: nil, closure: nil)
         )
     }
@@ -89,7 +89,7 @@ class UIAlertController_FleetSpec: XCTestCase {
 
         expect(Fleet.getApplicationScreen()?.topmostViewController).to(beIdenticalTo(alert))
 
-        try! alert.tapAlertAction(withTitle: "action")
+        alert.tapAlertAction(withTitle: "action")
         expect(didCallOnMainThread).toEventually(beTrue())
     }
 }

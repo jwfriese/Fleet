@@ -29,7 +29,7 @@ extension UIAlertController {
      - throws:
      A `FleetError` if an alert action with the given title cannot be found.
      */
-    public func tapAlertAction(withTitle title: String) throws {
+    public func tapAlertAction(withTitle title: String) {
         let filteredActions = actions.filter { action in
             return action.title == title
         }

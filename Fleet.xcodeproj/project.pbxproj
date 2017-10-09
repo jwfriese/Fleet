@@ -67,6 +67,8 @@
 		7B0D3B521CFB29B40096DBC2 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7B0D3B501CFB29B40096DBC2 /* LaunchScreen.storyboard */; };
 		7B0D3B651CFB2E230096DBC2 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B471CFB29B40096DBC2 /* AppDelegate.swift */; };
 		7B104A691EB9987B00D97A14 /* copy_storyboard_info_files.sh in Resources */ = {isa = PBXBuildFile; fileRef = 7B9458181D4E474B00F16A64 /* copy_storyboard_info_files.sh */; };
+		7B1AE9DB1F8B004E00A533C2 /* CatchErrorSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1AE9DA1F8B004E00A533C2 /* CatchErrorSpec.swift */; };
+		7B1AE9DD1F8B01F100A533C2 /* CatchError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1AE9DC1F8B01F100A533C2 /* CatchError.swift */; };
 		7B29F41D1DDCABF5008EA836 /* UITableView+SelectRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B29F41C1DDCABF5008EA836 /* UITableView+SelectRow.swift */; };
 		7B29F41F1DDCAC76008EA836 /* UITableView+SelectCellAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B29F41E1DDCAC76008EA836 /* UITableView+SelectCellAction.swift */; };
 		7B29F4211DDCAC8A008EA836 /* UITableView+SelectCellActionSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B29F4201DDCAC8A008EA836 /* UITableView+SelectCellActionSpec.swift */; };
@@ -212,6 +214,8 @@
 		7B0D3B511CFB29B40096DBC2 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7B0D3B591CFB2B860096DBC2 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = FleetTestApp/Info.plist; sourceTree = SOURCE_ROOT; };
 		7B0D3B671CFB2F030096DBC2 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7B1AE9DA1F8B004E00A533C2 /* CatchErrorSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatchErrorSpec.swift; sourceTree = "<group>"; };
+		7B1AE9DC1F8B01F100A533C2 /* CatchError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatchError.swift; sourceTree = "<group>"; };
 		7B29F41C1DDCABF5008EA836 /* UITableView+SelectRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+SelectRow.swift"; sourceTree = "<group>"; };
 		7B29F41E1DDCAC76008EA836 /* UITableView+SelectCellAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+SelectCellAction.swift"; sourceTree = "<group>"; };
 		7B29F4201DDCAC8A008EA836 /* UITableView+SelectCellActionSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+SelectCellActionSpec.swift"; sourceTree = "<group>"; };
@@ -503,6 +507,7 @@
 		7B8F2B361DE258DE00B6F4C2 /* ObjC */ = {
 			isa = PBXGroup;
 			children = (
+				7B1AE9DA1F8B004E00A533C2 /* CatchErrorSpec.swift */,
 				7B8F2B371DE258EB00B6F4C2 /* IsClassKindOfSpec.swift */,
 			);
 			path = ObjC;
@@ -650,6 +655,7 @@
 		7BDB63B11E47723300515C22 /* Error */ = {
 			isa = PBXGroup;
 			children = (
+				7B1AE9DC1F8B01F100A533C2 /* CatchError.swift */,
 				7BDB63B21E47725600515C22 /* FleetError.swift */,
 				7B8DBD481F3BF9E000508E58 /* FleetInternalError.swift */,
 			);
@@ -1157,6 +1163,7 @@
 			files = (
 				7BB14A711D77B425002ABE82 /* FLTScreen.swift in Sources */,
 				7B675E941D0DA7EA002E6B45 /* Fleet.swift in Sources */,
+				7B1AE9DD1F8B01F100A533C2 /* CatchError.swift in Sources */,
 				7B9458101D4D7DFA00F16A64 /* StoryboardDeserializer.swift in Sources */,
 				7BDF62001E936BFB00990588 /* UIAlertAction+Fleet.swift in Sources */,
 				7BDF61EB1E935B4600990588 /* UIAlertAction+Fleet.m in Sources */,
@@ -1205,6 +1212,7 @@
 				7B29F4251DDDEA60008EA836 /* SegueDetailSpec.swift in Sources */,
 				7BF913B31E3A4BC300019CF2 /* UIViewController+FleetSpec.swift in Sources */,
 				7B6724901F3B4562008FE29E /* NotificationListener.swift in Sources */,
+				7B1AE9DB1F8B004E00A533C2 /* CatchErrorSpec.swift in Sources */,
 				7BA90ADF1CC3F6C50040B031 /* File.swift in Sources */,
 				7BB14A5F1D75065E002ABE82 /* UINavigationController+FleetSpec.swift in Sources */,
 				7BFABD6A1E3DA2F1002823B3 /* UISwitch+FleetSpec.swift in Sources */,

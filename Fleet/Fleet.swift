@@ -56,7 +56,7 @@ public class Fleet {
 
     /**
      Note: The original file this func was taken from can be found in the Quick
-     project (https://github.com/Quick/Quick)
+     project (https://github.com/Quick/Quick) .
      */
     internal static var currentTestBundle: Bundle? {
         return Bundle.allBundles.lazy

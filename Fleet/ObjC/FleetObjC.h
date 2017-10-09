@@ -12,4 +12,6 @@
  */
 + (BOOL)_isClass:(Class)klass kindOf:(Class)superclass;
 
++ (BOOL)_catchException:(void(^)(void))tryBlock error:(__autoreleasing NSError **)error;
+
 @end
