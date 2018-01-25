@@ -9,7 +9,6 @@ before_install:
 - export PATH=$PATH:$XCODEBUILD_PATH
 - export PATH=$PATH:~/bin
 - brew update
-- gem env  
 - gem install xcpretty --no-rdoc --no-ri --user-install -n~/bin
 - gem install fastlane --no-rdoc --no-ri --user-install -n~/bin
 install:
