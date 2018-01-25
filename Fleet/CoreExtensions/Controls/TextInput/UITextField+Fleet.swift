@@ -133,7 +133,7 @@ extension UITextField {
             return
         }
 
-        for character in newText.characters {
+        for character in newText {
             var existingText = ""
             if let unwrappedText = text {
                 existingText = unwrappedText
@@ -142,7 +142,7 @@ extension UITextField {
                 let doesImplementShouldChangeText = delegate.responds(to: #selector(UITextFieldDelegate.textField(_:shouldChangeCharactersIn:replacementString:)))
                 var doesAllowTextChange = true
                 if doesImplementShouldChangeText {
-                    doesAllowTextChange = delegate.textField!(self, shouldChangeCharactersIn: NSMakeRange(existingText.characters.count, 0), replacementString: String(character))
+                    doesAllowTextChange = delegate.textField!(self, shouldChangeCharactersIn: NSMakeRange(existingText.count, 0), replacementString: String(character))
                 }
                 if doesAllowTextChange {
                     insertText(String(character))
@@ -179,7 +179,7 @@ extension UITextField {
             let doesImplementShouldChangeText = delegate.responds(to: #selector(UITextFieldDelegate.textField(_:shouldChangeCharactersIn:replacementString:)))
             var doesAllowTextChange = true
             if doesImplementShouldChangeText {
-                doesAllowTextChange = delegate.textField!(self, shouldChangeCharactersIn: NSMakeRange(existingText.characters.count, 0), replacementString: textToPaste)
+                doesAllowTextChange = delegate.textField!(self, shouldChangeCharactersIn: NSMakeRange(existingText.count, 0), replacementString: textToPaste)
             }
             if doesAllowTextChange {
                 insertText(textToPaste)
@@ -218,8 +218,8 @@ extension UITextField {
             return
         }
         if let delegate = delegate {
-            let location = existingText.characters.count > 0 ? existingText.characters.count - 1 : 0
-            let backspaceAmount = existingText.characters.count > 0 ? 1 : 0
+            let location = existingText.count > 0 ? existingText.count - 1 : 0
+            let backspaceAmount = existingText.count > 0 ? 1 : 0
             let doesImplementShouldChangeText = delegate.responds(to: #selector(UITextFieldDelegate.textField(_:shouldChangeCharactersIn:replacementString:)))
             var doesAllowTextChange = true
             if doesImplementShouldChangeText {
@@ -248,7 +248,7 @@ extension UITextField {
 
         var characterCount = 0
         if let unwrappedText = text {
-            characterCount = unwrappedText.characters.count
+            characterCount = unwrappedText.count
         }
 
         for _ in 0..<characterCount {

@@ -37,7 +37,7 @@ extension CrabViewController: UITextFieldDelegate {
 
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let textFieldName = (textField === enabledTextField) ? "Enabled" : "Disabled"
-        print("\(textFieldName) Text field editing CHANGED: \(string) (change size: \(string.characters.count))")
+        print("\(textFieldName) Text field editing CHANGED: \(string) (change size: \(string.count))")
         return true
     }
 }

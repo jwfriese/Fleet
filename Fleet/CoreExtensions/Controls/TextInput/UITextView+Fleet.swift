@@ -137,7 +137,7 @@ extension UITextView {
             return
         }
 
-        for character in newText.characters {
+        for character in newText {
             var existingText = ""
             if let unwrappedText = text {
                 existingText = unwrappedText
@@ -146,7 +146,7 @@ extension UITextView {
                 let doesImplementShouldChangeText = delegate.responds(to: #selector(UITextViewDelegate.textView(_:shouldChangeTextIn:replacementText:)))
                 var doesAllowTextChange = true
                 if doesImplementShouldChangeText {
-                    doesAllowTextChange = delegate.textView!(self, shouldChangeTextIn: NSMakeRange(existingText.characters.count, 0), replacementText: String(character))
+                    doesAllowTextChange = delegate.textView!(self, shouldChangeTextIn: NSMakeRange(existingText.count, 0), replacementText: String(character))
                 }
                 if doesAllowTextChange {
                     insertText(String(character))
@@ -183,7 +183,7 @@ extension UITextView {
             let doesImplementShouldChangeText = delegate.responds(to: #selector(UITextViewDelegate.textView(_:shouldChangeTextIn:replacementText:)))
             var doesAllowTextChange = true
             if doesImplementShouldChangeText {
-                doesAllowTextChange = delegate.textView!(self, shouldChangeTextIn: NSMakeRange(existingText.characters.count, 0), replacementText: textToPaste)
+                doesAllowTextChange = delegate.textView!(self, shouldChangeTextIn: NSMakeRange(existingText.count, 0), replacementText: textToPaste)
             }
             if doesAllowTextChange {
                 insertText(textToPaste)
@@ -222,8 +222,8 @@ extension UITextView {
             return
         }
         if let delegate = delegate {
-            let location = existingText.characters.count > 0 ? existingText.characters.count - 1 : 0
-            let backspaceAmount = existingText.characters.count > 0 ? 1 : 0
+            let location = existingText.count > 0 ? existingText.count - 1 : 0
+            let backspaceAmount = existingText.count > 0 ? 1 : 0
             let doesImplementShouldChangeText = delegate.responds(to: #selector(UITextViewDelegate.textView(_:shouldChangeTextIn:replacementText:)))
             var doesAllowTextChange = true
             if doesImplementShouldChangeText {
@@ -252,7 +252,7 @@ extension UITextView {
 
         var characterCount = 0
         if let unwrappedText = text {
-            characterCount = unwrappedText.characters.count
+            characterCount = unwrappedText.count
         }
 
         for _ in 0..<characterCount {
