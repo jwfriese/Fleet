@@ -1,7 +1,7 @@
 import UIKit
 import Nimble
 
-func equal(_ expectedValue: UIControlEvents?) -> Predicate<UIControlEvents> {
+func equal(_ expectedValue: UIControl.Event?) -> Predicate<UIControl.Event> {
     return Predicate { actualExpression in
         guard let expectedValue = expectedValue else {
             return PredicateResult(
@@ -31,7 +31,7 @@ func equal(_ expectedValue: UIControlEvents?) -> Predicate<UIControlEvents> {
     }.requireNonNil
 }
 
-func equal(_ expectedValue: [UIControlEvents]?) -> Predicate<[UIControlEvents]> {
+func equal(_ expectedValue: [UIControl.Event]?) -> Predicate<[UIControl.Event]> {
     return Predicate { actualExpression in
         guard let expectedValue = expectedValue else {
             return PredicateResult(
@@ -61,40 +61,40 @@ func equal(_ expectedValue: [UIControlEvents]?) -> Predicate<[UIControlEvents]> 
     }
 }
 
-extension UIControlEvents {
+extension UIControl.Event {
     func toString() -> String {
         switch self {
-        case UIControlEvents.touchDown:
+        case UIControl.Event.touchDown:
             return "touchDown"
-        case UIControlEvents.touchDownRepeat:
+        case UIControl.Event.touchDownRepeat:
             return "touchDownRepeat"
-        case UIControlEvents.touchDragInside:
+        case UIControl.Event.touchDragInside:
             return "touchDragInside"
-        case UIControlEvents.touchDragOutside:
+        case UIControl.Event.touchDragOutside:
             return "touchDragOutside"
-        case UIControlEvents.touchDragEnter:
+        case UIControl.Event.touchDragEnter:
             return "touchDragEnter"
-        case UIControlEvents.touchDragExit:
+        case UIControl.Event.touchDragExit:
             return "touchDragExit"
-        case UIControlEvents.touchUpInside:
+        case UIControl.Event.touchUpInside:
             return "touchUpInside"
-        case UIControlEvents.touchUpOutside:
+        case UIControl.Event.touchUpOutside:
             return "touchUpOutside"
-        case UIControlEvents.touchCancel:
+        case UIControl.Event.touchCancel:
             return "touchCancel"
-        case UIControlEvents.valueChanged:
+        case UIControl.Event.valueChanged:
             return "valueChanged"
-        case UIControlEvents.editingDidBegin:
+        case UIControl.Event.editingDidBegin:
             return "editingDidBegin"
-        case UIControlEvents.editingChanged:
+        case UIControl.Event.editingChanged:
             return "editingChanged"
-        case UIControlEvents.editingDidEnd:
+        case UIControl.Event.editingDidEnd:
             return "editingDidEnd"
-        case UIControlEvents.editingDidEndOnExit:
+        case UIControl.Event.editingDidEndOnExit:
             return "editingDidEndOnExit"
-        case UIControlEvents.allTouchEvents:
+        case UIControl.Event.allTouchEvents:
             return "allTouchEvents"
-        case UIControlEvents.allEditingEvents:
+        case UIControl.Event.allEditingEvents:
             return "allEditingEvents"
         default:
             return "<unrecognized>"
@@ -102,7 +102,7 @@ extension UIControlEvents {
     }
 }
 
-fileprivate func allToString(controlEvents: [UIControlEvents]) -> String {
+fileprivate func allToString(controlEvents: [UIControl.Event]) -> String {
     var string = "["
     for event in controlEvents {
         string += "\(event.toString()), "

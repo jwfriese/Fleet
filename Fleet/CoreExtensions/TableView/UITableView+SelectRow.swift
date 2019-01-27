@@ -55,7 +55,7 @@ extension UITableView {
         }
 
         selectRow(at: indexPathToSelect, animated: false, scrollPosition: .none)
-        NotificationCenter.default.post(name: NSNotification.Name.UITableViewSelectionDidChange, object: nil)
+        NotificationCenter.default.post(name: UITableView.selectionDidChangeNotification, object: nil)
 
         delegate?.tableView?(self, didSelectRowAt: indexPathToSelect)
     }
@@ -65,7 +65,7 @@ extension UITableView {
             let indexPathToDeselectOptional = delegate!.tableView!(self, willDeselectRowAt: selectedRowIndexPath)
             if let indexPathToDeselect = indexPathToDeselectOptional {
                 deselectRow(at: indexPathToDeselect, animated: false)
-                NotificationCenter.default.post(name: NSNotification.Name.UITableViewSelectionDidChange, object: nil)
+                NotificationCenter.default.post(name: UITableView.selectionDidChangeNotification, object: nil)
                 delegate?.tableView?(self, didDeselectRowAt: indexPathToDeselect)
             }
         }

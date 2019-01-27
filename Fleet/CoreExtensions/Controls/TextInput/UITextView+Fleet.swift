@@ -83,12 +83,12 @@ extension UITextView {
                 }
             }
         }
-        NotificationCenter.default.post(name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.post(name: UIResponder.keyboardWillShowNotification, object: nil)
         guard becomeFirstResponder() else {
             FleetError(Fleet.TextViewError.editingFlow("Text view failed to become first responder. This can happen if the view is not part of the window's hierarchy.")).raise()
             return
         }
-        NotificationCenter.default.post(name: NSNotification.Name.UIKeyboardDidShow, object: nil)
+        NotificationCenter.default.post(name: UIResponder.keyboardDidShowNotification, object: nil)
     }
 
     /**
@@ -111,12 +111,12 @@ extension UITextView {
                 }
             }
         }
-        NotificationCenter.default.post(name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.post(name: UIResponder.keyboardWillHideNotification, object: nil)
         guard resignFirstResponder() else {
             FleetError(Fleet.TextViewError.editingFlow("Text view failed to resign first responder. This can happen if the view is not part of the window's hierarchy.")).raise()
             return
         }
-        NotificationCenter.default.post(name: NSNotification.Name.UIKeyboardDidHide, object: nil)
+        NotificationCenter.default.post(name: UIResponder.keyboardDidHideNotification, object: nil)
     }
 
     /**

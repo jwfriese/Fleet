@@ -1,7 +1,7 @@
 import UIKit
 
 class UIControlEventRecorder: NSObject {
-    private(set) var recordedEvents: [UIControlEvents] = []
+    private(set) var recordedEvents: [UIControl.Event] = []
 
     func registerAllEvents(for control: UIControl) {
         control.addTarget(self, action: #selector(UIControlEventRecorder.recordTouchDown(sender:)), for: .touchDown)

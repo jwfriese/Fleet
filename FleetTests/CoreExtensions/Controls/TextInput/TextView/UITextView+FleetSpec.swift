@@ -44,21 +44,21 @@ class UITextView_FleetSpec: XCTestCase {
         NotificationCenter.default.addObserver(
             notificationListener,
             selector: #selector(NotificationListener.listenTo(notification:)),
-            name: NSNotification.Name.UIKeyboardWillShow,
+            name: UIResponder.keyboardWillShowNotification,
             object: nil
         )
         NotificationCenter.default.addObserver(
             notificationListener,
             selector: #selector(NotificationListener.listenTo(notification:)),
-            name: NSNotification.Name.UIKeyboardDidShow,
+            name: UIResponder.keyboardDidShowNotification,
             object: nil
         )
 
         subject.startEditing()
 
         let expectedNotifications = [
-            NSNotification.Name.UIKeyboardWillShow,
-            NSNotification.Name.UIKeyboardDidShow
+            UIResponder.keyboardWillShowNotification,
+            UIResponder.keyboardDidShowNotification
         ]
 
         expect(notificationListener.notificationsReceived).to(contain(expectedNotifications))
@@ -197,13 +197,13 @@ class UITextView_FleetSpec: XCTestCase {
         NotificationCenter.default.addObserver(
             notificationListener,
             selector: #selector(NotificationListener.listenTo(notification:)),
-            name: NSNotification.Name.UIKeyboardWillHide,
+            name: UIResponder.keyboardWillHideNotification,
             object: nil
         )
         NotificationCenter.default.addObserver(
             notificationListener,
             selector: #selector(NotificationListener.listenTo(notification:)),
-            name: NSNotification.Name.UIKeyboardDidHide,
+            name: UIResponder.keyboardDidHideNotification,
             object: nil
         )
 
@@ -211,8 +211,8 @@ class UITextView_FleetSpec: XCTestCase {
         subject.stopEditing()
 
         let expectedNotifications = [
-            NSNotification.Name.UIKeyboardWillHide,
-            NSNotification.Name.UIKeyboardDidHide
+            UIResponder.keyboardWillHideNotification,
+            UIResponder.keyboardDidHideNotification
         ]
 
         expect(notificationListener.notificationsReceived).to(contain(expectedNotifications))

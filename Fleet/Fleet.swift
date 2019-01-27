@@ -34,7 +34,7 @@ public class Fleet {
      */
     public static func setAsAppWindowRoot(_ viewController: UIViewController) {
         UIApplication.shared.keyWindow?.rootViewController = viewController
-        RunLoop.current.run(mode: RunLoopMode.defaultRunLoopMode, before: Date(timeIntervalSinceNow: 1))
+        RunLoop.current.run(mode: RunLoop.Mode.default, before: Date(timeIntervalSinceNow: 1))
     }
 
     /**
@@ -50,7 +50,7 @@ public class Fleet {
     public static func setInAppWindowRootNavigation(_ viewController: UIViewController) -> UINavigationController {
         let navigationController = UINavigationController(rootViewController: viewController)
         UIApplication.shared.keyWindow?.rootViewController = navigationController
-        RunLoop.current.run(mode: RunLoopMode.defaultRunLoopMode, before: Date(timeIntervalSinceNow: 1))
+        RunLoop.current.run(mode: RunLoop.Mode.default, before: Date(timeIntervalSinceNow: 1))
         return navigationController
     }
 

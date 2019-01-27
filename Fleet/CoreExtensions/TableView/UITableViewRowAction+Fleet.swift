@@ -38,7 +38,7 @@ extension UITableViewRowAction {
         )
     }
 
-    @objc func fleet_init(withStyle style: UITableViewRowActionStyle, title: String?, handler: @escaping ((UITableViewRowAction, IndexPath) -> Swift.Void)) -> UITableViewRowAction {
+    @objc func fleet_init(withStyle style: UITableViewRowAction.Style, title: String?, handler: @escaping ((UITableViewRowAction, IndexPath) -> Swift.Void)) -> UITableViewRowAction {
         fleet_property_handler = handler
         return fleet_init(withStyle: style, title: title, handler: handler)
     }

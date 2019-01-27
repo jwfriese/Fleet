@@ -169,13 +169,13 @@ class UITableView_SelectRowSpec: XCTestCase {
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(listener,
                                        selector: #selector(NotificationListener.listenTo(notification:)),
-                                       name: NSNotification.Name.UITableViewSelectionDidChange,
+                                       name: UITableView.selectionDidChangeNotification,
                                        object: nil
         )
 
         viewController.birdsTableView?.selectRow(at: IndexPath(row: 1, section: 0))
 
-        expect(listener.callCount(for: NSNotification.Name.UITableViewSelectionDidChange)).to(equal(1))
+        expect(listener.callCount(for: UITableView.selectionDidChangeNotification)).to(equal(1))
     }
 
     func test_selectRow_whenTableViewDoesNotHaveDataSource_raisesException() {
