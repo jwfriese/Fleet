@@ -211,8 +211,10 @@ extension UITextField {
         }
         if existingText == "" {
             if let delegate = delegate {
-                // this still gets called in this case
-                let _ = delegate.textField!(self, shouldChangeCharactersIn: NSMakeRange(0, 0), replacementString: "")
+                let doesImplementShouldChangeText = delegate.responds(to: #selector(UITextFieldDelegate.textField(_:shouldChangeCharactersIn:replacementString:)))
+                if doesImplementShouldChangeText {
+                    let _ = delegate.textField!(self, shouldChangeCharactersIn: NSMakeRange(0, 0), replacementString: "")
+                }
             }
 
             return

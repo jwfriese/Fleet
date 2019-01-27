@@ -215,8 +215,10 @@ extension UITextView {
         }
         if existingText == "" {
             if let delegate = delegate {
-                // this still gets called in this case
-                let _ = delegate.textView!(self, shouldChangeTextIn: NSMakeRange(0, 0), replacementText: "")
+                let doesImplementShouldChangeText = delegate.responds(to: #selector(UITextViewDelegate.textView(_:shouldChangeTextIn:replacementText:)))
+                if doesImplementShouldChangeText {
+                    let _ = delegate.textView!(self, shouldChangeTextIn: NSMakeRange(0, 0), replacementText: "")
+                }
             }
 
             return
