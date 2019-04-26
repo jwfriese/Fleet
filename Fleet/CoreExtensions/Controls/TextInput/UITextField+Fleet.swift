@@ -295,6 +295,8 @@ extension UITextField {
             }
         case .always:
             break
+        default:
+            break
         }
 
         var shouldClear = true
