@@ -56,12 +56,12 @@ class UITextView_FleetSpec: XCTestCase {
 
         subject.startEditing()
 
-        let expectedNotifications = [
+        let expectedNotificationsInOrder = [
             UIResponder.keyboardWillShowNotification,
             UIResponder.keyboardDidShowNotification
         ]
 
-        expect(notificationListener.notificationsReceived).to(contain(expectedNotifications))
+        expect(notificationListener.notificationsReceived).toEventually(equal(expectedNotificationsInOrder))
     }
 
     func test_startEditing_whenTextViewFailsToBecomeFirstResponder_raisesException() {
@@ -210,12 +210,12 @@ class UITextView_FleetSpec: XCTestCase {
         subject.startEditing()
         subject.stopEditing()
 
-        let expectedNotifications = [
+        let expectedNotificationsInOrder = [
             UIResponder.keyboardWillHideNotification,
             UIResponder.keyboardDidHideNotification
         ]
 
-        expect(notificationListener.notificationsReceived).to(contain(expectedNotifications))
+        expect(notificationListener.notificationsReceived).toEventually(equal(expectedNotificationsInOrder))
     }
 
     func test_type_typesGivenTextIntoTextView() {

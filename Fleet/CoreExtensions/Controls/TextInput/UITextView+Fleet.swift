@@ -116,7 +116,6 @@ extension UITextView {
             FleetError(Fleet.TextViewError.editingFlow("Text view failed to resign first responder. This can happen if the view is not part of the window's hierarchy.")).raise()
             return
         }
-        NotificationCenter.default.post(name: UIResponder.keyboardDidHideNotification, object: nil)
     }
 
     /**

@@ -83,10 +83,12 @@ extension UITextField {
                 }
             }
         }
+        NotificationCenter.default.post(name: UIResponder.keyboardWillShowNotification, object: nil)
         guard becomeFirstResponder() else {
             FleetError(Fleet.TextFieldError.editingFlow("Text field failed to become first responder. This can happen if the field is not part of the window's hierarchy.")).raise()
             return
         }
+        NotificationCenter.default.post(name: UIResponder.keyboardDidShowNotification, object: nil)
     }
 
     /**
@@ -109,6 +111,7 @@ extension UITextField {
                 }
             }
         }
+        NotificationCenter.default.post(name: UIResponder.keyboardWillHideNotification, object: nil)
         guard resignFirstResponder() else {
             FleetError(Fleet.TextFieldError.editingFlow("Text field failed to resign first responder. This can happen if the field is not part of the window's hierarchy.")).raise()
             return
