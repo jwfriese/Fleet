@@ -42,7 +42,7 @@ extension UIAlertController {
                 }
             }
 
-            presentingViewController?.dismiss(animated: true, completion: completionHandler)
+            presentingViewController?.dismiss(animated: false, completion: completionHandler)
         } else {
             FleetError(Fleet.AlertError.titleNotFound(title: title)).raise()
         }
