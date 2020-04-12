@@ -116,6 +116,7 @@ extension UITextField {
             FleetError(Fleet.TextFieldError.editingFlow("Text field failed to resign first responder. This can happen if the field is not part of the window's hierarchy.")).raise()
             return
         }
+        NotificationCenter.default.post(name: UIResponder.keyboardDidHideNotification, object: nil)
     }
 
     /**
