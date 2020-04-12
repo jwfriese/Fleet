@@ -56,12 +56,12 @@ class UITextView_FleetSpec: XCTestCase {
 
         subject.startEditing()
 
-        let expectedNotificationsInOrder = [
+        let expectedNotifications = [
             UIResponder.keyboardWillShowNotification,
             UIResponder.keyboardDidShowNotification
         ]
 
-        expect(notificationListener.notificationsReceived).toEventually(equal(expectedNotificationsInOrder))
+        expect(notificationListener.notificationsReceived).toEventually(contain(expectedNotifications))
     }
 
     func test_startEditing_whenTextViewFailsToBecomeFirstResponder_raisesException() {

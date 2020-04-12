@@ -259,12 +259,12 @@ class UITextField_FleetSpec: XCTestCase {
         subject.startEditing()
         subject.stopEditing()
 
-        let expectedNotificationsInOrder = [
+        let expectedNotifications = [
             UIResponder.keyboardWillHideNotification,
             UIResponder.keyboardDidHideNotification
         ]
 
-        expect(notificationListener.notificationsReceived).toEventually(equal(expectedNotificationsInOrder))
+        expect(notificationListener.notificationsReceived).toEventually(contain(expectedNotifications))
     }
 
     func test_type_typesGivenTextIntoTextField() {
