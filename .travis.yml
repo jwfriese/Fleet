@@ -1,19 +1,12 @@
-language: generic
+language: swift
 os: osx
-osx_image: xcode9.2
+osx_image: xcode11.3
 branches:
   only:
   - master
-before_install:
-- export XCODEBUILD_PATH=$(which xcodebuild)
-- export PATH=$PATH:$XCODEBUILD_PATH
-- export PATH=$PATH:~/bin
-- brew update
-- gem install xcpretty --no-rdoc --no-ri --user-install -n~/bin
-- gem install fastlane --no-rdoc --no-ri --user-install -n~/bin
 install:
-- xcrun simctl list
-- carthage update --platform 'iOS' 
-- carthage update --platform 'tvOS' 
+  - bundle install
+  - carthage update --platform 'iOS' 
+  - carthage update --platform 'tvOS' 
 script:
-- ./test
+  - fastlane test
