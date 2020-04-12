@@ -1,2 +1,2 @@
 #!/bin/bash
-fastlane scan -s Fleet
+bundle exec fastlane test
