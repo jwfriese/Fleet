@@ -4,6 +4,8 @@ osx_image: xcode11.3
 branches:
   only:
   - master
+before_install:
+    - gem install bundler
 install:
   - bundle install
   - carthage update --platform 'iOS' 
