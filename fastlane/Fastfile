@@ -22,6 +22,6 @@ platform :ios do
 
   desc "Run tests"
   lane :test do
-    run_tests(scheme: "Dev")
+    run_tests(scheme: "Fleet")
   end
 end
