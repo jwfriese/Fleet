@@ -904,6 +904,7 @@
 					};
 					7B0D3B441CFB29B40096DBC2 = {
 						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = 6688B5H4XF;
 						LastSwiftMigration = 1020;
 					};
 					7BA90AB21CC130980040B031 = {
@@ -919,10 +920,9 @@
 			};
 			buildConfigurationList = 7BA90AAD1CC130980040B031 /* Build configuration list for PBXProject "Fleet" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
 				Base,
 			);
@@ -1416,6 +1416,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 6688B5H4XF;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = $SRCROOT/FleetTestApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -1430,6 +1431,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = 6688B5H4XF;
 				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = 0;
