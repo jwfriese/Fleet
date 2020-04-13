@@ -1,4 +1,4 @@
-import UIKit.UIViewController
+import UIKit.UICollectionViewController
 
-class FruitViewController: UIViewController {
+class FruitViewController: UICollectionViewController {
 }

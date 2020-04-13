@@ -4,6 +4,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
+        <capability name="collection view cell content view" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -298,7 +299,7 @@
                     </tabBar>
                     <connections>
                         <segue destination="LH8-wq-NZ5" kind="relationship" relationship="viewControllers" id="dSK-pA-pfT"/>
-                        <segue destination="VOS-Qr-0fk" kind="relationship" relationship="viewControllers" id="yXz-PW-e3z"/>
+                        <segue destination="xWw-jO-Zga" kind="relationship" relationship="viewControllers" id="UlU-BH-DME"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FVZ-dP-rlb" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -314,37 +315,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Di8-w5-wtg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-593" y="-58"/>
-        </scene>
-        <!--Fruit View Controller-->
-        <scene sceneID="Lpx-Zm-6Ed">
-            <objects>
-                <viewController storyboardIdentifier="Fruit" title="Fruit View Controller" id="VOS-Qr-0fk" customClass="FruitViewController" customModule="FleetTestApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="5d3-o1-2Nf"/>
-                        <viewControllerLayoutGuide type="bottom" id="eHH-ZF-S0m"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="l9y-le-rvf">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Fruit" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gXC-4F-4F8">
-                                <rect key="frame" x="170" y="323" width="35" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                        </subviews>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                        <constraints>
-                            <constraint firstItem="gXC-4F-4F8" firstAttribute="centerX" secondItem="l9y-le-rvf" secondAttribute="centerX" id="Nlm-5x-rNO"/>
-                            <constraint firstItem="gXC-4F-4F8" firstAttribute="centerY" secondItem="l9y-le-rvf" secondAttribute="centerY" id="jx0-jj-vk9"/>
-                        </constraints>
-                    </view>
-                    <tabBarItem key="tabBarItem" title="Fruit" id="md9-Jy-yUH"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="r5x-Q5-bYo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-1052" y="308"/>
         </scene>
         <!--CrabViewController-->
         <scene sceneID="J64-BJ-1hn">
@@ -385,6 +355,41 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="osF-6f-AIO" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="474" y="-58"/>
+        </scene>
+        <!--Fruit Collection View Controller-->
+        <scene sceneID="hFv-M7-QyH">
+            <objects>
+                <collectionViewController storyboardIdentifier="Fruit" title="Fruit Collection View Controller" id="xWw-jO-Zga" customClass="FruitViewController" customModule="FleetTestApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="GNe-LC-uCa">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="Mj9-IL-9TX">
+                            <size key="itemSize" width="128" height="128"/>
+                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                        </collectionViewFlowLayout>
+                        <cells>
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="QUV-aT-jyl">
+                                <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="ox0-HW-QSg">
+                                    <rect key="frame" x="0.0" y="0.0" width="128" height="128"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </collectionViewCellContentView>
+                            </collectionViewCell>
+                        </cells>
+                        <connections>
+                            <outlet property="dataSource" destination="xWw-jO-Zga" id="m1T-dQ-Wet"/>
+                            <outlet property="delegate" destination="xWw-jO-Zga" id="gYz-FT-7y0"/>
+                        </connections>
+                    </collectionView>
+                    <tabBarItem key="tabBarItem" title="Fruit" id="C1i-qU-YZ2"/>
+                </collectionViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="6N5-9V-1PM" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1311" y="239"/>
         </scene>
     </scenes>
     <resources>

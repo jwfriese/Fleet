@@ -263,4 +263,14 @@ class MockForSpec: XCTestCase {
             fail("Expected not to throw an error")
         }
     }
+
+    func test_mockFor_collectionViewController_throwsDescriptiveError() {
+        do {
+            let _ = try Fleet.mockFor(UICollectionViewController.self)
+        } catch let error as Fleet.MockError {
+            expect(error.description).to(equal("Fleet cannot mock instances of UICollectionViewController or its subclasses"))
+        } catch {
+            fail("wrong kind of error thrown")
+        }
+    }
 }
