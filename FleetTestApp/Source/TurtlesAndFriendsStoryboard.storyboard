@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="LH8-wq-NZ5">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="yeG-t7-Cxv">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12088"/>
-        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
-        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -25,27 +20,26 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="BOX TURTLE" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zgq-Oy-J04">
-                                <rect key="frame" x="136.5" y="88" width="102" height="21"/>
+                                <rect key="frame" x="136.5" y="68" width="102" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="box_turtle" translatesAutoresizingMaskIntoConstraints="NO" id="cHB-zx-EgI">
-                                <rect key="frame" x="123.5" y="181" width="128" height="128"/>
+                                <rect key="frame" x="123.5" y="161" width="128" height="128"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="128" id="SWi-pU-5bf"/>
                                     <constraint firstAttribute="width" secondItem="cHB-zx-EgI" secondAttribute="height" multiplier="1:1" id="wnl-Ok-5V4"/>
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2a0-7e-bho">
-                                <rect key="frame" x="187.5" y="357" width="0.0" height="0.0"/>
+                                <rect key="frame" x="187.5" y="337" width="0.0" height="0.0"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="lRV-il-fV3">
-                                <rect key="frame" x="94" y="597" width="187.5" height="30"/>
-                                <nil key="textColor"/>
+                                <rect key="frame" x="94" y="544" width="187.5" height="34"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
@@ -100,34 +94,34 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SPOTTED TURTLE" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gjE-Jh-3kv">
-                                <rect key="frame" x="116" y="88" width="143" height="21"/>
+                                <rect key="frame" x="116" y="68" width="143" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="spotted_turtle" translatesAutoresizingMaskIntoConstraints="NO" id="WJx-3p-MeX">
-                                <rect key="frame" x="123" y="181" width="128" height="128"/>
+                                <rect key="frame" x="123.5" y="161" width="128" height="128"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="128" id="2Mb-ZX-rd0"/>
                                     <constraint firstAttribute="width" secondItem="WJx-3p-MeX" secondAttribute="height" multiplier="1:1" id="Jmp-Av-DbK"/>
                                 </constraints>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Juu-UN-Bni" userLabel="Spotted Turtle Alert 1">
-                                <rect key="frame" x="114.5" y="357" width="146" height="30"/>
+                                <rect key="frame" x="114.5" y="337" width="146" height="30"/>
                                 <state key="normal" title="Spotted Turtle Alert 1"/>
                                 <connections>
                                     <action selector="showAlertWithAlertStyle" destination="MI9-bx-whb" eventType="touchUpInside" id="DPc-ZL-dzQ"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dNa-xj-NYG" userLabel="Spotted Turtle Alert 2">
-                                <rect key="frame" x="113.5" y="423" width="148" height="30"/>
+                                <rect key="frame" x="113.5" y="403" width="148" height="30"/>
                                 <state key="normal" title="Spotted Turtle Alert 2"/>
                                 <connections>
                                     <action selector="showAlertWithActionSheetStyle" destination="MI9-bx-whb" eventType="touchUpInside" id="mvi-CV-DZ3"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="W0L-HE-O3K">
-                                <rect key="frame" x="187.5" y="501" width="0.0" height="0.0"/>
+                                <rect key="frame" x="187.5" y="481" width="0.0" height="0.0"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
@@ -161,6 +155,7 @@
                             </mask>
                         </variation>
                     </view>
+                    <navigationItem key="navigationItem" id="c6n-Xv-j4c"/>
                     <connections>
                         <outlet property="alertButtonOne" destination="Juu-UN-Bni" id="Fk9-0Y-sOb"/>
                         <outlet property="alertButtonTwo" destination="dNa-xj-NYG" id="395-06-G2g"/>
@@ -171,12 +166,13 @@
             </objects>
             <point key="canvasLocation" x="1246" y="42"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Animals Navigation-->
         <scene sceneID="ITF-Be-HRm">
             <objects>
-                <navigationController id="LH8-wq-NZ5" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="AnimalsNavigation" title="Animals Navigation" id="LH8-wq-NZ5" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Animals" id="Rnp-C6-Zb1"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="uvJ-e0-nAA">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -185,7 +181,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0g4-9v-c0p" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1080" y="-517"/>
+            <point key="canvasLocation" x="-865" y="-518"/>
         </scene>
         <!--Animal List View Controller-->
         <scene sceneID="gIc-fV-N2X">
@@ -200,56 +196,56 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="S9G-IJ-tbd">
-                                <rect key="frame" x="152.5" y="164" width="70" height="30"/>
+                                <rect key="frame" x="152.5" y="144" width="70" height="30"/>
                                 <state key="normal" title="Box Turtle"/>
                                 <connections>
                                     <action selector="goToBoxTurtle" destination="kr1-g9-ioz" eventType="touchUpInside" id="rkf-dg-ySO"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nUc-bw-ld4">
-                                <rect key="frame" x="138.5" y="230" width="99" height="30"/>
+                                <rect key="frame" x="138" y="210" width="99" height="30"/>
                                 <state key="normal" title="Spotted Turtle"/>
                                 <connections>
                                     <action selector="goToSpottedTurtle" destination="kr1-g9-ioz" eventType="touchUpInside" id="2bZ-bW-BuQ"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="g4Z-Qd-G7i">
-                                <rect key="frame" x="170.5" y="296" width="34" height="30"/>
+                                <rect key="frame" x="170.5" y="276" width="34" height="30"/>
                                 <state key="normal" title="Crab"/>
                                 <connections>
                                     <action selector="goToCrab" destination="kr1-g9-ioz" eventType="touchUpInside" id="jIA-dY-7y4"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ROB-Ac-9ZK" userLabel="Crab 2 Button">
-                                <rect key="frame" x="164.5" y="362" width="46" height="30"/>
+                                <rect key="frame" x="164.5" y="342" width="46" height="30"/>
                                 <state key="normal" title="Crab 2"/>
                                 <connections>
                                     <action selector="goToCrab2" destination="kr1-g9-ioz" eventType="touchUpInside" id="rEi-84-lkO"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RhY-4G-fqL">
-                                <rect key="frame" x="165.5" y="428" width="44" height="30"/>
+                                <rect key="frame" x="165.5" y="408" width="44" height="30"/>
                                 <state key="normal" title="Puppy"/>
                                 <connections>
                                     <action selector="goToPuppy" destination="kr1-g9-ioz" eventType="touchUpInside" id="S4I-fT-rSm"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jj2-CU-ifK" userLabel="Kitten Button">
-                                <rect key="frame" x="167.5" y="494" width="41" height="30"/>
+                                <rect key="frame" x="167" y="474" width="41" height="30"/>
                                 <state key="normal" title="Kitten"/>
                                 <connections>
                                     <segue destination="pfk-wd-JTs" kind="show" identifier="ShowKittens" id="qkX-VI-Qoa"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Z5q-Jt-Npg" userLabel="Birds Button">
-                                <rect key="frame" x="170.5" y="560" width="35" height="30"/>
+                                <rect key="frame" x="170" y="540" width="35" height="30"/>
                                 <state key="normal" title="Birds"/>
                                 <connections>
                                     <segue destination="hNL-eJ-Dqv" kind="show" identifier="ShowBirds" id="Ldb-kw-4kW"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="knI-vk-fam" userLabel="Crab iOS Button">
-                                <rect key="frame" x="157" y="626" width="62" height="30"/>
+                                <rect key="frame" x="156.5" y="606" width="62" height="30"/>
                                 <state key="normal" title="Crab iOS"/>
                             </button>
                         </subviews>
@@ -291,18 +287,71 @@
             </objects>
             <point key="canvasLocation" x="-126" y="-517"/>
         </scene>
+        <!--Home Tab Bar Controller-->
+        <scene sceneID="xC4-WH-elG">
+            <objects>
+                <tabBarController storyboardIdentifier="HomeTabBar" id="yeG-t7-Cxv" customClass="HomeTabBarController" customModule="FleetTestApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="zcX-of-Up7">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="49"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="LH8-wq-NZ5" kind="relationship" relationship="viewControllers" id="dSK-pA-pfT"/>
+                        <segue destination="VOS-Qr-0fk" kind="relationship" relationship="viewControllers" id="yXz-PW-e3z"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="FVZ-dP-rlb" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1575" y="-519"/>
+        </scene>
         <!--CrabViewController-->
         <scene sceneID="O1e-yw-Azf">
             <objects>
-                <viewControllerPlaceholder storyboardName="CrabStoryboard" referencedIdentifier="CrabViewController" id="s4q-fa-MbE" sceneMemberID="viewController"/>
+                <viewControllerPlaceholder storyboardName="CrabStoryboard" referencedIdentifier="CrabViewController" id="s4q-fa-MbE" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="EEx-pa-S5s"/>
+                </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Di8-w5-wtg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-593" y="-58"/>
         </scene>
+        <!--Fruit View Controller-->
+        <scene sceneID="Lpx-Zm-6Ed">
+            <objects>
+                <viewController storyboardIdentifier="Fruit" title="Fruit View Controller" id="VOS-Qr-0fk" customClass="FruitViewController" customModule="FleetTestApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="5d3-o1-2Nf"/>
+                        <viewControllerLayoutGuide type="bottom" id="eHH-ZF-S0m"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="l9y-le-rvf">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Fruit" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gXC-4F-4F8">
+                                <rect key="frame" x="170" y="323" width="35" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="gXC-4F-4F8" firstAttribute="centerX" secondItem="l9y-le-rvf" secondAttribute="centerX" id="Nlm-5x-rNO"/>
+                            <constraint firstItem="gXC-4F-4F8" firstAttribute="centerY" secondItem="l9y-le-rvf" secondAttribute="centerY" id="jx0-jj-vk9"/>
+                        </constraints>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Fruit" id="md9-Jy-yUH"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="r5x-Q5-bYo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1052" y="308"/>
+        </scene>
         <!--CrabViewController-->
         <scene sceneID="J64-BJ-1hn">
             <objects>
-                <viewControllerPlaceholder storyboardName="CrabStoryboard" referencedIdentifier="CrabViewController" id="gcW-ev-w5z" sceneMemberID="viewController"/>
+                <viewControllerPlaceholder storyboardName="CrabStoryboard" referencedIdentifier="CrabViewController" id="gcW-ev-w5z" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="CZq-Vz-dKh"/>
+                </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="TR2-ZH-adV" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-314.5" y="-57"/>
@@ -310,7 +359,9 @@
         <!--PuppyStoryboard-->
         <scene sceneID="qkh-zT-0ge">
             <objects>
-                <viewControllerPlaceholder storyboardName="PuppyStoryboard" id="fVV-aN-iXJ" sceneMemberID="viewController"/>
+                <viewControllerPlaceholder storyboardName="PuppyStoryboard" id="fVV-aN-iXJ" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="tZm-0x-DbL"/>
+                </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZCb-Xe-WkL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-63" y="-58"/>
@@ -318,7 +369,9 @@
         <!--KittensStoryboard-->
         <scene sceneID="Fco-cp-xb7">
             <objects>
-                <viewControllerPlaceholder storyboardName="KittensStoryboard" id="pfk-wd-JTs" sceneMemberID="viewController"/>
+                <viewControllerPlaceholder storyboardName="KittensStoryboard" id="pfk-wd-JTs" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="CES-Br-O8T"/>
+                </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uz4-Kw-6XZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="202" y="-58"/>
@@ -326,7 +379,9 @@
         <!--BirdsViewController-->
         <scene sceneID="Qkr-Ry-O9Y">
             <objects>
-                <viewControllerPlaceholder storyboardName="Birds" referencedIdentifier="BirdsViewController" id="hNL-eJ-Dqv" sceneMemberID="viewController"/>
+                <viewControllerPlaceholder storyboardName="Birds" referencedIdentifier="BirdsViewController" id="hNL-eJ-Dqv" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="B8t-jf-iyC"/>
+                </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="osF-6f-AIO" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="474" y="-58"/>
@@ -334,6 +389,6 @@
     </scenes>
     <resources>
         <image name="box_turtle" width="540" height="405"/>
-        <image name="spotted_turtle" width="275" height="193"/>
+        <image name="spotted_turtle" width="275" height="193.5"/>
     </resources>
 </document>

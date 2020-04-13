@@ -30,6 +30,14 @@ class UIStoryboard_FleetSpec: XCTestCase {
         expect(storyboardViewController).to(beIdenticalTo(mockViewController))
     }
 
+    func test_mockIdentifier_tabBarController_whenTheIdentifierExistsOnTheStoryboard_returnsMockViewController() {
+        let mockTabBarController = try! turtlesAndFriendsStoryboard.mockIdentifier("HomeTabBar", usingMockFor: HomeTabBarController.self)
+        expect(mockTabBarController).to(beAKindOf(HomeTabBarController.self))
+
+        let storyboardViewController = turtlesAndFriendsStoryboard.instantiateViewController(withIdentifier: "HomeTabBar")
+        expect(storyboardViewController).to(beIdenticalTo(mockTabBarController))
+    }
+
     func test_mockIdentifier_whenInvalidIdentifier_raisesException() {
         expect { _ = try self.turtlesAndFriendsStoryboard.mockIdentifier("WatermelonViewController", usingMockFor: UIViewController.self) }.to(
             raiseException(named: "Fleet.StoryboardError", reason: "Could not find identifier 'WatermelonViewController' on storyboard with name 'TurtlesAndFriendsStoryboard'", userInfo: nil, closure: nil)

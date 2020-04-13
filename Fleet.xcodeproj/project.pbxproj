@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4EC820DAFDA1B9164C0E880E /* UITabBarController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC821C945584D2A053F3836 /* UITabBarController+Fleet.swift */; };
+		4EC829DEEF31BDE5A2C8E1D7 /* UITabBarController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC821C945584D2A053F3836 /* UITabBarController+Fleet.swift */; };
 		7B0082091EB6D788006B8FED /* Fleet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B0082001EB6D788006B8FED /* Fleet.framework */; };
 		7B0082171EB6D8B8006B8FED /* Fleet.h in Headers */ = {isa = PBXBuildFile; fileRef = 7BA90AB61CC130990040B031 /* Fleet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7B0082181EB6D8B8006B8FED /* FleetObjC.h in Headers */ = {isa = PBXBuildFile; fileRef = 7B8F2B391DE2592C00B6F4C2 /* FleetObjC.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -60,6 +62,11 @@
 		7B00825C1EB6E2DA006B8FED /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B00825B1EB6E2DA006B8FED /* Nimble.framework */; };
 		7B0082831EB6EAE4006B8FED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0082821EB6EAE4006B8FED /* AppDelegate.swift */; };
 		7B00828A1EB6EAE4006B8FED /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7B0082891EB6EAE4006B8FED /* Assets.xcassets */; };
+		7B0248522443E7EE007EC8CD /* HomeTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0248512443E7EE007EC8CD /* HomeTabBarController.swift */; };
+		7B0248532443E7EE007EC8CD /* HomeTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0248512443E7EE007EC8CD /* HomeTabBarController.swift */; };
+		7B02485724440239007EC8CD /* UITabBarController+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B02485624440239007EC8CD /* UITabBarController+FleetSpec.swift */; };
+		7B02485924442423007EC8CD /* FruitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B02485824442423007EC8CD /* FruitViewController.swift */; };
+		7B02485A24442423007EC8CD /* FruitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B02485824442423007EC8CD /* FruitViewController.swift */; };
 		7B0D3B381CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B371CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift */; };
 		7B0D3B3B1CFA76200096DBC2 /* UIStoryboard+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B3A1CFA76200096DBC2 /* UIStoryboard+Fleet.swift */; };
 		7B0D3B3F1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0D3B3E1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift */; };
@@ -197,6 +204,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4EC821C945584D2A053F3836 /* UITabBarController+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITabBarController+Fleet.swift"; sourceTree = "<group>"; };
 		7B0082001EB6D788006B8FED /* Fleet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Fleet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B0082081EB6D788006B8FED /* FleetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FleetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B0082571EB6DC60006B8FED /* UITextView+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextView+FleetSpec.swift"; sourceTree = "<group>"; };
@@ -205,6 +213,9 @@
 		7B0082821EB6EAE4006B8FED /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7B0082891EB6EAE4006B8FED /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7B00828B1EB6EAE4006B8FED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7B0248512443E7EE007EC8CD /* HomeTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTabBarController.swift; sourceTree = "<group>"; };
+		7B02485624440239007EC8CD /* UITabBarController+FleetSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITabBarController+FleetSpec.swift"; sourceTree = "<group>"; };
+		7B02485824442423007EC8CD /* FruitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FruitViewController.swift; sourceTree = "<group>"; };
 		7B0D3B371CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIStoryboard+FleetSpec.swift"; sourceTree = "<group>"; };
 		7B0D3B3A1CFA76200096DBC2 /* UIStoryboard+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIStoryboard+Fleet.swift"; sourceTree = "<group>"; };
 		7B0D3B3E1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryboardInstanceBinding.swift; sourceTree = "<group>"; };
@@ -375,6 +386,22 @@
 			path = "FleetTestApp-tvOS";
 			sourceTree = "<group>";
 		};
+		7B0248542443EB4F007EC8CD /* TabBar */ = {
+			isa = PBXGroup;
+			children = (
+				4EC821C945584D2A053F3836 /* UITabBarController+Fleet.swift */,
+			);
+			path = TabBar;
+			sourceTree = "<group>";
+		};
+		7B0248552443FA61007EC8CD /* TabBar */ = {
+			isa = PBXGroup;
+			children = (
+				7B02485624440239007EC8CD /* UITabBarController+FleetSpec.swift */,
+			);
+			path = TabBar;
+			sourceTree = "<group>";
+		};
 		7B0D3B361CFA76170096DBC2 /* Storyboard */ = {
 			isa = PBXGroup;
 			children = (
@@ -444,6 +471,8 @@
 				7B4957131EB99C4200F00977 /* KittensNavigationController.swift */,
 				7B4957141EB99C4200F00977 /* PuppyListViewController.swift */,
 				7B4957151EB99C4200F00977 /* SpottedTurtleViewController.swift */,
+				7B0248512443E7EE007EC8CD /* HomeTabBarController.swift */,
+				7B02485824442423007EC8CD /* FruitViewController.swift */,
 			);
 			path = TestAppCommon;
 			sourceTree = "<group>";
@@ -583,6 +612,7 @@
 		7BA90ABE1CC3B5E30040B031 /* CoreExtensions */ = {
 			isa = PBXGroup;
 			children = (
+				7B0248542443EB4F007EC8CD /* TabBar */,
 				7BDF61E61E935B0E00990588 /* Alerts */,
 				7BFABD531E3DA1F3002823B3 /* Controls */,
 				7B29F41B1DDCABDD008EA836 /* TableView */,
@@ -612,6 +642,7 @@
 		7BA90AD01CC3E82B0040B031 /* CoreExtensions */ = {
 			isa = PBXGroup;
 			children = (
+				7B0248552443FA61007EC8CD /* TabBar */,
 				7BDF61ED1E935B4D00990588 /* Alerts */,
 				7BFABD541E3DA1FA002823B3 /* Controls */,
 				7B29F41A1DDCABAD008EA836 /* TableView */,
@@ -1095,6 +1126,7 @@
 				7B00822D1EB6D901006B8FED /* StoryboardInstanceBinding.swift in Sources */,
 				7B00822C1EB6D901006B8FED /* StoryboardDeserializer.swift in Sources */,
 				7B0082301EB6D907006B8FED /* UIViewController+Fleet.swift in Sources */,
+				4EC829DEEF31BDE5A2C8E1D7 /* UITabBarController+Fleet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1134,8 +1166,10 @@
 				7B4957231EB99C8E00F00977 /* BoxTurtleViewController.swift in Sources */,
 				7B4957241EB99C8E00F00977 /* CorgiViewController.swift in Sources */,
 				7B4957251EB99C8E00F00977 /* KittensNavigationController.swift in Sources */,
+				7B0248532443E7EE007EC8CD /* HomeTabBarController.swift in Sources */,
 				7B4957261EB99C8E00F00977 /* PuppyListViewController.swift in Sources */,
 				7B4957271EB99C8E00F00977 /* SpottedTurtleViewController.swift in Sources */,
+				7B02485A24442423007EC8CD /* FruitViewController.swift in Sources */,
 				7B0082831EB6EAE4006B8FED /* AppDelegate.swift in Sources */,
 				7B4957521EB99E3900F00977 /* CrabViewController.swift in Sources */,
 				7B4957501EB99E3900F00977 /* BirdsViewController.swift in Sources */,
@@ -1150,8 +1184,10 @@
 				7B49571D1EB99C6A00F00977 /* BoxTurtleViewController.swift in Sources */,
 				7B49571E1EB99C6A00F00977 /* CorgiViewController.swift in Sources */,
 				7B49571F1EB99C6A00F00977 /* KittensNavigationController.swift in Sources */,
+				7B0248522443E7EE007EC8CD /* HomeTabBarController.swift in Sources */,
 				7B4957201EB99C6A00F00977 /* PuppyListViewController.swift in Sources */,
 				7B4957211EB99C6A00F00977 /* SpottedTurtleViewController.swift in Sources */,
+				7B02485924442423007EC8CD /* FruitViewController.swift in Sources */,
 				7B0D3B651CFB2E230096DBC2 /* AppDelegate.swift in Sources */,
 				7B4957431EB99E2100F00977 /* CrabViewController.swift in Sources */,
 				7B4957411EB99E2100F00977 /* BirdsViewController.swift in Sources */,
@@ -1197,6 +1233,7 @@
 				7B0D3B3B1CFA76200096DBC2 /* UIStoryboard+Fleet.swift in Sources */,
 				7BFABD591E3DA2C5002823B3 /* UITextView+Fleet.swift in Sources */,
 				7B675E821D0C5372002E6B45 /* UIBarButtonItem+Fleet.swift in Sources */,
+				4EC820DAFDA1B9164C0E880E /* UITabBarController+Fleet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1225,6 +1262,7 @@
 				7B29F4231DDCACA5008EA836 /* UITableView+SelectRowSpec.swift in Sources */,
 				7BFABD631E3DA2EA002823B3 /* TestTextFieldDelegate.swift in Sources */,
 				7BFABD6C1E3DA3D4002823B3 /* UITableViewRowAction+FleetSpec.swift in Sources */,
+				7B02485724440239007EC8CD /* UITabBarController+FleetSpec.swift in Sources */,
 				7BA4B1941E3565020052A2A7 /* EmbedView.swift in Sources */,
 				7BA4B1961E35652A0052A2A7 /* Test.swift in Sources */,
 				7BDF61F11E935B7500990588 /* UIAlertController+FleetSpec.swift in Sources */,

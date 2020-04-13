@@ -19,11 +19,12 @@ Read more about using Fleet's storyboard features in the [Documentation section]
 Fleet extends UIKit classes in order to make it easier to test your code's interactions with UIKit. Following are summaries of the major features for each extended class. The [Documentation folder](./Documentation) contains more information about these features, as well as sample code showing you how they are intended to be used.
 
 - [UIViewController](./Documentation/UIViewController.md) - Makes the UI run-loop behave more consistently to allow specs to test view controller presentation and dismissal with less effort.
-- [UITableView](./Documentation/UITableView.md) - Provides methods mimicing user actions on table views, ensuring all appropriate delegate and data source callbacks are run.
+- [UITableView](./Documentation/UITableView.md) - Provides methods mimicking user actions on table views, ensuring all appropriate delegate and data source callbacks are run.
 - [UINavigationController](./Documentation/UINavigationController.md) - Allows specs to test pushing and popping on the navigation stack without waiting for the UI run-loop.
 - [UIButton](./Documentation/UIButton.md) - Provides convenience methods for interacting with buttons in test.
 - [UIBarButtonItem](./Documentation/UIBarButtonItem.md) - Provides convenience methods similar to those provided for UIButton.
 - [UIAlertController](./Documentation/UIAlertController.md) - Allows specs to simply tap on alert actions in order to test their behavior.
+- [UITabBarController](./Documentation/UITabBarController.md) - Provides convenience methods for selecting tabs.
 - [UITextField](./Documentation/UITextField.md) - Provides convenience methods for entering text. (iOS-only)
 - [UISwitch](./Documentation/UISwitch.md) - Provides convenience methods for interacting with switches in test. (iOS-only)
 - [UITextView](./Documentation/UITextView.md) - Provides convenience methods for entering text into a text view. (iOS-only)
