@@ -19,6 +19,17 @@ extension Fleet {
 }
 
 extension UIToolbar {
+    /**
+     Mimics a tap on the toolbar item with the given title,
+     firing any associated behavior.
+
+     - parameters:
+        - title:  The title of the item to tap
+
+     - throws:
+        A `FleetError` if a toolbar item with the given title cannot be found, if there
+        in the are no items in the toolbar, or if the item's action is not properly set up.
+     */
     public func tapItem(withTitle title: String) {
         guard let toolbarItems = items else {
             FleetError(Fleet.ToolbarError.noToolbarItems).raise()

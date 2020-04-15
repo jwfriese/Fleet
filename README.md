@@ -28,6 +28,7 @@ Fleet extends UIKit classes in order to make it easier to test your code's inter
 - [UITextField](./Documentation/UITextField.md) - Provides convenience methods for entering text. (iOS-only)
 - [UISwitch](./Documentation/UISwitch.md) - Provides convenience methods for interacting with switches in test. (iOS-only)
 - [UITextView](./Documentation/UITextView.md) - Provides convenience methods for entering text into a text view. (iOS-only)
+- [UIToolbar](./Documentation/UIToolbar.md) - Tap on items in a toolbar. (iOS-only)
 
 ### Setup for view controller tests
 Fleet provides another method of help in setting up view controller alongside storyboard injection and mocking. It makes it easy
