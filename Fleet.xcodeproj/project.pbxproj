@@ -82,6 +82,9 @@
 		7B29F4231DDCACA5008EA836 /* UITableView+SelectRowSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B29F4221DDCACA5008EA836 /* UITableView+SelectRowSpec.swift */; };
 		7B29F4251DDDEA60008EA836 /* SegueDetailSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B29F4241DDDEA60008EA836 /* SegueDetailSpec.swift */; };
 		7B2D724A1E292A1F0046EDFC /* StoryboardBindingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B2D72491E292A1F0046EDFC /* StoryboardBindingError.swift */; };
+		7B48F48A24469F6F00BA2D65 /* TestImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B48F48924469F6F00BA2D65 /* TestImage.swift */; };
+		7B48F48F2446A42A00BA2D65 /* UIToolbar+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B48F48E2446A42A00BA2D65 /* UIToolbar+Fleet.swift */; };
+		7B48F4942446A5B300BA2D65 /* UIToolbar+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B48F4932446A5B300BA2D65 /* UIToolbar+FleetSpec.swift */; };
 		7B49571C1EB99C6A00F00977 /* AnimalListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4957101EB99C4200F00977 /* AnimalListViewController.swift */; };
 		7B49571D1EB99C6A00F00977 /* BoxTurtleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4957111EB99C4200F00977 /* BoxTurtleViewController.swift */; };
 		7B49571E1EB99C6A00F00977 /* CorgiViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B4957121EB99C4200F00977 /* CorgiViewController.swift */; };
@@ -233,6 +236,9 @@
 		7B29F4221DDCACA5008EA836 /* UITableView+SelectRowSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+SelectRowSpec.swift"; sourceTree = "<group>"; };
 		7B29F4241DDDEA60008EA836 /* SegueDetailSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SegueDetailSpec.swift; sourceTree = "<group>"; };
 		7B2D72491E292A1F0046EDFC /* StoryboardBindingError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoryboardBindingError.swift; sourceTree = "<group>"; };
+		7B48F48924469F6F00BA2D65 /* TestImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestImage.swift; sourceTree = "<group>"; };
+		7B48F48E2446A42A00BA2D65 /* UIToolbar+Fleet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIToolbar+Fleet.swift"; sourceTree = "<group>"; };
+		7B48F4932446A5B300BA2D65 /* UIToolbar+FleetSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIToolbar+FleetSpec.swift"; sourceTree = "<group>"; };
 		7B4957101EB99C4200F00977 /* AnimalListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnimalListViewController.swift; sourceTree = "<group>"; };
 		7B4957111EB99C4200F00977 /* BoxTurtleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoxTurtleViewController.swift; sourceTree = "<group>"; };
 		7B4957121EB99C4200F00977 /* CorgiViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CorgiViewController.swift; sourceTree = "<group>"; };
@@ -462,6 +468,22 @@
 			path = TableView;
 			sourceTree = "<group>";
 		};
+		7B48F48D2446A3FA00BA2D65 /* Toolbar */ = {
+			isa = PBXGroup;
+			children = (
+				7B48F48E2446A42A00BA2D65 /* UIToolbar+Fleet.swift */,
+			);
+			path = Toolbar;
+			sourceTree = "<group>";
+		};
+		7B48F4922446A59F00BA2D65 /* Toolbar */ = {
+			isa = PBXGroup;
+			children = (
+				7B48F4932446A5B300BA2D65 /* UIToolbar+FleetSpec.swift */,
+			);
+			path = Toolbar;
+			sourceTree = "<group>";
+		};
 		7B49570D1EB99B1600F00977 /* TestAppCommon */ = {
 			isa = PBXGroup;
 			children = (
@@ -473,6 +495,7 @@
 				7B4957151EB99C4200F00977 /* SpottedTurtleViewController.swift */,
 				7B0248512443E7EE007EC8CD /* HomeTabBarController.swift */,
 				7B02485824442423007EC8CD /* FruitViewController.swift */,
+				7B48F48924469F6F00BA2D65 /* TestImage.swift */,
 			);
 			path = TestAppCommon;
 			sourceTree = "<group>";
@@ -612,6 +635,7 @@
 		7BA90ABE1CC3B5E30040B031 /* CoreExtensions */ = {
 			isa = PBXGroup;
 			children = (
+				7B48F48D2446A3FA00BA2D65 /* Toolbar */,
 				7B0248542443EB4F007EC8CD /* TabBar */,
 				7BDF61E61E935B0E00990588 /* Alerts */,
 				7BFABD531E3DA1F3002823B3 /* Controls */,
@@ -642,6 +666,7 @@
 		7BA90AD01CC3E82B0040B031 /* CoreExtensions */ = {
 			isa = PBXGroup;
 			children = (
+				7B48F4922446A59F00BA2D65 /* Toolbar */,
 				7B0248552443FA61007EC8CD /* TabBar */,
 				7BDF61ED1E935B4D00990588 /* Alerts */,
 				7BFABD541E3DA1FA002823B3 /* Controls */,
@@ -1203,6 +1228,7 @@
 				7B1AE9DD1F8B01F100A533C2 /* CatchError.swift in Sources */,
 				7B9458101D4D7DFA00F16A64 /* StoryboardDeserializer.swift in Sources */,
 				7BDF62001E936BFB00990588 /* UIAlertAction+Fleet.swift in Sources */,
+				7B48F48A24469F6F00BA2D65 /* TestImage.swift in Sources */,
 				7BDF61EB1E935B4600990588 /* UIAlertAction+Fleet.m in Sources */,
 				7B8DBD491F3BF9E000508E58 /* FleetInternalError.swift in Sources */,
 				7B8F2B3C1DE2592C00B6F4C2 /* FleetObjC.m in Sources */,
@@ -1227,6 +1253,7 @@
 				7B9458121D4D7ED100F16A64 /* StoryboardReferenceMap.swift in Sources */,
 				7BFABD5D1E3DA2CD002823B3 /* UISwitch+Fleet.swift in Sources */,
 				7BF913AE1E3A4BA800019CF2 /* UIViewController+Fleet.swift in Sources */,
+				7B48F48F2446A42A00BA2D65 /* UIToolbar+Fleet.swift in Sources */,
 				7B8DBD4C1F3C052500508E58 /* Swizzle.swift in Sources */,
 				7BFABD581E3DA2C5002823B3 /* UITextField+Fleet.swift in Sources */,
 				7BB14A611D75091B002ABE82 /* UINavigationController+Fleet.swift in Sources */,
@@ -1269,6 +1296,7 @@
 				7BF913B21E3A4BC300019CF2 /* UIViewController+FleetInternalSpec.swift in Sources */,
 				7B0D3B381CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift in Sources */,
 				7B8F2B381DE258EB00B6F4C2 /* IsClassKindOfSpec.swift in Sources */,
+				7B48F4942446A5B300BA2D65 /* UIToolbar+FleetSpec.swift in Sources */,
 				7BFABD721E3DA7BD002823B3 /* UIControlEventEqualityMatcher.swift in Sources */,
 				7B675E7D1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift in Sources */,
 				7BDF61F01E935B7500990588 /* UIAlertAction+FleetSpec.swift in Sources */,
