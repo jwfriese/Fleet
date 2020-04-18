@@ -504,20 +504,20 @@
 			isa = PBXGroup;
 			children = (
 				47DB3BE5DA6426EFCC2825BB4F9D14C6 /* AnimalListViewController.swift */,
+				0B0A5FE9E9C6536F560C28CB59E5E04E /* Birds.storyboard */,
+				35AFCCB8CD16D7A436E5A5B406868350 /* BirdsViewController.swift */,
 				72B2E576B44507A600BCC3F02334EB35 /* BoxTurtleViewController.swift */,
 				64E7455E4ACEA1E5756F88CA503D3211 /* CorgiViewController.swift */,
+				4852491031D69EDAD3310ADD8F74AC08 /* CrabStoryboard.storyboard */,
+				FFB2C13E0318B0488EF9AF5E6C075EF6 /* CrabViewController.swift */,
 				C3C6A0F27B1EC657058F0AB28C7DAB2A /* FruitViewController.swift */,
 				56E18EF111882E0BFA3EFD9C2BFE9D6A /* HomeTabBarController.swift */,
 				793F5157FBAEF735B127A01613C67667 /* KittensNavigationController.swift */,
+				43FEC73C021965C3D77828B9FC0B2C7E /* KittensStoryboard.storyboard */,
 				9DF88149CF8370C85EE137DA80CDC153 /* PuppyListViewController.swift */,
+				F0602920E5A049CB7C18890A3B3F9B5A /* PuppyStoryboard.storyboard */,
 				F1373A32EFE6376408B79542E7A86C5A /* SpottedTurtleViewController.swift */,
 				8809CE78CF33BF6186F19235A00991AE /* TestImage.swift */,
-				0B0A5FE9E9C6536F560C28CB59E5E04E /* Birds.storyboard */,
-				35AFCCB8CD16D7A436E5A5B406868350 /* BirdsViewController.swift */,
-				4852491031D69EDAD3310ADD8F74AC08 /* CrabStoryboard.storyboard */,
-				FFB2C13E0318B0488EF9AF5E6C075EF6 /* CrabViewController.swift */,
-				43FEC73C021965C3D77828B9FC0B2C7E /* KittensStoryboard.storyboard */,
-				F0602920E5A049CB7C18890A3B3F9B5A /* PuppyStoryboard.storyboard */,
 				D38127D5F0103783BA35453E16775848 /* TurtlesAndFriendsStoryboard.storyboard */,
 			);
 			path = Source;
@@ -857,7 +857,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2B8111449B778CC57F88F76BC76E949F /* AnimalListViewController.swift in Sources */,
-				7B7D8D4E244AE8520079ECCC /* TestImage.swift in Sources */,
 				E0421BC481EB0A0C9D12A2D7BE3C743D /* AppDelegate.swift in Sources */,
 				36F9BA0A562FE1052DA8A400EA3A6C0E /* BirdsViewController.swift in Sources */,
 				6DB3766132F4B47D50B35AA8A9324FDF /* BoxTurtleViewController.swift in Sources */,
@@ -868,6 +867,7 @@
 				AA9854FE0F64E745990710F3B22B00E0 /* KittensNavigationController.swift in Sources */,
 				B87563B5EB166B4DE22B90278D11CC3B /* PuppyListViewController.swift in Sources */,
 				DB1A3355E7A8233359CC0F020E970F20 /* SpottedTurtleViewController.swift in Sources */,
+				7B7D8D4E244AE8520079ECCC /* TestImage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

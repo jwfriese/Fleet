@@ -16,7 +16,7 @@ func main() {
         fmt.Printf("Trim successful\n\n")
 
         fmt.Print("Sorting XCode project...\n")
-        if err := exec.Command("xunique", "Fleet.xcodeproj").Run(); err != nil {
+        if err := exec.Command("xunique", "-s", "Fleet.xcodeproj").Run(); err != nil {
                 fmt.Printf("Error encountered while sorting: %v", err)
                 os.Exit(1)
         }
