@@ -80,6 +80,3 @@ trim
 
 # The binary produced for releasing
 release
-
-# Trimming and sorting Xcode project
-sweep
