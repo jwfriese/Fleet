@@ -21,7 +21,7 @@ class UINavigationBar_FleetSpec: XCTestCase {
 
     func test_tapTopItemWithTitle_rightItem_itemWithTitleExists_firesTheAction() {
         navigationController.navigationBar.tapTopItem(withTitle: "Dance")
-        
+
         expect(self.boxTurtleViewController.informationLabel?.text).toEventually(equal("Box Turtle Dance Party!!!!!!"))
     }
 
