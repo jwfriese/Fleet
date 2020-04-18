@@ -2,11 +2,7 @@ import XCTest
 import Nimble
 import Fleet
 
-#if os(iOS)
-    @testable import FleetTestApp
-#elseif os(tvOS)
-    @testable import FleetTestApp_tvOS
-#endif
+@testable import FleetTestApp
 
 class FleetSpec: XCTestCase {
     var applicationScreen: FLTScreen!

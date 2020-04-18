@@ -2,11 +2,7 @@ import XCTest
 import Fleet
 import Nimble
 
-#if os(iOS)
-    @testable import FleetTestApp
-#elseif os(tvOS)
-    @testable import FleetTestApp_tvOS
-#endif
+@testable import FleetTestApp
 
 class SegueDetailSpec: XCTestCase {
     override func setUp() {

@@ -1,10 +1,9 @@
 # Fleet [![Build Status](https://travis-ci.org/jwfriese/Fleet.svg?branch=master)](https://travis-ci.org/jwfriese/Fleet)
-Fleet is a UIKit-focused testing framework intended for use on iOS and tvOS projects written in Swift.
+Fleet is a UIKit-focused testing framework intended for use on iOS  projects written in Swift.
 
 ## Installation
 
-See the Installation section for details about installing Fleet in your [iOS](./Documentation/Installation/iOS.md)
-or [tvOS](./Documentation/Installation/tvOS.md) project.
+See the Installation section for details about installing Fleet in your [iOS](./Documentation/Installation/iOS.md) project.
 
 ## Features
 
@@ -25,10 +24,10 @@ Fleet extends UIKit classes in order to make it easier to test your code's inter
 - [UIBarButtonItem](./Documentation/UIBarButtonItem.md) - Provides convenience methods similar to those provided for UIButton.
 - [UIAlertController](./Documentation/UIAlertController.md) - Allows specs to simply tap on alert actions in order to test their behavior.
 - [UITabBarController](./Documentation/UITabBarController.md) - Provides convenience methods for selecting tabs.
-- [UITextField](./Documentation/UITextField.md) - Provides convenience methods for entering text. (iOS-only)
-- [UISwitch](./Documentation/UISwitch.md) - Provides convenience methods for interacting with switches in test. (iOS-only)
-- [UITextView](./Documentation/UITextView.md) - Provides convenience methods for entering text into a text view. (iOS-only)
-- [UIToolbar](./Documentation/UIToolbar.md) - Tap on items in a toolbar. (iOS-only)
+- [UITextField](./Documentation/UITextField.md) - Provides convenience methods for entering text.
+- [UISwitch](./Documentation/UISwitch.md) - Provides convenience methods for interacting with switches in test.
+- [UITextView](./Documentation/UITextView.md) - Provides convenience methods for entering text into a text view.
+- [UIToolbar](./Documentation/UIToolbar.md) - Tap on items in a toolbar.
 
 ### Setup for view controller tests
 Fleet provides another method of help in setting up view controller alongside storyboard injection and mocking. It makes it easy
