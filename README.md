@@ -25,6 +25,7 @@ Fleet extends UIKit classes in order to make it easier to test your code's inter
 - [UIBarButtonItem](./Documentation/UIBarButtonItem.md) - Provides convenience methods similar to those provided for UIButton.
 - [UIAlertController](./Documentation/UIAlertController.md) - Allows specs to simply tap on alert actions in order to test their behavior.
 - [UITabBarController](./Documentation/UITabBarController.md) - Provides convenience methods for selecting tabs.
+- [UINavigationBar](./Documentation/UINavigationBar.md) - Tap on items in a navigation bar.
 - [UITextField](./Documentation/UITextField.md) - Provides convenience methods for entering text. (iOS-only)
 - [UISwitch](./Documentation/UISwitch.md) - Provides convenience methods for interacting with switches in test. (iOS-only)
 - [UITextView](./Documentation/UITextView.md) - Provides convenience methods for entering text into a text view. (iOS-only)
