@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4EC820DAFDA1B9164C0E880E /* UITabBarController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC821C945584D2A053F3836 /* UITabBarController+Fleet.swift */; };
+		4EC825C6FF6FAC4BBFBD3312 /* UINavigationBar+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC820F0C51682AB437523BE /* UINavigationBar+FleetSpec.swift */; };
 		4EC829DEEF31BDE5A2C8E1D7 /* UITabBarController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC821C945584D2A053F3836 /* UITabBarController+Fleet.swift */; };
 		7B0082091EB6D788006B8FED /* Fleet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B0082001EB6D788006B8FED /* Fleet.framework */; };
 		7B0082171EB6D8B8006B8FED /* Fleet.h in Headers */ = {isa = PBXBuildFile; fileRef = 7BA90AB61CC130990040B031 /* Fleet.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -141,6 +142,7 @@
 		7BB14A661D772481002ABE82 /* FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A651D772481002ABE82 /* FleetSpec.swift */; };
 		7BB14A701D77B425002ABE82 /* Screen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A6D1D77B425002ABE82 /* Screen.swift */; };
 		7BB14A711D77B425002ABE82 /* FLTScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A6E1D77B425002ABE82 /* FLTScreen.swift */; };
+		7BB46890244AA58D00FFC241 /* UINavigationBar+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB4688F244AA58D00FFC241 /* UINavigationBar+Fleet.swift */; };
 		7BDB63B31E47725600515C22 /* FleetError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDB63B21E47725600515C22 /* FleetError.swift */; };
 		7BDF61EB1E935B4600990588 /* UIAlertAction+Fleet.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BDF61E81E935B4600990588 /* UIAlertAction+Fleet.m */; };
 		7BDF61EC1E935B4600990588 /* UIAlertController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDF61E91E935B4600990588 /* UIAlertController+Fleet.swift */; };
@@ -207,6 +209,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4EC820F0C51682AB437523BE /* UINavigationBar+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UINavigationBar+FleetSpec.swift"; sourceTree = "<group>"; };
 		4EC821C945584D2A053F3836 /* UITabBarController+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITabBarController+Fleet.swift"; sourceTree = "<group>"; };
 		7B0082001EB6D788006B8FED /* Fleet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Fleet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B0082081EB6D788006B8FED /* FleetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FleetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -288,6 +291,7 @@
 		7BB14A651D772481002ABE82 /* FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FleetSpec.swift; sourceTree = "<group>"; };
 		7BB14A6D1D77B425002ABE82 /* Screen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Screen.swift; sourceTree = "<group>"; };
 		7BB14A6E1D77B425002ABE82 /* FLTScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FLTScreen.swift; sourceTree = "<group>"; };
+		7BB4688F244AA58D00FFC241 /* UINavigationBar+Fleet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigationBar+Fleet.swift"; sourceTree = "<group>"; };
 		7BDB63B21E47725600515C22 /* FleetError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FleetError.swift; sourceTree = "<group>"; };
 		7BDF61E81E935B4600990588 /* UIAlertAction+Fleet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIAlertAction+Fleet.m"; sourceTree = "<group>"; };
 		7BDF61E91E935B4600990588 /* UIAlertController+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Fleet.swift"; sourceTree = "<group>"; };
@@ -635,8 +639,8 @@
 		7BA90ABE1CC3B5E30040B031 /* CoreExtensions */ = {
 			isa = PBXGroup;
 			children = (
+				7BB4688B244A981D00FFC241 /* Navigation */,
 				7B48F48D2446A3FA00BA2D65 /* Toolbar */,
-				7B0248542443EB4F007EC8CD /* TabBar */,
 				7BDF61E61E935B0E00990588 /* Alerts */,
 				7BFABD531E3DA1F3002823B3 /* Controls */,
 				7B29F41B1DDCABDD008EA836 /* TableView */,
@@ -666,8 +670,8 @@
 		7BA90AD01CC3E82B0040B031 /* CoreExtensions */ = {
 			isa = PBXGroup;
 			children = (
+				7BB4688D244A983700FFC241 /* Navigation */,
 				7B48F4922446A59F00BA2D65 /* Toolbar */,
-				7B0248552443FA61007EC8CD /* TabBar */,
 				7BDF61ED1E935B4D00990588 /* Alerts */,
 				7BFABD541E3DA1FA002823B3 /* Controls */,
 				7B29F41A1DDCABAD008EA836 /* TableView */,
@@ -706,6 +710,40 @@
 				7BB14A6E1D77B425002ABE82 /* FLTScreen.swift */,
 			);
 			path = Screen;
+			sourceTree = "<group>";
+		};
+		7BB4688B244A981D00FFC241 /* Navigation */ = {
+			isa = PBXGroup;
+			children = (
+				7BB4688C244A982C00FFC241 /* NavBar */,
+				7B0248542443EB4F007EC8CD /* TabBar */,
+			);
+			path = Navigation;
+			sourceTree = "<group>";
+		};
+		7BB4688C244A982C00FFC241 /* NavBar */ = {
+			isa = PBXGroup;
+			children = (
+				7BB4688F244AA58D00FFC241 /* UINavigationBar+Fleet.swift */,
+			);
+			path = NavBar;
+			sourceTree = "<group>";
+		};
+		7BB4688D244A983700FFC241 /* Navigation */ = {
+			isa = PBXGroup;
+			children = (
+				7B0248552443FA61007EC8CD /* TabBar */,
+				7BB4688E244A983D00FFC241 /* NavBar */,
+			);
+			path = Navigation;
+			sourceTree = "<group>";
+		};
+		7BB4688E244A983D00FFC241 /* NavBar */ = {
+			isa = PBXGroup;
+			children = (
+				4EC820F0C51682AB437523BE /* UINavigationBar+FleetSpec.swift */,
+			);
+			path = NavBar;
 			sourceTree = "<group>";
 		};
 		7BDB63B11E47723300515C22 /* Error */ = {
@@ -1234,6 +1272,7 @@
 				7B8F2B3C1DE2592C00B6F4C2 /* FleetObjC.m in Sources */,
 				7BFABD5C1E3DA2CD002823B3 /* UIButton+Fleet.swift in Sources */,
 				7BDF61F81E93671600990588 /* UINavigationController+Fleet.m in Sources */,
+				7BB46890244AA58D00FFC241 /* UINavigationBar+Fleet.swift in Sources */,
 				7BDF61FE1E936A3200990588 /* UIStoryboard+Fleet.m in Sources */,
 				7BDF61FA1E93685800990588 /* FleetSwizzle.m in Sources */,
 				7B0D3B3F1CFA79E70096DBC2 /* StoryboardInstanceBinding.swift in Sources */,
@@ -1301,6 +1340,7 @@
 				7B675E7D1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift in Sources */,
 				7BDF61F01E935B7500990588 /* UIAlertAction+FleetSpec.swift in Sources */,
 				7B29F4211DDCAC8A008EA836 /* UITableView+SelectCellActionSpec.swift in Sources */,
+				4EC825C6FF6FAC4BBFBD3312 /* UINavigationBar+FleetSpec.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -9,10 +9,14 @@ class BoxTurtleViewController: UIViewController {
 
     @IBAction func onLeftBarButtonItemTapped() {
         informationLabel?.text = "box turtle stop party..."
+
+        if let boxTurtleImage = boxTurtleImage {
+            boxTurtleImage.layer.removeAllAnimations()
+        }
     }
 
     @IBAction func onRightBarButtonItemTapped() {
-        informationLabel?.text = "BOX TURTLE DANCE PARTY"
+        informationLabel?.text = "Box Turtle Dance Party!!!!!!"
 
         doTurtleDanceParty()
     }
