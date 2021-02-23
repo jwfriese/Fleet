@@ -23,7 +23,7 @@ func equal(_ expectedValue: UIControl.Event?) -> Predicate<UIControl.Event> {
         if !matches {
             return PredicateResult(
                 status: .doesNotMatch,
-                message: .expectedCustomValueTo("equal \(stringify(expectedValue))", "<\(stringify(actualValue))>")
+                message: .expectedCustomValueTo("equal \(stringify(expectedValue))", actual: "<\(stringify(actualValue))>")
             )
         }
 
@@ -53,7 +53,7 @@ func equal(_ expectedValue: [UIControl.Event]?) -> Predicate<[UIControl.Event]> 
         if !matches {
             return PredicateResult(
                 status: .doesNotMatch,
-                message: .expectedCustomValueTo("equal \(stringify(expectedValue))", "<\(allToString(controlEvents: actualValue))>")
+                message: .expectedCustomValueTo("equal \(stringify(expectedValue))", actual: "<\(allToString(controlEvents: actualValue))>")
             )
         }
 
