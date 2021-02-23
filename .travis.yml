@@ -8,7 +8,7 @@ before_install:
     - gem install bundler
 install:
   - bundle install
-  - carthage update --platform 'iOS' 
-  - carthage update --platform 'tvOS' 
+  - ./script/carthage.sh update --platform 'iOS' 
+  - ./script/carthage.sh update --platform 'tvOS' 
 script:
   - fastlane test
