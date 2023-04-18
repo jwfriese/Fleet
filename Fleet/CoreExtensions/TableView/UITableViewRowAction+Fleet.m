@@ -5,7 +5,7 @@ BOOL didSwizzleUITableViewRowAction = NO;
 
 @implementation UITableViewRowAction (FleetPrivate)
 
-+ (void)initialize {
++ (void)load {
     if (self == [UITableViewRowAction class]) {
         if (!didSwizzleUITableViewRowAction) {
             [self objc_swizzleInit];

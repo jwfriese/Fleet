@@ -5,7 +5,7 @@ BOOL didSwizzleUIViewController = NO;
 
 @implementation UIViewController (FleetPrivate)
 
-+ (void)initialize {
++ (void)load {
     if (self == [UIViewController class]) {
         if (!didSwizzleUIViewController) {
             [self objc_swizzleViewDidLoad];

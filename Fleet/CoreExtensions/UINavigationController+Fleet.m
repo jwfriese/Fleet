@@ -5,7 +5,7 @@ BOOL didSwizzleUINavigationController = NO;
 
 @implementation UINavigationController (FleetPrivate)
 
-+ (void)initialize {
++ (void)load {
     if (self == [UINavigationController class]) {
         if (!didSwizzleUINavigationController) {
             [self objc_swizzlePushViewController];
