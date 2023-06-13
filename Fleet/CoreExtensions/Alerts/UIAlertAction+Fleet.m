@@ -5,7 +5,7 @@ BOOL didSwizzleUIAlertAction = NO;
 
 @implementation UIAlertAction (FleetPrivate)
 
-+ (void)initialize {
++ (void)load {
     if (self == [UIAlertAction class]) {
         if (!didSwizzleUIAlertAction) {
             [self objc_swizzleHandlerSetter];

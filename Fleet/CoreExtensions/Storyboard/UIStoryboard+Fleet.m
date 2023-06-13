@@ -5,7 +5,7 @@ BOOL didSwizzleUIStoryboard = NO;
 
 @implementation UIStoryboard (FleetPrivate)
 
-+ (void)initialize {
++ (void)load {
     if (self == [UIStoryboard class]) {
         if (!didSwizzleUIStoryboard) {
             [self objc_swizzleViewControllerInstantiationMethod];
