@@ -150,7 +150,7 @@ class UINavigationController_FleetSpec: XCTestCase {
         }
     }
 
-    func test_popToViewController_whenTheNavigationControllerNotInVisibleWindow_returnsNil() {
+    func test_popToViewController_whenTheNavigationControllerNotInVisibleWindow_returnsPoppedControllers() {
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
         let window = UIWindow()
@@ -166,7 +166,11 @@ class UINavigationController_FleetSpec: XCTestCase {
 
         let poppedControllers = navigationController.popToViewController(controllerOne, animated: true)
 
-        expect(poppedControllers).to(beNil())
+        // Current UIKit returns the removed controllers even for an offscreen stack.
+        expect(poppedControllers?.count).to(equal(2))
+        expect(poppedControllers?[0]).to(beIdenticalTo(controllerTwo))
+        expect(poppedControllers?[1]).to(beIdenticalTo(controllerThree))
+        expect(navigationController.topViewController).to(beIdenticalTo(controllerOne))
     }
 
     func test_popToRootViewController_immediatelySetsTheRootViewControllerAsTheTopViewController() {
@@ -211,7 +215,7 @@ class UINavigationController_FleetSpec: XCTestCase {
         }
     }
 
-    func test_popToRootViewController_whenTheNavigationControllerIsNotInVisibleWindow_returnsNil() {
+    func test_popToRootViewController_whenTheNavigationControllerIsNotInVisibleWindow_returnsPoppedControllers() {
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
         let window = UIWindow()
@@ -225,7 +229,10 @@ class UINavigationController_FleetSpec: XCTestCase {
 
         let poppedControllers = navigationController.popToRootViewController(animated: true)
 
-        expect(poppedControllers).to(beNil())
+        expect(poppedControllers?.count).to(equal(2))
+        expect(poppedControllers?[0]).to(beIdenticalTo(controllerOne))
+        expect(poppedControllers?[1]).to(beIdenticalTo(controllerTwo))
+        expect(navigationController.topViewController).to(beIdenticalTo(root))
     }
 
     func test_navigationControllerWithSegueInViewDidLoad_segueHappensAndResultIsImmediatelyVisible() {

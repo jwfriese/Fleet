@@ -2,7 +2,7 @@
 
 The goal is to make Fleet straightforward to build, dependable to test, and ready for regular feature development. Preserve its focus on exercising real UIKit screen behavior with isolated dependencies. Work through the milestones below in order, using small changes with regression tests for behavior changes.
 
-This is an implementation backlog based on a repository audit on October 2, 2026. All task checkboxes begin unchecked. Findings from source inspection identify work to investigate or correct; they do not establish how every supported OS behaves at runtime. Proposed compatibility and API choices should be settled before implementing changes that depend on them.
+This is an implementation backlog based on a repository audit on October 2, 2026. Checkboxes track completed work; the starting-point findings below preserve the original audit. Findings from source inspection identify work to investigate or correct; they do not establish how every supported OS behaves at runtime. Proposed compatibility and API choices should be settled before implementing changes that depend on them.
 
 ## Verified starting point
 
@@ -17,19 +17,36 @@ The audit machine has Xcode 26.6, build 17F113, and Apple Swift 6.3.3. No depend
 
 The framework builds used `CODE_SIGNING_ALLOWED=NO` and derived data outside the repository. The initial sandboxed iOS build could not access Xcode services; the successful check ran with the required access. Build logs are temporary audit artifacts, rather than project prerequisites.
 
+## Phase 0 implementation
+
+The development baseline now uses Xcode 26.6, Swift 6.3.3 in Swift 5 language mode, and iOS/tvOS 26.5 simulators. Installing the tvOS platform enabled its previously unverified test host to compile and run. The canonical command is `script/test all`; `script/test` runs iOS and `script/test tvos` runs tvOS separately. Each run retains logs and an `.xcresult` bundle under `build/`, executes serially, and enables XCTest timeouts.
+
+The iOS suite passes 251 tests and the tvOS suite passes 121 tests. Five Python tooling checks verify simulator selection and runner behavior, including failure propagation. Nimble 14 is pinned through Xcode SwiftPM, with a test-only Objective-C catcher preserving exception assertions independently of Fleet's production error handling.
+
+Restoration exposed specific compatibility and fixture issues:
+
+- Root replacement needed to finish the previous editing session and lay out the new root. A new regression covers responder handoff and immediately usable navigation content.
+- Current UIKit returns removed controllers from offscreen navigation pops. Two stale nil assertions now check returned controller identities and the remaining stack.
+- The tvOS host contained obsolete Swift API names, lacked a shared notification helper in its test target, and lacked the `HomeTabBar` scene required by a shared storyboard test. These fixtures are restored.
+- Focus fixtures now end editing, dismiss presented UI, and restore the borrowed root. The new handoff regression uses a text field on iOS and a real non-text responder on tvOS; interrupting tvOS system text-entry presentation caused a UIKit keyboard-layout stall. Existing tvOS text-field focus tests remain enabled. System keyboard presentation and interruption require separate coverage in M3/M4.
+
+[GitHub Actions](../.github/workflows/test.yml) replaces Travis with separate iOS/tvOS jobs using the canonical command and retaining results even on failure. The workflow passes actionlint; remote execution awaits pushing the implementation. [CONTRIBUTING.md](../CONTRIBUTING.md) and [AGENTS.md](../AGENTS.md) document setup, checks, repository structure, and behavioral-test expectations.
+
+Phase 0 restores a usable development/test baseline. Public distribution, Swift 6 language mode, scene hosting, lifecycle warnings, and the remaining readiness gate are still outstanding.
+
 ## Milestone 1 Restore reproducible development
 
 Finish this milestone before changing runtime behavior. A working test suite will preserve the useful coverage already in [FleetTests](../FleetTests).
 
-- [ ] **M1.1 Choose and document the support matrix.** Specify minimum Swift tools and language versions, supported Xcode versions, and minimum iOS and tvOS versions. Keep both existing platforms in scope unless an explicit support decision changes that. Reconcile `.swift-version` at 5.0.1, project deployment settings at iOS/tvOS 12, and the podspec at iOS 8/tvOS 10. **Done when:** the published matrix and all build/distribution settings agree.
+- [ ] **M1.1 Choose and document the support matrix.** Specify minimum Swift tools and language versions, supported Xcode versions, and minimum iOS and tvOS versions. Keep both existing platforms in scope unless an explicit support decision changes that. Phase 0 records compiler 6.3.3 in `.swift-version`, keeps Swift 5 language mode and framework deployment targets at iOS/tvOS 12, and raises test/host targets to 13 for Nimble. The podspec still advertises iOS 8/tvOS 10. **Done when:** the published matrix and all build/distribution settings agree.
 
-- [ ] **M1.2 Restore the current tests with maintained dependencies.** The test project links Nimble from `Carthage/Build`; the root dependency files pin Nimble 9.0.0. Choose a maintained version compatible with M1.1 and update changed assertions as needed. Retain meaningful behavioral coverage while making the suite run. **Done when:** iOS and tvOS test bundles resolve their dependencies and execute, with failures recorded and explained.
+- [x] **M1.2 Restore the current tests with maintained dependencies.** Phase 0 replaces the root Carthage/Nimble 9 dependency with pinned Nimble 14 through Xcode SwiftPM. It retains real Objective-C exception assertions through an independently tested catcher, updates obsolete host APIs, and corrects current UIKit compatibility issues. **Done when:** iOS and tvOS test bundles resolve their dependencies and execute, with failures recorded and explained.
 
-- [ ] **M1.3 Establish one documented test command.** Update `./test` or provide a replacement that selects the platform and an available simulator, fails clearly when prerequisites are missing, returns a failing exit status for failed tests, and retains result bundles. The current fastlane lane runs only the iOS `Fleet` scheme on an iPhone 11 and calls `setup_travis`. **Done when:** a fresh checkout can run each platform's suite using documented commands without editing machine-specific paths.
+- [x] **M1.3 Establish one documented test command.** Phase 0 adds `script/test [ios|tvos|all]` and makes `./test` forward to it. The runner selects an available simulator, fails when prerequisites are missing, preserves Xcode's exit status through logging, and retains result bundles. Python regression checks cover selection and failure propagation. The historical fastlane lane is no longer the canonical path. **Done when:** a fresh checkout can run each platform's suite using documented commands without editing machine-specific paths.
 
-- [ ] **M1.4 Replace the historical CI setup.** `.travis.yml` targets Xcode 12.2 and bootstraps Ruby/Carthage. Configure an actively maintained CI workflow for the selected matrix, with both platforms, dependency caching, and test results on failure. **Done when:** a pull request builds and runs the baseline suites on clean runners; failed checks cannot appear successful because of log filtering or retries.
+- [ ] **M1.4 Replace the historical CI setup.** Phase 0 removes Travis and adds GitHub Actions jobs for both platforms on Xcode 26.6, using the canonical command and retaining logs/result bundles on failure. The workflow passes actionlint; its first remote execution and dependency caching remain to verify or add. **Done when:** a pull request builds and runs the baseline suites on clean runners; failed checks cannot appear successful because of log filtering or retries.
 
-Sources: [project settings](../Fleet.xcodeproj/project.pbxproj), [podspec](../Fleet.podspec), [test entry point](../test), [fastlane configuration](../fastlane/Fastfile), [root dependencies](../Cartfile.private), and [Travis configuration](../.travis.yml).
+Sources: [project settings](../Fleet.xcodeproj/project.pbxproj), [podspec](../Fleet.podspec), [test runner](../script/test), [historical fastlane configuration](../fastlane/Fastfile), [pinned dependencies](../Fleet.xcworkspace/xcshareddata/swiftpm/Package.resolved), and [GitHub Actions workflow](../.github/workflows/test.yml).
 
 ## Milestone 2 Modernize packaging and compiler support
 
@@ -101,9 +118,9 @@ Sources: [navigation implementation](../Fleet/CoreExtensions/UINavigationControl
 
 - [ ] **M5.5 Update contributor and agent guidance.** Document setup, canonical checks, repository structure, regression-test expectations, platform exclusions, and rules for changing UIKit simulation semantics. Provide short issue/PR templates and a focused `AGENTS.md` if useful for ongoing agent work. **Done when:** a contributor can add a small helper and know which tests/docs/checks to update without reconstructing the old toolchain.
 
-- [ ] **M5.6 Modernize release preparation.** `script/release.go` bumps versions, commits, pushes, tags, and publishes to CocoaPods in one run, with no test gate. Separate local preparation from publication, enforce passing checks and a clean release state, and provide a changelog and migration guide. Use a major version if public signatures or implicit runtime behavior change incompatibly. **Done when:** release preparation is reviewable and repeatable, and every advertised distribution route resolves the same validated revision.
+- [ ] **M5.6 Modernize release preparation.** Release tooling is now pulled forward: `script/release prepare` leaves a version/changelog diff for review, `check` validates a clean committed revision, and `publish` verifies that revision and CI before pushing only its release tag and creating GitHub release notes. The old Go/CocoaPods publisher is removed. Regression tests cover failure handling and publication recovery; a read-only GitHub Actions workflow runs release validation. Publication remains gated on Fleet's SwiftPM manifest and external iOS/tvOS consumer checks. Finish packaging/distribution validation and migration guidance before marking this task complete. Use a major version if public signatures or implicit runtime behavior change incompatibly. **Done when:** release preparation is reviewable and repeatable, and every advertised distribution route resolves the same validated revision.
 
-Sources: [example dependencies](../Examples/FleetExamples/Cartfile), [example tests](../Examples/FleetExamples/FleetExamplesTests), [presentation docs](UIViewController.md), [FAQ](FAQ.md), [contribution guide](../CONTRIBUTING.md), and [release script](../script/release.go). Swift Testing can run alongside XCTest and runs tests in parallel by default; see its [official repository](https://github.com/swiftlang/swift-testing).
+Sources: [example dependencies](../Examples/FleetExamples/Cartfile), [example tests](../Examples/FleetExamples/FleetExamplesTests), [presentation docs](UIViewController.md), [FAQ](FAQ.md), [contribution guide](../CONTRIBUTING.md), [release commands](../script/release.py), and [release guide](Releasing.md). Swift Testing can run alongside XCTest and runs tests in parallel by default; see its [official repository](https://github.com/swiftlang/swift-testing).
 
 ## Gate for resuming regular feature development
 
@@ -127,4 +144,4 @@ These are candidates for later feature development. Their scope and order should
 - [ ] **Configurable screen environments.** Size, traits, Dynamic Type, appearance, and localization, with snapshot integrations where they help verify output.
 - [ ] **Better diagnostics for humans and agents.** Structured action traces, relevant hierarchy/state attachments, and focused test execution. Extend the established command-line test workflow as concrete needs emerge.
 
-The first implementation change should restore dependency resolution and get the existing suite executing. That provides the feedback needed to make the subsequent modernization safely incremental.
+With Phase 0 in place, settle M1.1's public support matrix and verify the first clean CI runs before starting packaging and compiler migration. Use the restored suite to keep subsequent modernization incremental.

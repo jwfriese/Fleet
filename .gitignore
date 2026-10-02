@@ -41,6 +41,7 @@ playground.xcworkspace
 # Add this line if you want to avoid checking in source code from Swift Package Manager dependencies.
 # Packages/
 .build/
+__pycache__/
 
 # CocoaPods
 #
@@ -79,4 +80,4 @@ Testing/src/*
 trim
 
 # The binary produced for releasing
-release
+/release

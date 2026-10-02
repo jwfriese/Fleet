@@ -1,0 +1,45 @@
+name: Release validation
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Committed release version to validate (X.Y.Z)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-validation-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate release on Xcode 26.6
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+      FLEET_RELEASE_VERSION: ${{ inputs.version }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Check command syntax
+        run: bash -n script/test script/release test
+      - name: Validate committed release and consumers
+        run: script/release check "$FLEET_RELEASE_VERSION"
+      - name: Upload release validation evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-validation-${{ github.run_id }}
+          path: |
+            build/releases/
+            build/ios-test-*/
+            build/tvos-test-*/
+          if-no-files-found: warn
+          retention-days: 14
