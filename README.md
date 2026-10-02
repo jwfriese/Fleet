@@ -61,3 +61,7 @@ contains many examples of basic tests that you'll likely write in any Swift iOS 
 For more complicated, larger-scale projects that use Fleet, check out the following projects:
 
 [FrequentFlyer](https://github.com/jwfriese/FrequentFlyer)
+
+## Modernization
+
+The [modernization checklist](./Documentation/Modernization.md) tracks the work needed to restore a maintained build, verify current UIKit behavior, and resume regular feature development.
