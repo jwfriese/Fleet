@@ -40,7 +40,7 @@ To run one test class during development, use `script/test ios -only-testing:Fle
 
 Logs and result bundles are retained in unique run directories under `build/`; open a `TestResults.xcresult` bundle in Xcode to inspect failures. `FLEET_BUILD_DIR` changes the output directory. Tests run serially because Fleet shares application UI state, with XCTest timeouts enabled (30 seconds per test by default, maximum 60). The root `./test` command remains a compatibility wrapper.
 
-For runner or release-tooling changes, also run `python3 -m unittest discover -s script/tests -v` and `bash -n script/test script/release test`. GitHub Actions runs these checks and both simulator suites. See [AGENTS.md](AGENTS.md) for repository structure and guidance for agent work.
+For runner, release-tooling, or storyboard-script changes, also run `python3 -m unittest discover -s script/tests -v` and `bash -n script/test script/release test Fleet/Script/copy_storyboard_info_files.sh`. GitHub Actions runs these checks and both simulator suites. See [AGENTS.md](AGENTS.md) for repository structure and guidance for agent work.
 
 ## Pull Requests
 

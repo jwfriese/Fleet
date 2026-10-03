@@ -30,7 +30,7 @@ jobs:
           persist-credentials: false
       - name: Check test tooling
         run: |
-          bash -n script/test script/release test
+          bash -n script/test script/release test Fleet/Script/copy_storyboard_info_files.sh
           python3 -m unittest discover -s script/tests -v
           git diff --check
       - name: Run simulator tests

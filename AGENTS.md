@@ -9,14 +9,14 @@ Fleet is a UIKit testing library for iOS and tvOS. It helps hosted unit tests ex
 - Run `script/test` for the complete iOS suite, `script/test tvos` for tvOS, or `script/test all` for both. The root `./test` forwards to this runner.
 - Narrow a development run with `script/test ios -only-testing:FleetTests/ClassName/test_method`. Run the complete affected platform suite before reporting completion; run both platforms for changes shared by both when their SDKs/runtimes are available.
 - Set `FLEET_TEST_DESTINATION` to an explicit `xcodebuild` destination if automatic selection is unsuitable. Use that override with one platform at a time. `FLEET_BUILD_DIR` overrides the default `build/` output directory.
-- Run `python3 -m unittest discover -s script/tests -v` for test-runner or release-tooling changes. Check shell syntax with `bash -n script/test script/release test` and check whitespace with `git diff --check`.
+- Run `python3 -m unittest discover -s script/tests -v` for test-runner, release-tooling, or storyboard-script changes. Check shell syntax with `bash -n script/test script/release test Fleet/Script/copy_storyboard_info_files.sh` and check whitespace with `git diff --check`.
 - The first test run needs network access to fetch packages. Xcode resolves pinned Nimble dependencies from `Fleet.xcworkspace/xcshareddata/swiftpm/Package.resolved`. Commit intentional dependency changes together with that lockfile.
 - Test hosts and test targets require iOS/tvOS 13 for Nimble. Phase 0 does not settle the library's public deployment/support matrix; see `Documentation/Modernization.md`.
 - Test runs execute serially because Fleet modifies application UI state and installs process-wide runtime hooks. Do not enable parallel execution until that shared state is isolated.
 - The runner enables XCTest timeouts (30 seconds per test by default, maximum 60). A timeout is a failure; diagnose its result bundle instead of retrying it away.
 - Each run writes `xcodebuild.log` and `TestResults.xcresult` into a unique directory under `build/`. Report test counts and failures; a successful framework build alone is not a passing test suite. Preserve failures instead of adding retries or silently skipping tests.
 
-The canonical test path needs neither Ruby/fastlane nor Carthage. Historical tooling and the separate example's Carthage setup are not the canonical development workflow. Plain macOS `swift test` cannot run Fleet's UIKit suite.
+The obsolete Ruby/fastlane setup, Xcode 12 Carthage workaround, and Go whitespace utility are removed. The separate example still has its historical Carthage setup; it is not the canonical development workflow. Plain macOS `swift test` cannot run Fleet's UIKit suite.
 
 ## Repository structure
 
@@ -24,7 +24,7 @@ The canonical test path needs neither Ruby/fastlane nor Carthage. Historical too
 - `FleetTests/`: XCTest specifications and test helpers. Nimble comes from SwiftPM; `Helpers/ExceptionCatcher.*` and `RaiseExceptionMatcher.swift` preserve exception assertions independently of Fleet's production catcher.
 - `FleetTestApp/` and `FleetTestApp-tvOS/`: applications hosting the test bundles and storyboard fixtures. `TestAppCommon/` contains shared controllers.
 - `Fleet.xcodeproj` / `Fleet.xcworkspace`: shared iOS `Fleet` and tvOS `Fleet-tvOS` schemes. Add new shared source/test files to both applicable targets; use platform guards for APIs unavailable on tvOS.
-- `Fleet/Script/copy_storyboard_info_files.sh`: extracts compiled storyboard metadata required for binding tests. Keep it connected to the test targets.
+- `Fleet/Script/copy_storyboard_info_files.sh`: standalone macOS Bash script extracting compiled storyboard metadata required for binding tests. Keep it connected to the test targets. Both phases deliberately run every build because storyboard paths are discovered dynamically in the host's intermediates; inputs/outputs are declared, but script timestamps alone cannot track host resource changes. Discovery/copy failures must fail the build and preserve previous metadata. Identical localized copies may share a name; conflicting metadata must fail.
 - `script/test`, `script/select-simulator.py`, and `script/tests/`: canonical test runner, simulator selection, and tooling regression checks.
 - `.github/workflows/test.yml`: GitHub Actions runs both platform suites through the same command and retains their results.
 - `script/release` and `script/release.py`: separate preparation, validation, and publication commands. `.github/workflows/release.yml` runs full release validation manually with read-only permissions. `Documentation/Releasing.md` describes prerequisites and recovery.

@@ -1112,31 +1112,37 @@
 /* Begin PBXShellScriptBuildPhase section */
 		7B00825E1EB6E309006B8FED /* Storyboard script */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/Fleet/Script/copy_storyboard_info_files.sh",
 			);
 			name = "Storyboard script";
 			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(CONTENTS_FOLDER_PATH)/StoryboardInfo",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "$PROJECT_DIR/Fleet/Script/copy_storyboard_info_files.sh \"FleetTestApp\"";
+			shellScript = "\"$PROJECT_DIR/Fleet/Script/copy_storyboard_info_files.sh\"";
 		};
 		7B9458191D4E49ED00F16A64 /* Storyboard script */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/Fleet/Script/copy_storyboard_info_files.sh",
 			);
 			name = "Storyboard script";
 			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(CONTENTS_FOLDER_PATH)/StoryboardInfo",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "$PROJECT_DIR/Fleet/Script/copy_storyboard_info_files.sh \"FleetTestApp\"";
+			shellScript = "\"$PROJECT_DIR/Fleet/Script/copy_storyboard_info_files.sh\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 

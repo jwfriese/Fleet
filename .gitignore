@@ -57,27 +57,6 @@ __pycache__/
 **/Carthage/Checkouts
 **/Carthage/Build
 
-# fastlane
-#
-# It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the 
-# screenshots whenever they are needed.
-# For more information about the recommended setup visit:
-# https://github.com/fastlane/fastlane/blob/master/docs/Gitignore.md
-
-fastlane/report.xml
-fastlane/screenshots
-test_output
-
-# The project maintains a Golang ecosystem, which we want to ignore most of. The only things to 
-# include are the files for the Go lib that this project is developing.
-Testing/pkg
-Testing/bin
-
-Testing/src/*
-!Testing/src/simulator
-
-# The binary produced for trimming
-trim
-
-# The binary produced for releasing
+# Historical Go tool binaries
+/trim
 /release
