@@ -1,4 +1,4 @@
-# Fleet [![Tests](https://github.com/jwfriese/Fleet/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/jwfriese/Fleet/actions/workflows/test.yml)
+# Fleet [![Tests](https://github.com/jwfriese/Fleet/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/jwfriese/Fleet/actions/workflows/test.yml)
 Fleet is a UIKit-focused testing framework intended for use on iOS and tvOS projects written in Swift.
 
 ## Installation

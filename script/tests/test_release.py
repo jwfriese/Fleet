@@ -43,7 +43,7 @@ class ReleaseTests(unittest.TestCase):
             "        Path('build/python-check-ran').write_text('executed')\n"
         )
         self.write_test_runner()
-        self.git("init", "-b", "master")
+        self.git("init", "-b", "main")
         self.git("config", "user.name", "Release Fixture")
         self.git("config", "user.email", "fixture@example.invalid")
         self.git("remote", "add", "origin", "git@github.com:owner/Fleet.git")
@@ -98,7 +98,7 @@ class ReleaseTests(unittest.TestCase):
         original = release.run
         commit = release.head(self.root)
         if runs is None:
-            runs = [{"databaseId": 42, "headSha": commit, "headBranch": "master", "event": "push",
+            runs = [{"databaseId": 42, "headSha": commit, "headBranch": "main", "event": "push",
                      "status": "completed", "conclusion": "success", "createdAt": "2026-10-02T00:00:00Z"}]
         if jobs is None:
             jobs = [{"name": f"{platform} on Xcode 26.6", "status": "completed", "conclusion": "success",
@@ -110,7 +110,7 @@ class ReleaseTests(unittest.TestCase):
         def fake(root, *args, input_text=None):
             if args[:2] == ("git", "ls-remote"):
                 self.network_calls.append(args)
-                refs = f"{commit}\trefs/heads/master\n"
+                refs = f"{commit}\trefs/heads/main\n"
                 if tag_commit:
                     refs += f"{tag_commit}\trefs/tags/5.0.0\n"
                 return refs
@@ -281,6 +281,22 @@ class ReleaseTests(unittest.TestCase):
         self.assertEqual(self.network_calls, [])
         self.assertEqual(self.git("tag", "--list"), before)
 
+    def test_publish_rejects_old_default_branch_before_network_or_tag_mutations(self):
+        self.checked()
+        self.git("branch", "-m", "master")
+        before = self.git("tag", "--list")
+        with self.fake_network(), self.assertRaisesRegex(release.ReleaseError, "Publish from main"):
+            release.publish(self.root, "5.0.0")
+        self.assertEqual(self.network_calls, [])
+        self.assertEqual(self.git("tag", "--list"), before)
+
+    def test_old_default_branch_ci_cannot_authorize_publication(self):
+        commit = self.checked()
+        old_run = {"databaseId": 42, "headSha": commit, "headBranch": "master", "event": "push",
+                   "status": "completed", "conclusion": "success", "createdAt": "2026-10-02T00:00:00Z"}
+        with self.fake_network(runs=[old_run]), self.assertRaisesRegex(release.ReleaseError, "on main"):
+            release.require_ci(self.root, "owner/Fleet", commit)
+
     def test_malformed_or_incomplete_evidence_cannot_authorize_publication(self):
         commit = self.checked()
         path = self.root / "build/releases/5.0.0/validation.json"
@@ -293,7 +309,7 @@ class ReleaseTests(unittest.TestCase):
 
     def test_publish_requires_latest_successful_ci_and_executed_platform_steps(self):
         commit = self.checked()
-        base = {"databaseId": 42, "headSha": commit, "headBranch": "master", "event": "push",
+        base = {"databaseId": 42, "headSha": commit, "headBranch": "main", "event": "push",
                 "status": "completed", "conclusion": "success", "createdAt": "2026-10-01T00:00:00Z"}
         cases = [
             [{"name": "ios on Xcode 26.6", "status": "completed", "conclusion": "success", "steps": []}],

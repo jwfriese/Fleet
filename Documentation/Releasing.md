@@ -46,7 +46,7 @@ The manually dispatched [Release validation workflow](../.github/workflows/relea
 
 ## Publish
 
-Merge and push the reviewed release changes to `master`, and wait for the [Tests workflow](../.github/workflows/test.yml) to pass for that exact commit. Check out that revision locally on `master`, and obtain a successful full-validation receipt.
+Merge and push the reviewed release changes to `main`, and wait for the [Tests workflow](../.github/workflows/test.yml) to pass for that exact commit. Check out that revision locally on `main`, and obtain a successful full-validation receipt.
 
 Review the local publication plan:
 
@@ -62,7 +62,7 @@ When deliberately publishing the reviewed release:
 script/release publish 5.0.0
 ```
 
-Use `--remote NAME` to choose a remote other than `origin`. The remote must have exactly one GitHub push URL. The publisher checks that destination's `master` commit, release tags, and latest applicable Tests workflow run. Both native platform jobs and the external SwiftPM consumer job must have executed their test steps successfully; an older successful run cannot override a newer failed or pending run.
+Use `--remote NAME` to choose a remote other than `origin`. The remote must have exactly one GitHub push URL. The publisher checks that destination's `main` commit, release tags, and latest applicable Tests workflow run. Both native platform jobs and the external SwiftPM consumer job must have executed their test steps successfully; an older successful run cannot override a newer failed or pending run.
 
 Publication creates an annotated tag at the validated commit, pushes only that tag, and creates a GitHub release from the reviewed changelog. It does not push branches, unrelated tags, or a CocoaPods specification. Conflicting local or remote tags fail without being moved or deleted. GitHub release creation uses `--verify-tag` to prevent implicit tagging of a different revision.
 

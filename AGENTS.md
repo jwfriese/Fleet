@@ -36,6 +36,8 @@ The obsolete Ruby/fastlane setup, Xcode 12 Carthage workaround, and Go whitespac
 
 ## Making changes
 
+`main` is the default integration and release branch. Target pull requests at `main`; the publisher requires its exact committed revision and passing CI.
+
 For behavior changes, first add or identify a failing regression test, then make the smallest implementation change that satisfies it. Preserve existing coverage. If an old expectation conflicts with current UIKit, establish the actual behavior and document why the expectation changes. Never weaken an assertion solely to make CI green.
 
 UIKit interaction helpers must account for relevant delegate/control events and unavailable controls. An action dispatched programmatically does not prove physical hit testing, accessibility, or actual keyboard presentation. Document the exact supported behavior.

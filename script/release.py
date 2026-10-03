@@ -283,13 +283,13 @@ def github_repository(url):
 
 def require_ci(root, repository, commit):
     runs = json.loads(run(root, "gh", "run", "list", "--repo", repository,
-                          "--workflow", "test.yml", "--branch", "master", "--commit", commit,
+                          "--workflow", "test.yml", "--branch", "main", "--commit", commit,
                           "--limit", "20", "--json",
                           "databaseId,headSha,headBranch,event,status,conclusion,createdAt"))
     candidates = [item for item in runs if item["headSha"] == commit
-                  and item["headBranch"] == "master" and item["event"] in ("push", "workflow_dispatch")]
+                  and item["headBranch"] == "main" and item["event"] in ("push", "workflow_dispatch")]
     if not candidates:
-        raise ReleaseError("No Tests workflow run exists for this revision on master.")
+        raise ReleaseError("No Tests workflow run exists for this revision on main.")
     latest = max(candidates, key=lambda item: (item["createdAt"], item["databaseId"]))
     if latest["status"] != "completed" or latest["conclusion"] != "success":
         raise ReleaseError("The latest Tests workflow run for this revision has not passed.")
@@ -314,8 +314,8 @@ def publish(root, version, remote="origin", dry_run=False):
     commit = validate_snapshot(root, version)
     require_distribution_checker(root)
     load_evidence(root, version, commit)
-    if git(root, "branch", "--show-current") != "master":
-        raise ReleaseError("Publish from master after the release changes are reviewed and merged.")
+    if git(root, "branch", "--show-current") != "main":
+        raise ReleaseError("Publish from main after the release changes are reviewed and merged.")
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._/-]*", remote):
         raise ReleaseError("Invalid remote name.")
     push_urls = git(root, "remote", "get-url", "--push", "--all", remote).splitlines()
@@ -325,17 +325,17 @@ def publish(root, version, remote="origin", dry_run=False):
     repository = github_repository(push_url)
     if dry_run:
         print(f"Publication plan: {repository}, tag {version}, commit {commit}.")
-        print("Verify remote master, version tags, and the latest successful native and external consumer CI run.")
+        print("Verify remote main, version tags, and the latest successful native and external consumer CI run.")
         print(f"Create or reuse only tag {version} at {commit}; push only refs/tags/{version}.")
         print("Create the GitHub release using the reviewed changelog.")
         print("Dry run complete. No network requests, tags, pushes, or releases were made.")
         return
     refs = {}
-    for line in git(root, "ls-remote", push_url, "refs/heads/master", "refs/tags/*").splitlines():
+    for line in git(root, "ls-remote", push_url, "refs/heads/main", "refs/tags/*").splitlines():
         sha, ref = line.split()
         refs[ref] = sha
-    if refs.get("refs/heads/master") != commit:
-        raise ReleaseError("Remote master does not point to the validated commit. Push or merge it and wait for CI.")
+    if refs.get("refs/heads/main") != commit:
+        raise ReleaseError("Remote main does not point to the validated commit. Push or merge it and wait for CI.")
     tag_ref = f"refs/tags/{version}"
     remote_tag = refs.get(tag_ref + "^{}", refs.get(tag_ref))
     if remote_tag and remote_tag != commit:
