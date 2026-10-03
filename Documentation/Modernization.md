@@ -38,11 +38,19 @@ After this follow-up, `script/test all` passes 251 iOS tests and 121 tvOS tests 
 
 Phase 0 restores a usable development/test baseline. Public distribution, Swift 6 language mode, scene hosting, lifecycle warnings, and the remaining readiness gate are still outstanding.
 
+## Compatibility baseline
+
+The selected policy for the next major release is iOS 15 and tvOS 15, with SwiftPM as the supported distribution route. Framework, test, host, and project deployment settings and the historical podspec now agree on 15. The development baseline remains Xcode 26.6 and Apple Swift 6.3.3 in Swift 5 language mode; the forthcoming SwiftPM manifest will use tools version 6.3. See [compatibility and distribution](Compatibility.md) for the difference between selected minimum deployment targets and verified current-runtime coverage.
+
+CocoaPods, Carthage, and direct integration remain historical Fleet 4.x routes. Their installation documents are marked accordingly, with links to the 4.6.1 tag. Package and consumer validation still gate the next major release. The Objective-C helper definitions now have explicit `(void)` prototypes, and the collection-view fixture has a reuse identifier; their build warnings are resolved without suppressing diagnostics.
+
+With every target set to deployment version 15.0, the full hosted suites pass 251 iOS and 121 tvOS tests with zero failures. All 34 tooling checks pass, the podspec passes Ruby syntax validation, and all 14 Xcode configurations retain Swift 5 language mode.
+
 ## Milestone 1 Restore reproducible development
 
 Finish this milestone before changing runtime behavior. A working test suite will preserve the useful coverage already in [FleetTests](../FleetTests).
 
-- [ ] **M1.1 Choose and document the support matrix.** Specify minimum Swift tools and language versions, supported Xcode versions, and minimum iOS and tvOS versions. Keep both existing platforms in scope unless an explicit support decision changes that. Phase 0 records compiler 6.3.3 in `.swift-version`, keeps Swift 5 language mode and framework deployment targets at iOS/tvOS 12, and raises test/host targets to 13 for Nimble. The podspec still advertises iOS 8/tvOS 10. **Done when:** the published matrix and all build/distribution settings agree.
+- [x] **M1.1 Choose and document the support matrix.** The next major release selects iOS/tvOS 15 across framework, test, host, project, and historical podspec settings. [Compatibility and distribution](Compatibility.md) documents Xcode 26.6, reference compiler 6.3.3, retained Swift 5 language mode, and tools version 6.3 for the forthcoming package. Both platforms remain in scope. Current-runtime coverage is verified on 26.5; additional runtime/toolchain combinations remain to validate. **Done when:** the published matrix and all build/distribution settings agree.
 
 - [x] **M1.2 Restore the current tests with maintained dependencies.** Phase 0 replaces the root Carthage/Nimble 9 dependency with pinned Nimble 14 through Xcode SwiftPM. It retains real Objective-C exception assertions through an independently tested catcher, updates obsolete host APIs, and corrects current UIKit compatibility issues. **Done when:** iOS and tvOS test bundles resolve their dependencies and execute, with failures recorded and explained.
 
@@ -60,9 +68,9 @@ Sources: [project settings](../Fleet.xcodeproj/project.pbxproj), [podspec](../Fl
 
 - [ ] **M2.3 Complete the Swift 6 migration.** Address the verified global-state diagnostics, isolate UI APIs appropriately, and review Objective-C entry points and closure isolation. Remove unused mutable keys/flags where appropriate; use narrowly justified synchronization or unsafe annotations only where the invariant is established. **Done when:** library and test targets compile in the selected Swift 6 configuration, and Swift 6 consumer tests pass without disabling concurrency checking globally.
 
-- [ ] **M2.4 Update the remaining build infrastructure.** The obsolete Xcode 12 architecture workaround and Ruby/fastlane tooling are removed. Storyboard phases declare inputs/outputs and deliberately run every build to follow host resource changes. Remaining work includes Objective-C functions without explicit `(void)` prototypes, storyboard cells without reuse identifiers, and absolute `/usr/local/bin/carthage` assumptions in legacy installation instructions, subject to M2.5. **Done when:** the selected builds run on Apple silicon and report no unexplained project warnings.
+- [ ] **M2.4 Update the remaining build infrastructure.** The obsolete Xcode 12 architecture workaround and Ruby/fastlane tooling are removed. Storyboard phases declare inputs/outputs and deliberately run every build to follow host resource changes. Explicit Objective-C `(void)` prototypes and the collection-view fixture reuse identifier resolve their warnings. Remaining warnings include deprecated UIKit APIs and synchronous Nimble waits, addressed alongside M2.3/M3/M4. Absolute `/usr/local/bin/carthage` paths are confined to instructions explicitly marked as historical 4.x routes. **Done when:** the selected builds run on Apple silicon and report no unexplained project warnings.
 
-- [ ] **M2.5 Decide the legacy distribution policy.** State whether CocoaPods, Carthage, and direct project integration remain supported, receive a transitional release, or are deprecated. Validate every advertised route, including storyboard setup. **Done when:** installation docs and release checks cover the promised routes, and deprecated routes have clear migration instructions.
+- [ ] **M2.5 Decide the legacy distribution policy.** The policy decision is complete: SwiftPM is the supported route for the next major release; CocoaPods, Carthage, and direct integration remain historical 4.x routes. [Compatibility and distribution](Compatibility.md), installation docs, and the release guide explain that transition. Finish the promised SwiftPM route and its storyboard setup/consumer checks in M2.1/M2.2 before completing this item. **Done when:** installation docs and release checks cover the promised routes, and deprecated routes have clear migration instructions.
 
 Sources: [Objective-C bridge](../Fleet/ObjC), [runtime categories](../Fleet/CoreExtensions), [metadata copy script](../Fleet/Script/copy_storyboard_info_files.sh), and [installation instructions](Installation/iOS.md). SwiftPM provides package and module configuration through its [package manifest API](https://docs.swift.org/package-manager/PackageDescription/PackageDescription.html).
 
@@ -148,4 +156,4 @@ These are candidates for later feature development. Their scope and order should
 - [ ] **Configurable screen environments.** Size, traits, Dynamic Type, appearance, and localization, with snapshot integrations where they help verify output.
 - [ ] **Better diagnostics for humans and agents.** Structured action traces, relevant hierarchy/state attachments, and focused test execution. Extend the established command-line test workflow as concrete needs emerge.
 
-With Phase 0 in place, settle M1.1's public support matrix and verify the first clean CI runs before starting packaging and compiler migration. Use the restored suite to keep subsequent modernization incremental.
+Phase 0, clean CI verification, and the support-matrix decision are complete. Next implement and validate M2.1/M2.2's SwiftPM distribution and external hosted consumers, then use that foundation for compiler and runtime modernization. Keep publication gated until the distributed revision passes the consumer checks.
