@@ -42,6 +42,8 @@ UIKit interaction helpers must account for relevant delegate/control events and 
 
 Presentation, lifecycle, and focus can complete asynchronously. Wait for the state being asserted with bounded waits; avoid arbitrary sleeps. Keep windows, first responders, observers, and storyboard bindings from leaking between tests.
 
+`FleetSpec` uses real text fields with a local custom input view on iOS to test root hosting and responder handoff without coupling those fixtures to cold system-keyboard startup. Preserve both `becomeFirstResponder` and `isFirstResponder` assertions. Actual keyboard presentation and interruption require separate coverage; the text-input suites retain their editing tests.
+
 Fleet currently installs Objective-C swizzles in `+load`. Changes to selectors, initialization, static/dynamic linking, or mocking need hosted integration coverage. Keep any unsafe runtime assumptions explicit and avoid unrelated API redesign during build-tool changes.
 
 Keep public API docs and platform exclusions in sync with changes. Do not add generated build output, simulator identifiers, or machine-specific paths to the repository.
