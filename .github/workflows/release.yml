@@ -29,7 +29,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - name: Check command syntax
-        run: bash -n script/test script/release test Fleet/Script/copy_storyboard_info_files.sh
+        run: bash -n script/test script/release script/check-distribution test Fleet/Script/copy_storyboard_info_files.sh Integration/PackageConsumer/CopyStoryboardMetadata.sh
       - name: Validate committed release and consumers
         run: script/release check "$FLEET_RELEASE_VERSION"
       - name: Upload release validation evidence
@@ -41,5 +41,11 @@ jobs:
             build/releases/
             build/ios-test-*/
             build/tvos-test-*/
+            build/distribution-*/ios/*.log
+            build/distribution-*/ios/*.xcresult/
+            build/distribution-*/tvos/*.log
+            build/distribution-*/tvos/*.xcresult/
+            build/distribution-*/validation.json
+            build/distribution-*/Consumer/Consumer.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
           if-no-files-found: warn
           retention-days: 14

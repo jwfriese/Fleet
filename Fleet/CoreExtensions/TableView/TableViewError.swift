@@ -1,3 +1,5 @@
+import Foundation
+
 extension Fleet {
     enum TableViewError: FleetErrorDefinition {
         case dataSourceRequired(userAction: String)

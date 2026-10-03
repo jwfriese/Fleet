@@ -1,3 +1,4 @@
+#if os(iOS)
 import UIKit
 
 extension UITableView {
@@ -64,3 +65,5 @@ extension UITableView {
         delegate.tableView?(self, didEndEditingRowAt: indexPath)
     }
 }
+
+#endif

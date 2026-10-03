@@ -18,7 +18,7 @@ Be sure to include in your issue:
 
 Use full Xcode with the iOS and/or tvOS platform and simulator runtime installed. Phase 0 is verified with Xcode 26.6 and the 26.5 simulator SDKs/runtimes. The project uses Swift 5 language mode. Python 3 is required for simulator selection and runner checks.
 
-The next major release sets all framework, test, and host deployment targets to iOS/tvOS 15 and selects SwiftPM for distribution. See [compatibility and distribution](Documentation/Compatibility.md) for the chosen baseline and the transition from historical 4.x installation routes. SwiftPM packaging and external consumer checks are still in progress.
+The next major release sets all framework, test, and host deployment targets to iOS/tvOS 15 and uses SwiftPM for distribution. See [compatibility and distribution](Documentation/Compatibility.md) and [SwiftPM setup](Documentation/Installation/SwiftPM.md) for the transition from historical 4.x installation routes.
 
 Open `Fleet.xcworkspace` to work on Fleet. Xcode resolves the pinned Nimble test dependency through Swift Package Manager; the first run requires network access. Ruby, fastlane, and Carthage are not required for the canonical suite. The test targets run inside the included host applications.
 
@@ -42,7 +42,7 @@ To run one test class during development, use `script/test ios -only-testing:Fle
 
 Logs and result bundles are retained in unique run directories under `build/`; open a `TestResults.xcresult` bundle in Xcode to inspect failures. `FLEET_BUILD_DIR` changes the output directory. Tests run serially because Fleet shares application UI state, with XCTest timeouts enabled (30 seconds per test by default, maximum 60). The root `./test` command remains a compatibility wrapper.
 
-For runner, release-tooling, or storyboard-script changes, also run `python3 -m unittest discover -s script/tests -v` and `bash -n script/test script/release test Fleet/Script/copy_storyboard_info_files.sh`. GitHub Actions runs these checks and both simulator suites. See [AGENTS.md](AGENTS.md) for repository structure and guidance for agent work.
+For runner, release, packaging-checker, or storyboard-script changes, also run `python3 -m unittest discover -s script/tests -v` and `bash -n script/test script/release script/check-distribution test Fleet/Script/copy_storyboard_info_files.sh Integration/PackageConsumer/CopyStoryboardMetadata.sh`. Packaging and runtime-linking changes must pass `script/check-distribution` for both external hosted consumers on a clean committed revision. Use `script/check-distribution --allow-dirty` before committing for development; that run creates a separate Git snapshot and is not release evidence. GitHub Actions runs the tooling, native suites, and committed consumer checks. See [AGENTS.md](AGENTS.md) for repository structure and guidance for agent work.
 
 ## Pull Requests
 
@@ -59,4 +59,4 @@ a complete addition to the test suite to capture the new behavior.
 
 ## Releases
 
-Use `script/release prepare VERSION` to create a reviewable version/changelog diff, then `script/release check VERSION` on the committed revision. Publication is a separate `script/release publish VERSION` command; `--dry-run` prints its local plan. See [Releasing Fleet](Documentation/Releasing.md) for prerequisites and recovery steps. Publication remains blocked until Fleet's SwiftPM packaging and external consumer checks are ready.
+Use `script/release prepare VERSION` to create a reviewable version/changelog diff, then `script/release check VERSION` on the committed revision. Publication is a separate `script/release publish VERSION` command; `--dry-run` prints its local plan. See [Releasing Fleet](Documentation/Releasing.md) for prerequisites and recovery steps. Publication requires native tests and real external SwiftPM consumers passing on that exact revision, along with finished release notes and successful CI.

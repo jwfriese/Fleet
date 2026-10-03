@@ -1,3 +1,5 @@
+#import <TargetConditionals.h>
+#if !TARGET_OS_TV
 #import <UIKit/UIKit.h>
 #import "FleetSwizzle.h"
 
@@ -19,3 +21,4 @@ BOOL didSwizzleUITableViewRowAction = NO;
 }
 
 @end
+#endif

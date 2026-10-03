@@ -30,7 +30,7 @@ jobs:
           persist-credentials: false
       - name: Check test tooling
         run: |
-          bash -n script/test script/release test Fleet/Script/copy_storyboard_info_files.sh
+          bash -n script/test script/release script/check-distribution test Fleet/Script/copy_storyboard_info_files.sh Integration/PackageConsumer/CopyStoryboardMetadata.sh
           python3 -m unittest discover -s script/tests -v
           git diff --check
       - name: Run simulator tests
@@ -41,5 +41,33 @@ jobs:
         with:
           name: test-results-${{ matrix.platform }}
           path: build/${{ matrix.platform }}-test-*/
+          if-no-files-found: warn
+          retention-days: 14
+
+  distribution:
+    name: External SwiftPM consumers on Xcode 26.6
+    runs-on: macos-26
+    timeout-minutes: 30
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Run external hosted consumers
+        run: script/check-distribution
+      - name: Upload consumer logs and results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: distribution-results
+          path: |
+            build/distribution-*/ios/*.log
+            build/distribution-*/ios/*.xcresult/
+            build/distribution-*/tvos/*.log
+            build/distribution-*/tvos/*.xcresult/
+            build/distribution-*/validation.json
+            build/distribution-*/Consumer/Consumer.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
           if-no-files-found: warn
           retention-days: 14

@@ -1,3 +1,4 @@
+#if os(iOS)
 import UIKit
 
 extension Fleet {
@@ -262,3 +263,5 @@ extension UITextView {
         }
     }
 }
+
+#endif

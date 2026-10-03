@@ -1,3 +1,6 @@
+#if os(iOS)
+import UIKit
+
 extension Fleet {
     enum ToolbarError: FleetErrorDefinition {
         case noToolbarItems
@@ -48,3 +51,5 @@ extension UIToolbar {
         matchingToolbarItem.tap()
     }
 }
+
+#endif

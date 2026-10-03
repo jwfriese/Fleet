@@ -1,3 +1,4 @@
+#if os(iOS)
 import UIKit
 import ObjectiveC
 
@@ -43,3 +44,5 @@ extension UITableViewRowAction {
         return fleet_init(withStyle: style, title: title, handler: handler)
     }
 }
+
+#endif

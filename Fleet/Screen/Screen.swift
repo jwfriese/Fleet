@@ -1,3 +1,5 @@
+import UIKit
+
 class Screen {
     fileprivate var window: UIWindow
 

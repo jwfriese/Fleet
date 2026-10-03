@@ -1,3 +1,5 @@
+import UIKit
+
 extension Fleet {
     enum NavBarError: FleetErrorDefinition {
         case noNavBarItems
