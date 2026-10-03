@@ -60,7 +60,6 @@
 		7B0082541EB6DB6F006B8FED /* MockForSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B8F2B3E1DE259B400B6F4C2 /* MockForSpec.swift */; };
 		7B0082551EB6DB72006B8FED /* ScreenSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B933C271D77B48D001B98F0 /* ScreenSpec.swift */; };
 		7B0082581EB6DC60006B8FED /* UITextView+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0082571EB6DC60006B8FED /* UITextView+FleetSpec.swift */; };
-		7B00825C1EB6E2DA006B8FED /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B00825B1EB6E2DA006B8FED /* Nimble.framework */; };
 		7B0082831EB6EAE4006B8FED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0082821EB6EAE4006B8FED /* AppDelegate.swift */; };
 		7B00828A1EB6EAE4006B8FED /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7B0082891EB6EAE4006B8FED /* Assets.xcassets */; };
 		7B0248522443E7EE007EC8CD /* HomeTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B0248512443E7EE007EC8CD /* HomeTabBarController.swift */; };
@@ -161,7 +160,6 @@
 		7BF913B31E3A4BC300019CF2 /* UIViewController+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF913B11E3A4BC300019CF2 /* UIViewController+FleetSpec.swift */; };
 		7BF9145D1E3CF59700019CF2 /* UITableView+FetchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF9145C1E3CF59700019CF2 /* UITableView+FetchCell.swift */; };
 		7BF9145F1E3CF77A00019CF2 /* UITableView+FetchCellSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF9145E1E3CF77A00019CF2 /* UITableView+FetchCellSpec.swift */; };
-		7BF914621E3D897D00019CF2 /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BF914611E3D897D00019CF2 /* Nimble.framework */; };
 		7BFABD581E3DA2C5002823B3 /* UITextField+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFABD561E3DA2C5002823B3 /* UITextField+Fleet.swift */; };
 		7BFABD591E3DA2C5002823B3 /* UITextView+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFABD571E3DA2C5002823B3 /* UITextView+Fleet.swift */; };
 		7BFABD5C1E3DA2CD002823B3 /* UIButton+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFABD5A1E3DA2CD002823B3 /* UIButton+Fleet.swift */; };
@@ -175,6 +173,15 @@
 		7BFABD6E1E3DA3EA002823B3 /* UITableViewRowAction+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFABD6D1E3DA3EA002823B3 /* UITableViewRowAction+Fleet.swift */; };
 		7BFABD701E3DA493002823B3 /* UIControlEventRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFABD6F1E3DA493002823B3 /* UIControlEventRecorder.swift */; };
 		7BFABD721E3DA7BD002823B3 /* UIControlEventEqualityMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFABD711E3DA7BD002823B3 /* UIControlEventEqualityMatcher.swift */; };
+		F10000000000000000000004 /* Nimble in Frameworks */ = {isa = PBXBuildFile; productRef = F10000000000000000000002 /* Nimble */; };
+		F10000000000000000000005 /* Nimble in Frameworks */ = {isa = PBXBuildFile; productRef = F10000000000000000000003 /* Nimble */; };
+		F10000000000000000000111 /* ExceptionCatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000011 /* ExceptionCatcher.m */; };
+		F10000000000000000000121 /* ExceptionCatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000011 /* ExceptionCatcher.m */; };
+		F10000000000000000000113 /* RaiseExceptionMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000013 /* RaiseExceptionMatcher.swift */; };
+		F10000000000000000000123 /* RaiseExceptionMatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000013 /* RaiseExceptionMatcher.swift */; };
+		F10000000000000000000114 /* RaiseExceptionMatcherSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000014 /* RaiseExceptionMatcherSpec.swift */; };
+		F10000000000000000000124 /* RaiseExceptionMatcherSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000014 /* RaiseExceptionMatcherSpec.swift */; };
+		F10000000000000000000125 /* NotificationListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B67248F1F3B4562008FE29E /* NotificationListener.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -214,7 +221,6 @@
 		7B0082001EB6D788006B8FED /* Fleet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Fleet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B0082081EB6D788006B8FED /* FleetTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FleetTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B0082571EB6DC60006B8FED /* UITextView+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextView+FleetSpec.swift"; sourceTree = "<group>"; };
-		7B00825B1EB6E2DA006B8FED /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = Carthage/Build/tvOS/Nimble.framework; sourceTree = "<group>"; };
 		7B0082801EB6EAE4006B8FED /* FleetTestApp-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "FleetTestApp-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7B0082821EB6EAE4006B8FED /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7B0082891EB6EAE4006B8FED /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -311,7 +317,6 @@
 		7BF913B11E3A4BC300019CF2 /* UIViewController+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+FleetSpec.swift"; sourceTree = "<group>"; };
 		7BF9145C1E3CF59700019CF2 /* UITableView+FetchCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+FetchCell.swift"; sourceTree = "<group>"; };
 		7BF9145E1E3CF77A00019CF2 /* UITableView+FetchCellSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableView+FetchCellSpec.swift"; sourceTree = "<group>"; };
-		7BF914611E3D897D00019CF2 /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = Carthage/Build/iOS/Nimble.framework; sourceTree = "<group>"; };
 		7BFABD561E3DA2C5002823B3 /* UITextField+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextField+Fleet.swift"; sourceTree = "<group>"; };
 		7BFABD571E3DA2C5002823B3 /* UITextView+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITextView+Fleet.swift"; sourceTree = "<group>"; };
 		7BFABD5A1E3DA2CD002823B3 /* UIButton+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIButton+Fleet.swift"; sourceTree = "<group>"; };
@@ -325,6 +330,11 @@
 		7BFABD6D1E3DA3EA002823B3 /* UITableViewRowAction+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableViewRowAction+Fleet.swift"; sourceTree = "<group>"; };
 		7BFABD6F1E3DA493002823B3 /* UIControlEventRecorder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIControlEventRecorder.swift; sourceTree = "<group>"; };
 		7BFABD711E3DA7BD002823B3 /* UIControlEventEqualityMatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIControlEventEqualityMatcher.swift; sourceTree = "<group>"; };
+		F10000000000000000000010 /* ExceptionCatcher.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExceptionCatcher.h; sourceTree = "<group>"; };
+		F10000000000000000000011 /* ExceptionCatcher.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExceptionCatcher.m; sourceTree = "<group>"; };
+		F10000000000000000000012 /* FleetTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FleetTests-Bridging-Header.h; sourceTree = "<group>"; };
+		F10000000000000000000013 /* RaiseExceptionMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseExceptionMatcher.swift; sourceTree = "<group>"; };
+		F10000000000000000000014 /* RaiseExceptionMatcherSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseExceptionMatcherSpec.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -339,7 +349,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7B00825C1EB6E2DA006B8FED /* Nimble.framework in Frameworks */,
+				F10000000000000000000005 /* Nimble in Frameworks */,
 				7B0082091EB6D788006B8FED /* Fleet.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -369,7 +379,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7BF914621E3D897D00019CF2 /* Nimble.framework in Frameworks */,
+				F10000000000000000000004 /* Nimble in Frameworks */,
 				7BA90ACA1CC3B8950040B031 /* Fleet.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -686,8 +696,6 @@
 		7BA90AD51CC3F0320040B031 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				7B00825B1EB6E2DA006B8FED /* Nimble.framework */,
-				7BF914611E3D897D00019CF2 /* Nimble.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -695,6 +703,11 @@
 		7BA90ADD1CC3F6B50040B031 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				F10000000000000000000014 /* RaiseExceptionMatcherSpec.swift */,
+				F10000000000000000000013 /* RaiseExceptionMatcher.swift */,
+				F10000000000000000000012 /* FleetTests-Bridging-Header.h */,
+				F10000000000000000000011 /* ExceptionCatcher.m */,
+				F10000000000000000000010 /* ExceptionCatcher.h */,
 				7BA4B1931E3565020052A2A7 /* EmbedView.swift */,
 				7BA90ADE1CC3F6C50040B031 /* File.swift */,
 				7B67248F1F3B4562008FE29E /* NotificationListener.swift */,
@@ -885,7 +898,6 @@
 				7B0082051EB6D788006B8FED /* Frameworks */,
 				7B0082061EB6D788006B8FED /* Resources */,
 				7B00825E1EB6E309006B8FED /* Storyboard script */,
-				7B00825D1EB6E2E3006B8FED /* Copy Carthage frameworks */,
 			);
 			buildRules = (
 			);
@@ -894,6 +906,7 @@
 				7B00820B1EB6D788006B8FED /* PBXTargetDependency */,
 			);
 			name = "Fleet-tvOSTests";
+			packageProductDependencies = (F10000000000000000000003 /* Nimble */, );
 			productName = "Fleet-tvOSTests";
 			productReference = 7B0082081EB6D788006B8FED /* FleetTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -958,7 +971,6 @@
 				7BA90AC21CC3B8950040B031 /* Frameworks */,
 				7BA90AC31CC3B8950040B031 /* Resources */,
 				7B9458191D4E49ED00F16A64 /* Storyboard script */,
-				7BF914601E3D894700019CF2 /* Copy Carthage frameworks */,
 			);
 			buildRules = (
 			);
@@ -967,6 +979,7 @@
 				7BA90ACC1CC3B8950040B031 /* PBXTargetDependency */,
 			);
 			name = FleetTests;
+			packageProductDependencies = (F10000000000000000000002 /* Nimble */, );
 			productName = FleetTests;
 			productReference = 7BA90AC51CC3B8950040B031 /* FleetTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -1022,6 +1035,7 @@
 			);
 			mainGroup = 7BA90AA91CC130980040B031;
 			productRefGroup = 7BA90AB41CC130980040B031 /* Products */;
+			packageReferences = (F10000000000000000000001 /* Nimble */, );
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -1096,63 +1110,39 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		7B00825D1EB6E2E3006B8FED /* Copy Carthage frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/tvOS/Nimble.framework",
-			);
-			name = "Copy Carthage frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks";
-		};
 		7B00825E1EB6E309006B8FED /* Storyboard script */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/Fleet/Script/copy_storyboard_info_files.sh",
 			);
 			name = "Storyboard script";
 			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(CONTENTS_FOLDER_PATH)/StoryboardInfo",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "$PROJECT_DIR/Fleet/Script/copy_storyboard_info_files.sh \"FleetTestApp\"";
+			shellScript = "\"$PROJECT_DIR/Fleet/Script/copy_storyboard_info_files.sh\"";
 		};
 		7B9458191D4E49ED00F16A64 /* Storyboard script */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/Fleet/Script/copy_storyboard_info_files.sh",
 			);
 			name = "Storyboard script";
 			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(CONTENTS_FOLDER_PATH)/StoryboardInfo",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "$PROJECT_DIR/Fleet/Script/copy_storyboard_info_files.sh \"FleetTestApp\"";
-		};
-		7BF914601E3D894700019CF2 /* Copy Carthage frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/Nimble.framework",
-			);
-			name = "Copy Carthage frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks";
+			shellScript = "\"$PROJECT_DIR/Fleet/Script/copy_storyboard_info_files.sh\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1197,6 +1187,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F10000000000000000000125 /* NotificationListener.swift in Sources */,
+				F10000000000000000000124 /* RaiseExceptionMatcherSpec.swift in Sources */,
+				F10000000000000000000123 /* RaiseExceptionMatcher.swift in Sources */,
+				F10000000000000000000121 /* ExceptionCatcher.m in Sources */,
 				7B8586CB1EB6F265008EC4EE /* UITableView+SelectRowMinimalDelegateImplSpec.swift in Sources */,
 				7B00823D1EB6DB57006B8FED /* UIAlertAction+FleetSpec.swift in Sources */,
 				7B0082541EB6DB6F006B8FED /* MockForSpec.swift in Sources */,
@@ -1307,6 +1301,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F10000000000000000000114 /* RaiseExceptionMatcherSpec.swift in Sources */,
+				F10000000000000000000113 /* RaiseExceptionMatcher.swift in Sources */,
+				F10000000000000000000111 /* ExceptionCatcher.m in Sources */,
 				7BEE35B51E15434A00302991 /* UITableView+SelectRowMinimalDelegateImplSpec.swift in Sources */,
 				7BB14A661D772481002ABE82 /* FleetSpec.swift in Sources */,
 				7BFABD691E3DA2F1002823B3 /* UIButton+FleetSpec.swift in Sources */,
@@ -1435,6 +1432,7 @@
 		7B0082131EB6D788006B8FED /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				SWIFT_OBJC_BRIDGING_HEADER = "FleetTests/Helpers/FleetTests-Bridging-Header.h";
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -1442,23 +1440,24 @@
 				DEVELOPMENT_TEAM = J9CKPFYEQU;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/tvOS",
 				);
 				INFOPLIST_FILE = FleetTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.FleetTests;
 				PRODUCT_NAME = FleetTests;
 				SDKROOT = appletvos;
+				TARGETED_DEVICE_FAMILY = 3;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FleetTestApp-tvOS.app/FleetTestApp-tvOS";
-				TVOS_DEPLOYMENT_TARGET = 12.0;
+				TVOS_DEPLOYMENT_TARGET = 13.0;
 			};
 			name = Debug;
 		};
 		7B0082141EB6D788006B8FED /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				SWIFT_OBJC_BRIDGING_HEADER = "FleetTests/Helpers/FleetTests-Bridging-Header.h";
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -1466,16 +1465,16 @@
 				DEVELOPMENT_TEAM = J9CKPFYEQU;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/tvOS",
 				);
 				INFOPLIST_FILE = FleetTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.FleetTests;
 				PRODUCT_NAME = FleetTests;
 				SDKROOT = appletvos;
+				TARGETED_DEVICE_FAMILY = 3;
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FleetTestApp-tvOS.app/FleetTestApp-tvOS";
-				TVOS_DEPLOYMENT_TARGET = 12.0;
+				TVOS_DEPLOYMENT_TARGET = 13.0;
 			};
 			name = Release;
 		};
@@ -1495,7 +1494,7 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 12.0;
+				TVOS_DEPLOYMENT_TARGET = 13.0;
 			};
 			name = Debug;
 		};
@@ -1514,7 +1513,7 @@
 				SDKROOT = appletvos;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 12.0;
+				TVOS_DEPLOYMENT_TARGET = 13.0;
 			};
 			name = Release;
 		};
@@ -1525,7 +1524,7 @@
 				DEVELOPMENT_TEAM = 6688B5H4XF;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = $SRCROOT/FleetTestApp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.FleetTestApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1542,7 +1541,7 @@
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = $SRCROOT/FleetTestApp/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.FleetTestApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1734,14 +1733,14 @@
 		7BA90ACE1CC3B8950040B031 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				SWIFT_OBJC_BRIDGING_HEADER = "FleetTests/Helpers/FleetTests-Bridging-Header.h";
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = FleetTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.FleetTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1754,14 +1753,14 @@
 		7BA90ACF1CC3B8950040B031 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				SWIFT_OBJC_BRIDGING_HEADER = "FleetTests/Helpers/FleetTests-Bridging-Header.h";
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = FleetTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = jwfriese.FleetTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1837,6 +1836,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+/* Begin XCRemoteSwiftPackageReference section */
+		F10000000000000000000001 /* Nimble */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Quick/Nimble.git";
+			requirement = {kind = exactVersion; version = 14.0.0; };
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F10000000000000000000002 /* Nimble */ = {isa = XCSwiftPackageProductDependency; package = F10000000000000000000001 /* Nimble */; productName = Nimble; };
+		F10000000000000000000003 /* Nimble */ = {isa = XCSwiftPackageProductDependency; package = F10000000000000000000001 /* Nimble */; productName = Nimble; };
+/* End XCSwiftPackageProductDependency section */
+
 	};
 	rootObject = 7BA90AAA1CC130980040B031 /* Project object */;
 }

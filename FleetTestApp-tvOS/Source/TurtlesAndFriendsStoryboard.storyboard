@@ -331,6 +331,22 @@
             </objects>
             <point key="canvasLocation" x="474" y="-58"/>
         </scene>
+        <!--Home Tab Bar Controller: fixture for shared storyboard mocking tests-->
+        <scene sceneID="xC4-WH-elG">
+            <objects>
+                <tabBarController storyboardIdentifier="HomeTabBar" id="yeG-t7-Cxv" customClass="HomeTabBarController" customModule="FleetTestApp_tvOS" customModuleProvider="target" sceneMemberID="viewController">
+                    <tabBar key="tabBar" contentMode="scaleToFill" id="zcX-of-Up7">
+                        <rect key="frame" x="0.0" y="0.0" width="1920" height="90"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="LH8-wq-NZ5" kind="relationship" relationship="viewControllers" id="dSK-pA-pfT"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="FVZ-dP-rlb" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1575" y="-519"/>
+        </scene>
     </scenes>
     <resources>
         <image name="box_turtle" width="540" height="405"/>

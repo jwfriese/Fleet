@@ -1,0 +1,45 @@
+name: Tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: ${{ matrix.platform }} on Xcode 26.6
+    runs-on: macos-26
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ios, tvos]
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Check test tooling
+        run: |
+          bash -n script/test script/release test Fleet/Script/copy_storyboard_info_files.sh
+          python3 -m unittest discover -s script/tests -v
+          git diff --check
+      - name: Run simulator tests
+        run: script/test "${{ matrix.platform }}"
+      - name: Upload logs and test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results-${{ matrix.platform }}
+          path: build/${{ matrix.platform }}-test-*/
+          if-no-files-found: warn
+          retention-days: 14

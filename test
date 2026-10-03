@@ -1,2 +1,3 @@
 #!/bin/bash
-bundle exec fastlane test
+set -euo pipefail
+exec "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/script/test" "$@"

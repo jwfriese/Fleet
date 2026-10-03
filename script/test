@@ -1,0 +1,97 @@
+#!/bin/bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+usage() {
+    cat <<'EOF'
+Usage: script/test [ios|tvos|all] [xcodebuild test options...]
+
+Defaults to iOS. Examples:
+  script/test
+  script/test tvos
+  script/test ios -only-testing:FleetTests/UIButton_FleetSpec
+
+Environment:
+  DEVELOPER_DIR           Select a different Xcode installation.
+  FLEET_TEST_DESTINATION  Explicit xcodebuild destination (one platform only).
+  FLEET_BUILD_DIR         Build/log/result directory (default: repo/build).
+
+Requires full Xcode, the requested platform SDK/runtime, Python 3, and network
+access on the first run to resolve the committed Swift package dependencies.
+EOF
+}
+
+platform=ios
+case "${1:-}" in
+    ios|tvos|all) platform="$1"; shift ;;
+    -h|--help) usage; exit 0 ;;
+    ""|-*) ;;
+    *) usage >&2; exit 2 ;;
+esac
+if [[ "$platform" == all && -n "${FLEET_TEST_DESTINATION:-}" ]]; then
+    printf '%s\n' 'Fleet: use an explicit destination with ios or tvos, not all.' >&2
+    exit 2
+fi
+for tool in xcodebuild xcrun python3; do
+    if ! command -v "$tool" >/dev/null; then
+        printf 'Fleet: required tool not found: %s\n' "$tool" >&2
+        exit 2
+    fi
+done
+cd "$repo_root"
+xcodebuild -version
+
+build_dir="${FLEET_BUILD_DIR:-$repo_root/build}"
+mkdir -p "$build_dir"
+build_dir="$(cd "$build_dir" && pwd)"
+
+run_tests() {
+    local test_platform="$1"
+    shift
+    local scheme sdk destination run_dir
+    case "$test_platform" in
+        ios) scheme=Fleet; sdk=iphonesimulator ;;
+        tvos) scheme=Fleet-tvOS; sdk=appletvsimulator ;;
+    esac
+    run_dir="$(mktemp -d "$build_dir/$test_platform-test-XXXXXXXX")"
+    destination="${FLEET_TEST_DESTINATION:-}"
+    if [[ -z "$destination" ]]; then
+        local sdk_version device_id
+        sdk_version="$(xcrun --sdk "$sdk" --show-sdk-version)"
+        xcrun simctl list devices available --json > "$run_dir/devices.json"
+        device_id="$(python3 "$repo_root/script/select-simulator.py" "$test_platform" "$sdk_version" < "$run_dir/devices.json")"
+        destination="id=$device_id"
+    fi
+    printf 'Fleet: testing %s on %s\n' "$scheme" "$destination"
+    printf 'Fleet: logs and results: %s\n' "$run_dir"
+    set +e
+    xcodebuild test \
+        -workspace Fleet.xcworkspace \
+        -scheme "$scheme" \
+        -destination "$destination" \
+        -destination-timeout 60 \
+        -derivedDataPath "$build_dir/DerivedData/$test_platform" \
+        -resultBundlePath "$run_dir/TestResults.xcresult" \
+        -onlyUsePackageVersionsFromResolvedFile \
+        -test-timeouts-enabled YES \
+        -default-test-execution-time-allowance 30 \
+        -maximum-test-execution-time-allowance 60 \
+        "$@" \
+        -parallel-testing-enabled NO \
+        CODE_SIGNING_ALLOWED=NO 2>&1 | tee "$run_dir/xcodebuild.log"
+    local statuses=("${PIPESTATUS[@]}")
+    set -e
+    if [[ "${statuses[0]}" != 0 ]]; then
+        printf 'Fleet: xcodebuild failed (%s). See %s\n' "${statuses[0]}" "$run_dir" >&2
+        return "${statuses[0]}"
+    fi
+    return "${statuses[1]}"
+}
+
+if [[ "$platform" == all ]]; then
+    run_tests ios "$@"
+    run_tests tvos "$@"
+else
+    run_tests "$platform" "$@"
+fi

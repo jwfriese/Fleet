@@ -1,4 +1,4 @@
-# Fleet [![Build Status](https://travis-ci.org/jwfriese/Fleet.svg?branch=master)](https://travis-ci.org/jwfriese/Fleet)
+# Fleet [![Tests](https://github.com/jwfriese/Fleet/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/jwfriese/Fleet/actions/workflows/test.yml)
 Fleet is a UIKit-focused testing framework intended for use on iOS and tvOS projects written in Swift.
 
 ## Installation
@@ -61,3 +61,11 @@ contains many examples of basic tests that you'll likely write in any Swift iOS 
 For more complicated, larger-scale projects that use Fleet, check out the following projects:
 
 [FrequentFlyer](https://github.com/jwfriese/FrequentFlyer)
+
+## Modernization
+
+The [modernization checklist](./Documentation/Modernization.md) tracks the work needed to restore a maintained build, verify current UIKit behavior, and resume regular feature development.
+
+For development, run `script/test` for iOS or `script/test all` for iOS and tvOS. See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup and [AGENTS.md](./AGENTS.md) for repository guidance.
+
+Release preparation, validation, and publication use separate commands documented in [Releasing Fleet](./Documentation/Releasing.md). Publication requires validated packaging and external consumer tests.

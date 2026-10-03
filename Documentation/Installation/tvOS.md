@@ -17,7 +17,9 @@ To your test target, add a `Run Script`. The script will run a shell script incl
 
 The `Run Script` should look like this:
 
-`$PROJECT_DIR/Externals/Fleet/Fleet/Script/copy_storyboard_info_files.sh "PRODUCTION_TARGET_NAME"`
+`"$PROJECT_DIR/Externals/Fleet/Fleet/Script/copy_storyboard_info_files.sh"`
+
+For each storyboard metadata phase below, uncheck **Based on dependency analysis** so it refreshes after host storyboard changes. The script uses Xcode's `TEST_HOST` to locate the host's compiled storyboards; the host must build before the test target. It fails the build when metadata is missing or when two storyboards have the same name with different metadata, preserving previous output on failure. Identical localized copies are accepted. Historical target-name arguments remain accepted, but are unnecessary.
 
 #### Cocoapods
 
@@ -31,7 +33,7 @@ Make sure to put this in the section of your `Podfile` calls for `tvOS` as the p
 3) *(The following step is only necessary if you are using Fleet's storyboard-related features)*
 To your test target, add a `Run Script`. The script will run a shell script preserved in the framework's Pod. Assuming your `Pods` directory is in your source root, your `Run Script` would look like this:
 
-`${SRCROOT}/Pods/Fleet/Fleet/Script/copy_storyboard_info_files.sh "PRODUCTION_TARGET_NAME"`
+`"${SRCROOT}/Pods/Fleet/Fleet/Script/copy_storyboard_info_files.sh"`
 
 #### Carthage
 

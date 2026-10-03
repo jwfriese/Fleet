@@ -33,7 +33,11 @@ public class Fleet {
      This will kick off the given view controller's lifecycle.
      */
     public static func setAsAppWindowRoot(_ viewController: UIViewController) {
-        UIApplication.shared.keyWindow?.rootViewController = viewController
+        let window = UIApplication.shared.keyWindow
+        // Finish the previous root's editing session before handing off the window.
+        window?.endEditing(true)
+        window?.rootViewController = viewController
+        window?.layoutIfNeeded()
         RunLoop.current.run(mode: RunLoop.Mode.default, before: Date(timeIntervalSinceNow: 1))
     }
 
@@ -49,8 +53,7 @@ public class Fleet {
      */
     public static func setInAppWindowRootNavigation(_ viewController: UIViewController) -> UINavigationController {
         let navigationController = UINavigationController(rootViewController: viewController)
-        UIApplication.shared.keyWindow?.rootViewController = navigationController
-        RunLoop.current.run(mode: RunLoop.Mode.default, before: Date(timeIntervalSinceNow: 1))
+        setAsAppWindowRoot(navigationController)
         return navigationController
     }
 

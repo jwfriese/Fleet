@@ -1,10 +1,10 @@
 import UIKit
 import Nimble
 
-func equal(_ expectedValue: UIControl.Event?) -> Predicate<UIControl.Event> {
-    return Predicate { actualExpression in
+func equal(_ expectedValue: UIControl.Event?) -> Matcher<UIControl.Event> {
+    return Matcher { actualExpression in
         guard let expectedValue = expectedValue else {
-            return PredicateResult(
+            return MatcherResult(
                 status: .doesNotMatch,
                 message: .expectedTo("(use beNil() to match nils)")
             )
@@ -13,7 +13,7 @@ func equal(_ expectedValue: UIControl.Event?) -> Predicate<UIControl.Event> {
         let errorMessage: ExpectationMessage =
             .expectedActualValueTo("equal <\(stringify(expectedValue))>")
         guard let actualValue = try actualExpression.evaluate() else {
-            return PredicateResult(
+            return MatcherResult(
                 status: .doesNotMatch,
                 message: errorMessage.appendedBeNilHint()
             )
@@ -21,20 +21,20 @@ func equal(_ expectedValue: UIControl.Event?) -> Predicate<UIControl.Event> {
 
         let matches = actualValue.rawValue == expectedValue.rawValue
         if !matches {
-            return PredicateResult(
+            return MatcherResult(
                 status: .doesNotMatch,
                 message: .expectedCustomValueTo("equal \(stringify(expectedValue))", actual: "<\(stringify(actualValue))>")
             )
         }
 
-        return PredicateResult(status: .matches, message: errorMessage)
+        return MatcherResult(status: .matches, message: errorMessage)
     }.requireNonNil
 }
 
-func equal(_ expectedValue: [UIControl.Event]?) -> Predicate<[UIControl.Event]> {
-    return Predicate { actualExpression in
+func equal(_ expectedValue: [UIControl.Event]?) -> Matcher<[UIControl.Event]> {
+    return Matcher { actualExpression in
         guard let expectedValue = expectedValue else {
-            return PredicateResult(
+            return MatcherResult(
                 status: .doesNotMatch,
                 message: .expectedTo("(use beNil() to match nils)")
             )
@@ -42,7 +42,7 @@ func equal(_ expectedValue: [UIControl.Event]?) -> Predicate<[UIControl.Event]> 
         let errorMessage: ExpectationMessage =
             .expectedActualValueTo("equal <\(allToString(controlEvents: expectedValue))>")
         guard let actualValue = try actualExpression.evaluate() else {
-            return PredicateResult(
+            return MatcherResult(
                 status: .doesNotMatch,
                 message: errorMessage.appendedBeNilHint()
             )
@@ -51,13 +51,13 @@ func equal(_ expectedValue: [UIControl.Event]?) -> Predicate<[UIControl.Event]> 
         let matches = actualValue.elementsEqual(expectedValue)
 
         if !matches {
-            return PredicateResult(
+            return MatcherResult(
                 status: .doesNotMatch,
                 message: .expectedCustomValueTo("equal \(stringify(expectedValue))", actual: "<\(allToString(controlEvents: actualValue))>")
             )
         }
 
-        return PredicateResult(status: .matches, message: errorMessage)
+        return MatcherResult(status: .matches, message: errorMessage)
     }
 }
 
