@@ -1,3 +1,6 @@
+import Foundation
+import ObjectiveC
+
 extension Fleet {
     class func swizzle(originalSelector: Selector, swizzledSelector: Selector, forClass klass: AnyClass) {
         guard let originalMethod = class_getInstanceMethod(klass, originalSelector) else {

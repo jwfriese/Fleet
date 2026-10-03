@@ -1,3 +1,5 @@
+import Foundation
+
 extension Fleet {
     enum InternalError: FleetErrorDefinition {
         case unrecoverable(details: String)

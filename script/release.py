@@ -302,6 +302,12 @@ def require_ci(root, repository, commit):
         steps = [step for step in jobs[0]["steps"] if step["name"] == "Run simulator tests"]
         if len(steps) != 1 or steps[0]["status"] != "completed" or steps[0]["conclusion"] != "success":
             raise ReleaseError(f"CI skipped or failed the {platform} simulator test step.")
+    jobs = [job for job in details["jobs"] if job["name"].startswith("External SwiftPM consumers on Xcode ")]
+    if len(jobs) != 1 or jobs[0]["status"] != "completed" or jobs[0]["conclusion"] != "success":
+        raise ReleaseError("CI must have a successful external SwiftPM consumer job for this revision.")
+    steps = [step for step in jobs[0]["steps"] if step["name"] == "Run external hosted consumers"]
+    if len(steps) != 1 or steps[0]["status"] != "completed" or steps[0]["conclusion"] != "success":
+        raise ReleaseError("CI skipped or failed the external SwiftPM consumer step.")
 
 
 def publish(root, version, remote="origin", dry_run=False):
@@ -319,7 +325,7 @@ def publish(root, version, remote="origin", dry_run=False):
     repository = github_repository(push_url)
     if dry_run:
         print(f"Publication plan: {repository}, tag {version}, commit {commit}.")
-        print("Verify remote master, version tags, and the latest successful iOS/tvOS CI run.")
+        print("Verify remote master, version tags, and the latest successful native and external consumer CI run.")
         print(f"Create or reuse only tag {version} at {commit}; push only refs/tags/{version}.")
         print("Create the GitHub release using the reviewed changelog.")
         print("Dry run complete. No network requests, tags, pushes, or releases were made.")

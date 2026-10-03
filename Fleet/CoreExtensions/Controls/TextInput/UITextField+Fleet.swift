@@ -1,3 +1,4 @@
+#if os(iOS)
 import UIKit
 
 extension Fleet {
@@ -317,3 +318,5 @@ extension UITextField {
         }
     }
 }
+
+#endif

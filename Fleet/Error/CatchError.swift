@@ -1,3 +1,7 @@
+#if SWIFT_PACKAGE
+import FleetRuntime
+#endif
+
 extension Fleet {
     public static func swallowAnyErrors(_ throwable: @escaping () -> ()) {
         do {

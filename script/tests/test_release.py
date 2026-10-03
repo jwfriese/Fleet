@@ -104,6 +104,8 @@ class ReleaseTests(unittest.TestCase):
             jobs = [{"name": f"{platform} on Xcode 26.6", "status": "completed", "conclusion": "success",
                      "steps": [{"name": "Run simulator tests", "status": "completed", "conclusion": "success"}]}
                     for platform in ("ios", "tvos")]
+            jobs.append({"name": "External SwiftPM consumers on Xcode 26.6", "status": "completed", "conclusion": "success",
+                         "steps": [{"name": "Run external hosted consumers", "status": "completed", "conclusion": "success"}]})
 
         def fake(root, *args, input_text=None):
             if args[:2] == ("git", "ls-remote"):
@@ -308,6 +310,19 @@ class ReleaseTests(unittest.TestCase):
         self.assertNotIn("5.0.0", self.git("tag", "--list").splitlines())
         self.assertFalse(any(call[:2] == ("git", "push") or call[:3] == ("gh", "release", "create")
                              for call in self.network_calls))
+
+    def test_publish_requires_executed_external_consumer_ci(self):
+        commit = self.checked()
+        native_jobs = [{"name": f"{platform} on Xcode 26.6", "status": "completed", "conclusion": "success",
+                        "steps": [{"name": "Run simulator tests", "status": "completed", "conclusion": "success"}]}
+                       for platform in ("ios", "tvos")]
+        for conclusion in (None, "skipped", "failure"):
+            jobs = list(native_jobs)
+            if conclusion:
+                jobs.append({"name": "External SwiftPM consumers on Xcode 26.6", "status": "completed", "conclusion": "success",
+                             "steps": [{"name": "Run external hosted consumers", "status": "completed", "conclusion": conclusion}]})
+            with self.subTest(conclusion=conclusion), self.fake_network(jobs=jobs), self.assertRaises(release.ReleaseError):
+                release.require_ci(self.root, "owner/Fleet", commit)
 
     def test_publish_pushes_only_selected_tag_and_uses_exact_commit(self):
         commit = self.checked()

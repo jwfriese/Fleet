@@ -1,3 +1,4 @@
+#if os(iOS)
 import UIKit
 
 extension Fleet {
@@ -41,3 +42,5 @@ extension UISwitch {
         sendActions(for: .touchUpInside)
     }
 }
+
+#endif

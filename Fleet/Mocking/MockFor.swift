@@ -1,5 +1,8 @@
 import UIKit
 import ObjectiveC
+#if SWIFT_PACKAGE
+import FleetRuntime
+#endif
 
 extension Fleet {
     enum MockError: Error, CustomStringConvertible {

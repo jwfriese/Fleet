@@ -3,7 +3,7 @@ Fleet is a UIKit-focused testing framework intended for use on iOS and tvOS proj
 
 ## Installation
 
-The next major release will support iOS 15 and tvOS 15 through Swift Package Manager. Packaging and external consumer validation are still in progress; see [compatibility and distribution](./Documentation/Compatibility.md) for the selected toolchain and migration policy.
+The next major release supports iOS 15 and tvOS 15 through Swift Package Manager. This checkout contains the package and hosted consumer checks; no new major version is published yet. See [SwiftPM installation](./Documentation/Installation/SwiftPM.md) and [compatibility and distribution](./Documentation/Compatibility.md) for setup and the migration policy.
 
 For existing Fleet 4.x releases, consult the historical [iOS](./Documentation/Installation/iOS.md) or [tvOS](./Documentation/Installation/tvOS.md) installation guidance.
 
