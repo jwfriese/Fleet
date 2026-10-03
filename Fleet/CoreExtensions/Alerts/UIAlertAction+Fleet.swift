@@ -1,8 +1,9 @@
 import UIKit
 import ObjectiveC
 
-private var handlerAssociatedKey: UInt = 0
+@MainActor private var handlerAssociatedKey: UInt = 0
 
+@MainActor
 @objc private class ObjectifiedBlock: NSObject {
     var block: ((UIAlertAction) -> Void)?
 
@@ -11,6 +12,7 @@ private var handlerAssociatedKey: UInt = 0
     }
 }
 
+@MainActor
 extension UIAlertAction {
     var handler: ((UIAlertAction) -> Void)? {
         get {
@@ -18,7 +20,7 @@ extension UIAlertAction {
         }
     }
 
-    @objc class func swizzleHandlerSetter() {
+    @objc nonisolated class func swizzleHandlerSetter() {
         Fleet.swizzle(
             originalSelector: Selector(("setHandler:")),
             swizzledSelector: #selector(UIAlertAction.fleet_setHandler(_:)),

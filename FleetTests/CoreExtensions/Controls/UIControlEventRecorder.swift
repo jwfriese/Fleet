@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 class UIControlEventRecorder: NSObject {
     private(set) var recordedEvents: [UIControl.Event] = []
 

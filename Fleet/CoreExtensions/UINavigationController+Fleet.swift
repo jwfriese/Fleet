@@ -1,7 +1,7 @@
 import UIKit
 
 extension UINavigationController {
-    @objc class func swizzlePushViewController() {
+    @objc nonisolated class func swizzlePushViewController() {
         Fleet.swizzle(
             originalSelector: #selector(UINavigationController.pushViewController(_:animated:)),
             swizzledSelector: #selector(UINavigationController.fleet_pushViewController(_:animated:)),
@@ -16,7 +16,7 @@ extension UINavigationController {
         let _ = viewController.view
     }
 
-    @objc class func swizzlePopViewController() {
+    @objc nonisolated class func swizzlePopViewController() {
         Fleet.swizzle(
             originalSelector: #selector(UINavigationController.popViewController(animated:)),
             swizzledSelector: #selector(UINavigationController.fleet_popViewControllerAnimated(_:)),
@@ -31,7 +31,7 @@ extension UINavigationController {
         return poppedViewController
     }
 
-    @objc class func swizzlePopToViewController() {
+    @objc nonisolated class func swizzlePopToViewController() {
         Fleet.swizzle(
             originalSelector: #selector(UINavigationController.popToViewController(_:animated:)),
             swizzledSelector: #selector(UINavigationController.fleet_popToViewController(_:animated:)),
@@ -43,7 +43,7 @@ extension UINavigationController {
         return fleet_popToViewController(viewController, animated: false)
     }
 
-    @objc class func swizzlePopToRootViewControllerAnimated() {
+    @objc nonisolated class func swizzlePopToRootViewControllerAnimated() {
         Fleet.swizzle(
             originalSelector: #selector(UINavigationController.popToRootViewController(animated:)),
             swizzledSelector: #selector(UINavigationController.fleet_popToRootViewControllerAnimated(_:)),

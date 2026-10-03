@@ -2,8 +2,9 @@
 import UIKit
 import ObjectiveC
 
-private var handlerAssociatedKey: UInt = 0
+@MainActor private var handlerAssociatedKey: UInt = 0
 
+@MainActor
 @objc private class ObjectifiedBlock: NSObject {
     var block: ((UITableViewRowAction, IndexPath) -> Void)?
 
@@ -12,6 +13,7 @@ private var handlerAssociatedKey: UInt = 0
     }
 }
 
+@MainActor
 extension UITableViewRowAction {
     var handler: ((UITableViewRowAction, IndexPath) -> Void)? {
         get {
@@ -31,7 +33,7 @@ extension UITableViewRowAction {
         }
     }
 
-    @objc class func swizzleInit() {
+    @objc nonisolated class func swizzleInit() {
         Fleet.swizzle(
             originalSelector: Selector(("_initWithStyle:title:handler:")),
             swizzledSelector: #selector(UITableViewRowAction.fleet_init(withStyle:title:handler:)),

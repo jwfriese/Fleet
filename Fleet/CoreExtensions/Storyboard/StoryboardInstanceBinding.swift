@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 internal final class StoryboardInstanceBinding {
     fileprivate var binding = [String : UIViewController]()
 

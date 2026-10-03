@@ -4,9 +4,10 @@ import Nimble
 import Fleet
 @testable import FleetTestApp
 
+@MainActor
 class UIAlertController_FleetSpec: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         continueAfterFailure = false
     }
 

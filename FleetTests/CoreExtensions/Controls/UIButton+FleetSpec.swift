@@ -2,9 +2,10 @@ import XCTest
 import Fleet
 import Nimble
 
+@MainActor
 class UIButton_FleetSpec: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         continueAfterFailure = false
     }
 

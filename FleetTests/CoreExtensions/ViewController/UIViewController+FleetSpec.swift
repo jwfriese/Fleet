@@ -2,6 +2,7 @@ import XCTest
 import Fleet
 import Nimble
 
+@MainActor
 class UIViewController_FleetSpec: XCTestCase {
     fileprivate class TestViewController: UIViewController {
         var testViewDidLoadCallCount: UInt = 0
@@ -12,8 +13,8 @@ class UIViewController_FleetSpec: XCTestCase {
         }
     }
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         continueAfterFailure = false
     }
 

@@ -3,9 +3,10 @@ import Nimble
 
 @testable import Fleet
 
+@MainActor
 class UIViewController_FleetInternalSpec: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         continueAfterFailure = false
     }
 

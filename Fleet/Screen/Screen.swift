@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 class Screen {
     fileprivate var window: UIWindow
 

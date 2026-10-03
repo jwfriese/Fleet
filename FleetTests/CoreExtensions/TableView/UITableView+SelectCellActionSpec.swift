@@ -4,9 +4,10 @@ import Nimble
 
 @testable import FleetTestApp
 
+@MainActor
 class UITableView_SelectCellActionSpec: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         continueAfterFailure = false
     }
 

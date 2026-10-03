@@ -7,6 +7,7 @@ public class Fleet {
      - returns:
      A `FLTScreen` instance wrapping the application's key window.
      */
+    @MainActor
     public static func getApplicationScreen() -> FLTScreen? {
         guard let window = UIApplication.shared.keyWindow else {
             Logger.logWarning("Cannot get application screen: UIApplication not set up with a key window.")
@@ -22,6 +23,7 @@ public class Fleet {
      - returns:
      A `FLTScreen` instance wrapping the given `UIWindow` instance.
      */
+    @MainActor
     public static func getScreen(forWindow window: UIWindow) -> FLTScreen {
         return Screen(forWindow: window)
     }
@@ -32,6 +34,7 @@ public class Fleet {
      - note:
      This will kick off the given view controller's lifecycle.
      */
+    @MainActor
     public static func setAsAppWindowRoot(_ viewController: UIViewController) {
         let window = UIApplication.shared.keyWindow
         // Finish the previous root's editing session before handing off the window.
@@ -51,6 +54,7 @@ public class Fleet {
      - returns:
      The `UINavigationController` that is now the root view controller of the main app window.
      */
+    @MainActor
     public static func setInAppWindowRootNavigation(_ viewController: UIViewController) -> UINavigationController {
         let navigationController = UINavigationController(rootViewController: viewController)
         setAsAppWindowRoot(navigationController)

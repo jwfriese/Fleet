@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 class TestTextFieldDelegate: NSObject {
     var didCallShouldBeginEditing: Bool = false
     var didCallDidBeginEditing: Bool = false
