@@ -8,12 +8,13 @@ import Nimble
     @testable import FleetTestApp_tvOS
 #endif
 
+@MainActor
 class UITabBarController_FleetSpec: XCTestCase {
     var turtlesAndFriendsStoryboard: UIStoryboard!
     var subject: HomeTabBarController!
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         continueAfterFailure = false
 
         turtlesAndFriendsStoryboard = UIStoryboard(name: "TurtlesAndFriendsStoryboard", bundle: nil)

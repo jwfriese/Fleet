@@ -3,13 +3,14 @@ import Fleet
 import Nimble
 @testable import FleetTestApp
 
+@MainActor
 class UINavigationBar_FleetSpec: XCTestCase {
     var turtlesAndFriendsStoryboard: UIStoryboard!
     var boxTurtleViewController: BoxTurtleViewController!
     var navigationController: UINavigationController!
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         continueAfterFailure = false
 
         turtlesAndFriendsStoryboard = UIStoryboard(name: "TurtlesAndFriendsStoryboard", bundle: nil)

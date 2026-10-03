@@ -1,11 +1,7 @@
 import UIKit
 import ObjectiveC
 
-private var presentedViewControllerAssociatedKey: UInt = 0
-private var presentingViewControllerAssociatedKey: UInt = 0
-private var viewDidLoadCallCountAssociatedKey: UInt = 0
-
-fileprivate var didSwizzle = false
+@MainActor private var viewDidLoadCallCountAssociatedKey: UInt = 0
 
 extension UIViewController {
     var viewDidLoadCallCount: Int {
@@ -34,7 +30,7 @@ extension UIViewController {
         }
     }
 
-    @objc class func swizzleViewDidLoad() {
+    @objc nonisolated class func swizzleViewDidLoad() {
         Fleet.swizzle(
             originalSelector: #selector(UIViewController.viewDidLoad),
             swizzledSelector: #selector(UIViewController.fleet_viewDidLoad),
@@ -47,7 +43,7 @@ extension UIViewController {
         viewDidLoadCallCount += 1
     }
 
-    @objc class func swizzlePresent() {
+    @objc nonisolated class func swizzlePresent() {
         Fleet.swizzle(
             originalSelector: #selector(UIViewController.present(_:animated:completion:)),
             swizzledSelector: #selector(UIViewController.fleet_present(viewController:animated:completion:)),
@@ -59,7 +55,7 @@ extension UIViewController {
         fleet_present(viewController: viewController, animated: false, completion: completion)
     }
 
-    @objc class func swizzleDismiss() {
+    @objc nonisolated class func swizzleDismiss() {
         Fleet.swizzle(
             originalSelector: #selector(UIViewController.dismiss(animated:completion:)),
             swizzledSelector: #selector(UIViewController.fleet_dismiss(animated:completion:)),

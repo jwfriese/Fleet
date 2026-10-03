@@ -3,12 +3,13 @@ import Nimble
 
 @testable import Fleet
 
+@MainActor
 class UIToolbar_FleetSpec: XCTestCase {
     var rootViewController: TestViewController!
     var navigationController: UINavigationController!
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         continueAfterFailure = false
 
         rootViewController = TestViewController()

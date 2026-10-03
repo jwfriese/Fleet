@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 public protocol FLTScreen {
     /**
      Gives access to the topmost view controller on the screen. It returns the `UIViewController`

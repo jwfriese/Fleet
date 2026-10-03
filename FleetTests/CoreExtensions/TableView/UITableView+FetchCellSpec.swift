@@ -23,12 +23,13 @@ fileprivate class TestTableViewDataSource: NSObject, UITableViewDataSource {
     }
 }
 
+@MainActor
 class UITableView_FetchCellSpec: XCTestCase {
     var subject: UITableView!
     fileprivate var dataSource: TestTableViewDataSource!
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         continueAfterFailure = false
 
         dataSource = TestTableViewDataSource()

@@ -2,12 +2,13 @@ import XCTest
 import Nimble
 import Fleet
 
+@MainActor
 class UITextView_FleetSpec: XCTestCase {
     var subject: UITextView!
     var delegate: TestTextViewDelegate!
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         continueAfterFailure = false
 
         let tuple = createCompleteTextViewAndDelegate()
@@ -16,9 +17,9 @@ class UITextView_FleetSpec: XCTestCase {
         try! Test.embedViewIntoMainApplicationWindow(subject)
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         subject.removeFromSuperview()
-        super.tearDown()
+        try await super.tearDown()
     }
 
     func createCompleteTextViewAndDelegate() -> (textView: UITextView, delegate: TestTextViewDelegate) {

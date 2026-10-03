@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 class NotificationListener: NSObject {
     private(set) var notificationsReceived: [Notification.Name] = []
 

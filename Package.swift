@@ -36,5 +36,5 @@ let package = Package(
             resources: [.copy("Script/copy_storyboard_info_files.sh")]
         ),
     ],
-    swiftLanguageModes: [.v5]
+    swiftLanguageModes: [.v6]
 )

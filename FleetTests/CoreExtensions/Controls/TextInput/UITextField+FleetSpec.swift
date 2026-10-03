@@ -2,13 +2,14 @@ import XCTest
 import Nimble
 import Fleet
 
+@MainActor
 class UITextField_FleetSpec: XCTestCase {
     var subject: UITextField!
     var delegate: TestTextFieldDelegate!
     var recorder: UIControlEventRecorder!
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         continueAfterFailure = false
 
         let tuple = createCompleteTextFieldAndDelegate()
@@ -19,9 +20,9 @@ class UITextField_FleetSpec: XCTestCase {
         try! Test.embedViewIntoMainApplicationWindow(subject)
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         subject.removeFromSuperview()
-        super.tearDown()
+        try await super.tearDown()
     }
 
     func createCompleteTextFieldAndDelegate() -> (textField: UITextField, delegate: TestTextFieldDelegate) {

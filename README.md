@@ -3,7 +3,7 @@ Fleet is a UIKit-focused testing framework intended for use on iOS and tvOS proj
 
 ## Installation
 
-The next major release supports iOS 15 and tvOS 15 through Swift Package Manager. This checkout contains the package and hosted consumer checks; no new major version is published yet. See [SwiftPM installation](./Documentation/Installation/SwiftPM.md) and [compatibility and distribution](./Documentation/Compatibility.md) for setup and the migration policy.
+The next major release supports iOS 15 and tvOS 15 through Swift Package Manager. This checkout contains the package and hosted consumer checks; no new major version is published yet. See [SwiftPM installation](./Documentation/Installation/SwiftPM.md) and [compatibility and distribution](./Documentation/Compatibility.md) for setup and the migration policy. Fleet uses Swift 6 language mode; UIKit tests call its helpers on `@MainActor` and run serially.
 
 For existing Fleet 4.x releases, consult the historical [iOS](./Documentation/Installation/iOS.md) or [tvOS](./Documentation/Installation/tvOS.md) installation guidance.
 
@@ -38,7 +38,7 @@ to set your view controllers up in a proper key application window by providing 
 
 ```swift
 // Takes a `UIViewController`,  makes it the test app key window's root, and kicks off its lifecycle.
-Fleet.setAsAppRootWindow(_:)
+Fleet.setAsAppWindowRoot(_:)
 
 // Takes a `UIViewController`,  makes it the root of a navigation stack, kicks off the lifecycle, and
 // returns the navigation controller that hosts that view controller.

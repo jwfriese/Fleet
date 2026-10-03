@@ -2,6 +2,7 @@ import XCTest
 import UIKit
 import Fleet
 
+@MainActor
 private final class ActionTarget: NSObject {
     var count = 0
     @objc func tapped() { count += 1 }
@@ -15,33 +16,53 @@ private class LifecycleSpy: UIViewController {
     }
 }
 
+@MainActor
 final class PackageConsumerTests: XCTestCase {
     private var window: UIWindow!
     private var previousRoot: UIViewController?
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         continueAfterFailure = false
         window = UIApplication.shared.keyWindow
         XCTAssertNotNil(window, "The external consumer must run in an application host")
         previousRoot = window.rootViewController
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         window.endEditing(true)
         if let root = window.rootViewController, root.presentedViewController != nil {
             let dismissed = expectation(description: "Dismiss consumer UI")
             root.dismiss(animated: false) { dismissed.fulfill() }
-            wait(for: [dismissed], timeout: 5)
+            await fulfillment(of: [dismissed], timeout: 5)
         }
         window.rootViewController = previousRoot
         previousRoot = nil
         window = nil
-        super.tearDown()
+        try await super.tearDown()
     }
 
     private func storyboard() -> UIStoryboard {
         UIStoryboard(name: "Consumer", bundle: .main)
+    }
+
+    func testUIHelpersFromDetachedTaskHopToMainActor() async {
+        let result = await Task.detached {
+            await MainActor.run {
+                let target = ActionTarget()
+                let button = UIButton(type: .custom)
+                button.addTarget(target, action: #selector(ActionTarget.tapped), for: .touchUpInside)
+                button.tap()
+                let controller = UIViewController()
+                let window = UIWindow()
+                window.rootViewController = controller
+                return (onMainThread: Thread.isMainThread, tapCount: target.count,
+                        matchesScreen: Fleet.getScreen(forWindow: window).topmostViewController === controller)
+            }
+        }.value
+        XCTAssertTrue(result.onMainThread)
+        XCTAssertEqual(result.tapCount, 1)
+        XCTAssertTrue(result.matchesScreen)
     }
 
     func testPublicButtonActionExecutesExactlyOnce() {
@@ -105,17 +126,17 @@ final class PackageConsumerTests: XCTestCase {
         XCTAssertFalse(returnedAfterRaise)
     }
 
-    func testPresentationCompletionWithPublicUIKitAPI() {
+    func testPresentationCompletionWithPublicUIKitAPI() async {
         let root = UIViewController()
         Fleet.setAsAppWindowRoot(root)
         let presented = UIViewController()
         let completion = expectation(description: "Presentation completed")
         root.present(presented, animated: true) { completion.fulfill() }
-        wait(for: [completion], timeout: 5)
+        await fulfillment(of: [completion], timeout: 5)
         XCTAssertTrue(root.presentedViewController === presented)
     }
 
-    func testAlertHandlerCaptureAndDispatch() {
+    func testAlertHandlerCaptureAndDispatch() async {
         let root = UIViewController()
         Fleet.setAsAppWindowRoot(root)
         let alert = UIAlertController(title: "Consumer", message: nil, preferredStyle: .alert)
@@ -127,9 +148,9 @@ final class PackageConsumerTests: XCTestCase {
         })
         let presented = expectation(description: "Alert presented")
         root.present(alert, animated: false) { presented.fulfill() }
-        wait(for: [presented], timeout: 5)
+        await fulfillment(of: [presented], timeout: 5)
         alert.tapAlertAction(withTitle: "Continue")
-        wait(for: [handler], timeout: 5)
+        await fulfillment(of: [handler], timeout: 5)
         XCTAssertEqual(count, 1)
     }
 }

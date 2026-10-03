@@ -2,6 +2,8 @@ import Foundation
 import ObjectiveC
 
 extension Fleet {
+    // Called synchronously by Objective-C +load installers. This helper touches
+    // only runtime method tables; instance hooks and their UI state are main-actor isolated.
     class func swizzle(originalSelector: Selector, swizzledSelector: Selector, forClass klass: AnyClass) {
         guard let originalMethod = class_getInstanceMethod(klass, originalSelector) else {
             FleetError(Fleet.InternalError.unrecoverable(details: "Failed to swizzle on class \(klass) - Original selector: \(originalSelector); New selector: \(swizzledSelector)")).raise()

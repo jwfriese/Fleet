@@ -31,7 +31,7 @@ def create_project(destination, fixtures, package_url, revision):
         return add(name + "configuration-list", "XCConfigurationList", buildConfigurations=entries,
                    defaultConfigurationIsVisible="0", defaultConfigurationName="Debug")
 
-    common = {"SWIFT_VERSION": "5.0", "CLANG_ENABLE_MODULES": "YES", "CLANG_ENABLE_OBJC_ARC": "YES",
+    common = {"SWIFT_VERSION": "6.0", "CLANG_ENABLE_MODULES": "YES", "CLANG_ENABLE_OBJC_ARC": "YES",
               "CODE_SIGNING_ALLOWED": "NO", "GENERATE_INFOPLIST_FILE": "YES",
               "SWIFT_OPTIMIZATION_LEVEL": "-Onone", "ONLY_ACTIVE_ARCH": "YES",
               "LD_RUNPATH_SEARCH_PATHS": ["$(inherited)", "@executable_path/Frameworks", "@loader_path/Frameworks"]}

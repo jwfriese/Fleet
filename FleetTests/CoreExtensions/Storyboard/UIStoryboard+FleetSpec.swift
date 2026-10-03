@@ -8,6 +8,7 @@ import Nimble
     @testable import FleetTestApp_tvOS
 #endif
 
+@MainActor
 class UIStoryboard_FleetSpec: XCTestCase {
     var turtlesAndFriendsStoryboard: UIStoryboard!
 
@@ -15,8 +16,8 @@ class UIStoryboard_FleetSpec: XCTestCase {
     class MockCrabViewController: CrabViewController { }
     class MockPuppyListViewController: PuppyListViewController { }
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         continueAfterFailure = false
 
         turtlesAndFriendsStoryboard = UIStoryboard(name: "TurtlesAndFriendsStoryboard", bundle: nil)

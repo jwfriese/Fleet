@@ -16,7 +16,7 @@ Be sure to include in your issue:
 
 ## Building the Project
 
-Use full Xcode with the iOS and/or tvOS platform and simulator runtime installed. Phase 0 is verified with Xcode 26.6 and the 26.5 simulator SDKs/runtimes. The project uses Swift 5 language mode. Python 3 is required for simulator selection and runner checks.
+Use full Xcode with the iOS and/or tvOS platform and simulator runtime installed. Phase 0 is verified with Xcode 26.6 and the 26.5 simulator SDKs/runtimes. All maintained targets and the SwiftPM package use Swift 6 language mode. UI specifications use `@MainActor` and async XCTest setup/teardown; use bounded waits and keep execution serial. Native Nimble 14 polling remains synchronous pending dependency concurrency support. Python 3 is required for simulator selection and runner checks.
 
 The next major release sets all framework, test, and host deployment targets to iOS/tvOS 15 and uses SwiftPM for distribution. See [compatibility and distribution](Documentation/Compatibility.md) and [SwiftPM setup](Documentation/Installation/SwiftPM.md) for the transition from historical 4.x installation routes.
 

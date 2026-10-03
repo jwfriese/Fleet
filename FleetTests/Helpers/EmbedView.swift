@@ -18,6 +18,7 @@ extension Test {
         }
     }
 
+    @MainActor
     static func embedViewIntoMainApplicationWindow(_ view: UIView) throws {
         guard let keyWindow = UIApplication.shared.keyWindow else {
             throw Test.InternalError.unexpectedError("Testing environment does not have a key window")

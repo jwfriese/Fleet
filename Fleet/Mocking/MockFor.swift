@@ -21,6 +21,7 @@ extension Fleet {
         }
     }
 
+    @MainActor
     static func mockFor<T>(_ klass: T.Type) throws -> T where T: UIViewController {
         guard FleetObjC._isClass(klass, kindOf: UIViewController.self) else {
             throw MockError.missingUIViewControllerSuperClass

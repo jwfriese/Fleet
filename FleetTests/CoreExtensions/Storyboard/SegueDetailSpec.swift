@@ -8,9 +8,10 @@ import Nimble
     @testable import FleetTestApp_tvOS
 #endif
 
+@MainActor
 class SegueDetailSpec: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         continueAfterFailure = false
     }
 

@@ -1,5 +1,6 @@
 import UIKit
 
+@MainActor
 class TestTextViewDelegate: NSObject, UITextViewDelegate {
     var didCallShouldBeginEditing: Bool = false
     var shouldAllowBeginEditing = true

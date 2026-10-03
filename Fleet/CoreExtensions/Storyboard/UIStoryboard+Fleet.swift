@@ -2,10 +2,8 @@ import Foundation
 import UIKit
 import ObjectiveC
 
-private var storyboardInstanceBindingMap = [String : StoryboardInstanceBinding]()
-private var storyboardBindingIdentifierAssociationKey: UInt8 = 0
-
-fileprivate var didSwizzle = false
+@MainActor private var storyboardInstanceBindingMap = [String : StoryboardInstanceBinding]()
+@MainActor private var storyboardBindingIdentifierAssociationKey: UInt8 = 0
 
 extension UIStoryboard {
     var storyboardBindingIdentifier: String? {
@@ -226,7 +224,7 @@ extension UIStoryboard {
         }
     }
 
-    @objc class func swizzleViewControllerInstantiationMethod() {
+    @objc nonisolated class func swizzleViewControllerInstantiationMethod() {
         Fleet.swizzle(
             originalSelector: #selector(UIStoryboard.instantiateViewController(withIdentifier:)),
             swizzledSelector: #selector(UIStoryboard.fleet_instantiateViewController(withIdentifier:)),

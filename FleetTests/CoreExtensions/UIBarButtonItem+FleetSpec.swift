@@ -8,6 +8,7 @@ import Nimble
     @testable import FleetTestApp_tvOS
 #endif
 
+@MainActor
 fileprivate class TestTarget: NSObject {
     var didCallAction = false
 
@@ -16,12 +17,13 @@ fileprivate class TestTarget: NSObject {
     }
 }
 
+@MainActor
 class UIBarButtonItem_FleetSpec: XCTestCase {
     var subject: UIBarButtonItem!
     fileprivate var testTarget: TestTarget!
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         continueAfterFailure = false
 
         let viewController = UIViewController()

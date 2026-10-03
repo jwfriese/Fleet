@@ -8,6 +8,7 @@ import Fleet
     @testable import FleetTestApp_tvOS
 #endif
 
+@MainActor
 class FleetSpec: XCTestCase {
     private var hostWindow: UIWindow?
     private var originalRootViewController: UIViewController?
@@ -18,8 +19,8 @@ class FleetSpec: XCTestCase {
     var otherWindow: UIWindow!
     var otherWindowRootViewController: UIViewController!
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         continueAfterFailure = false
 
         hostWindow = UIApplication.shared.keyWindow
@@ -34,13 +35,13 @@ class FleetSpec: XCTestCase {
         otherWindowScreen = Fleet.getScreen(forWindow: otherWindow)
     }
 
-    override func tearDown() {
+    override func tearDown() async throws {
         // Focus tests must finish editing before the next test replaces the root.
         hostWindow?.endEditing(true)
         if let root = hostWindow?.rootViewController, root.presentedViewController != nil {
             let dismissed = expectation(description: "Dismiss the test's presented controller")
             root.dismiss(animated: false) { dismissed.fulfill() }
-            wait(for: [dismissed], timeout: 2)
+            await fulfillment(of: [dismissed], timeout: 2)
         }
         hostWindow?.rootViewController = originalRootViewController
         hostWindow?.layoutIfNeeded()
@@ -51,7 +52,7 @@ class FleetSpec: XCTestCase {
         otherWindow = nil
         originalRootViewController = nil
         hostWindow = nil
-        super.tearDown()
+        try await super.tearDown()
     }
 
     private func prepareFocusFixture(_ textField: UITextField) {

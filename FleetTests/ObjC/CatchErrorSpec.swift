@@ -3,6 +3,7 @@ import UIKit
 import Fleet
 import Nimble
 
+@MainActor
 class CatchErrorSpec: XCTestCase {
     func test_swallowIfErrors_allowsCatchingOfFleetErrors() {
         let alert = UIAlertController(title: "title", message: "message", preferredStyle: .alert)

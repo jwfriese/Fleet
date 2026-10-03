@@ -1,6 +1,6 @@
 # Installing Fleet with SwiftPM
 
-Fleet's next major release uses a dynamic SwiftPM product named `Fleet`, with minimum deployment targets of iOS 15 and tvOS 15. Use Xcode 26.6 and Swift tools 6.3 or newer for the manifest; Fleet currently compiles in Swift 5 language mode. The supported and verified combinations are recorded in [compatibility and distribution](../Compatibility.md).
+Fleet's next major release uses a dynamic SwiftPM product named `Fleet`, with minimum deployment targets of iOS 15 and tvOS 15. Use Xcode 26.6 and Swift tools 6.3 or newer for the manifest; Fleet and the maintained consumer fixtures compile in Swift 6 language mode. The supported and verified combinations are recorded in [compatibility and distribution](../Compatibility.md).
 
 This checkout contains the package, but no new major release has been published. During development, add this checkout as a local package in Xcode. Once the reviewed major release is published, add `https://github.com/jwfriese/Fleet` through Xcode's package dependency UI and select that release. Do not select an older 4.x tag expecting it to contain this manifest.
 
@@ -8,7 +8,7 @@ This checkout contains the package, but no new major release has been published.
 
 Add the `Fleet` product to your hosted unit test target and use `import Fleet` in its Swift files. The [external consumer fixture](../../Integration/PackageConsumer) links Fleet only to the test target; the application host does not depend on Fleet. Xcode embeds the dynamic product and its resources for the hosted tests.
 
-Use a UIKit application host with a window. The maintained fixture uses an app-delegate window; scene-based hosting is still tracked separately. Run tests serially around Fleet's shared application state and process-wide hooks. Fleet remains a UIKit library; plain macOS `swift test` cannot run its hosted suites.
+Mark UIKit test classes or methods `@MainActor`; Fleet UI helpers require main-actor access. Use async XCTest setup/teardown for UI fixtures and bounded async waits for completion. Use a UIKit application host with a window. The maintained fixture uses an app-delegate window; scene-based hosting is still tracked separately. Run tests serially around Fleet's shared application state and process-wide hooks. Fleet remains a UIKit library; plain macOS `swift test` cannot run its hosted suites.
 
 ## Configure storyboard metadata
 
@@ -21,10 +21,15 @@ Declare `$(TARGET_BUILD_DIR)/$(CONTENTS_FOLDER_PATH)/StoryboardInfo` as an outpu
 The script discovers the host through `TEST_HOST` and copies compiler metadata into the test bundle. Storyboard creation itself should use the host's bundle, for example:
 
 ```swift
-let storyboard = UIStoryboard(name: "Consumer", bundle: .main)
-let replacement = UIViewController()
-try storyboard.bind(viewController: replacement, toIdentifier: "Detail")
-XCTAssertTrue(storyboard.instantiateViewController(withIdentifier: "Detail") === replacement)
+@MainActor
+final class StoryboardTests: XCTestCase {
+    func testBinding() throws {
+        let storyboard = UIStoryboard(name: "Consumer", bundle: .main)
+        let replacement = UIViewController()
+        try storyboard.bind(viewController: replacement, toIdentifier: "Detail")
+        XCTAssertTrue(storyboard.instantiateViewController(withIdentifier: "Detail") === replacement)
+    }
+}
 ```
 
 The [consumer tests](../../Integration/PackageConsumer/PackageConsumerTests.swift) exercise these public calls on both platforms, including rejection of an already loaded controller and lifecycle suppression for storyboard mocks.

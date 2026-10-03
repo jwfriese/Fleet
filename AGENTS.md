@@ -4,16 +4,16 @@ Fleet is a UIKit testing library for iOS and tvOS. It helps hosted unit tests ex
 
 ## Build and test
 
-- The Phase 0 reference environment is Xcode 26.6 (Apple Swift 6.3.3), with iOS/tvOS 26.5 simulator SDKs and runtimes. The project still uses Swift 5 language mode; a full Swift 6 migration is separate work.
+- The Phase 0 reference environment is Xcode 26.6 (Apple Swift 6.3.3), with iOS/tvOS 26.5 simulator SDKs and runtimes. All maintained native targets, the package, and external consumers use Swift 6 language mode.
 - Use full Xcode, not only standalone Command Line Tools. Set `DEVELOPER_DIR` to another Xcode installation if needed. Install missing platforms/runtimes through Xcode Settings > Components or `xcodebuild -downloadPlatform iOS` / `xcodebuild -downloadPlatform tvOS`.
 - Run `script/test` for the complete iOS suite, `script/test tvos` for tvOS, or `script/test all` for both. The root `./test` forwards to this runner.
 - Narrow a development run with `script/test ios -only-testing:FleetTests/ClassName/test_method`. Run the complete affected platform suite before reporting completion; run both platforms for changes shared by both when their SDKs/runtimes are available.
 - Set `FLEET_TEST_DESTINATION` to an explicit `xcodebuild` destination if automatic selection is unsuitable. Use that override with one platform at a time. `FLEET_BUILD_DIR` overrides the default `build/` output directory.
 - Run `python3 -m unittest discover -s script/tests -v` for runner, release, packaging-checker, or storyboard-script changes. Check shell syntax with `bash -n script/test script/release script/check-distribution test Fleet/Script/copy_storyboard_info_files.sh Integration/PackageConsumer/CopyStoryboardMetadata.sh` and check whitespace with `git diff --check`.
 - The first test run needs network access to fetch packages. Xcode resolves pinned Nimble dependencies from `Fleet.xcworkspace/xcshareddata/swiftpm/Package.resolved`. Commit intentional dependency changes together with that lockfile.
-- The next major release requires iOS/tvOS 15 across framework, test, and host targets. SwiftPM is the distribution route, using tools version 6.3 and Swift 5 language mode. See `Documentation/Compatibility.md`. Existing 4.x tags retain their historical requirements and installation routes.
+- The next major release requires iOS/tvOS 15 across framework, test, and host targets. SwiftPM is the distribution route, using tools version 6.3 and Swift 6 language mode. See `Documentation/Compatibility.md`. Existing 4.x tags retain their historical requirements and installation routes.
 - Run `script/check-distribution` on a clean committed checkout for external iOS/tvOS consumers. For uncommitted development use `--allow-dirty`, optionally with `ios` or `tvos`; that creates a development Git snapshot and cannot certify a release. Run both platforms before completing shared packaging/runtime changes. The checker uses separate test hosts, a Git-pinned dependency, and public APIs; do not replace it with manifest-only validation or reuse the native framework target as the consumer.
-- Test runs execute serially because Fleet modifies application UI state and installs process-wide runtime hooks. Do not enable parallel execution until that shared state is isolated.
+- UI tests and helpers run on `@MainActor`; use async XCTest setup/teardown and bounded waits. The native Nimble 14 polling calls remain synchronous pending its Sendable migration; external consumer completion waits are async. Hop to the main actor before invoking Fleet UI APIs from other tasks. Main-actor isolation does not serialize complete test lifetimes. Test runs execute serially because Fleet modifies application UI state and installs process-wide runtime hooks. Do not enable parallel execution until that shared state is isolated.
 - The runner enables XCTest timeouts (30 seconds per test by default, maximum 60). A timeout is a failure; diagnose its result bundle instead of retrying it away.
 - Each run writes `xcodebuild.log` and `TestResults.xcresult` into a unique directory under `build/`. Report test counts and failures; a successful framework build alone is not a passing test suite. Preserve failures instead of adding retries or silently skipping tests.
 
@@ -46,7 +46,7 @@ Presentation, lifecycle, and focus can complete asynchronously. Wait for the sta
 
 `FleetSpec` uses real text fields with a local custom input view on iOS to test root hosting and responder handoff without coupling those fixtures to cold system-keyboard startup. Preserve both `becomeFirstResponder` and `isFirstResponder` assertions. Actual keyboard presentation and interruption require separate coverage; the text-input suites retain their editing tests.
 
-Fleet currently installs Objective-C swizzles in `+load`. Changes to selectors, initialization, static/dynamic linking, or mocking need hosted integration coverage. Keep any unsafe runtime assumptions explicit and avoid unrelated API redesign during build-tool changes.
+Fleet currently installs Objective-C swizzles in `+load`. The nonisolated Swift installers touch only runtime method tables; instance hooks, associated-object storage, and storyboard bindings are main-actor isolated. Objective-C callers must honor UIKit main-thread requirements. The exception catcher executes closures synchronously on the calling actor. Changes to selectors, initialization, static/dynamic linking, or mocking need hosted integration coverage. Keep any unsafe runtime assumptions explicit and avoid unrelated API redesign during build-tool changes.
 
 Keep public API docs and platform exclusions in sync with changes. Do not add generated build output, simulator identifiers, or machine-specific paths to the repository.
 
