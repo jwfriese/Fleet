@@ -145,10 +145,10 @@ class FleetSpec: XCTestCase {
 
         let storyboard = UIStoryboard(name: "TurtlesAndFriendsStoryboard", bundle: nil)
         let controller = storyboard.instantiateViewController(withIdentifier: "BoxTurtleViewController") as! BoxTurtleViewController
+        let navigation = Fleet.setInAppWindowRootNavigation(controller)
         if let textField = controller.textField {
             prepareFocusFixture(textField)
         }
-        let navigation = Fleet.setInAppWindowRootNavigation(controller)
         expect(previousField.isFirstResponder).to(beFalse())
         expect(navigation.topViewController).to(beIdenticalTo(controller))
         expect(controller.textField?.window).toNot(beNil())
