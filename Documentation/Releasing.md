@@ -6,7 +6,7 @@ Fleet releases use three separate commands: prepare a diff, validate a committed
 
 Release tooling is available, but publication remains blocked until Fleet has a `Package.swift` and an executable `script/check-distribution` that verifies external iOS and tvOS consumers. These files are intentionally absent while packaging is being modernized. The existing framework tests and Nimble's SwiftPM dependency do not establish that Fleet can be distributed through SwiftPM.
 
-Finish the public support matrix and installation policy alongside packaging. CocoaPods trunk publication is not part of this workflow; the old Go publisher has been removed. The podspec's version is still maintained so repository metadata stays consistent. Existing Carthage/CocoaPods installation instructions describe historical routes whose validation remains on the [modernization checklist](Modernization.md).
+The [compatibility policy](Compatibility.md) selects iOS/tvOS 15 and SwiftPM for the next major release. CocoaPods, Carthage, and direct integration remain historical 4.x routes. CocoaPods trunk publication is not part of this workflow; the old Go publisher has been removed. The podspec's version and platform settings are still maintained so repository metadata stays consistent. Finish SwiftPM packaging, external consumer validation, and installation instructions before publication.
 
 ## Prepare
 
@@ -72,7 +72,7 @@ If a tag push succeeds but release creation fails, the command exits nonzero. Pr
 
 ```sh
 python3 -m unittest discover -s script/tests -v
-bash -n script/test script/release test
+bash -n script/test script/release test Fleet/Script/copy_storyboard_info_files.sh
 git diff --check
 ```
 

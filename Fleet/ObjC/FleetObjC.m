@@ -2,7 +2,7 @@
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
 
-IMP createViewDidLoadImpl() {
+IMP createViewDidLoadImpl(void) {
     id block = ^(id self, SEL _cmd) {};
     return imp_implementationWithBlock(block);
 }
@@ -12,7 +12,7 @@ const char * getViewDidLoadTypes(Class klass) {
     return method_getTypeEncoding(viewDidLoadMethod);
 }
 
-IMP createViewWillAppearImpl() {
+IMP createViewWillAppearImpl(void) {
     id block = ^(id self, SEL _cmd, BOOL animated) {};
     return imp_implementationWithBlock(block);
 }
@@ -22,7 +22,7 @@ const char * getViewWillAppearTypes(Class klass) {
     return method_getTypeEncoding(viewWillAppearMethod);
 }
 
-IMP createViewDidAppearImpl() {
+IMP createViewDidAppearImpl(void) {
     id block = ^(id self, SEL _cmd, BOOL animated) {};
     return imp_implementationWithBlock(block);
 }
@@ -32,7 +32,7 @@ const char * getViewDidAppearTypes(Class klass) {
     return method_getTypeEncoding(viewDidAppearMethod);
 }
 
-IMP createViewWillDisappearImpl() {
+IMP createViewWillDisappearImpl(void) {
     id block = ^(id self, SEL _cmd, BOOL animated) {};
     return imp_implementationWithBlock(block);
 }
@@ -42,7 +42,7 @@ const char * getViewWillDisappearTypes(Class klass) {
     return method_getTypeEncoding(viewWillDisappearMethod);
 }
 
-IMP createViewDidDisappearImpl() {
+IMP createViewDidDisappearImpl(void) {
     id block = ^(id self, SEL _cmd, BOOL animated) {};
     return imp_implementationWithBlock(block);
 }

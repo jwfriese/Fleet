@@ -1,5 +1,7 @@
 ## Installation
 
+These instructions describe Fleet 4.x's historical installation routes. The next major release requires tvOS 15 and uses SwiftPM; its package and consumer validation are still in progress. See [compatibility and distribution](../Compatibility.md), or use the [instructions at the 4.6.1 tag](https://github.com/jwfriese/Fleet/blob/4.6.1/Documentation/Installation/tvOS.md) when working with that release. These routes are not supported for the next major release.
+
 #### Git submodules
 
 1) Run `git submodule add http://github.com/jwfriese/Fleet`

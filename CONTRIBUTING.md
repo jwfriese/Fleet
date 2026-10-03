@@ -18,6 +18,8 @@ Be sure to include in your issue:
 
 Use full Xcode with the iOS and/or tvOS platform and simulator runtime installed. Phase 0 is verified with Xcode 26.6 and the 26.5 simulator SDKs/runtimes. The project uses Swift 5 language mode. Python 3 is required for simulator selection and runner checks.
 
+The next major release sets all framework, test, and host deployment targets to iOS/tvOS 15 and selects SwiftPM for distribution. See [compatibility and distribution](Documentation/Compatibility.md) for the chosen baseline and the transition from historical 4.x installation routes. SwiftPM packaging and external consumer checks are still in progress.
+
 Open `Fleet.xcworkspace` to work on Fleet. Xcode resolves the pinned Nimble test dependency through Swift Package Manager; the first run requires network access. Ruby, fastlane, and Carthage are not required for the canonical suite. The test targets run inside the included host applications.
 
 Run the tests from the repository root:
