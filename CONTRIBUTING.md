@@ -54,9 +54,12 @@ a complete addition to the test suite to capture the new behavior.
 - Make sure your pull request includes any necessary updates to the
   README or other documentation.
 - Please make sure to run the unit tests before submitting a PR using `script/test all`.
-- Pull requests into `main` require maintainer approval and passing iOS, tvOS,
+- For non-admin contributors, pull requests into `main` require maintainer approval and passing iOS, tvOS,
   and external SwiftPM consumer checks. `.github/CODEOWNERS` assigns review to
   `@jwfriese`; authors cannot approve their own pull requests.
+- The owner/admin exception allows the maintainer to merge their own PRs after
+  the same checks pass. Automation uses a separate machine account with write
+  access and no admin privileges, so its PRs still require maintainer approval.
 - The `main` branch will always support the stable Xcode version. Other
   branches will point to their corresponding versions they support.
 
