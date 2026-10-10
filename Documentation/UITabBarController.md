@@ -10,10 +10,10 @@ will be able to switch tabs using the following code:
 // Fetch the tab bar controller under test in whatever way makes sense.
 var tabBarController: UITabBarController!
 // then later...
-tabBarController.selectTab(withLabelText: "Tab Text")
+tabBarController.selectTab(withLabel: "Tab Text")
 
 // Now you can make any assertions you'd like on the behavior that you like to see when the tab change occurs.
 ```
 
-Another convenience method that behaves very similarly -- `UITabBarController.selectTab(withIndex:)` -- is also
+Another convenience method that behaves very similarly -- `UITabBarController.selectTab(atIndex:)` -- is also
 provided.
