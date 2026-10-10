@@ -1,69 +1,102 @@
-## UITextView
+# UITextView
 
-Instead of having to manually send text editing events yourself, you can now simply enter text into a text view using `enter(text:)` on any `UITextView`.
+Platforms: iOS only
 
-For example, given you have some UIViewController that looks like this:
+All methods raise a `Fleet.TextViewError` (`FleetError`) on failure.
+
+## Methods
+
+| Method | Summary |
+| --- | --- |
+| [`enter(text:)`](#entertext) | `startEditing()`, `type(text:)`, then `stopEditing()`. |
+| [`startEditing()`](#startediting) | Gives the textView first responder focus. |
+| [`stopEditing()`](#stopediting) | Removes first responder focus. |
+| [`type(text:)`](#typetext) | Types text one character at a time. |
+| [`paste(text:)`](#pastetext) | Inserts text as a single change. |
+| [`backspace()`](#backspace) | Deletes the last character. |
+| [`backspaceAll()`](#backspaceall) | Deletes every character, one backspace at a time. |
+
+Delegate callbacks and notifications fire in the order UIKit uses.
+
+### `enter(text:)`
+
 ```swift
-class ControllerUnderTest: UIViewController {
-	@IBOutlet weak var textView: UITextView?
-
-// rest of code here
-// ...
-}
+func enter(text: String)
 ```
-When you want to enter some text into the controller's `textView`, simply do the following:
+
+Starts editing, types `text`, and stops editing.
+
+**Raises** if `startEditing()`, `type(text:)`, or `stopEditing()` raises.
+
+### `startEditing()`
+
+```swift
+func startEditing()
+```
+
+Makes the textView first responder. Calls the delegate's should-begin and did-begin editing methods.
+
+**Raises** if the textView does not allow user interaction, is hidden, is not selectable, is not editable, or cannot become first responder. The textView must be in a window's view hierarchy.
+
+### `stopEditing()`
+
+```swift
+func stopEditing()
+```
+
+Resigns first responder. Calls the delegate's should-end and did-end editing methods.
+
+**Raises** if the textView is not first responder or fails to resign.
+
+### `type(text:)`
+
+```swift
+func type(text newText: String)
+```
+
+Appends `newText` one character at a time. `textView(_:shouldChangeTextIn:replacementText:)` is called once per character.
+
+**Raises** if the textView is not first responder.
+
+### `paste(text:)`
+
+```swift
+func paste(text textToPaste: String)
+```
+
+Appends `textToPaste` as one change. `textView(_:shouldChangeTextIn:replacementText:)` is called once for the whole string.
+
+**Raises** if the textView is not first responder.
+
+### `backspace()`
+
+```swift
+func backspace()
+```
+
+Removes the last character, calling the delegate as a user's backspace would.
+
+**Raises** if the textView is not first responder.
+
+### `backspaceAll()`
+
+```swift
+func backspaceAll()
+```
+
+Calls `backspace()` once per character.
+
+**Raises** if the textView is not first responder.
+
+## Example
 
 ```swift
 let controller = getControllerUnderTest() as? ControllerUnderTest
-try! controller.textView?.enter(text: "text")
-
-// Any delegate attached to the text view will automatically receive all
-// events that you would expect to receive had a real user interacted
-// with the text view. This includes:
-//
-// - the call to make the text view a first responder
-// - should begin/did begin editing events
-// - all the text change callbacks exactly as they would be received were a user to actually
-//   input the text themselves
-// - appropriate focus handoff callbacks in the case that another element had focus
-// - should end/did end editing events
-// - and of course, the text in the text view will update appropriately
-//
+controller?.textView.enter(text: "text")
 ```
 
-You can also get more granular control with the `startEditing()`, `endEditing()`, `type(text:)`, `paste(text:)`, and `backspace()` methods.
+## Notes
 
-```swift
-try! textView.startEditing()
-
-// Sends should begin and did begin events to the delegate.
-```
-
-```swift
-try! textView.endEditing()
-
-// Sends should end and did end events to the delegate if textView previously
-// had startEditing() called on it.
-```
-
-```swift
-try! textView.type(text: "text")
-try! textView.paste(text: "text")
-
-// Sends the appropriate editing changed methods to the delegate. The
-// difference between the two is that type(text:) triggers the
-// textView:shouldChangeTextInRange:replacementText: method for
-// each character in the given string, while paste(text:) triggers it for the
-// entire given string.
-```
-
-```swift
-try! textView.backspace()
-
-// Sends the appropriate methods to the delegate while removing the last character of content
-// from the text view.
-```
-
-All the methods throw `Fleet.TextViewError` errors that communicate errors that occur when attempting to perform
-the various operations. For example, the `UITextView.type(text:)` method will throw an error when it is called
-on a text view that does not have first responder focus.
+- Methods raise Objective-C exceptions, not Swift errors. Do not use `try`. See the [FAQ](FAQ.md#why-does-fleet-raise-exceptions-and-how-should-i-handle-them).
+- The textView must be in the key window's hierarchy to become first responder.
+- These helpers dispatch the editing events programmatically. They do not prove that the system keyboard appears or that a user could reach the control.

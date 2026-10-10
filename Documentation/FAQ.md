@@ -44,7 +44,7 @@ fully-implemented delegate callbacks and notification handlers, the test code to
 exactly the same:
 
 ```swift
-try! myTableView.selectRow(at: myIndexPath)
+myTableView.selectRow(at: myIndexPath)
 ```
 
 The principles laid out above for just one of Fleet's `UITableView` extensions apply to all of the
@@ -65,7 +65,7 @@ and have your test proceed, Fleet gives you a way to do that too:
 
 ```swift
 Fleet.swallowAnyErrors {
-    myTextField.enter("some text")
+    myTextField.enter(text: "some text")
 }
 
 // If `enter` raises an exception, Fleet will catch it, log it in the console, and proceed.

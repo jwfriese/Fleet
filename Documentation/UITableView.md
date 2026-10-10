@@ -1,107 +1,76 @@
-## UITableView
+# UITableView
 
-### Row selection
-A table view's many delegate and data source methods contribute to the complexity of
-testing their behavior reliably, consistently, and succinctly. For example, when trying
-to test how the app behaves when a particular cell on a table view is selected, a
-developer might write code like the following:
+Platforms: `fetchCell` and `selectRow`: iOS, tvOS. `selectCellAction`: iOS only.
 
-```swift
-// Set up table view
-// ...
-// This does it, right?
-subject.tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
+All methods raise a `Fleet.TableViewError` (`FleetError`) on failure.
 
-// Go test that the thing happened
-```
+## Methods
 
-While this successfully selects the row, it does not fire delegate callbacks. It also
-does not post table selection notifications. To get all these behaviors, the test code
-will have to look like this:
+| Method | Summary |
+| --- | --- |
+| [`selectRow(at:)`](#selectrowat) | Selects a row as a user would, with delegate callbacks and notifications. |
+| [`fetchCell(at:)`](#fetchcellat) | Returns the cell from the data source. |
+| [`fetchCell(at:asType:)`](#fetchcellatastype) | Returns the cell cast to a `UITableViewCell` subclass. |
+| [`selectCellAction(withTitle:at:)`](#selectcellactionwithtitleat) | Runs a custom edit action on a row. |
+
+### `selectRow(at:)`
 
 ```swift
-// Set up table view
-// ...
-subject.tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
-subject.tableView(subject.someTableView!, willSelectRowAt: IndexPath(row: 1, section: 0))
-subject.tableView(subject.someTableView!, didSelectRowAt: IndexPath(row: 1, section: 0))
-NotificationCenter.default.post(name: NSNotification.Name.UITableViewSelectionDidChange, object: nil)
-
-// Go test that the thing happened
+func selectRow(at indexPath: IndexPath)
 ```
 
-All this setup, and the code _still_ isn't even testing deselection behavior.
+Mimics a user selecting the row. In order of use:
 
-Fleet provides a helper method that lets developers write test setup code like this for _all_
-table view behavior tests:
+- `tableView(_:willSelectRowAt:)` and `tableView(_:didSelectRowAt:)` are called.
+- `tableView(_:willDeselectRowAt:)` and `tableView(_:didDeselectRowAt:)` are called only when a deselection would occur.
+- Selection notifications are posted.
+- The row is selected and any previously selected row is deselected.
+
+`selectRow(at:animated:scrollPosition:)` does none of the delegate or notification work.
+
+**Raises** if the table view has no data source, the row does not exist, or the table view does not allow selection.
+
+### `fetchCell(at:)`
+
 ```swift
-try! tableView.selectRow(at: indexPath)
+func fetchCell(at indexPath: IndexPath) -> UITableViewCell
 ```
 
-When this method is called, all the following occurs:
-- `UITableViewDelegate.tableView(_:willSelectRowAt:)` is called at the appropriate time
-- `UITableViewDelegate.tableView(_:didSelectRowAt:)` is called at the appropriate time
-- `UITableViewDelegate.tableView(_:willDeselectRowAt:)` is called at the appropriate time, and only when
-a deselection would occur
-- `UITableViewDelegate.tableView(_:didDeselectRowAt:)` is called at the appropriate time, and only when
-a deselection would occur
-- All the appropriate `NSNotification`s are posted
-- The cell is actually selected
-- Any previously selected cell is deselected
+Returns the cell the data source provides for `indexPath`.
 
-In other words, Fleet does its best to make the test code setup act as closely to production code
-as possible, so that the developer can feel confident that their tests are telling them the truth
-about their code.
+**Raises** if the table view has no data source, or the section or row does not exist.
 
-Additionally, the method throws an error clearly that describes any problem that occurs
-when attempting to take the selection action, such as:
-- Attempting to select an index path that does not exist in the table
-- Attempting to select an index path that does not allow selection
+### `fetchCell(at:asType:)`
 
-### Fetching a cell
-Fetching a cell in test requires a surprising amount of work:
 ```swift
-// Get it and make sure it is not nil
-var cell = subject.tableView(subject.teamPipelinesTableView!, cellForRowAt: IndexPath(row: 0, section: 0))
-expect(cellOne).toNot(beNil())
-
-// Optionally cast it to the kind of cell you want
-// cell = cell as? KindOfCellIWant
-
-// Now you can start doing assertions
+func fetchCell<T>(at indexPath: IndexPath, asType type: T.Type) -> T where T: UITableViewCell
 ```
 
-The above code could condense into one line. Even then, error messaging from UIKit does not make it obvious
-why a fetch failed. Fleet provides an extension to help address these difficulties:
+Like `fetchCell(at:)`, cast to `T`. Unlike `as!`, a failed cast describes the found and requested types.
+
+**Raises** in the cases above, or if the cell is not a `T`.
+
+### `selectCellAction(withTitle:at:)`
+
 ```swift
-try! let cell = subject.tableView.fetchCell(at: IndexPath(row: 0, section: 0)
-// Now you can start doing assertions -- the cell that comes back is not an optional.
+func selectCellAction(withTitle title: String, at indexPath: IndexPath)
 ```
 
-The test code can also cast as part of the call:
+Runs the custom edit action whose title equals `title`. Calls `tableView(_:willBeginEditingRowAt:)` and `tableView(_:didEndEditingRowAt:)`, and the action's handler.
+
+**Raises** if the row does not exist, does not allow editing, or has no action with that title.
+
+## Example
+
 ```swift
-try! let cell = subject.tableView.fetchCell(at: IndexPath(row: 0, section: 0, asType: KindOfCellIWant.self)
-// Now you can start doing assertions -- `cell` above is of type `KindOfCellIWant`
+tableView.selectRow(at: IndexPath(row: 1, section: 0))
+
+let cell = tableView.fetchCell(at: IndexPath(row: 0, section: 0), asType: MyCell.self)
+expect(cell.titleLabel.text).to(equal("First"))
+
+tableView.selectCellAction(withTitle: "Delete", at: IndexPath(row: 0, section: 0))
 ```
 
-Functionally, this is the same as appending your own `as! KindOfCellIWant` at the end of the call to `fetchCell(at:)`,
-except Fleet's version tries to give a more descriptive error message.
+## Notes
 
-These methods throw errors that attempt to describe specifically why the fetch failed.
-
-### Selecting a custom table view cell edit action
-Fleet also provides a helper method for selecting custom edit actions on a row:
-```swift
-try! tableView.selectCellAction(withTitle: "Edit Action Title", at: indexPath)
-```
-
-When this method is called, all the following occurs:
-- `UITableViewDelegate.tableView(_:willBeginEditingRowAt:)` is called at the appropriate time
-- `UITableViewDelegate.tableView(_:willEndEditingRowAt:)` is called at the appropriate time
-- The callback assigned to that edit action is called
-
-The method throws an error that clearly describes any problem that occurs
-when attempting to take the edit action, such as:
-- Attempting to take an edit action on an index path that does not exist in the table
-- Attempting to take an edit action on an index path that does not allow editing
-- Attempting to take an edit action that does not exist at that index path
+- Methods raise Objective-C exceptions, not Swift errors. Do not use `try`. See the [FAQ](FAQ.md#why-does-fleet-raise-exceptions-and-how-should-i-handle-them).
