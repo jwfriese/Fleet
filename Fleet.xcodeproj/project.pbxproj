@@ -182,6 +182,16 @@
 		F10000000000000000000114 /* RaiseExceptionMatcherSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000014 /* RaiseExceptionMatcherSpec.swift */; };
 		F10000000000000000000124 /* RaiseExceptionMatcherSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000014 /* RaiseExceptionMatcherSpec.swift */; };
 		F10000000000000000000125 /* NotificationListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B67248F1F3B4562008FE29E /* NotificationListener.swift */; };
+		3DF370EBE1FB36C77DB6B886 /* CollectionViewError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75492EC7624A1D41FE0BBADC /* CollectionViewError.swift */; };
+		10A4742C5277E4975776385A /* UICollectionView+FetchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E5BF24B8233D5E0B4E8438A /* UICollectionView+FetchCell.swift */; };
+		3E613E9A3A5879AAAEA2A7BD /* UICollectionView+SelectItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB60DF515018FB5C6E644563 /* UICollectionView+SelectItem.swift */; };
+		C39E10AC9C85DC7C9B87B9C2 /* CollectionViewError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75492EC7624A1D41FE0BBADC /* CollectionViewError.swift */; };
+		AB96850BE53F3CD0DB3B698E /* UICollectionView+FetchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E5BF24B8233D5E0B4E8438A /* UICollectionView+FetchCell.swift */; };
+		33DD260109631965A3037DE2 /* UICollectionView+SelectItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB60DF515018FB5C6E644563 /* UICollectionView+SelectItem.swift */; };
+		B6AC703746498EF7C7B0F79B /* UICollectionView+FetchCellSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D01DBD7724E3CEAC94F9E2 /* UICollectionView+FetchCellSpec.swift */; };
+		87B1E06ABE036012A5AE2C60 /* UICollectionView+SelectItemSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47EF94C4103923DB084B60B3 /* UICollectionView+SelectItemSpec.swift */; };
+		51B8AF774775B7B893F7E499 /* UICollectionView+FetchCellSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D01DBD7724E3CEAC94F9E2 /* UICollectionView+FetchCellSpec.swift */; };
+		5EF9C83B6DEB9FFACEBA82C9 /* UICollectionView+SelectItemSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47EF94C4103923DB084B60B3 /* UICollectionView+SelectItemSpec.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -335,6 +345,11 @@
 		F10000000000000000000012 /* FleetTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FleetTests-Bridging-Header.h; sourceTree = "<group>"; };
 		F10000000000000000000013 /* RaiseExceptionMatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseExceptionMatcher.swift; sourceTree = "<group>"; };
 		F10000000000000000000014 /* RaiseExceptionMatcherSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseExceptionMatcherSpec.swift; sourceTree = "<group>"; };
+		75492EC7624A1D41FE0BBADC /* CollectionViewError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CollectionViewError.swift"; sourceTree = "<group>"; };
+		1E5BF24B8233D5E0B4E8438A /* UICollectionView+FetchCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+FetchCell.swift"; sourceTree = "<group>"; };
+		CB60DF515018FB5C6E644563 /* UICollectionView+SelectItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+SelectItem.swift"; sourceTree = "<group>"; };
+		37D01DBD7724E3CEAC94F9E2 /* UICollectionView+FetchCellSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+FetchCellSpec.swift"; sourceTree = "<group>"; };
+		47EF94C4103923DB084B60B3 /* UICollectionView+SelectItemSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+SelectItemSpec.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -653,6 +668,7 @@
 				7B48F48D2446A3FA00BA2D65 /* Toolbar */,
 				7BDF61E61E935B0E00990588 /* Alerts */,
 				7BFABD531E3DA1F3002823B3 /* Controls */,
+				4F4CB7CF70EDED19664C6D5D /* CollectionView */,
 				7B29F41B1DDCABDD008EA836 /* TableView */,
 				7B0D3B391CFA76200096DBC2 /* Storyboard */,
 				7BF913AC1E3A4B9500019CF2 /* ViewController */,
@@ -684,6 +700,7 @@
 				7B48F4922446A59F00BA2D65 /* Toolbar */,
 				7BDF61ED1E935B4D00990588 /* Alerts */,
 				7BFABD541E3DA1FA002823B3 /* Controls */,
+				657A71B448D71AC507F215BF /* CollectionView */,
 				7B29F41A1DDCABAD008EA836 /* TableView */,
 				7B0D3B361CFA76170096DBC2 /* Storyboard */,
 				7BF913AF1E3A4BB200019CF2 /* ViewController */,
@@ -846,6 +863,25 @@
 				7B0082561EB6DC11006B8FED /* TextView */,
 			);
 			path = TextInput;
+			sourceTree = "<group>";
+		};
+		4F4CB7CF70EDED19664C6D5D /* CollectionView */ = {
+			isa = PBXGroup;
+			children = (
+				75492EC7624A1D41FE0BBADC /* CollectionViewError.swift */,
+				1E5BF24B8233D5E0B4E8438A /* UICollectionView+FetchCell.swift */,
+				CB60DF515018FB5C6E644563 /* UICollectionView+SelectItem.swift */,
+			);
+			path = CollectionView;
+			sourceTree = "<group>";
+		};
+		657A71B448D71AC507F215BF /* CollectionView */ = {
+			isa = PBXGroup;
+			children = (
+				37D01DBD7724E3CEAC94F9E2 /* UICollectionView+FetchCellSpec.swift */,
+				47EF94C4103923DB084B60B3 /* UICollectionView+SelectItemSpec.swift */,
+			);
+			path = CollectionView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1151,6 +1187,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C39E10AC9C85DC7C9B87B9C2 /* CollectionViewError.swift in Sources */,
+				AB96850BE53F3CD0DB3B698E /* UICollectionView+FetchCell.swift in Sources */,
+				33DD260109631965A3037DE2 /* UICollectionView+SelectItem.swift in Sources */,
 				7B0082371EB6D917006B8FED /* Screen.swift in Sources */,
 				7B0082341EB6D90E006B8FED /* FleetObjC.m in Sources */,
 				7B0082271EB6D8F8006B8FED /* UITableView+SelectRow.swift in Sources */,
@@ -1187,6 +1226,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				51B8AF774775B7B893F7E499 /* UICollectionView+FetchCellSpec.swift in Sources */,
+				5EF9C83B6DEB9FFACEBA82C9 /* UICollectionView+SelectItemSpec.swift in Sources */,
 				F10000000000000000000125 /* NotificationListener.swift in Sources */,
 				F10000000000000000000124 /* RaiseExceptionMatcherSpec.swift in Sources */,
 				F10000000000000000000123 /* RaiseExceptionMatcher.swift in Sources */,
@@ -1255,6 +1296,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3DF370EBE1FB36C77DB6B886 /* CollectionViewError.swift in Sources */,
+				10A4742C5277E4975776385A /* UICollectionView+FetchCell.swift in Sources */,
+				3E613E9A3A5879AAAEA2A7BD /* UICollectionView+SelectItem.swift in Sources */,
 				7BB14A711D77B425002ABE82 /* FLTScreen.swift in Sources */,
 				7B675E941D0DA7EA002E6B45 /* Fleet.swift in Sources */,
 				7B1AE9DD1F8B01F100A533C2 /* CatchError.swift in Sources */,
@@ -1301,6 +1345,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6AC703746498EF7C7B0F79B /* UICollectionView+FetchCellSpec.swift in Sources */,
+				87B1E06ABE036012A5AE2C60 /* UICollectionView+SelectItemSpec.swift in Sources */,
 				F10000000000000000000114 /* RaiseExceptionMatcherSpec.swift in Sources */,
 				F10000000000000000000113 /* RaiseExceptionMatcher.swift in Sources */,
 				F10000000000000000000111 /* ExceptionCatcher.m in Sources */,
