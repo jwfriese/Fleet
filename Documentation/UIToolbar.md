@@ -1,16 +1,22 @@
-## UIToolbar
+# UIToolbar
 
-Unit testing the behavior of items on `UIToolbar`s through UIKit is ordinarily a challenge because of how
- difficult accessing the toolbar items directly can be.
+Platforms: iOS only
 
-Fleet aims to erase this pain by providing a way to "tap" on tooltip items in-test to fire their associated handlers.
+## Methods
 
-Suppose you have a `UIToolbar` set up on a page in your storyboard. With Fleet, you can unit test the behavior of
- tapping that toolbar's items much more easily than before. With one simple line of code, an item's handler can be fired:
+### `tapItem(withTitle:)`
+
 ```swift
-// Suppose we have items in a toolbar associated with `navigationController`
+func tapItem(withTitle title: String)
+```
+
+Taps the toolbar item whose title equals `title`, firing its action.
+
+**Raises** a `Fleet.ToolbarError` (`FleetError`) if no item has that title or the item's action is not set up correctly.
+
+## Example
+
+```swift
 let toolbar = navigationController.toolbar!
 toolbar.tapItem(withTitle: "Some Item")
-
-// Now you can make any assertions you'd like on the behavior of tapping that item.
 ```

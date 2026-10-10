@@ -1,12 +1,25 @@
 # UINavigationBar
 
+Platforms: iOS, tvOS
+
 ## Methods
-`public func tapTopItem(withTitle title: String)`
 
-Searches the `topItem` of a navigation bar for an item with a
-title equal to the parameter `title`. If found, it fires the action
-associated with that item.
+### `tapTopItem(withTitle:)`
 
-Raises a `FleetError` if a navigation bar item with the given title
-cannot be found, if there in the are no items in the navigation bar,
-or if the item's action is not properly set up.
+```swift
+func tapTopItem(withTitle title: String)
+```
+
+Searches the navigation bar's `topItem` for a bar button item whose title equals `title` and taps it, firing its action.
+
+**Raises** a `Fleet.NavBarError` (`FleetError`) if:
+
+- the navigation bar has no items,
+- no item has the given title, or
+- the item's action is not set up correctly.
+
+## Example
+
+```swift
+navigationController.navigationBar.tapTopItem(withTitle: "Done")
+```

@@ -17,7 +17,7 @@ to isolate any particular view controller for unit testing purposes.
 Read more about using Fleet's storyboard features in the [Documentation section](./Documentation/UIStoryboard.md).
 
 ### Interaction with UIKit elements
-Fleet extends UIKit classes in order to make it easier to test your code's interactions with UIKit. Following are summaries of the major features for each extended class. The [Documentation folder](./Documentation) contains more information about these features, as well as sample code showing you how they are intended to be used.
+Fleet extends UIKit classes in order to make it easier to test your code's interactions with UIKit. Following are summaries of the major features for each extended class. The [Documentation index](./Documentation/README.md) lists every extension and contains more information about these features, as well as sample code showing you how they are intended to be used.
 
 - [UIViewController](./Documentation/UIViewController.md) - Makes the UI run-loop behave more consistently to allow specs to test view controller presentation and dismissal with less effort.
 - [UITableView](./Documentation/UITableView.md) - Provides methods mimicking user actions on table views, ensuring all appropriate delegate and data source callbacks are run.
