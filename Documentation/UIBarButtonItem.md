@@ -1,6 +1,6 @@
 ## UIBarButtonItem
 
-Fleet provides helpers for `UIBarButtonItem` similar to those provider for `UIButton`. Here is the normal
+Fleet provides helpers for `UIBarButtonItem` similar to those provided for `UIButton`. Here is the normal
 flow for testing taps on UIBarButtonItem objects:
 
 ```swift
