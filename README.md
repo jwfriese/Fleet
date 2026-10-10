@@ -21,6 +21,7 @@ Fleet extends UIKit classes in order to make it easier to test your code's inter
 
 - [UIViewController](./Documentation/UIViewController.md) - Makes the UI run-loop behave more consistently to allow specs to test view controller presentation and dismissal with less effort.
 - [UITableView](./Documentation/UITableView.md) - Provides methods mimicking user actions on table views, ensuring all appropriate delegate and data source callbacks are run.
+- [UICollectionView](./Documentation/UICollectionView.md) - Provides methods to fetch cells and mimic item selection on collection views, running the appropriate delegate callbacks.
 - [UINavigationController](./Documentation/UINavigationController.md) - Allows specs to test pushing and popping on the navigation stack without waiting for the UI run-loop.
 - [UIButton](./Documentation/UIButton.md) - Provides convenience methods for interacting with buttons in test.
 - [UIBarButtonItem](./Documentation/UIBarButtonItem.md) - Provides convenience methods similar to those provided for UIButton.
