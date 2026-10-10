@@ -69,7 +69,13 @@ const char * getViewDidDisappearTypes(Class klass) {
         objc_registerClassPair(mockClass);
     }
 
-    id instance = [[mockClass alloc] init];
+    id instance;
+    if ([self _isClass:mockClass kindOf:[UICollectionViewController class]]) {
+        // UICollectionViewController raises if initialized without a layout.
+        instance = [[mockClass alloc] initWithCollectionViewLayout:[[UICollectionViewFlowLayout alloc] init]];
+    } else {
+        instance = [[mockClass alloc] init];
+    }
 
     return instance;
 }
