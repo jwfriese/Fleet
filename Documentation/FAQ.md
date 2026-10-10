@@ -99,7 +99,7 @@ little detail like this should not compromise that.
 Fleet makes it easy to ensure your view controllers are in the key window hierarchy:
 ```swift
 // Takes a `UIViewController`,  makes it the test app key window's root, and kicks off its lifecycle.
-Fleet.setAsAppRootWindow(_:)
+Fleet.setAsAppWindowRoot(_:)
 
 // Takes a `UIViewController`,  makes it the root of a navigation stack, kicks off the lifecycle, and
 // returns the navigation controller that hosts that view controller.
