@@ -53,6 +53,14 @@ class UICollectionView_SelectItemSpec: XCTestCase {
         try! Test.embedViewIntoMainApplicationWindow(subject)
     }
 
+    override func tearDown() async throws {
+        subject.removeFromSuperview()
+        subject.dataSource = nil
+        subject.delegate = nil
+        subject = nil
+        try await super.tearDown()
+    }
+
     func test_selectItem_selectsTheItemAndCallsDelegate() {
         subject.selectItem(at: IndexPath(item: 1, section: 0))
 
@@ -133,5 +141,25 @@ class UICollectionView_SelectItemSpec: XCTestCase {
         expect { self.subject.selectItem(at: IndexPath(item: 5, section: 0)) }.to(
             raiseException(named: "Fleet.CollectionViewError", reason: "Collection view has no item 5 in section 0.", userInfo: nil, closure: nil)
         )
+    }
+
+    func test_selectItem_whenIndicesAreNegative_raisesWithoutChangingSelection() {
+        expect { self.subject.selectItem(at: IndexPath(item: 0, section: -1)) }.to(
+            raiseException(named: "Fleet.CollectionViewError", reason: "Collection view has no section -1.", userInfo: nil, closure: nil)
+        )
+        expect { self.subject.selectItem(at: IndexPath(item: -1, section: 0)) }.to(
+            raiseException(named: "Fleet.CollectionViewError", reason: "Collection view has no item -1 in section 0.", userInfo: nil, closure: nil)
+        )
+        expect(self.subject.indexPathsForSelectedItems).to(beEmpty())
+        expect(self.controller.events).to(beEmpty())
+    }
+
+    func test_selectItem_whenReselectingSelectedItemInSingleSelection_callsSelectCallbacksAgain() {
+        subject.selectItem(at: IndexPath(item: 1, section: 0))
+        controller.events = []
+        subject.selectItem(at: IndexPath(item: 1, section: 0))
+
+        expect(self.subject.indexPathsForSelectedItems).to(equal([IndexPath(item: 1, section: 0)]))
+        expect(self.controller.events).to(equal(["shouldSelect 0.1", "didSelect 0.1"]))
     }
 }
