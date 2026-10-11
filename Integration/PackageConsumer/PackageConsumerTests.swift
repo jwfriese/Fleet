@@ -159,6 +159,22 @@ final class PackageConsumerTests: XCTestCase {
         XCTAssertTrue(storyboard.instantiateViewController(withIdentifier: "Detail") === replacement)
     }
 
+    func testStoryboardBindingsAreReleasedAndMetadataBundleIsExplicit() throws {
+        let storyboard = storyboard()
+        try storyboard.useBindingMetadata(forStoryboardNamed: "Consumer", in: Bundle(for: type(of: self)))
+        weak var weakController: UIViewController?
+        try autoreleasepool {
+            let controller = UIViewController()
+            weakController = controller
+            try storyboard.bind(viewController: controller, toIdentifier: "Detail")
+            XCTAssertTrue(storyboard.instantiateViewController(withIdentifier: "Detail") === controller)
+        }
+        XCTAssertNotNil(weakController)
+        storyboard.removeBindings()
+        XCTAssertNil(weakController)
+        XCTAssertFalse(storyboard.instantiateViewController(withIdentifier: "Detail") === weakController)
+    }
+
     func testStoryboardMockSuppressesProductionLifecycle() throws {
         let storyboard = storyboard()
         let mock = try storyboard.mockIdentifier("Detail", usingMockFor: LifecycleSpy.self)

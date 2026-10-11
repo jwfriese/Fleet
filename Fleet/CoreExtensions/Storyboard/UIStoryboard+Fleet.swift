@@ -2,35 +2,127 @@ import Foundation
 import UIKit
 import ObjectiveC
 
-@MainActor private var storyboardInstanceBindingMap = [String : StoryboardInstanceBinding]()
-@MainActor private var storyboardBindingIdentifierAssociationKey: UInt8 = 0
+private final class Box<T> {
+    let value: T
+    init(_ value: T) { self.value = value }
+}
+
+@MainActor private var storyboardInstanceBindingAssociationKey: UInt8 = 0
+
+/// Where a storyboard's compiled metadata is found: the storyboard's name and, optionally, the bundle holding it.
+private struct StoryboardMetadataIdentity: Equatable {
+    var name: String?
+    var bundle: Bundle?
+}
+
+@MainActor private var storyboardMetadataIdentityAssociationKey: UInt8 = 0
 
 extension UIStoryboard {
-    var storyboardBindingIdentifier: String? {
+    // Bindings live on the storyboard instance, so they (and the controllers bound to them) are
+    // released with it. Nothing is kept in process-wide storage between tests.
+    fileprivate var storyboardInstanceBinding: StoryboardInstanceBinding? {
         get {
-            return objc_getAssociatedObject(self, &storyboardBindingIdentifierAssociationKey) as? String
+            return objc_getAssociatedObject(self, &storyboardInstanceBindingAssociationKey) as? StoryboardInstanceBinding
         }
         set {
-            objc_setAssociatedObject(self, &storyboardBindingIdentifierAssociationKey,
+            objc_setAssociatedObject(self, &storyboardInstanceBindingAssociationKey,
                                      newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
         }
     }
-}
 
-extension UIStoryboard {
-    fileprivate func initializeStoryboardBindings() throws {
-        let storyboardName = self.value(forKey: "name") as! String
-        if storyboardBindingIdentifier == nil {
-            storyboardBindingIdentifier = storyboardName + "_" + UUID().uuidString
+    fileprivate var metadataIdentity: StoryboardMetadataIdentity {
+        get {
+            return (objc_getAssociatedObject(self, &storyboardMetadataIdentityAssociationKey) as? Box<StoryboardMetadataIdentity>)?.value
+                ?? StoryboardMetadataIdentity()
+        }
+        set {
+            objc_setAssociatedObject(self, &storyboardMetadataIdentityAssociationKey,
+                                     Box(newValue), objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
+        }
+    }
+
+    fileprivate func resolvedStoryboardName() -> String {
+        if let name = metadataIdentity.name {
+            return name
         }
 
-        if let storyboardBindingIdentifier = storyboardBindingIdentifier {
-            if storyboardInstanceBindingMap[storyboardBindingIdentifier] == nil {
-                let deserializer = StoryboardDeserializer()
-                let storyboardReference = try deserializer.deserializeStoryboard(withName: storyboardName)
-                storyboardInstanceBindingMap[storyboardBindingIdentifier] = StoryboardInstanceBinding(fromStoryboardName: storyboardName, storyboardReferenceMap: storyboardReference)
-            }
+        // UIStoryboard exposes no public accessor for its name; fall back to the KVC key it has always had.
+        if responds(to: NSSelectorFromString("name")), let name = value(forKey: "name") as? String {
+            return name
         }
+
+        let message = "Could not determine the name of this storyboard. Call useBindingMetadata(forStoryboardNamed:in:) with the storyboard's name before binding."
+        FleetError(Fleet.StoryboardError.internalInconsistency(message)).raise()
+        return ""
+    }
+
+    fileprivate func initializeStoryboardBindings() throws -> StoryboardInstanceBinding {
+        if let existing = storyboardInstanceBinding {
+            return existing
+        }
+
+        let storyboardName = resolvedStoryboardName()
+        let storyboardReference = try StoryboardDeserializer().deserializeStoryboard(withName: storyboardName, in: metadataIdentity.bundle)
+        let binding = StoryboardInstanceBinding(fromStoryboardName: storyboardName, storyboardReferenceMap: storyboardReference)
+        storyboardInstanceBinding = binding
+        return binding
+    }
+
+    /**
+     Names the compiled metadata that Fleet uses to validate this storyboard's bindings, instead of
+     inferring the storyboard's name and searching every loaded test bundle.
+
+     Call this before the first `bind` or `mockIdentifier` call. Use it when the same storyboard
+     name is compiled into more than one test bundle with different contents, or when the storyboard
+     lives in a bundle other than the loaded test bundles.
+
+     - parameters:
+        - name: The storyboard's name, as passed to `UIStoryboard(name:bundle:)`
+        - bundle: The bundle that holds `StoryboardInfo/<name>/Info.plist`, as copied by Fleet's
+          storyboard metadata script. Pass `nil` to search the loaded test bundles.
+
+     - throws:
+     A `FleetError` if bindings have already been made with different metadata.
+     */
+    public func useBindingMetadata(forStoryboardNamed name: String, in bundle: Bundle?) throws {
+        let identity = StoryboardMetadataIdentity(name: name, bundle: bundle)
+        if storyboardInstanceBinding != nil && identity != metadataIdentity {
+            let message = "Cannot change the binding metadata of storyboard '\(name)' after view controllers have been bound. Call removeBindings() first."
+            FleetError(Fleet.StoryboardError.internalInconsistency(message)).raise()
+        }
+        metadataIdentity = identity
+    }
+
+    /**
+     Removes every binding and mock registration made on this storyboard instance, releasing the
+     view controllers bound to it. Bindings belong to the storyboard instance they were made on, so
+     this does not affect other storyboards, including other instances with the same name.
+
+     Bindings are also released when the storyboard itself is deallocated. Call this from
+     `tearDown` (or `addTeardownBlock`) when the storyboard outlives a single test, for example
+     when it is stored in an `XCTestCase` property, since XCTest keeps test case instances alive
+     until the whole run finishes.
+     */
+    public func removeBindings() {
+        storyboardInstanceBinding?.clear()
+        storyboardInstanceBinding = nil
+    }
+
+    /**
+     Runs `body`, then removes this storyboard's bindings whether `body` returns or throws.
+     */
+    public func withBindings<T>(_ body: () throws -> T) rethrows -> T {
+        defer { removeBindings() }
+        return try body()
+    }
+
+    /**
+     Runs the asynchronous `body`, then removes this storyboard's bindings whether `body` returns,
+     throws, or is cancelled.
+     */
+    public func withBindings<T>(_ body: () async throws -> T) async rethrows -> T {
+        defer { removeBindings() }
+        return try await body()
     }
 
     /**
@@ -154,12 +246,8 @@ extension UIStoryboard {
             let message = "Attempted to bind a view controller whose view has already been loaded to storyboard identifier '\(identifier)'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."
             FleetError(Fleet.StoryboardError.invalidViewControllerState(message)).raise()
         }
-        try initializeStoryboardBindings()
-        if let storyboardBindingIdentifier = storyboardBindingIdentifier {
-            if let storyboardInstanceBinding = storyboardInstanceBindingMap[storyboardBindingIdentifier] {
-                try storyboardInstanceBinding.bind(viewController: viewController, toIdentifier: identifier)
-            }
-        }
+        let storyboardInstanceBinding = try initializeStoryboardBindings()
+        try storyboardInstanceBinding.bind(viewController: viewController, toIdentifier: identifier)
     }
 
     /**
@@ -186,13 +274,9 @@ extension UIStoryboard {
             let message = "Attempted to bind a view controller whose view has already been loaded to view controller identifier '\(identifier)' on storyboard '\(referencedStoryboardName)'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."
             FleetError(Fleet.StoryboardError.invalidViewControllerState(message)).raise()
         }
-        try initializeStoryboardBindings()
-        if let storyboardBindingIdentifier = storyboardBindingIdentifier {
-            if let storyboardInstanceBinding = storyboardInstanceBindingMap[storyboardBindingIdentifier] {
-                try storyboardInstanceBinding.bind(viewController: viewController, toIdentifier: identifier,
-                                                   forReferencedStoryboardWithName:referencedStoryboardName)
-            }
-        }
+        let storyboardInstanceBinding = try initializeStoryboardBindings()
+        try storyboardInstanceBinding.bind(viewController: viewController, toIdentifier: identifier,
+                                           forReferencedStoryboardWithName:referencedStoryboardName)
     }
 
     /**
@@ -216,12 +300,8 @@ extension UIStoryboard {
             let message = "Attempted to bind a view controller whose view has already been loaded to initial view controller of storyboard '\(referencedStoryboardName)'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."
             FleetError(Fleet.StoryboardError.invalidViewControllerState(message)).raise()
         }
-        try initializeStoryboardBindings()
-        if let storyboardBindingIdentifier = storyboardBindingIdentifier {
-            if let storyboardInstanceBinding = storyboardInstanceBindingMap[storyboardBindingIdentifier] {
-                try storyboardInstanceBinding.bind(viewController: viewController, asInitialViewControllerForReferencedStoryboardWithName: referencedStoryboardName)
-            }
-        }
+        let storyboardInstanceBinding = try initializeStoryboardBindings()
+        try storyboardInstanceBinding.bind(viewController: viewController, asInitialViewControllerForReferencedStoryboardWithName: referencedStoryboardName)
     }
 
     @objc nonisolated class func swizzleViewControllerInstantiationMethod() {
@@ -233,12 +313,8 @@ extension UIStoryboard {
     }
 
     @objc func fleet_instantiateViewController(withIdentifier identifier: String) -> UIViewController {
-        if let storyboardBindingIdentifier = storyboardBindingIdentifier {
-            if let storyboardInstanceBinding = storyboardInstanceBindingMap[storyboardBindingIdentifier] {
-                if let boundInstance = storyboardInstanceBinding.viewController(forIdentifier: identifier) {
-                    return boundInstance
-                }
-            }
+        if let boundInstance = storyboardInstanceBinding?.viewController(forIdentifier: identifier) {
+            return boundInstance
         }
 
         let viewController = fleet_instantiateViewController(withIdentifier: identifier)

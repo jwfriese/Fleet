@@ -93,3 +93,37 @@ Bind into a referenced storyboard:
 let corgi = CorgiViewController()
 try turtleStoryboard.bind(viewController: corgi, toIdentifier: "CorgiViewController", forReferencedStoryboardWithName: "CorgiStoryboard")
 ```
+
+### Binding lifetime
+
+Bindings and mocks belong to the `UIStoryboard` instance they were made on. They are released when that storyboard is deallocated, and a second storyboard with the same name never sees them. `XCTestCase` instances live until the whole run finishes, so a storyboard stored in a test property keeps its bound controllers alive; release them explicitly:
+
+```swift
+override func tearDown() async throws {
+    storyboard.removeBindings()
+    try await super.tearDown()
+}
+
+// Or scope them to a block (an async overload also cleans up on throw and cancellation):
+try storyboard.withBindings {
+    try storyboard.bind(viewController: controller, toIdentifier: "BoxTurtleViewController")
+    // ...
+}
+```
+
+`removeBindings()` affects only the storyboard it is called on. An Objective-C exception raised by a failing `bind` unwinds through Swift frames without releasing the references they held, so a controller passed to a rejected call may stay alive; construct controllers for failing calls inside an `autoreleasepool` only if that matters to your test, and do not rely on their release.
+
+### Choosing metadata explicitly
+
+Fleet validates identifiers against compiled storyboard metadata copied into the test bundle by the metadata script. By default it infers the storyboard's name and searches every loaded `.xctest` bundle: one match is used, identical copies in several bundles are accepted, and differing copies fail with an error naming each file. To avoid inference, or to read metadata from another bundle, name it before the first binding:
+
+```swift
+let storyboard = UIStoryboard(name: "Turtles", bundle: nil)
+try storyboard.useBindingMetadata(forStoryboardNamed: "Turtles", in: Bundle(for: MyTests.self))
+```
+
+A bundle without `StoryboardInfo/<name>/Info.plist`, or with an unreadable one, fails with a message naming the bundle or file.
+
+### Lifecycle suppression limits
+
+A mock suppresses `viewDidLoad`, `viewWillAppear(_:)`, `viewDidAppear(_:)`, `viewWillDisappear(_:)`, and `viewDidDisappear(_:)`. It does not stop initializers (`init(coder:)`, `init(nibName:bundle:)`, or designated initializers) from running, nor property initializers or `prepare(for:sender:)` on a source controller, so any side effects there still happen. `UICollectionViewController` subclasses cannot be mocked (see issue #23); mock a `UIViewController` subclass, or bind a real instance instead.

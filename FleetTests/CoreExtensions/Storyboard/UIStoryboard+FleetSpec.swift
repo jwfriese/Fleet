@@ -195,4 +195,154 @@ class UIStoryboard_FleetSpec: XCTestCase {
         let greenBoxTurtleViewController = turtleStoryboardTwo.instantiateViewController(withIdentifier: "BoxTurtleViewController")
         expect(greenBoxTurtleViewController).to(beIdenticalTo(mockBoxTurtleViewControllerGreen))
     }
+
+    // MARK: Binding lifetime
+
+    private func bindWeakly(to storyboard: UIStoryboard, identifier: String = "BoxTurtleViewController") -> WeakController {
+        let controller = BoxTurtleViewController()
+        try! storyboard.bind(viewController: controller, toIdentifier: identifier)
+        return WeakController(controller)
+    }
+
+    private struct WeakController {
+        weak var value: UIViewController?
+        init(_ value: UIViewController) { self.value = value }
+    }
+
+    func test_boundViewController_isReleasedWithItsStoryboard() {
+        var weakController: WeakController!
+        autoreleasepool {
+            let storyboard = UIStoryboard(name: "TurtlesAndFriendsStoryboard", bundle: nil)
+            weakController = bindWeakly(to: storyboard)
+            expect(weakController.value).toNot(beNil())
+        }
+        expect(weakController.value).to(beNil())
+    }
+
+    func test_boundMock_isReleasedWithItsStoryboard() {
+        weak var weakMock: BoxTurtleViewController?
+        autoreleasepool {
+            let storyboard = UIStoryboard(name: "TurtlesAndFriendsStoryboard", bundle: nil)
+            weakMock = try! storyboard.mockIdentifier("BoxTurtleViewController", usingMockFor: BoxTurtleViewController.self)
+            expect(weakMock).toNot(beNil())
+        }
+        expect(weakMock).to(beNil())
+    }
+
+    func test_removeBindings_releasesControllersAndRestoresStoryboardInstantiation() {
+        let weakController = bindWeakly(to: turtlesAndFriendsStoryboard)
+        turtlesAndFriendsStoryboard.removeBindings()
+
+        expect(weakController.value).to(beNil())
+        let instantiated = turtlesAndFriendsStoryboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")
+        expect(instantiated).toNot(beNil())
+    }
+
+    func test_removeBindings_onlyAffectsTheStoryboardItIsCalledOn() {
+        let other = UIStoryboard(name: "TurtlesAndFriendsStoryboard", bundle: nil)
+        let ownedWeak = bindWeakly(to: turtlesAndFriendsStoryboard)
+        let otherController = BoxTurtleViewController()
+        try! other.bind(viewController: otherController, toIdentifier: "BoxTurtleViewController")
+
+        turtlesAndFriendsStoryboard.removeBindings()
+
+        expect(ownedWeak.value).to(beNil())
+        expect(other.instantiateViewController(withIdentifier: "BoxTurtleViewController")).to(beIdenticalTo(otherController))
+    }
+
+    func test_sequentialStoryboardsWithTheSameName_doNotSeeEachOthersBindings() {
+        let first = UIStoryboard(name: "TurtlesAndFriendsStoryboard", bundle: nil)
+        let bound = BoxTurtleViewController()
+        try! first.bind(viewController: bound, toIdentifier: "BoxTurtleViewController")
+
+        let second = UIStoryboard(name: "TurtlesAndFriendsStoryboard", bundle: nil)
+        expect(second.instantiateViewController(withIdentifier: "BoxTurtleViewController")).toNot(beIdenticalTo(bound))
+    }
+
+    func test_withBindings_releasesControllersAfterNormalCompletion() {
+        var weakController: WeakController!
+        turtlesAndFriendsStoryboard.withBindings {
+            weakController = bindWeakly(to: turtlesAndFriendsStoryboard)
+            expect(weakController.value).toNot(beNil())
+        }
+        expect(weakController.value).to(beNil())
+    }
+
+    func test_withBindings_releasesControllersWhenBodyThrows() {
+        struct Failure: Error {}
+        var weakController: WeakController!
+        do {
+            try turtlesAndFriendsStoryboard.withBindings {
+                weakController = bindWeakly(to: turtlesAndFriendsStoryboard)
+                throw Failure()
+            }
+            XCTFail("Expected the body's error to propagate")
+        } catch {
+            expect(error is Failure).to(beTrue())
+        }
+        expect(weakController.value).to(beNil())
+    }
+
+    func test_withBindings_releasesControllersWhenAsyncBodyIsCancelled() async {
+        let storyboard = turtlesAndFriendsStoryboard!
+        var weakController: WeakController?
+        var sawCancellation = false
+        let task = Task { @MainActor in
+            do {
+                try await storyboard.withBindings {
+                    weakController = self.bindWeakly(to: storyboard)
+                    // The task is cancelled before it first runs, so this throws immediately.
+                    try await Task.sleep(nanoseconds: 30_000_000_000)
+                }
+            } catch is CancellationError {
+                sawCancellation = true
+            } catch {}
+        }
+        task.cancel()
+        await task.value
+
+        expect(sawCancellation).to(beTrue())
+        expect(weakController).toNot(beNil())
+        expect(weakController?.value).to(beNil())
+    }
+
+    func test_failedBinding_recordsNothingAndLeavesEarlierBindingsOwnedByTheStoryboard() {
+        // An Objective-C exception unwinding through Swift frames does not release the references
+        // they held, so the rejected controller itself is not asserted on here; the storyboard's own
+        // registrations are.
+        let weakController = bindWeakly(to: turtlesAndFriendsStoryboard)
+        let rejected = BoxTurtleViewController()
+        expect { try self.turtlesAndFriendsStoryboard.bind(viewController: rejected, toIdentifier: "WatermelonViewController") }.to(
+            raiseException(named: "Fleet.StoryboardError")
+        )
+        expect(self.turtlesAndFriendsStoryboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")).toNot(beIdenticalTo(rejected))
+
+        turtlesAndFriendsStoryboard.removeBindings()
+        expect(weakController.value).to(beNil())
+    }
+
+    // MARK: Explicit metadata
+
+    func test_useBindingMetadata_withExplicitNameAndBundle_bindsUsingThatMetadata() {
+        let storyboard = UIStoryboard(name: "TurtlesAndFriendsStoryboard", bundle: nil)
+        try! storyboard.useBindingMetadata(forStoryboardNamed: "TurtlesAndFriendsStoryboard", in: Bundle(for: type(of: self)))
+        let controller = BoxTurtleViewController()
+        try! storyboard.bind(viewController: controller, toIdentifier: "BoxTurtleViewController")
+        expect(storyboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")).to(beIdenticalTo(controller))
+    }
+
+    func test_useBindingMetadata_withBundleLackingMetadata_raisesActionableException() {
+        let storyboard = UIStoryboard(name: "TurtlesAndFriendsStoryboard", bundle: nil)
+        try! storyboard.useBindingMetadata(forStoryboardNamed: "TurtlesAndFriendsStoryboard", in: Bundle(for: UIView.self))
+        expect { try storyboard.bind(viewController: BoxTurtleViewController(), toIdentifier: "BoxTurtleViewController") }.to(
+            raiseException(named: "Fleet.StoryboardError")
+        )
+    }
+
+    func test_useBindingMetadata_afterBindingWithDifferentIdentity_raisesException() {
+        try! turtlesAndFriendsStoryboard.bind(viewController: BoxTurtleViewController(), toIdentifier: "BoxTurtleViewController")
+        expect { try self.turtlesAndFriendsStoryboard.useBindingMetadata(forStoryboardNamed: "Other", in: nil) }.to(
+            raiseException(named: "Fleet.StoryboardError")
+        )
+    }
 }
