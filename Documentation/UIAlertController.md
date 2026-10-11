@@ -1,24 +1,26 @@
-## UIAlertController
+# UIAlertController
 
-Unit testing the behavior of buttons on UIAlertControllers through UIKit is ordinarily a challenge because of how accessing button directly can be.
+Platforms: iOS, tvOS
 
-Fleet aims to erase this pain by providing a way to "tap" on alert actions in-test to fire their associated handlers.
+## Methods
 
-Suppose you have an alert controller in code that is set up like this:
+### `tapAlertAction(withTitle:)`
+
 ```swift
-let alertController = UIAlertController(title: "Some Alert", message: "This is a regular old alert", preferredStyle: .alert)
-let someAction = UIAlertAction(title: "Some Action", style: .default) { action in
-    // Do some stuff in here
-}
-
-alertController.addAction(someAction)
+func tapAlertAction(withTitle title: String)
 ```
 
-With Fleet, you can unit test the stuff that happens in that action much more easily than before. With one simple line of code, that action's handler will be fired:
+Fires the handler of the alert action whose title equals `title`.
+
+**Raises** a `Fleet.AlertError` (`FleetError`) if the alert has no action with that title.
+
+## Example
+
 ```swift
-try! alertController.tapAlertAction(withTitle: "Some Action")
+let alert = UIAlertController(title: "Some Alert", message: nil, preferredStyle: .alert)
+alert.addAction(UIAlertAction(title: "Some Action", style: .default) { _ in
+    // handler under test
+})
 
-// Now you can make any assertions you'd like on the behavior of that action.
+alert.tapAlertAction(withTitle: "Some Action")
 ```
-
-The `tapAlertAction(withTitle:)` method throws an error if no action with the given title exists on the alert.

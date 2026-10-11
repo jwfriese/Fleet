@@ -1,70 +1,95 @@
-## UIStoryboard
+# UIStoryboard
 
-### Mocking view controllers on storyboards
+Platforms: iOS, tvOS
 
-Storyboards can significantly speed up development of your iOS app. Unit testing individual components is challenging, though, because controlling for the integration points of all those components (particularly connections through segues) is not readily done using UIKit's interface. Fleet helps you solve this problem in your tests by allowing your test code to mock out the elements bound to a storyboard's identifiers.
+Storyboard helpers replace the view controllers a storyboard returns, so one controller can be tested apart from its siblings. Call them before the storyboard instantiates the identifier.
 
-For example, suppose I have a storyboard with an initial view controller of type `ViewControllerA`. It has a button that triggers a segue to a view controller of type `ViewControllerB`. `ViewControllerB` does a bunch of stuff in its `viewDidLoad` method (e.g. network calls, creating subviews, etc.) that I don't care to allow under test. I still, however, want to test that the transitioning occurs when I fire the segue. The following code accomplishes this:
+All methods are `throws`. Use `try`. Errors are `Fleet.StoryboardError` values that describe what is missing from the storyboard.
+
+## Methods
+
+| Method | Summary |
+| --- | --- |
+| [`mockIdentifier(_:usingMockFor:)`](#mockidentifierusingmockfor) | Mocks a local view controller. |
+| [`mockIdentifier(_:forReferencedStoryboardWithName:usingMockFor:)`](#mockidentifierforreferencedstoryboardwithnameusingmockfor) | Mocks a view controller in a referenced storyboard. |
+| [`mockInitialViewController(forReferencedStoryboardWithName:usingMockFor:)`](#mockinitialviewcontrollerforreferencedstoryboardwithnameusingmockfor) | Mocks the initial controller of a referenced storyboard. |
+| [`bind(viewController:toIdentifier:)`](#bindviewcontrollertoidentifier) | Returns a given instance for a local identifier. |
+| [`bind(viewController:toIdentifier:forReferencedStoryboardWithName:)`](#bindviewcontrollertoidentifierforreferencedstoryboardwithname) | Returns a given instance for an identifier in a referenced storyboard. |
+| [`bind(viewController:asInitialViewControllerForReferencedStoryboardWithName:)`](#bindviewcontrollerasinitialviewcontrollerforreferencedstoryboardwithname) | Returns a given instance as a referenced storyboard's initial controller. |
+
+## Mocking
+
+A mock is a full instance of the class with empty `viewDidLoad`, `viewWillAppear(_:)`, `viewDidAppear(_:)`, `viewWillDisappear(_:)`, and `viewDidDisappear(_:)`. Its other properties and methods are untouched.
+
+### `mockIdentifier(_:usingMockFor:)`
+
+```swift
+func mockIdentifier<T>(_ identifier: String, usingMockFor classToMock: T.Type) throws -> T where T: UIViewController
+```
+
+Returns a mock the storyboard supplies for `identifier`.
+
+### `mockIdentifier(_:forReferencedStoryboardWithName:usingMockFor:)`
+
+```swift
+func mockIdentifier<T>(_ identifier: String, forReferencedStoryboardWithName referencedStoryboardName: String, usingMockFor classToMock: T.Type) throws -> T where T: UIViewController
+```
+
+Same, for an identifier reached through an external storyboard reference.
+
+### `mockInitialViewController(forReferencedStoryboardWithName:usingMockFor:)`
+
+```swift
+func mockInitialViewController<T>(forReferencedStoryboardWithName name: String, usingMockFor classToMock: T.Type) throws -> T where T: UIViewController
+```
+
+Same, for the initial view controller of a referenced storyboard.
+
+## Binding
+
+Binding supplies your own instance rather than a mock. It works for any controller reference, including embedded ones.
+
+### `bind(viewController:toIdentifier:)`
+
+```swift
+func bind(viewController: UIViewController, toIdentifier identifier: String) throws
+```
+
+### `bind(viewController:toIdentifier:forReferencedStoryboardWithName:)`
+
+```swift
+func bind(viewController: UIViewController, toIdentifier identifier: String, forReferencedStoryboardWithName referencedStoryboardName: String) throws
+```
+
+### `bind(viewController:asInitialViewControllerForReferencedStoryboardWithName:)`
+
+```swift
+func bind(viewController: UIViewController, asInitialViewControllerForReferencedStoryboardWithName referencedStoryboardName: String) throws
+```
+
+## Examples
+
+Mock a destination reached by segue:
 
 ```swift
 let storyboard = UIStoryboard(name: "MyStoryboard", bundle: nil)
-let mockControllerB = try! storyboard.mockIdentifier("ViewControllerB", usingMockFor: ViewControllerB.self)
-
-// Hold onto 'mockControllerB' and write the test code that would lead to ViewControllerB's presentation.
-// Then test that it got presented however your test code normally accomplishes this.
+let mockB = try storyboard.mockIdentifier("ViewControllerB", usingMockFor: ViewControllerB.self)
+// Trigger the segue, then assert mockB was presented.
 ```
 
-In the above code `mockControllerB` will be returned by the storyboard anytime code executes that tries to grab the storyboard identifier "ViewControllerB". The mock returned is a full-fledged `ViewControllerB` object with all that class's properties, functions, and behavior EXCEPT for all its UIKit view controller lifecyle code. That is, when `mockControllerB` is presented in code, it runs empty implementations of `viewDidLoad`, `viewWillAppear(_:)`, `viewDidAppear(_:)`, `viewWillDisappear(_:)`, and `viewDidDisappear(_:)`.
-
-This mocking allows true unit testing of an individual view controller within a storyboard. All that view controller's interactions with its sibling elements are untouched. Only the _behavior_ of those sibling elements are changed -- something that was already abstracted to our view controller under test anyway.
-
-There are three functions on the mocking interface:
+Bind an instance:
 
 ```swift
-// Mocks the identifier of a local view controller on a storyboard
-let _ = try turtlesAndFriendsStoryboard.mockIdentifier("SomeIdentifier", usingMockFor: SomeViewController.self)
+let boxTurtle = BoxTurtleViewController()
+try turtleStoryboard.bind(viewController: boxTurtle, toIdentifier: "BoxTurtleViewController")
 
-// Mocks an identifier of a view controller originating from a local external storyboard reference on a storyboard
-let _ = try storyboard.mockIdentifier("SomeOtherIdentifier", forReferencedStoryboardWithName: "SomeOtherStoryboard", usingMockFor: SomeOtherViewController.self)
-
-// Mocks the initial view controller originating from a local external storyboard reference on a storyboard
-let _ = try storyboard.mockInitialViewController(forReferencedStoryboardWithName: "SomeOtherStoryboard", usingMockFor: UIViewController.self)
+let result = turtleStoryboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")
+// result === boxTurtle
 ```
 
-### Binding to storyboard elements
-
-Fleet allows you to bind specific instances to view controller references, and even storyboard references.
-
-Suppose there is a storyboard called "TurtlesStoryboard", and it has a view controller on it with Storyboard Id "BoxTurtleViewController". You can use `bind(viewController:toIdentifier:)` to control the instance created by the storyboard. For example,
+Bind into a referenced storyboard:
 
 ```swift
-let mockBoxTurtleViewController = BoxTurtleViewController()
-try! turtleStoryboard.bind(viewController: mockBoxTurtleViewController, toIdentifier: "BoxTurtleViewController")
-
-let returnedBoxTurtleViewController = turtleStoryboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")
-
-// At this point, returnedBoxTurtleViewController will be the same instance as mockBoxTurtleViewController
+let corgi = CorgiViewController()
+try turtleStoryboard.bind(viewController: corgi, toIdentifier: "CorgiViewController", forReferencedStoryboardWithName: "CorgiStoryboard")
 ```
-
-This technique works for any reference to a view controller, even embedded view controllers.
-
-#### Storyboard references
-
-Fleet's binding supports storyboard references as well. Suppose TurtlesStoryboard has a reference to another storyboard, called "PuppiesStoryboard". And suppose that TurtlesStoryboard segues into a PuppiesStoryboard view controller with the Storyboard Id "CorgiViewController". We can bind a view controller instance to this storyboard reference by using `bind(viewController:toIdentifier:forReferencedStoryboardWithName:)`. For example,
-
-```swift
-let mockCorgiViewController = CorgiViewController()
-try! turtleStoryboard.bind(viewController: mockCorgiViewController, toIdentifier: "CorgiViewController", forReferencedStoryboardWithName: "CorgiStoryboard")
-
-let boxTurtleViewController = turtleStoryboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")
-
-// Do some code that expects to trigger a segue to present the CorgiViewController on the BoxTurtleViewController
-
-expect(boxTurtleViewController.presentedViewController).to(beIdenticalTo(mockCrabViewController))
-```
-
-If you would like to bind to the initial view controller of a storyboard reference, use `bind(viewController:asInitialViewControllerForReferencedStoryboardWithName:)`.
-
-### Error messaging
-
-Notice that each call to a storyboard helper method above follows a `try!`. All storyboard helper methods throw descriptive errors that inform you of insufficient set-up of your storyboards. The intention is that the error messages make apparent the changes required in the production code to satisfy the test's expectations of the storyboard under test.
