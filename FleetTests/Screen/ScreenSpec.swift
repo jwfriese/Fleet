@@ -90,6 +90,107 @@ class ScreenSpec: XCTestCase {
         expect(screen.topmostViewController).to(beIdenticalTo(viewControllerToShow))
     }
 
+    func test_topmostContainer_whenNavigationControllerIsRoot_returnsNavigationControllerWhileTopmostViewControllerReturnsVisibleChild() {
+        let window = UIWindow()
+        let navigationController = UINavigationController(rootViewController: UIViewController())
+        window.rootViewController = navigationController
+        window.makeKeyAndVisible()
+        let pushed = UIViewController()
+        navigationController.pushViewController(pushed, animated: false)
+
+        let screen = Screen(forWindow: window)
+
+        expect(screen.topmostContainer).to(beIdenticalTo(navigationController))
+        expect(screen.topmostViewController).to(beIdenticalTo(pushed))
+    }
+
+    func test_topmostContainer_whenNavigationControllerIsEmpty_returnsTheNavigationControllerForBoth() {
+        let window = UIWindow()
+        let navigationController = UINavigationController()
+        window.rootViewController = navigationController
+        window.makeKeyAndVisible()
+
+        let screen = Screen(forWindow: window)
+
+        expect(screen.topmostContainer).to(beIdenticalTo(navigationController))
+        expect(screen.topmostViewController).to(beIdenticalTo(navigationController))
+    }
+
+    func test_topmostViewController_whenTabBarControllerIsRoot_returnsSelectedViewController() {
+        let window = UIWindow()
+        let first = UIViewController()
+        let second = UIViewController()
+        let tabBarController = UITabBarController()
+        tabBarController.viewControllers = [first, second]
+        window.rootViewController = tabBarController
+        window.makeKeyAndVisible()
+        tabBarController.selectedIndex = 1
+
+        let screen = Screen(forWindow: window)
+
+        expect(screen.topmostViewController).to(beIdenticalTo(second))
+        expect(screen.topmostContainer).to(beIdenticalTo(tabBarController))
+    }
+
+    func test_topmostViewController_whenTabBarControllerHasNoViewControllers_returnsTheTabBarController() {
+        let window = UIWindow()
+        let tabBarController = UITabBarController()
+        window.rootViewController = tabBarController
+        window.makeKeyAndVisible()
+
+        let screen = Screen(forWindow: window)
+
+        expect(screen.topmostViewController).to(beIdenticalTo(tabBarController))
+    }
+
+    func test_topmostViewController_whenTabContainsNavigationController_returnsNavigationTopController() {
+        let window = UIWindow()
+        let root = UIViewController()
+        let navigationController = UINavigationController(rootViewController: root)
+        let tabBarController = UITabBarController()
+        tabBarController.viewControllers = [navigationController]
+        window.rootViewController = tabBarController
+        window.makeKeyAndVisible()
+        let pushed = UIViewController()
+        navigationController.pushViewController(pushed, animated: false)
+
+        let screen = Screen(forWindow: window)
+
+        expect(screen.topmostViewController).to(beIdenticalTo(pushed))
+        expect(screen.topmostContainer).to(beIdenticalTo(tabBarController))
+    }
+
+    func test_topmostViewController_whenNavigationControllerIsPresentedFromTab_descendsIntoPresentedContainer() {
+        let window = UIWindow()
+        let tabBarController = UITabBarController()
+        tabBarController.viewControllers = [UIViewController()]
+        window.rootViewController = tabBarController
+        window.makeKeyAndVisible()
+
+        let modalRoot = UIViewController()
+        let modalNavigation = UINavigationController(rootViewController: modalRoot)
+        tabBarController.present(modalNavigation, animated: false, completion: nil)
+
+        let screen = Screen(forWindow: window)
+
+        expect(screen.topmostContainer).to(beIdenticalTo(modalNavigation))
+        expect(screen.topmostViewController).to(beIdenticalTo(modalRoot))
+    }
+
+    func test_topmostViewController_whenNavigationControllerPresentsDirectly_returnsPresentedController() {
+        let window = UIWindow()
+        let navigationController = UINavigationController(rootViewController: UIViewController())
+        window.rootViewController = navigationController
+        window.makeKeyAndVisible()
+        let presented = UIViewController()
+        navigationController.present(presented, animated: false, completion: nil)
+
+        let screen = Screen(forWindow: window)
+
+        expect(screen.topmostViewController).to(beIdenticalTo(presented))
+        expect(screen.topmostContainer).to(beIdenticalTo(presented))
+    }
+
     func test_presentedAlert_whenNoAlertIsPresented_returnsNil() {
         let storyboard = UIStoryboard.init(name: "TurtlesAndFriendsStoryboard", bundle: nil)
         let viewControllerThatPresentsAlerts = storyboard.instantiateViewController(withIdentifier: "SpottedTurtleViewController") as! SpottedTurtleViewController

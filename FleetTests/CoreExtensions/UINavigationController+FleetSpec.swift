@@ -236,6 +236,47 @@ class UINavigationController_FleetSpec: XCTestCase {
         expect(navigationController.topViewController).to(beIdenticalTo(root))
     }
 
+    fileprivate class RecordingDelegate: NSObject, UINavigationControllerDelegate {
+        var events: [String] = []
+        func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+            events.append("willShow")
+        }
+        func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
+            events.append("didShow")
+        }
+    }
+
+    func test_pushViewController_notifiesDelegateInOrder() {
+        let navigationController = UINavigationController(rootViewController: UIViewController())
+        let window = UIWindow()
+        window.rootViewController = navigationController
+        window.makeKeyAndVisible()
+        let delegate = RecordingDelegate()
+        navigationController.delegate = delegate
+
+        navigationController.pushViewController(UIViewController(), animated: true)
+
+        // UIKit delivers these callbacks after the call returns for a non-animated transition in
+        // the hosted test window, so wait for them rather than asserting immediately.
+        expect(delegate.events).toEventually(equal(["willShow", "didShow"]))
+    }
+
+    func test_popViewController_notifiesDelegateInOrder() {
+        let navigationController = UINavigationController(rootViewController: UIViewController())
+        let window = UIWindow()
+        window.rootViewController = navigationController
+        window.makeKeyAndVisible()
+        navigationController.pushViewController(UIViewController(), animated: false)
+        let delegate = RecordingDelegate()
+        navigationController.delegate = delegate
+
+        navigationController.popViewController(animated: true)
+
+        // UIKit delivers these callbacks after the call returns for a non-animated transition in
+        // the hosted test window, so wait for them rather than asserting immediately.
+        expect(delegate.events).toEventually(equal(["willShow", "didShow"]))
+    }
+
     func test_popViewController_whenOnlyRootIsInStack_returnsNilAndPreservesRoot() {
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
@@ -279,6 +320,34 @@ class UINavigationController_FleetSpec: XCTestCase {
 
         expect(popped ?? []).to(beEmpty())
         expect(navigationController.viewControllers).to(beEmpty())
+    }
+
+    func test_popToViewController_whenAlreadyTop_returnsNoControllers() {
+        let root = UIViewController()
+        let navigationController = UINavigationController(rootViewController: root)
+        let window = UIWindow()
+        window.rootViewController = navigationController
+        window.makeKeyAndVisible()
+
+        let popped = navigationController.popToViewController(root, animated: true)
+
+        expect(popped ?? []).to(beEmpty())
+        expect(navigationController.viewControllers).to(equal([root]))
+    }
+
+    func test_pushViewController_repeatedPushesBuildStackInOrder() {
+        let root = UIViewController()
+        let navigationController = UINavigationController(rootViewController: root)
+        let window = UIWindow()
+        window.rootViewController = navigationController
+        window.makeKeyAndVisible()
+        let one = UIViewController()
+        let two = UIViewController()
+
+        navigationController.pushViewController(one, animated: true)
+        navigationController.pushViewController(two, animated: true)
+
+        expect(navigationController.viewControllers).to(equal([root, one, two]))
     }
 
     func test_navigationControllerWithSegueInViewDidLoad_segueHappensAndResultIsImmediatelyVisible() {

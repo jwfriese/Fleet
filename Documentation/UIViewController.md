@@ -29,3 +29,14 @@ expect(top.presentingViewController).toEventually(beIdenticalTo(bottom))
 bottom.dismiss(animated: true, completion: nil)
 expect(bottom.presentedViewController).toEventually(beNil())
 ```
+
+## Finding what is on screen
+
+`FLTScreen` has two lookups with distinct meanings:
+
+- `topmostViewController` is the **visible content**. Starting at the window's root, it follows presentations, then descends into a navigation controller's `topViewController` and a tab bar controller's `selectedViewController`, repeating until neither applies. An empty navigation controller or tab bar controller is returned itself.
+- `topmostContainer` is the end of the **presentation chain** without descending into navigation or tab children, so it returns the `UINavigationController` or `UITabBarController` that hosts the visible content.
+
+Split view controllers and custom container controllers are **not** traversed: they are returned as they are, and their children must be reached explicitly.
+
+For waiting on presentation and dismissal state, see the behavior notes above.
