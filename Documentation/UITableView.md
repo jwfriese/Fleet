@@ -55,6 +55,26 @@ Like `fetchCell(at:)`, cast to `T`. Unlike `as!`, a failed cast describes the fo
 
 iOS only.
 
+#### Selection contract
+`selectRow(at:)` follows this order in single-selection mode: `willSelectRowAt`, `willDeselectRowAt` (previous row),
+`didDeselectRowAt`, `didSelectRowAt`. Delegate methods that are not implemented are skipped.
+- If `willSelectRowAt` returns `nil`, nothing changes (no deselection, no selection, no notification).
+- A redirected index path is validated before dispatch; a nonexistent one raises and changes nothing.
+- If `willDeselectRowAt` returns `nil`, no deselect callback or notification is sent for that row.
+- `UITableView.selectionDidChangeNotification` is posted with the table view as its object after each selection or deselection.
+- Tapping the already selected row in single-selection mode reports select callbacks again and leaves it selected.
+- With `allowsMultipleSelection` (or `allowsMultipleSelectionDuringEditing` while editing), other rows stay selected and
+tapping a selected row deselects it.
+- While `isEditing`, `allowsSelectionDuringEditing` governs selection instead of `allowsSelection`.
+
+Not simulated: hit testing, highlighting (`shouldHighlightRowAt`), scrolling, and cell editing controls. Callback order
+is derived from UIKit's documented behavior and verified by Fleet's own tests, not by physical touches.
+
+### Fetching a cell
+`fetchCell(at:)` returns a *configured* cell: it asks the data source for one (`tableView(_:cellForRowAt:)`), so it is not
+necessarily the instance the table view displays. Use `fetchDisplayedCell(at:)` / `fetchDisplayedCell(at:asType:)` to get
+the displayed instance (`cellForRow(at:)`). It raises if the row is offscreen or not yet laid out (call `layoutIfNeeded()` first).
+
 ```swift
 @discardableResult
 func performContextualAction(withTitle title: String, edge: SwipeActionEdge, at indexPath: IndexPath, completionTimeout: TimeInterval = 2) -> Bool

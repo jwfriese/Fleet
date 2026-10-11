@@ -13,6 +13,7 @@ extension Fleet {
         case ambiguousContextualAction(at: IndexPath, edge: String, title: String, matchCount: Int)
         case contextualActionIndexOutOfRange(at: IndexPath, edge: String, index: Int, count: Int)
         case contextualActionDidNotComplete(at: IndexPath, edge: String, title: String?, timeout: TimeInterval)
+        case cellNotDisplayed(at: IndexPath)
         case mismatchedCellType(at: IndexPath, foundType: AnyClass, requestedType: AnyClass)
 
         var errorMessage: String {
@@ -39,6 +40,7 @@ extension Fleet {
                 return "Row \(indexPath.row) in section \(indexPath.section) has \(count) \(edge) contextual actions; no action at index \(index)."
             case .contextualActionDidNotComplete(let indexPath, let edge, let title, let timeout):
                 return "The \(edge) contextual action '\(title ?? "(untitled)")' at row \(indexPath.row) in section \(indexPath.section) did not call its completion handler within \(timeout) seconds."
+        case cellNotDisplayed(at: IndexPath)
             case .mismatchedCellType(let indexPath, let foundType, let requestedType):
                 return "Cell at row \(indexPath.row) in section \(indexPath.section) is of type `\(foundType)` (wanted `\(requestedType)`)."
             }

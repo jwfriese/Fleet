@@ -42,6 +42,7 @@ class UITableView_FetchCellSpec: XCTestCase {
         subject.reloadData()
 
         try! Test.embedViewIntoMainApplicationWindow(subject)
+        subject.frame = CGRect(x: 0, y: 0, width: 320, height: 480)
     }
 
     func test_fetchCell_whenTheCellExists_returnsTheCell() {
@@ -107,6 +108,55 @@ class UITableView_FetchCellSpec: XCTestCase {
 
     func test_fetchCellAsType_whenCellAtIndexPathIsNotOfRequestedType_raisesException() {
         expect { self.subject.fetchCell(at: IndexPath(row: 0, section: 0), asType: TestTableViewCell.self)  }.to(
+            raiseException()
+        )
+    }
+
+    func test_fetchDisplayedCell_returnsTheInstanceTheTableViewDisplays() {
+        subject.layoutIfNeeded()
+        let displayed = subject.fetchDisplayedCell(at: IndexPath(row: 0, section: 0))
+        expect(displayed).to(beIdenticalTo(subject.cellForRow(at: IndexPath(row: 0, section: 0))))
+        expect(self.subject.fetchDisplayedCell(at: IndexPath(row: 0, section: 0))).to(beIdenticalTo(displayed))
+    }
+
+    func test_fetchCell_returnsAConfiguredCellDistinctFromTheDisplayedCell() {
+        subject.layoutIfNeeded()
+        let displayed = subject.fetchDisplayedCell(at: IndexPath(row: 0, section: 0))
+        let configured = subject.fetchCell(at: IndexPath(row: 0, section: 0))
+        expect(configured).toNot(beIdenticalTo(displayed))
+    }
+
+    func test_fetchDisplayedCell_whenRowIsNotDisplayed_raisesException() {
+        // Rows of a table view whose frame is empty are never displayed.
+        subject.frame = .zero
+        subject.layoutIfNeeded()
+        expect { self.subject.fetchDisplayedCell(at: IndexPath(row: 1, section: 0)) }.to(
+            raiseException(named: "Fleet.TableViewError", reason: "Cell at row 1 in section 0 is not currently displayed by the table view.", userInfo: nil, closure: nil)
+        )
+    }
+
+    func test_fetchDisplayedCell_whenIndexPathIsInvalid_raisesException() {
+        subject.layoutIfNeeded()
+        expect { self.subject.fetchDisplayedCell(at: IndexPath(row: 0, section: 1)) }.to(
+            raiseException(named: "Fleet.TableViewError", reason: "Table view has no section 1.", userInfo: nil, closure: nil)
+        )
+        expect { self.subject.fetchDisplayedCell(at: IndexPath(row: 2, section: 0)) }.to(
+            raiseException(named: "Fleet.TableViewError", reason: "Table view has no row 2 in section 0.", userInfo: nil, closure: nil)
+        )
+    }
+
+    func test_fetchDisplayedCell_whenNoDataSource_raisesException() {
+        subject.dataSource = nil
+        expect { self.subject.fetchDisplayedCell(at: IndexPath(row: 0, section: 0)) }.to(
+            raiseException(named: "Fleet.TableViewError", reason: "Data source required to fetch displayed cells.", userInfo: nil, closure: nil)
+        )
+    }
+
+    func test_fetchDisplayedCellAsType_returnsTypedCellOrRaisesOnMismatch() {
+        subject.layoutIfNeeded()
+        let typed = subject.fetchDisplayedCell(at: IndexPath(row: 1, section: 0), asType: TestTableViewCell.self)
+        expect(typed).to(beIdenticalTo(subject.cellForRow(at: IndexPath(row: 1, section: 0))))
+        expect { self.subject.fetchDisplayedCell(at: IndexPath(row: 0, section: 0), asType: TestTableViewCell.self) }.to(
             raiseException()
         )
     }
