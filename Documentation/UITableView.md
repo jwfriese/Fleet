@@ -1,6 +1,6 @@
 # UITableView
 
-Platforms: `fetchCell` and `selectRow`: iOS, tvOS. `selectCellAction`: iOS only.
+Platforms: `fetchCell` and `selectRow`: iOS, tvOS. `performContextualAction`: iOS only.
 
 All methods raise a `Fleet.TableViewError` (`FleetError`) on failure.
 
@@ -11,7 +11,8 @@ All methods raise a `Fleet.TableViewError` (`FleetError`) on failure.
 | [`selectRow(at:)`](#selectrowat) | Selects a row as a user would, with delegate callbacks and notifications. |
 | [`fetchCell(at:)`](#fetchcellat) | Returns the cell from the data source. |
 | [`fetchCell(at:asType:)`](#fetchcellatastype) | Returns the cell cast to a `UITableViewCell` subclass. |
-| [`selectCellAction(withTitle:at:)`](#selectcellactionwithtitleat) | Runs a custom edit action on a row. |
+| [`performContextualAction(withTitle:edge:at:completionTimeout:)`](#performcontextualaction) | Runs a leading or trailing swipe action by title (iOS only). |
+| [`performContextualAction(atIndex:edge:at:completionTimeout:)`](#performcontextualaction) | Runs a leading or trailing swipe action by index (iOS only). |
 
 ### `selectRow(at:)`
 
@@ -50,15 +51,47 @@ Like `fetchCell(at:)`, cast to `T`. Unlike `as!`, a failed cast describes the fo
 
 **Raises** in the cases above, or if the cell is not a `T`.
 
-### `selectCellAction(withTitle:at:)`
+### `performContextualAction`
+
+iOS only.
 
 ```swift
-func selectCellAction(withTitle title: String, at indexPath: IndexPath)
+@discardableResult
+func performContextualAction(withTitle title: String, edge: SwipeActionEdge, at indexPath: IndexPath, completionTimeout: TimeInterval = 2) -> Bool
+@discardableResult
+func performContextualAction(atIndex index: Int, edge: SwipeActionEdge, at indexPath: IndexPath, completionTimeout: TimeInterval = 2) -> Bool
 ```
 
-Runs the custom edit action whose title equals `title`. Calls `tableView(_:willBeginEditingRowAt:)` and `tableView(_:didEndEditingRowAt:)`, and the action's handler.
+Fleet invokes `UIContextualAction`s that your table view delegate vends from
+`tableView(_:leadingSwipeActionsConfigurationForRowAt:)` and
+`tableView(_:trailingSwipeActionsConfigurationForRowAt:)`:
+```swift
+let performed = tableView.performContextualAction(withTitle: "Archive", edge: .trailing, at: indexPath)
+tableView.performContextualAction(atIndex: 0, edge: .leading, at: indexPath)
+```
 
-**Raises** if the row does not exist, does not allow editing, or has no action with that title.
+Fleet asks the delegate for the configuration and calls the action's public `handler` exactly once,
+passing the row's cell (displayed, or built by the data source if offscreen) as the source view. No
+private API or runtime hook is involved, so any `UIContextualAction` the delegate returns works; there is no
+Fleet-specific construction or registration.
+
+What this establishes: the delegate vends that action for that row and edge, the data source allows editing
+the row, and the handler runs and calls its completion closure. It does not prove the action is reachable by a
+physical swipe, hit testing, or accessibility, and it does not render swipe buttons or perform the action's
+default full-swipe behavior. `tableView(_:willBeginEditingRowAt:)` is called before the handler and
+`tableView(_:didEndEditingRowAt:)` after completion.
+
+- The return value is the `Bool` the handler passed to its completion closure (`false` means the action
+  reports that it did nothing, like a refused action in UIKit).
+- Handlers may complete asynchronously. Fleet runs the run loop until completion or `completionTimeout`
+  (default 2 seconds). A handler that never completes raises an error after the timeout; a second
+  completion call is ignored. `didEndEditingRowAt` is not called after a timeout.
+- Selecting by title requires exactly one match on that edge. Zero matches, or duplicate titles (reported
+  with the match count) raise an error; use `atIndex:` to choose between duplicates or untitled actions.
+- Errors are raised for: missing data source or delegate, a delegate that does not implement the edge's method,
+  a nonexistent section or row, a data source whose `tableView(_:canEditRowAt:)` returns `false`, a
+  `nil`/empty configuration, an out-of-range index, and a handler that does not complete in time. A data source
+  that does not implement `canEditRowAt` is treated as allowing edits, as UIKit does.
 
 ## Example
 
@@ -68,9 +101,34 @@ tableView.selectRow(at: IndexPath(row: 1, section: 0))
 let cell = tableView.fetchCell(at: IndexPath(row: 0, section: 0), asType: MyCell.self)
 expect(cell.titleLabel.text).to(equal("First"))
 
-tableView.selectCellAction(withTitle: "Delete", at: IndexPath(row: 0, section: 0))
+tableView.performContextualAction(withTitle: "Delete", edge: .trailing, at: IndexPath(row: 0, section: 0))
 ```
 
 ## Notes
 
 - Methods raise Objective-C exceptions, not Swift errors. Do not use `try`. See the [FAQ](FAQ.md#why-does-fleet-raise-exceptions-and-how-should-i-handle-them).
+
+## Migrating from `selectCellAction`
+`selectCellAction(withTitle:at:)` and the `UITableViewRowAction.handler` interception were removed in the
+next major version because `UITableViewRowAction` is deprecated and the interception depended on a private
+initializer. Historical 4.x tags still contain them. Replace `tableView(_:editActionsForRowAt:)` with swipe
+configurations:
+```swift
+// Before (4.x)
+func tableView(_ tv: UITableView, editActionsForRowAt ip: IndexPath) -> [UITableViewRowAction]? {
+    [UITableViewRowAction(style: .normal, title: "Archive") { _, ip in archive(ip) }]
+}
+tableView.selectCellAction(withTitle: "Archive", at: indexPath)
+
+// After
+func tableView(_ tv: UITableView, trailingSwipeActionsConfigurationForRowAt ip: IndexPath) -> UISwipeActionsConfiguration? {
+    let archive = UIContextualAction(style: .normal, title: "Archive") { _, _, completion in
+        archive(ip)
+        completion(true)
+    }
+    return UISwipeActionsConfiguration(actions: [archive])
+}
+tableView.performContextualAction(withTitle: "Archive", edge: .trailing, at: indexPath)
+```
+Legacy row actions were always trailing; leading actions are new. Unlike the old helper, the handler must call its
+completion closure.

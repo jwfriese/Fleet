@@ -153,4 +153,54 @@ final class PackageConsumerTests: XCTestCase {
         await fulfillment(of: [handler], timeout: 5)
         XCTAssertEqual(count, 1)
     }
+
+#if os(iOS)
+    func testContextualActionLeadingAndTrailingReplacements() {
+        let source = SwipeSource()
+        let table = UITableView(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
+        table.dataSource = source
+        table.delegate = source
+        table.reloadData()
+        let row = IndexPath(row: 0, section: 0)
+
+        XCTAssertTrue(table.performContextualAction(withTitle: "Pin", edge: .leading, at: row))
+        XCTAssertFalse(table.performContextualAction(atIndex: 0, edge: .trailing, at: row))
+        XCTAssertEqual(source.invoked, ["Pin", "Delete"])
+
+        var raised = false
+        Fleet.swallowAnyErrors {
+            table.performContextualAction(withTitle: "Missing", edge: .leading, at: row)
+            raised = true
+        }
+        XCTAssertFalse(raised)
+    }
+#endif
 }
+
+#if os(iOS)
+@MainActor
+private final class SwipeSource: NSObject, UITableViewDataSource, UITableViewDelegate {
+    var invoked: [String] = []
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { 1 }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        UITableViewCell(style: .default, reuseIdentifier: nil)
+    }
+
+    private func action(_ title: String, completesWith result: Bool) -> UIContextualAction {
+        UIContextualAction(style: .normal, title: title) { [weak self] _, _, completion in
+            self?.invoked.append(title)
+            completion(result)
+        }
+    }
+
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        UISwipeActionsConfiguration(actions: [action("Pin", completesWith: true)])
+    }
+
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        UISwipeActionsConfiguration(actions: [action("Delete", completesWith: false)])
+    }
+}
+#endif

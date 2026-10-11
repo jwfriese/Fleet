@@ -6,7 +6,6 @@ let runtimeSources = [
     "ObjC/FleetSwizzle.m",
     "CoreExtensions/Alerts/UIAlertAction+Fleet.m",
     "CoreExtensions/Storyboard/UIStoryboard+Fleet.m",
-    "CoreExtensions/TableView/UITableViewRowAction+Fleet.m",
     "CoreExtensions/UINavigationController+Fleet.m",
     "CoreExtensions/ViewController/UIViewController+Fleet.m",
 ]
