@@ -3,6 +3,13 @@ import UIKit
 import Fleet
 
 @MainActor
+private final class ChainResponder: UIViewController {
+    var count = 0
+    override var canBecomeFirstResponder: Bool { true }
+    @objc func chainAction(_ sender: Any?) { count += 1 }
+}
+
+@MainActor
 private final class ActionTarget: NSObject {
     var count = 0
     @objc func tapped() { count += 1 }
@@ -310,6 +317,71 @@ final class PackageConsumerTests: XCTestCase {
         }
         XCTAssertNil(replacement)
         XCTAssertTrue(storyboard.instantiateViewController(withIdentifier: "Detail") === original)
+    }
+
+    func testModernAndRetainedButtonActionsEachExecuteExactlyOnce() {
+        let target = ActionTarget()
+        var primary = 0
+        var modern = 0
+        let button = UIButton(primaryAction: UIAction { _ in primary += 1 })
+        button.addAction(UIAction { _ in modern += 1 }, for: .touchUpInside)
+        button.addTarget(target, action: #selector(ActionTarget.tapped), for: .touchUpInside)
+        button.tap()
+        XCTAssertEqual([primary, modern, target.count], [1, 1, 1])
+    }
+
+    func testBarButtonItemDispatchesPrimaryActionAndTargetActionOnce() {
+        let target = ActionTarget()
+        let item = UIBarButtonItem(title: "Item", style: .plain, target: target, action: #selector(ActionTarget.tapped))
+        item.tap()
+        XCTAssertEqual(target.count, 1)
+
+        var primary = 0
+        UIBarButtonItem(primaryAction: UIAction(title: "Primary") { _ in primary += 1 }).tap()
+        XCTAssertEqual(primary, 1)
+    }
+
+    func testBarButtonItemWithoutTargetUsesResponderChainAndFailsWhenUnresolved() {
+        let responder = ChainResponder()
+        Fleet.setAsAppWindowRoot(responder)
+        XCTAssertTrue(responder.becomeFirstResponder())
+        defer { _ = responder.resignFirstResponder() }
+        UIBarButtonItem(title: "Chain", style: .plain, target: nil, action: #selector(ChainResponder.chainAction(_:))).tap()
+        XCTAssertEqual(responder.count, 1)
+
+        var returnedAfterRaise = false
+        Fleet.swallowAnyErrors {
+            UIBarButtonItem(title: "Lost", style: .plain, target: nil, action: Selector(("consumerNobodyImplementsThis:"))).tap()
+            returnedAfterRaise = true
+        }
+        XCTAssertFalse(returnedAfterRaise)
+    }
+
+    func testRuntimeHooksPresentSynchronously() {
+        let root = UIViewController()
+        Fleet.setAsAppWindowRoot(root)
+        let presented = UIViewController()
+        root.present(presented, animated: true)
+        XCTAssertTrue(root.presentedViewController === presented, "The present hook must run automatically")
+    }
+
+    func testAlertTapRejectsAmbiguousTitlesWithoutRunningHandlers() {
+        let root = UIViewController()
+        Fleet.setAsAppWindowRoot(root)
+        let alert = UIAlertController(title: "Consumer", message: nil, preferredStyle: .alert)
+        var count = 0
+        alert.addAction(UIAlertAction(title: "Same", style: .default) { _ in count += 1 })
+        alert.addAction(UIAlertAction(title: "Same", style: .cancel) { _ in count += 1 })
+        root.present(alert, animated: false)
+
+        var returnedAfterRaise = false
+        Fleet.swallowAnyErrors {
+            alert.tapAlertAction(withTitle: "Same")
+            returnedAfterRaise = true
+        }
+        XCTAssertFalse(returnedAfterRaise)
+        XCTAssertEqual(count, 0)
+        XCTAssertTrue(root.presentedViewController === alert)
     }
 
     func testScopedContextHostsExplicitWindowAndScene() async throws {

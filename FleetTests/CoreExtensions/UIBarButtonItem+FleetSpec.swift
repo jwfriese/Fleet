@@ -12,8 +12,26 @@ import Nimble
 fileprivate class TestTarget: NSObject {
     var didCallAction = false
 
+    var senders: [Any?] = []
+
     @objc func action() {
         didCallAction = true
+    }
+
+    @objc func actionWithSender(_ sender: Any?) {
+        didCallAction = true
+        senders.append(sender)
+    }
+}
+
+@MainActor
+private class ResponderChainViewController: UIViewController {
+    var actionCount = 0
+
+    override var canBecomeFirstResponder: Bool { true }
+
+    @objc func chainAction(_ sender: Any?) {
+        actionCount += 1
     }
 }
 
@@ -49,10 +67,66 @@ class UIBarButtonItem_FleetSpec: XCTestCase {
 
     func test_tap_whenNoTarget_raisesException() {
         subject.target = nil
+        // A nil target dispatches through the responder chain, so use an action no responder implements.
+        subject.action = Selector(("fleetNoResponderImplementsThis:"))
         expect { self.subject.tap() }.to(
-            raiseException(named: "Fleet.BarButtonItemError", reason: "Attempted to tap UIBarButtonItem (title='turtles') with no associated target.", userInfo: nil, closure: nil)
+            raiseException(named: "Fleet.BarButtonItemError", reason: "Attempted to tap UIBarButtonItem (title='turtles') with no associated target, and no responder in the responder chain handles the action.", userInfo: nil, closure: nil)
         )
     }
+
+    func test_tap_whenTargetIsNil_dispatchesActionThroughResponderChain() {
+        let controller = ResponderChainViewController()
+        Fleet.setAsAppWindowRoot(controller)
+        expect(controller.becomeFirstResponder()).to(beTrue())
+        defer { _ = controller.resignFirstResponder() }
+
+        let item = UIBarButtonItem(title: "chain", style: .plain, target: nil, action: #selector(ResponderChainViewController.chainAction(_:)))
+        item.tap()
+
+        expect(controller.actionCount).to(equal(1))
+    }
+
+    func test_tap_whenTargetDoesNotRespondToAction_raisesExceptionWithoutCrashing() {
+        subject.action = #selector(ResponderChainViewController.chainAction(_:))
+        expect { self.subject.tap() }.to(
+            raiseException(named: "Fleet.BarButtonItemError", reason: "Attempted to tap UIBarButtonItem (title='turtles') whose target does not respond to the action.", userInfo: nil, closure: nil)
+        )
+    }
+
+    func test_tap_passesItemAsSenderExactlyOnce() {
+        subject.action = #selector(TestTarget.actionWithSender(_:))
+        subject.tap()
+        expect(self.testTarget.senders.count).to(equal(1))
+        expect(self.testTarget.senders.first.flatMap { $0 as? UIBarButtonItem }).to(beIdenticalTo(subject))
+    }
+
+    func test_tap_invokesPrimaryActionExactlyOnce() {
+        var count = 0
+        let item = UIBarButtonItem(primaryAction: UIAction(title: "primary") { _ in count += 1 })
+        item.tap()
+        expect(count).to(equal(1))
+    }
+
+    func test_tap_whenPrimaryActionItemIsDisabled_doesNotInvokeAction() {
+        var count = 0
+        let item = UIBarButtonItem(primaryAction: UIAction(title: "primary") { _ in count += 1 })
+        item.isEnabled = false
+        expect { item.tap() }.to(
+            raiseException(named: "Fleet.BarButtonItemError", reason: "Cannot tap UIBarButtonItem: Control is not enabled.", userInfo: nil, closure: nil)
+        )
+        expect(count).to(equal(0))
+    }
+
+    #if os(iOS)
+    func test_tap_whenItemOnlyPresentsMenu_raisesException() {
+        var count = 0
+        let item = UIBarButtonItem(title: "menu", menu: UIMenu(children: [UIAction(title: "x") { _ in count += 1 }]))
+        expect { item.tap() }.to(
+            raiseException(named: "Fleet.BarButtonItemError", reason: "Cannot tap UIBarButtonItem: Item presents a menu, which tap() cannot open. Invoke the menu element's handler directly.", userInfo: nil, closure: nil)
+        )
+        expect(count).to(equal(0))
+    }
+    #endif
 
     func test_tap_whenNoAction_raisesException() {
         subject.action = nil

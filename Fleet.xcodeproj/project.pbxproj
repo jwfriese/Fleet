@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		829A34FAF5F9F10B436680ED /* RuntimeHooksSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF8E9E25F9838E375E97D25 /* RuntimeHooksSpec.swift */; };
+		4FF0743980276C5C56B28D1B /* RuntimeHooksSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF8E9E25F9838E375E97D25 /* RuntimeHooksSpec.swift */; };
 		4EC820DAFDA1B9164C0E880E /* UITabBarController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC821C945584D2A053F3836 /* UITabBarController+Fleet.swift */; };
 		4EC825C6FF6FAC4BBFBD3312 /* UINavigationBar+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC820F0C51682AB437523BE /* UINavigationBar+FleetSpec.swift */; };
 		4EC829DEEF31BDE5A2C8E1D7 /* UITabBarController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EC821C945584D2A053F3836 /* UITabBarController+Fleet.swift */; };
@@ -233,6 +235,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5DF8E9E25F9838E375E97D25 /* RuntimeHooksSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RuntimeHooksSpec.swift; sourceTree = "<group>"; };
 		4EC820F0C51682AB437523BE /* UINavigationBar+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UINavigationBar+FleetSpec.swift"; sourceTree = "<group>"; };
 		4EC821C945584D2A053F3836 /* UITabBarController+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITabBarController+Fleet.swift"; sourceTree = "<group>"; };
 		7B0082001EB6D788006B8FED /* Fleet.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Fleet.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -596,6 +599,7 @@
 			children = (
 				7B1AE9DA1F8B004E00A533C2 /* CatchErrorSpec.swift */,
 				7B8F2B371DE258EB00B6F4C2 /* IsClassKindOfSpec.swift */,
+				5DF8E9E25F9838E375E97D25 /* RuntimeHooksSpec.swift */,
 			);
 			path = ObjC;
 			sourceTree = "<group>";
@@ -1278,6 +1282,7 @@
 				7B00823C1EB6DB47006B8FED /* Test.swift in Sources */,
 				7B00823B1EB6DB47006B8FED /* File.swift in Sources */,
 				7B0082531EB6DB6B006B8FED /* IsClassKindOfSpec.swift in Sources */,
+				829A34FAF5F9F10B436680ED /* RuntimeHooksSpec.swift in Sources */,
 				7B0082491EB6DB65006B8FED /* UITableView+SelectRowSpec.swift in Sources */,
 				7B0082521EB6DB65006B8FED /* UINavigationController+FleetSpec.swift in Sources */,
 				7B0082471EB6DB65006B8FED /* UITableView+FetchCellSpec.swift in Sources */,
@@ -1412,6 +1417,7 @@
 				7BF913B21E3A4BC300019CF2 /* UIViewController+FleetInternalSpec.swift in Sources */,
 				7B0D3B381CFA76170096DBC2 /* UIStoryboard+FleetSpec.swift in Sources */,
 				7B8F2B381DE258EB00B6F4C2 /* IsClassKindOfSpec.swift in Sources */,
+				4FF0743980276C5C56B28D1B /* RuntimeHooksSpec.swift in Sources */,
 				7B48F4942446A5B300BA2D65 /* UIToolbar+FleetSpec.swift in Sources */,
 				7BFABD721E3DA7BD002823B3 /* UIControlEventEqualityMatcher.swift in Sources */,
 				7B675E7D1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift in Sources */,
