@@ -153,4 +153,28 @@ final class PackageConsumerTests: XCTestCase {
         await fulfillment(of: [handler], timeout: 5)
         XCTAssertEqual(count, 1)
     }
+
+    func testCollectionViewSelectionAndCellInspectionWithDiffableDataSource() async {
+        let collectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: 320, height: 480), collectionViewLayout: UICollectionViewFlowLayout())
+        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+        let dataSource = UICollectionViewDiffableDataSource<Int, String>(collectionView: collectionView) { view, indexPath, _ in
+            view.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+        }
+        var snapshot = NSDiffableDataSourceSnapshot<Int, String>()
+        snapshot.appendSections([0])
+        snapshot.appendItems(["Dune", "Fern"])
+        await dataSource.apply(snapshot, animatingDifferences: false)
+        let root = UIViewController()
+        root.view.addSubview(collectionView)
+        Fleet.setAsAppWindowRoot(root)
+        collectionView.layoutIfNeeded()
+
+        let item = IndexPath(item: 1, section: 0)
+        XCTAssertNotNil(collectionView.displayedCell(at: item))
+        XCTAssertFalse(collectionView.configuredCell(at: item) === collectionView.fetchCell(at: item))
+        collectionView.selectItem(at: item)
+        XCTAssertEqual(collectionView.indexPathsForSelectedItems, [item])
+        collectionView.deselectItem(at: item)
+        XCTAssertEqual(collectionView.indexPathsForSelectedItems ?? [], [])
+    }
 }

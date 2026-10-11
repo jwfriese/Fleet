@@ -185,13 +185,21 @@
 		3DF370EBE1FB36C77DB6B886 /* CollectionViewError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75492EC7624A1D41FE0BBADC /* CollectionViewError.swift */; };
 		10A4742C5277E4975776385A /* UICollectionView+FetchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E5BF24B8233D5E0B4E8438A /* UICollectionView+FetchCell.swift */; };
 		3E613E9A3A5879AAAEA2A7BD /* UICollectionView+SelectItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB60DF515018FB5C6E644563 /* UICollectionView+SelectItem.swift */; };
+		F09796D00F26B97EC4854CF0 /* UICollectionView+InspectCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24B06AE8A5588FD0DB404F6 /* UICollectionView+InspectCell.swift */; };
+		BB1FBC47633E3E908D3BE229 /* UICollectionView+DeselectItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2033168EE9542184B51CBCB2 /* UICollectionView+DeselectItem.swift */; };
 		C39E10AC9C85DC7C9B87B9C2 /* CollectionViewError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75492EC7624A1D41FE0BBADC /* CollectionViewError.swift */; };
 		AB96850BE53F3CD0DB3B698E /* UICollectionView+FetchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E5BF24B8233D5E0B4E8438A /* UICollectionView+FetchCell.swift */; };
 		33DD260109631965A3037DE2 /* UICollectionView+SelectItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB60DF515018FB5C6E644563 /* UICollectionView+SelectItem.swift */; };
+		42D9E7C862C71BE77A81C70E /* UICollectionView+InspectCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24B06AE8A5588FD0DB404F6 /* UICollectionView+InspectCell.swift */; };
+		6DC6D1BC0B57BB255609005B /* UICollectionView+DeselectItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2033168EE9542184B51CBCB2 /* UICollectionView+DeselectItem.swift */; };
 		B6AC703746498EF7C7B0F79B /* UICollectionView+FetchCellSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D01DBD7724E3CEAC94F9E2 /* UICollectionView+FetchCellSpec.swift */; };
 		87B1E06ABE036012A5AE2C60 /* UICollectionView+SelectItemSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47EF94C4103923DB084B60B3 /* UICollectionView+SelectItemSpec.swift */; };
+		328A90828726B2FA42F6DA2F /* UICollectionView+InspectCellSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF510F984DDDFA20D4860155 /* UICollectionView+InspectCellSpec.swift */; };
+		8067A9C0B8B36B9C1067C846 /* UICollectionView+DeselectItemSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = E91B749513AED7DBC469C474 /* UICollectionView+DeselectItemSpec.swift */; };
 		51B8AF774775B7B893F7E499 /* UICollectionView+FetchCellSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D01DBD7724E3CEAC94F9E2 /* UICollectionView+FetchCellSpec.swift */; };
 		5EF9C83B6DEB9FFACEBA82C9 /* UICollectionView+SelectItemSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47EF94C4103923DB084B60B3 /* UICollectionView+SelectItemSpec.swift */; };
+		8232DAB98B9E35067DD6A10F /* UICollectionView+InspectCellSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF510F984DDDFA20D4860155 /* UICollectionView+InspectCellSpec.swift */; };
+		F1A71EBE72623A1290A9E3A2 /* UICollectionView+DeselectItemSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = E91B749513AED7DBC469C474 /* UICollectionView+DeselectItemSpec.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -348,8 +356,12 @@
 		75492EC7624A1D41FE0BBADC /* CollectionViewError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CollectionViewError.swift"; sourceTree = "<group>"; };
 		1E5BF24B8233D5E0B4E8438A /* UICollectionView+FetchCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+FetchCell.swift"; sourceTree = "<group>"; };
 		CB60DF515018FB5C6E644563 /* UICollectionView+SelectItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+SelectItem.swift"; sourceTree = "<group>"; };
+		D24B06AE8A5588FD0DB404F6 /* UICollectionView+InspectCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+InspectCell.swift"; sourceTree = "<group>"; };
+		2033168EE9542184B51CBCB2 /* UICollectionView+DeselectItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+DeselectItem.swift"; sourceTree = "<group>"; };
 		37D01DBD7724E3CEAC94F9E2 /* UICollectionView+FetchCellSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+FetchCellSpec.swift"; sourceTree = "<group>"; };
 		47EF94C4103923DB084B60B3 /* UICollectionView+SelectItemSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+SelectItemSpec.swift"; sourceTree = "<group>"; };
+		AF510F984DDDFA20D4860155 /* UICollectionView+InspectCellSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+InspectCellSpec.swift"; sourceTree = "<group>"; };
+		E91B749513AED7DBC469C474 /* UICollectionView+DeselectItemSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+DeselectItemSpec.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -871,6 +883,8 @@
 				75492EC7624A1D41FE0BBADC /* CollectionViewError.swift */,
 				1E5BF24B8233D5E0B4E8438A /* UICollectionView+FetchCell.swift */,
 				CB60DF515018FB5C6E644563 /* UICollectionView+SelectItem.swift */,
+				D24B06AE8A5588FD0DB404F6 /* UICollectionView+InspectCell.swift */,
+				2033168EE9542184B51CBCB2 /* UICollectionView+DeselectItem.swift */,
 			);
 			path = CollectionView;
 			sourceTree = "<group>";
@@ -880,6 +894,8 @@
 			children = (
 				37D01DBD7724E3CEAC94F9E2 /* UICollectionView+FetchCellSpec.swift */,
 				47EF94C4103923DB084B60B3 /* UICollectionView+SelectItemSpec.swift */,
+				AF510F984DDDFA20D4860155 /* UICollectionView+InspectCellSpec.swift */,
+				E91B749513AED7DBC469C474 /* UICollectionView+DeselectItemSpec.swift */,
 			);
 			path = CollectionView;
 			sourceTree = "<group>";
@@ -1190,6 +1206,8 @@
 				C39E10AC9C85DC7C9B87B9C2 /* CollectionViewError.swift in Sources */,
 				AB96850BE53F3CD0DB3B698E /* UICollectionView+FetchCell.swift in Sources */,
 				33DD260109631965A3037DE2 /* UICollectionView+SelectItem.swift in Sources */,
+				42D9E7C862C71BE77A81C70E /* UICollectionView+InspectCell.swift in Sources */,
+				6DC6D1BC0B57BB255609005B /* UICollectionView+DeselectItem.swift in Sources */,
 				7B0082371EB6D917006B8FED /* Screen.swift in Sources */,
 				7B0082341EB6D90E006B8FED /* FleetObjC.m in Sources */,
 				7B0082271EB6D8F8006B8FED /* UITableView+SelectRow.swift in Sources */,
@@ -1228,6 +1246,8 @@
 			files = (
 				51B8AF774775B7B893F7E499 /* UICollectionView+FetchCellSpec.swift in Sources */,
 				5EF9C83B6DEB9FFACEBA82C9 /* UICollectionView+SelectItemSpec.swift in Sources */,
+				8232DAB98B9E35067DD6A10F /* UICollectionView+InspectCellSpec.swift in Sources */,
+				F1A71EBE72623A1290A9E3A2 /* UICollectionView+DeselectItemSpec.swift in Sources */,
 				F10000000000000000000125 /* NotificationListener.swift in Sources */,
 				F10000000000000000000124 /* RaiseExceptionMatcherSpec.swift in Sources */,
 				F10000000000000000000123 /* RaiseExceptionMatcher.swift in Sources */,
@@ -1299,6 +1319,8 @@
 				3DF370EBE1FB36C77DB6B886 /* CollectionViewError.swift in Sources */,
 				10A4742C5277E4975776385A /* UICollectionView+FetchCell.swift in Sources */,
 				3E613E9A3A5879AAAEA2A7BD /* UICollectionView+SelectItem.swift in Sources */,
+				F09796D00F26B97EC4854CF0 /* UICollectionView+InspectCell.swift in Sources */,
+				BB1FBC47633E3E908D3BE229 /* UICollectionView+DeselectItem.swift in Sources */,
 				7BB14A711D77B425002ABE82 /* FLTScreen.swift in Sources */,
 				7B675E941D0DA7EA002E6B45 /* Fleet.swift in Sources */,
 				7B1AE9DD1F8B01F100A533C2 /* CatchError.swift in Sources */,
@@ -1347,6 +1369,8 @@
 			files = (
 				B6AC703746498EF7C7B0F79B /* UICollectionView+FetchCellSpec.swift in Sources */,
 				87B1E06ABE036012A5AE2C60 /* UICollectionView+SelectItemSpec.swift in Sources */,
+				328A90828726B2FA42F6DA2F /* UICollectionView+InspectCellSpec.swift in Sources */,
+				8067A9C0B8B36B9C1067C846 /* UICollectionView+DeselectItemSpec.swift in Sources */,
 				F10000000000000000000114 /* RaiseExceptionMatcherSpec.swift in Sources */,
 				F10000000000000000000113 /* RaiseExceptionMatcher.swift in Sources */,
 				F10000000000000000000111 /* ExceptionCatcher.m in Sources */,

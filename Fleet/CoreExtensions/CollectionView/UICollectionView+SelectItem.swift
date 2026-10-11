@@ -23,23 +23,10 @@ extension UICollectionView {
      (`allowsSelection == false`).
      */
     public func selectItem(at indexPath: IndexPath) {
-        guard let _ = self.dataSource else {
-            FleetError(Fleet.CollectionViewError.dataSourceRequired(userAction: "select item")).raise()
-            return
-        }
+        guard validateItemExists(at: indexPath, userAction: "select item") else { return }
 
         guard allowsSelection else {
             FleetError(Fleet.CollectionViewError.rejectedAction(at: indexPath, reason: "Collection view does not allow selection.")).raise()
-            return
-        }
-
-        if indexPath.section < 0 || numberOfSections <= indexPath.section {
-            FleetError(Fleet.CollectionViewError.sectionDoesNotExist(sectionNumber: indexPath.section)).raise()
-            return
-        }
-
-        if indexPath.item < 0 || numberOfItems(inSection: indexPath.section) <= indexPath.item {
-            FleetError(Fleet.CollectionViewError.itemDoesNotExist(at: indexPath)).raise()
             return
         }
 
@@ -64,7 +51,7 @@ extension UICollectionView {
         delegate?.collectionView?(self, didSelectItemAt: indexPath)
     }
 
-    private func deselectItemWithDelegateCallbacks(at indexPath: IndexPath) -> Bool {
+    internal func deselectItemWithDelegateCallbacks(at indexPath: IndexPath) -> Bool {
         if let shouldDeselect = delegate?.collectionView?(self, shouldDeselectItemAt: indexPath), !shouldDeselect {
             return false
         }

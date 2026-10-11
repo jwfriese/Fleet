@@ -44,6 +44,14 @@ class UICollectionView_FetchCellSpec: XCTestCase {
         try! Test.embedViewIntoMainApplicationWindow(subject)
     }
 
+    override func tearDown() async throws {
+        subject.removeFromSuperview()
+        subject.dataSource = nil
+        subject.delegate = nil
+        subject = nil
+        try await super.tearDown()
+    }
+
     func test_fetchCell_whenTheCellExists_returnsTheCell() {
         let cell = subject.fetchCell(at: IndexPath(item: 0, section: 0))
         expect(cell).to(beAnInstanceOf(UICollectionViewCell.self))
