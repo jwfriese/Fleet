@@ -25,6 +25,8 @@ extension UINavigationController {
     }
 
     @objc func fleet_popViewControllerAnimated(_ animated: Bool) -> UIViewController? {
+        // Like UIKit, never pop the root view controller.
+        guard self.viewControllers.count > 1 else { return nil }
         var newViewControllers = self.viewControllers
         let poppedViewController = newViewControllers.removeLast()
         self.setViewControllers(newViewControllers, animated: false)

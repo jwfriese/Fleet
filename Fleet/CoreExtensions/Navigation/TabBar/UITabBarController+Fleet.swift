@@ -31,7 +31,7 @@ extension UITabBarController {
         guard let viewControllers = viewControllers else {
             return
         }
-        if index >= viewControllers.count {
+        if index < 0 || index >= viewControllers.count {
             return
         }
         let vcToSelect = viewControllers[index]

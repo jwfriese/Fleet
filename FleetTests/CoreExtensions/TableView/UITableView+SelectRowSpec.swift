@@ -160,6 +160,30 @@ class UITableView_SelectRowSpec: XCTestCase {
         )
     }
 
+    func test_selectRow_whenSectionInIndexPathIsNegative_raisesException() {
+        let storyboard = UIStoryboard(name: "Birds", bundle: nil)
+        let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
+        let _ = viewController.view
+
+        expect { viewController.birdsTableView?.selectRow(at: IndexPath(row: 0, section: -1)) }.to(
+            raiseException(named: "Fleet.TableViewError", reason: "Table view has no section -1.", userInfo: nil, closure: nil)
+        )
+        expect(viewController.willSelectRowCallCount).to(equal(0))
+        expect(viewController.birdsTableView?.indexPathForSelectedRow).to(beNil())
+    }
+
+    func test_selectRow_whenRowInIndexPathIsNegative_raisesException() {
+        let storyboard = UIStoryboard(name: "Birds", bundle: nil)
+        let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController
+        let _ = viewController.view
+
+        expect { viewController.birdsTableView?.selectRow(at: IndexPath(row: -1, section: 0)) }.to(
+            raiseException(named: "Fleet.TableViewError", reason: "Table view has no row -1 in section 0.", userInfo: nil, closure: nil)
+        )
+        expect(viewController.willSelectRowCallCount).to(equal(0))
+        expect(viewController.birdsTableView?.indexPathForSelectedRow).to(beNil())
+    }
+
     func test_selectRow_whenSelectionIsValid_postsUITableViewSelectionDidChangeNotification() {
         let storyboard = UIStoryboard(name: "Birds", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "BirdsViewController") as! BirdsViewController

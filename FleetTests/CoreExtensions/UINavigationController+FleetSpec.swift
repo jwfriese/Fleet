@@ -236,6 +236,51 @@ class UINavigationController_FleetSpec: XCTestCase {
         expect(navigationController.topViewController).to(beIdenticalTo(root))
     }
 
+    func test_popViewController_whenOnlyRootIsInStack_returnsNilAndPreservesRoot() {
+        let root = UIViewController()
+        let navigationController = UINavigationController(rootViewController: root)
+        let window = UIWindow()
+        window.rootViewController = navigationController
+        window.makeKeyAndVisible()
+
+        let popped = navigationController.popViewController(animated: false)
+
+        expect(popped).to(beNil())
+        expect(navigationController.viewControllers).to(equal([root]))
+        expect(navigationController.topViewController).to(beIdenticalTo(root))
+    }
+
+    func test_popViewController_whenStackIsEmpty_returnsNil() {
+        let navigationController = UINavigationController()
+
+        let popped = navigationController.popViewController(animated: false)
+
+        expect(popped).to(beNil())
+        expect(navigationController.viewControllers).to(beEmpty())
+    }
+
+    func test_popToRootViewController_whenOnlyRootIsInStack_returnsNoControllersAndPreservesRoot() {
+        let root = UIViewController()
+        let navigationController = UINavigationController(rootViewController: root)
+        let window = UIWindow()
+        window.rootViewController = navigationController
+        window.makeKeyAndVisible()
+
+        let popped = navigationController.popToRootViewController(animated: false)
+
+        expect(popped ?? []).to(beEmpty())
+        expect(navigationController.viewControllers).to(equal([root]))
+    }
+
+    func test_popToRootViewController_whenStackIsEmpty_returnsNoControllers() {
+        let navigationController = UINavigationController()
+
+        let popped = navigationController.popToRootViewController(animated: false)
+
+        expect(popped ?? []).to(beEmpty())
+        expect(navigationController.viewControllers).to(beEmpty())
+    }
+
     func test_navigationControllerWithSegueInViewDidLoad_segueHappensAndResultIsImmediatelyVisible() {
         let storyboard = UIStoryboard(name: "KittensStoryboard", bundle: nil)
         let viewController = UIViewController()

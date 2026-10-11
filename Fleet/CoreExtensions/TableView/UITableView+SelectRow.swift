@@ -25,17 +25,7 @@ extension UITableView {
             return
         }
 
-        let sectionCount = numberOfSections
-        if indexPath.section >= sectionCount {
-            FleetError(Fleet.TableViewError.sectionDoesNotExist(sectionNumber: indexPath.section)).raise()
-            return
-        }
-
-        let rowCount = numberOfRows(inSection: indexPath.section)
-        if indexPath.row >= rowCount {
-            FleetError(Fleet.TableViewError.rowDoesNotExist(at: indexPath)).raise()
-            return
-        }
+        guard fleet_validateExistingRow(at: indexPath) else { return }
 
         let hasDelegate = delegate != nil
         let doesDelegateImplementWillDeselect = hasDelegate && delegate!.responds(to: #selector(UITableViewDelegate.tableView(_:willDeselectRowAt:)))
@@ -51,6 +41,7 @@ extension UITableView {
                 return
             }
 
+            guard fleet_validateExistingRow(at: unwrappedIndexPathToSelect) else { return }
             indexPathToSelect = unwrappedIndexPathToSelect
         }
 
@@ -64,6 +55,7 @@ extension UITableView {
         if let selectedRowIndexPath = indexPathForSelectedRow {
             let indexPathToDeselectOptional = delegate!.tableView!(self, willDeselectRowAt: selectedRowIndexPath)
             if let indexPathToDeselect = indexPathToDeselectOptional {
+                guard fleet_validateExistingRow(at: indexPathToDeselect) else { return }
                 deselectRow(at: indexPathToDeselect, animated: false)
                 NotificationCenter.default.post(name: UITableView.selectionDidChangeNotification, object: nil)
                 delegate?.tableView?(self, didDeselectRowAt: indexPathToDeselect)
