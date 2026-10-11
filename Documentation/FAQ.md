@@ -71,6 +71,26 @@ Fleet.swallowAnyErrors {
 // If `enter` raises an exception, Fleet will catch it, log it in the console, and proceed.
 ```
 
+## How do I migrate from `FleetError` and `swallowAnyErrors`?
+Most helpers still raise a `FleetError` (an `NSException`) and are non-throwing, so call them without `try`/`try!`;
+the `try!` in older examples does not apply to them. Helpers are moving to throwing Swift signatures that report a
+`FleetFailure` (see `Fleet/Error/FleetFailure.swift`), with a distinct documented outcome for each situation:
+
+| Situation | Behavior |
+| --- | --- |
+| Invalid setup, invalid input, unavailable interaction | throws `FleetFailure` with kind `.invalidSetup`, `.invalidInput`, `.unavailableInteraction` |
+| Bounded-wait timeout | throws `FleetFailure` with kind `.timedOut` |
+| Task cancellation | `CancellationError` propagates unchanged; it is never wrapped |
+| Delegate veto (`shouldSelect…` returns `false`) | not an error; returns `FleetInteractionOutcome.refusedByDelegate` |
+
+Migration: replace `Fleet.swallowAnyErrors { helper() }` with `try? helper()` or `do/catch` once the helper has a
+throwing form, and replace `raiseException` expectations with `XCTAssertThrowsError` / `#expect(throws:)`. Today
+`UICollectionView.selectItemOrThrow(at:)` is the migrated representative; the other families will follow with their
+behavioral repairs, and `selectItem(at:)` will then become throwing in the major release. Deliberate policy change:
+invalid input that currently raises will throw, so tests that relied on a crash must now handle or propagate the error.
+`Fleet.swallowAnyErrors` and the Objective-C exception bridge remain only for genuine `NSException` use and are not used
+to translate ordinary failures.
+
 ## Why should I make sure all `UIViewController` tests happen in a `UIWindow`?
 Fleet recommends that all view controller tests happen specifically in the `UIWindow` object that is
 the key window of your test host's app delegate. Whether you create your own for test or use the
