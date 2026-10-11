@@ -516,3 +516,275 @@ class UITextView_FleetSpec: XCTestCase {
         expect(self.subject.isFirstResponder).to(beFalse())
     }
 }
+
+// MARK: - Unicode, selection, and refusal semantics
+
+extension UITextView_FleetSpec {
+    private func select(_ range: NSRange) {
+        let start = subject.beginningOfDocument
+        let from = subject.position(from: start, offset: range.location)!
+        let to = subject.position(from: from, offset: range.length)!
+        subject.selectedTextRange = subject.textRange(from: from, to: to)
+    }
+
+    private func startEditing(withText text: String, selecting range: NSRange? = nil) {
+        subject.startEditing()
+        subject.text = text
+        select(range ?? NSRange(location: (text as NSString).length, length: 0))
+        delegate.resetState()
+    }
+
+    func test_startEditing_consultsShouldBeginEditingExactlyOnce() {
+        subject.startEditing()
+
+        expect(self.delegate.callLog).to(equal(["textViewShouldBeginEditing", "textViewDidBeginEditing"]))
+    }
+
+    func test_startEditing_whenDelegateRefuses_returnsFalseAndNeverBecomesFirstResponder() {
+        delegate.shouldAllowBeginEditing = false
+        let notificationListener = NotificationListener()
+        NotificationCenter.default.addObserver(notificationListener, selector: #selector(NotificationListener.listenTo(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(notificationListener, selector: #selector(NotificationListener.listenTo(notification:)), name: UIResponder.keyboardDidShowNotification, object: nil)
+
+        let result = subject.startEditing()
+
+        expect(result).to(beFalse())
+        expect(self.subject.isFirstResponder).to(beFalse())
+        expect(self.delegate.callLog).to(equal(["textViewShouldBeginEditing"]))
+        expect(notificationListener.notificationsReceived).to(beEmpty())
+    }
+
+    func test_startEditing_whenAlreadyFirstResponder_returnsTrue() {
+        subject.startEditing()
+
+        expect(self.subject.startEditing()).to(beTrue())
+    }
+
+    func test_stopEditing_consultsShouldEndEditingExactlyOnce() {
+        subject.startEditing()
+        delegate.resetState()
+
+        let result = subject.stopEditing()
+
+        expect(result).to(beTrue())
+        expect(self.subject.isFirstResponder).to(beFalse())
+        expect(self.delegate.callLog).to(equal(["textViewShouldEndEditing", "textViewDidEndEditing"]))
+    }
+
+    func test_stopEditing_whenDelegateRefuses_returnsFalseAndKeepsFirstResponder() {
+        subject.startEditing()
+        delegate.resetState()
+        delegate.shouldAllowEndEditing = false
+        let notificationListener = NotificationListener()
+        NotificationCenter.default.addObserver(notificationListener, selector: #selector(NotificationListener.listenTo(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(notificationListener, selector: #selector(NotificationListener.listenTo(notification:)), name: UIResponder.keyboardDidHideNotification, object: nil)
+
+        let result = subject.stopEditing()
+
+        expect(result).to(beFalse())
+        expect(self.subject.isFirstResponder).to(beTrue())
+        expect(self.delegate.callLog).to(equal(["textViewShouldEndEditing"]))
+        expect(notificationListener.notificationsReceived).to(beEmpty())
+    }
+
+    func test_enter_whenDelegateRefusesToBeginEditing_stopsBeforeChangingText() {
+        subject.text = "kept"
+        delegate.shouldAllowBeginEditing = false
+
+        let result = subject.enter(text: "new")
+
+        expect(result).to(beFalse())
+        expect(self.subject.text).to(equal("kept"))
+        expect(self.delegate.callLog).to(equal(["textViewShouldBeginEditing"]))
+        expect(self.subject.isFirstResponder).to(beFalse())
+    }
+
+    func test_enter_whenDelegateRefusesToEndEditing_typesTextAndReportsFailure() {
+        delegate.shouldAllowEndEditing = false
+
+        let result = subject.enter(text: "ab")
+
+        expect(result).to(beFalse())
+        expect(self.subject.text).to(equal("ab"))
+        expect(self.subject.isFirstResponder).to(beTrue())
+        expect(self.delegate.didCallDidEndEditing).to(beFalse())
+    }
+
+    func test_enter_whenEverythingSucceeds_returnsTrue() {
+        expect(self.subject.enter(text: "ab")).to(beTrue())
+        expect(self.subject.text).to(equal("ab"))
+        expect(self.subject.isFirstResponder).to(beFalse())
+    }
+
+    func test_type_withEmojiAlreadyInText_reportsUTF16Locations() {
+        startEditing(withText: "a😀")
+
+        subject.type(text: "b😀")
+
+        expect(self.subject.text).to(equal("a😀b😀"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 3, length: 0), NSRange(location: 4, length: 0)]))
+        expect(self.delegate.callLog).to(equal(["shouldChange", "shouldChange"]))
+    }
+
+    func test_type_withCombiningCharacters_typesEachGraphemeClusterAsOneChange() {
+        startEditing(withText: "")
+
+        subject.type(text: "e\u{301}f")
+
+        expect(self.subject.text).to(equal("e\u{301}f"))
+        expect(self.delegate.textChanges).to(equal(["e\u{301}", "f"]))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 0, length: 0), NSRange(location: 2, length: 0)]))
+    }
+
+    func test_type_atCaretInMiddleOfText_insertsAtCaret() {
+        startEditing(withText: "hello", selecting: NSRange(location: 2, length: 0))
+
+        subject.type(text: "Z")
+
+        expect(self.subject.text).to(equal("heZllo"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 2, length: 0)]))
+    }
+
+    func test_type_withSelection_firstCharacterReplacesSelection() {
+        startEditing(withText: "hello", selecting: NSRange(location: 1, length: 2))
+
+        subject.type(text: "XY")
+
+        expect(self.subject.text).to(equal("hXYlo"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 1, length: 2), NSRange(location: 2, length: 0)]))
+    }
+
+    func test_type_whenDelegateRefusesChange_leavesSelectionAndTextUntouched() {
+        startEditing(withText: "hello", selecting: NSRange(location: 1, length: 2))
+        delegate.shouldAllowTextChanges = false
+
+        subject.type(text: "X")
+
+        expect(self.subject.text).to(equal("hello"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 1, length: 2)]))
+    }
+
+    func test_type_emptyString_changesNothing() {
+        startEditing(withText: "hi")
+
+        subject.type(text: "")
+
+        expect(self.subject.text).to(equal("hi"))
+        expect(self.delegate.callLog).to(beEmpty())
+    }
+
+    func test_paste_withSelection_replacesSelectionInOneChange() {
+        startEditing(withText: "a😀bc", selecting: NSRange(location: 1, length: 2))
+
+        subject.paste(text: "XYZ")
+
+        expect(self.subject.text).to(equal("aXYZbc"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 1, length: 2)]))
+        expect(self.delegate.textChanges).to(equal(["XYZ"]))
+    }
+
+    func test_paste_atCaretInMiddleOfText_insertsAtCaretWithUTF16Location() {
+        startEditing(withText: "a😀bc", selecting: NSRange(location: 3, length: 0))
+
+        subject.paste(text: "😀")
+
+        expect(self.subject.text).to(equal("a😀😀bc"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 3, length: 0)]))
+    }
+
+    func test_paste_whenDelegateRefuses_leavesTextUnchanged() {
+        startEditing(withText: "hello", selecting: NSRange(location: 1, length: 2))
+        delegate.shouldAllowTextChanges = false
+
+        subject.paste(text: "XYZ")
+
+        expect(self.subject.text).to(equal("hello"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 1, length: 2)]))
+    }
+
+    func test_backspace_afterEmoji_removesWholeEmojiAndReportsItsUTF16Range() {
+        startEditing(withText: "a😀")
+
+        subject.backspace()
+
+        expect(self.subject.text).to(equal("a"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 1, length: 2)]))
+    }
+
+    func test_backspace_afterJoinedEmojiSequence_removesWholeSequence() {
+        startEditing(withText: "a👨‍👩‍👧")
+
+        subject.backspace()
+
+        expect(self.subject.text).to(equal("a"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 1, length: 8)]))
+    }
+
+    func test_backspace_afterCombiningCharacter_removesWholeComposedSequence() {
+        startEditing(withText: "ae\u{301}")
+
+        subject.backspace()
+
+        expect(self.subject.text).to(equal("a"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 1, length: 2)]))
+    }
+
+    func test_backspace_withSelection_deletesSelectionOnly() {
+        startEditing(withText: "hello", selecting: NSRange(location: 1, length: 2))
+
+        subject.backspace()
+
+        expect(self.subject.text).to(equal("hlo"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 1, length: 2)]))
+    }
+
+    func test_backspace_atCaretInMiddleOfText_deletesCharacterBeforeCaret() {
+        startEditing(withText: "hello", selecting: NSRange(location: 3, length: 0))
+
+        subject.backspace()
+
+        expect(self.subject.text).to(equal("helo"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 2, length: 1)]))
+    }
+
+    func test_backspace_atStartOfNonEmptyText_changesNothing() {
+        startEditing(withText: "hello", selecting: NSRange(location: 0, length: 0))
+
+        subject.backspace()
+
+        expect(self.subject.text).to(equal("hello"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 0, length: 0)]))
+    }
+
+    func test_backspace_whenDelegateRefuses_leavesComposedCharacterInPlace() {
+        startEditing(withText: "a😀")
+        delegate.shouldAllowTextChanges = false
+
+        subject.backspace()
+
+        expect(self.subject.text).to(equal("a😀"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 1, length: 2)]))
+    }
+
+    func test_backspaceAll_withMixedUnicode_deletesEveryCharacterWithUTF16Ranges() {
+        startEditing(withText: "a😀e\u{301}")
+
+        subject.backspaceAll()
+
+        expect(self.subject.text).to(equal(""))
+        expect(self.delegate.textRanges).to(equal([
+            NSRange(location: 3, length: 2),
+            NSRange(location: 1, length: 2),
+            NSRange(location: 0, length: 1)
+        ]))
+    }
+
+    func test_backspaceAll_withSelectionInMiddle_deletesAllText() {
+        startEditing(withText: "hello", selecting: NSRange(location: 1, length: 2))
+
+        subject.backspaceAll()
+
+        expect(self.subject.text).to(equal(""))
+        expect(self.delegate.textRanges.count).to(equal(5))
+    }
+}
