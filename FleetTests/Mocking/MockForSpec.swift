@@ -265,13 +265,15 @@ class MockForSpec: XCTestCase {
         }
     }
 
-    func test_mockFor_collectionViewController_throwsDescriptiveError() {
-        do {
-            let _ = try Fleet.mockFor(UICollectionViewController.self)
-        } catch let error as Fleet.MockError {
-            expect(error.description).to(equal("Fleet cannot mock instances of UICollectionViewController or its subclasses"))
-        } catch {
-            fail("wrong kind of error thrown")
-        }
+    func test_mockFor_collectionViewController_createsMockThatCanBeLoadedInWindow() throws {
+        let mock = try Fleet.mockFor(UICollectionViewController.self)
+        expect(mock.collectionView).toNot(beNil())
+
+        let window = UIWindow(frame: UIScreen.main.bounds)
+        window.rootViewController = mock
+        window.makeKeyAndVisible()
+        expect(mock.view.window).to(be(window))
+        window.isHidden = true
+        window.rootViewController = nil
     }
 }
