@@ -240,6 +240,42 @@ final class PackageConsumerTests: XCTestCase {
         XCTAssertFalse(raised)
     }
 #endif
+
+    func testScopedContextHostsExplicitWindowAndScene() async throws {
+        let host = try XCTUnwrap(window)
+        let scene = try XCTUnwrap(host.windowScene)
+        let borrowedRoot = UIViewController()
+        try await Fleet.withContext(window: host) { context in
+            try await context.setRoot(borrowedRoot)
+            XCTAssertTrue(context.screen.topmostViewController === borrowedRoot)
+        }
+        XCTAssertTrue(host.rootViewController === previousRoot)
+
+        weak var ownedRoot: UIViewController?
+        try await Fleet.withContext(scene: scene) { context in
+            let root = UIViewController()
+            ownedRoot = root
+            try await context.setRoot(root)
+            XCTAssertTrue(context.window.windowScene === scene)
+        }
+        for _ in 0..<50 where ownedRoot != nil {
+            try await Task.sleep(nanoseconds: 20_000_000)
+        }
+        XCTAssertNil(ownedRoot)
+        XCTAssertTrue(host.isKeyWindow)
+    }
+
+    func testScopedContextWaitTimesOutWithTypedFailure() async throws {
+        let host = try XCTUnwrap(window)
+        do {
+            try await Fleet.withContext(window: host) { context in
+                try await context.waitUntil("never", timeout: 0.05) { false }
+            }
+            XCTFail("Expected timeout")
+        } catch FleetContextError.timedOut(let description, _, _) {
+            XCTAssertEqual(description, "never")
+        }
+    }
 }
 
 #if os(iOS)
