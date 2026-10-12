@@ -28,38 +28,38 @@ extension UITableView {
         guard fleet_validateExistingRow(at: indexPath) else { return }
 
         let hasDelegate = delegate != nil
+
+        // Stage delegate redirections and validate them all before mutating selection
+        // or dispatching any did(De)Select callbacks.
+        var indexPathToDeselect: IndexPath?
         let doesDelegateImplementWillDeselect = hasDelegate && delegate!.responds(to: #selector(UITableViewDelegate.tableView(_:willDeselectRowAt:)))
-        if doesDelegateImplementWillDeselect {
-            deselectPreviouslySelectedRow()
+        if doesDelegateImplementWillDeselect, let selectedRowIndexPath = indexPathForSelectedRow {
+            if let redirected = delegate!.tableView!(self, willDeselectRowAt: selectedRowIndexPath) {
+                guard fleet_validateExistingRow(at: redirected) else { return }
+                indexPathToDeselect = redirected
+            }
         }
 
-        var indexPathToSelect = indexPath
+        var indexPathToSelect: IndexPath? = indexPath
         let doesDelegateImplementWillSelect = hasDelegate && delegate!.responds(to: #selector(UITableViewDelegate.tableView(_:willSelectRowAt:)))
         if doesDelegateImplementWillSelect {
-            let indexPathToSelectOptional = delegate!.tableView!(self, willSelectRowAt: indexPath)
-            guard let unwrappedIndexPathToSelect = indexPathToSelectOptional else {
-                return
+            indexPathToSelect = delegate!.tableView!(self, willSelectRowAt: indexPath)
+            if let redirected = indexPathToSelect {
+                guard fleet_validateExistingRow(at: redirected) else { return }
             }
-
-            guard fleet_validateExistingRow(at: unwrappedIndexPathToSelect) else { return }
-            indexPathToSelect = unwrappedIndexPathToSelect
         }
+
+        if let indexPathToDeselect = indexPathToDeselect {
+            deselectRow(at: indexPathToDeselect, animated: false)
+            NotificationCenter.default.post(name: UITableView.selectionDidChangeNotification, object: nil)
+            delegate?.tableView?(self, didDeselectRowAt: indexPathToDeselect)
+        }
+
+        guard let indexPathToSelect = indexPathToSelect else { return }
 
         selectRow(at: indexPathToSelect, animated: false, scrollPosition: .none)
         NotificationCenter.default.post(name: UITableView.selectionDidChangeNotification, object: nil)
 
         delegate?.tableView?(self, didSelectRowAt: indexPathToSelect)
-    }
-
-    private func deselectPreviouslySelectedRow() {
-        if let selectedRowIndexPath = indexPathForSelectedRow {
-            let indexPathToDeselectOptional = delegate!.tableView!(self, willDeselectRowAt: selectedRowIndexPath)
-            if let indexPathToDeselect = indexPathToDeselectOptional {
-                guard fleet_validateExistingRow(at: indexPathToDeselect) else { return }
-                deselectRow(at: indexPathToDeselect, animated: false)
-                NotificationCenter.default.post(name: UITableView.selectionDidChangeNotification, object: nil)
-                delegate?.tableView?(self, didDeselectRowAt: indexPathToDeselect)
-            }
-        }
     }
 }

@@ -20,6 +20,27 @@ extension MinimallyImplementedDelegate: UITableViewDataSource {
     }
 }
 
+fileprivate class InvalidRedirectDelegate: MinimallyImplementedDelegate {
+    var didDeselectCount = 0
+    var didSelectCount = 0
+
+    @objc func tableView(_ tableView: UITableView, willDeselectRowAt indexPath: IndexPath) -> IndexPath? {
+        return indexPath
+    }
+
+    @objc func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        return IndexPath(row: -1, section: 0)
+    }
+
+    @objc func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        didDeselectCount += 1
+    }
+
+    @objc func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        didSelectCount += 1
+    }
+}
+
 @MainActor
 class UITableView_SelectRowMinimalDelegateImplSpec: XCTestCase {
     override func setUp() async throws {
@@ -65,5 +86,22 @@ class UITableView_SelectRowMinimalDelegateImplSpec: XCTestCase {
 
         expect(selectedIndexPaths.count).to(equal(1))
         expect(selectedIndexPaths.first).to(equal(IndexPath(row: 4, section: 0)))
+    }
+
+    func test_selectRow_whenDelegateRedirectsToInvalidPath_raisesAndPreservesExistingSelectionWithoutCallbacks() {
+        let table = UITableView(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
+        let delegate = InvalidRedirectDelegate()
+        table.dataSource = delegate
+        table.delegate = delegate
+        table.layoutIfNeeded()
+
+        let original = IndexPath(row: 0, section: 0)
+        table.selectRow(at: original, animated: false, scrollPosition: .none)
+
+        expect { table.selectRow(at: IndexPath(row: 1, section: 0)) }.to(raiseException())
+
+        expect(table.indexPathForSelectedRow).to(equal(original))
+        expect(delegate.didDeselectCount).to(equal(0))
+        expect(delegate.didSelectCount).to(equal(0))
     }
 }
