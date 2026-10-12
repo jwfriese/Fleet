@@ -54,24 +54,21 @@ extension UITableView {
      */
     @discardableResult
     public func performContextualAction(withTitle title: String, edge: SwipeActionEdge, at indexPath: IndexPath, completionTimeout: TimeInterval = 2) -> Bool {
-        guard let delegate = validatedDelegate(edge: edge, at: indexPath) else { return false }
-        let actions = contextualActions(from: delegate, edge: edge, at: indexPath)
-        if actions.isEmpty {
-            FleetError(Fleet.TableViewError.noContextualActions(at: indexPath, edge: edge.rawValue)).raise()
-            return false
-        }
+        guard let (delegate, action) = resolveAction(withTitle: title, edge: edge, at: indexPath) else { return false }
+        return invoke(action, delegate: delegate, edge: edge, at: indexPath, timeout: completionTimeout)
+    }
 
-        let matches = actions.filter { $0.title == title }
-        if matches.isEmpty {
-            FleetError(Fleet.TableViewError.contextualActionDoesNotExist(at: indexPath, edge: edge.rawValue, title: title)).raise()
-            return false
-        }
-        if matches.count > 1 {
-            FleetError(Fleet.TableViewError.ambiguousContextualAction(at: indexPath, edge: edge.rawValue, title: title, matchCount: matches.count)).raise()
-            return false
-        }
+    /**
+     Asynchronous form of `performContextualAction(withTitle:edge:at:completionTimeout:)`.
 
-        return invoke(matches[0], delegate: delegate, edge: edge, at: indexPath, timeout: completionTimeout)
+     Instead of running the run loop synchronously, this suspends the calling task while waiting, so handlers
+     that complete from a `Task { @MainActor in ... }` can run even when the caller is itself on the main actor.
+     Prefer this form from `async` tests.
+     */
+    @discardableResult
+    public func performContextualAction(withTitle title: String, edge: SwipeActionEdge, at indexPath: IndexPath, completionTimeout: TimeInterval = 2) async -> Bool {
+        guard let (delegate, action) = resolveAction(withTitle: title, edge: edge, at: indexPath) else { return false }
+        return await invokeAsync(action, delegate: delegate, edge: edge, at: indexPath, timeout: completionTimeout)
     }
 
     /**
@@ -95,14 +92,46 @@ extension UITableView {
      */
     @discardableResult
     public func performContextualAction(atIndex actionIndex: Int, edge: SwipeActionEdge, at indexPath: IndexPath, completionTimeout: TimeInterval = 2) -> Bool {
-        guard let delegate = validatedDelegate(edge: edge, at: indexPath) else { return false }
+        guard let (delegate, action) = resolveAction(atIndex: actionIndex, edge: edge, at: indexPath) else { return false }
+        return invoke(action, delegate: delegate, edge: edge, at: indexPath, timeout: completionTimeout)
+    }
+
+    /// Asynchronous form of `performContextualAction(atIndex:edge:at:completionTimeout:)`. It suspends the
+    /// calling task while waiting; see `performContextualAction(withTitle:edge:at:completionTimeout:)` async.
+    @discardableResult
+    public func performContextualAction(atIndex actionIndex: Int, edge: SwipeActionEdge, at indexPath: IndexPath, completionTimeout: TimeInterval = 2) async -> Bool {
+        guard let (delegate, action) = resolveAction(atIndex: actionIndex, edge: edge, at: indexPath) else { return false }
+        return await invokeAsync(action, delegate: delegate, edge: edge, at: indexPath, timeout: completionTimeout)
+    }
+
+    private func resolveAction(withTitle title: String, edge: SwipeActionEdge, at indexPath: IndexPath) -> (UITableViewDelegate, UIContextualAction)? {
+        guard let delegate = validatedDelegate(edge: edge, at: indexPath) else { return nil }
+        let actions = contextualActions(from: delegate, edge: edge, at: indexPath)
+        if actions.isEmpty {
+            FleetError(Fleet.TableViewError.noContextualActions(at: indexPath, edge: edge.rawValue)).raise()
+            return nil
+        }
+
+        let matches = actions.filter { $0.title == title }
+        if matches.isEmpty {
+            FleetError(Fleet.TableViewError.contextualActionDoesNotExist(at: indexPath, edge: edge.rawValue, title: title)).raise()
+            return nil
+        }
+        if matches.count > 1 {
+            FleetError(Fleet.TableViewError.ambiguousContextualAction(at: indexPath, edge: edge.rawValue, title: title, matchCount: matches.count)).raise()
+            return nil
+        }
+        return (delegate, matches[0])
+    }
+
+    private func resolveAction(atIndex actionIndex: Int, edge: SwipeActionEdge, at indexPath: IndexPath) -> (UITableViewDelegate, UIContextualAction)? {
+        guard let delegate = validatedDelegate(edge: edge, at: indexPath) else { return nil }
         let actions = contextualActions(from: delegate, edge: edge, at: indexPath)
         if actionIndex < 0 || actionIndex >= actions.count {
             FleetError(Fleet.TableViewError.contextualActionIndexOutOfRange(at: indexPath, edge: edge.rawValue, index: actionIndex, count: actions.count)).raise()
-            return false
+            return nil
         }
-
-        return invoke(actions[actionIndex], delegate: delegate, edge: edge, at: indexPath, timeout: completionTimeout)
+        return (delegate, actions[actionIndex])
     }
 
     private func validatedDelegate(edge: SwipeActionEdge, at indexPath: IndexPath) -> UITableViewDelegate? {
@@ -163,18 +192,16 @@ extension UITableView {
         return configuration?.actions ?? []
     }
 
-    private func invoke(_ action: UIContextualAction, delegate: UITableViewDelegate, edge: SwipeActionEdge, at indexPath: IndexPath, timeout: TimeInterval) -> Bool {
+    private func begin(_ action: UIContextualAction, delegate: UITableViewDelegate, at indexPath: IndexPath) -> ContextualActionCompletion {
         let sourceView: UIView = cellForRow(at: indexPath) ?? fetchCell(at: indexPath)
         let completion = ContextualActionCompletion()
 
         delegate.tableView?(self, willBeginEditingRowAt: indexPath)
         action.handler(action, sourceView) { completion.complete($0) }
+        return completion
+    }
 
-        let deadline = Date(timeIntervalSinceNow: timeout)
-        while completion.result == nil && Date() < deadline {
-            RunLoop.current.run(mode: .default, before: Date(timeIntervalSinceNow: 0.01))
-        }
-
+    private func finish(_ completion: ContextualActionCompletion, _ action: UIContextualAction, delegate: UITableViewDelegate, edge: SwipeActionEdge, at indexPath: IndexPath, timeout: TimeInterval) -> Bool {
         guard let result = completion.result else {
             FleetError(Fleet.TableViewError.contextualActionDidNotComplete(at: indexPath, edge: edge.rawValue, title: action.title, timeout: timeout)).raise()
             return false
@@ -182,6 +209,25 @@ extension UITableView {
 
         delegate.tableView?(self, didEndEditingRowAt: indexPath)
         return result
+    }
+
+    private func invoke(_ action: UIContextualAction, delegate: UITableViewDelegate, edge: SwipeActionEdge, at indexPath: IndexPath, timeout: TimeInterval) -> Bool {
+        let completion = begin(action, delegate: delegate, at: indexPath)
+        let deadline = Date(timeIntervalSinceNow: timeout)
+        while completion.result == nil && Date() < deadline {
+            RunLoop.current.run(mode: .default, before: Date(timeIntervalSinceNow: 0.01))
+        }
+        return finish(completion, action, delegate: delegate, edge: edge, at: indexPath, timeout: timeout)
+    }
+
+    private func invokeAsync(_ action: UIContextualAction, delegate: UITableViewDelegate, edge: SwipeActionEdge, at indexPath: IndexPath, timeout: TimeInterval) async -> Bool {
+        let completion = begin(action, delegate: delegate, at: indexPath)
+        let deadline = Date(timeIntervalSinceNow: timeout)
+        while completion.result == nil && Date() < deadline {
+            await Task.yield()
+            try? await Task.sleep(nanoseconds: 5_000_000)
+        }
+        return finish(completion, action, delegate: delegate, edge: edge, at: indexPath, timeout: timeout)
     }
 }
 

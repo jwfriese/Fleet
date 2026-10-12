@@ -206,4 +206,35 @@ class UITableView_ContextualActionsSpec: XCTestCase {
             self.tableView.performContextualAction(atIndex: 0, edge: .trailing, at: IndexPath(row: 2, section: 0))
         }
     }
+
+    // MARK: Swift concurrency
+
+    func test_performContextualAction_async_completesFromMainActorTask() async {
+        let delegate = TaskCompletingDelegate()
+        tableView.delegate = delegate
+
+        let result = await tableView.performContextualAction(withTitle: "Task", edge: .trailing, at: IndexPath(row: 0, section: 0), completionTimeout: 2)
+
+        expect(result).to(beTrue())
+        expect(delegate.invocationCount).to(equal(1))
+    }
+}
+
+@MainActor
+private final class TaskCompletingDelegate: NSObject, UITableViewDelegate {
+    let completes: Bool
+    private(set) var invocationCount = 0
+
+    init(completes: Bool = true) {
+        self.completes = completes
+    }
+
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let action = UIContextualAction(style: .normal, title: "Task") { [weak self] _, _, completion in
+            self?.invocationCount += 1
+            guard self?.completes == true else { return }
+            Task { @MainActor in completion(true) }
+        }
+        return UISwipeActionsConfiguration(actions: [action])
+    }
 }

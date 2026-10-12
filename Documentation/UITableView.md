@@ -122,13 +122,17 @@ tableView.selectCellAction(withTitle: "Archive", at: indexPath)
 
 // After
 func tableView(_ tv: UITableView, trailingSwipeActionsConfigurationForRowAt ip: IndexPath) -> UISwipeActionsConfiguration? {
-    let archive = UIContextualAction(style: .normal, title: "Archive") { _, _, completion in
+    let archiveAction = UIContextualAction(style: .normal, title: "Archive") { _, _, completion in
         archive(ip)
         completion(true)
     }
-    return UISwipeActionsConfiguration(actions: [archive])
+    return UISwipeActionsConfiguration(actions: [archiveAction])
 }
 tableView.performContextualAction(withTitle: "Archive", edge: .trailing, at: indexPath)
 ```
+From an `async` test, call the `async` overloads (`try`-free, `await`ed): they suspend the calling task, so a
+handler that completes from `Task { @MainActor in ... }` works. The synchronous forms run the run loop and
+cannot let such tasks run while the caller occupies the main actor.
+
 Legacy row actions were always trailing; leading actions are new. Unlike the old helper, the handler must call its
 completion closure.
