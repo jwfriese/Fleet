@@ -2,7 +2,15 @@ import UIKit
 
 private let BirdsTableViewCellIdentifier = "BirdsTableViewCell"
 
+struct ContextualActionCall {
+    let title: String
+    let indexPath: IndexPath
+    let sourceView: UIView
+}
+
 class BirdsViewController: UIViewController {
+    var contextualActionCalls: [ContextualActionCall] = []
+
     var willSelectRowCallCount: Int = 0
     var didSelectRowCallCount: Int = 0
 
@@ -126,32 +134,54 @@ extension BirdsViewController: UITableViewDataSource {
     }
 
 #if os(iOS)
-    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-        let oneAction = UITableViewRowAction(style: .normal, title: "One") { action, indexPath in
-            DispatchQueue.main.async {
-                let alert = UIAlertController(title: "", message: "One tapped at row \(indexPath.row)", preferredStyle: .alert)
-                self.present(alert, animated: false, completion: nil)
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let pin = UIContextualAction(style: .normal, title: "Pin") { [weak self] _, sourceView, completion in
+            self?.contextualActionCalls.append(ContextualActionCall(title: "Pin", indexPath: indexPath, sourceView: sourceView))
+            completion(true)
+        }
+        let refuse = UIContextualAction(style: .destructive, title: "Refuse") { [weak self] _, sourceView, completion in
+            self?.contextualActionCalls.append(ContextualActionCall(title: "Refuse", indexPath: indexPath, sourceView: sourceView))
+            completion(false)
+        }
+        return UISwipeActionsConfiguration(actions: [pin, refuse])
+    }
+
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        if indexPath.row == 4 {
+            return nil
+        }
+
+        if indexPath.row == 5 {
+            let later = UIContextualAction(style: .normal, title: "Later") { [weak self] _, sourceView, completion in
+                self?.contextualActionCalls.append(ContextualActionCall(title: "Later", indexPath: indexPath, sourceView: sourceView))
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { completion(true) }
+            }
+            let never = UIContextualAction(style: .normal, title: "Never") { [weak self] _, sourceView, _ in
+                self?.contextualActionCalls.append(ContextualActionCall(title: "Never", indexPath: indexPath, sourceView: sourceView))
+            }
+            let twiceA = UIContextualAction(style: .normal, title: "Twice") { [weak self] _, sourceView, completion in
+                self?.contextualActionCalls.append(ContextualActionCall(title: "Twice (first)", indexPath: indexPath, sourceView: sourceView))
+                completion(true)
+            }
+            let twiceB = UIContextualAction(style: .normal, title: "Twice") { [weak self] _, sourceView, completion in
+                self?.contextualActionCalls.append(ContextualActionCall(title: "Twice (second)", indexPath: indexPath, sourceView: sourceView))
+                completion(true)
+            }
+            return UISwipeActionsConfiguration(actions: [later, never, twiceA, twiceB])
+        }
+
+        let actions = ["One", "Two", "Three"].map { title in
+            UIContextualAction(style: .normal, title: title) { [weak self] _, sourceView, completion in
+                guard let self = self else { return completion(false) }
+                self.contextualActionCalls.append(ContextualActionCall(title: title, indexPath: indexPath, sourceView: sourceView))
+                DispatchQueue.main.async {
+                    let alert = UIAlertController(title: "", message: "\(title) tapped at row \(indexPath.row)", preferredStyle: .alert)
+                    self.present(alert, animated: false, completion: nil)
+                }
+                completion(true)
             }
         }
-        oneAction.backgroundColor = UIColor.green
-
-        let twoAction = UITableViewRowAction(style: .normal, title: "Two") { action, indexPath in
-            DispatchQueue.main.async {
-                let alert = UIAlertController(title: "", message: "Two tapped at row \(indexPath.row)", preferredStyle: .alert)
-                self.present(alert, animated: false, completion: nil)
-            }
-        }
-        twoAction.backgroundColor = UIColor.red
-
-        let threeAction = UITableViewRowAction(style: .normal, title: "Three") { action, indexPath in
-            DispatchQueue.main.async {
-                let alert = UIAlertController(title: "", message: "Three tapped at row \(indexPath.row)", preferredStyle: .alert)
-                self.present(alert, animated: false, completion: nil)
-            }
-        }
-        threeAction.backgroundColor = UIColor.blue
-
-        return [oneAction, twoAction, threeAction]
+        return UISwipeActionsConfiguration(actions: actions)
     }
 #endif
 

@@ -16,9 +16,7 @@ Pod::Spec.new do |s|
   s.preserve_paths          = "Fleet/Script/copy_storyboard_info_files.sh"
 
   s.tvos.exclude_files = [
-    "Fleet/CoreExtensions/TableView/UITableViewRowAction+Fleet.m",
-    "Fleet/CoreExtensions/TableView/UITableView+SelectCellAction.swift",
-    "Fleet/CoreExtensions/TableView/UITableViewRowAction+Fleet.swift",
+    "Fleet/CoreExtensions/TableView/UITableView+ContextualActions.swift",
     "Fleet/CoreExtensions/Controls/TextInput/UITextField+Fleet.swift",
     "Fleet/CoreExtensions/Controls/TextInput/UITextView+Fleet.swift",
     "Fleet/CoreExtensions/Controls/UISwitch+Fleet.swift",
