@@ -85,6 +85,71 @@ final class PackageConsumerTests: XCTestCase {
         XCTAssertTrue(navigation.topViewController === root)
     }
 
+    func testEmptyAndRootOnlyNavigationPopsPreserveTheRoot() {
+        let empty = UINavigationController()
+        XCTAssertNil(empty.popViewController(animated: false))
+        XCTAssertNil(empty.popToRootViewController(animated: false))
+        XCTAssertTrue(empty.viewControllers.isEmpty)
+
+        let root = UIViewController()
+        let navigation = Fleet.setInAppWindowRootNavigation(root)
+        XCTAssertNil(navigation.popViewController(animated: true))
+        XCTAssertNil(navigation.popToRootViewController(animated: true))
+        XCTAssertEqual(navigation.viewControllers, [root])
+        XCTAssertTrue(navigation.topViewController === root)
+    }
+
+    func testInvalidTabIndicesAreNoOps() {
+        let first = UIViewController()
+        let second = UIViewController()
+        let tabs = UITabBarController()
+        tabs.viewControllers = [first, second]
+        tabs.selectedIndex = 1
+        tabs.selectTab(atIndex: -1)
+        XCTAssertEqual(tabs.selectedIndex, 1)
+        tabs.selectTab(atIndex: 2)
+        XCTAssertEqual(tabs.selectedIndex, 1)
+        XCTAssertTrue(tabs.selectedViewController === second)
+    }
+
+    func testInvalidTableRowRequestsRaiseWithoutMutationOrCallbacks() {
+        let source = SelectionSource()
+        let table = UITableView(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
+        table.dataSource = source
+        table.delegate = source
+        table.reloadData()
+        let original = IndexPath(row: 0, section: 0)
+        table.selectRow(at: original)
+        XCTAssertEqual(table.indexPathForSelectedRow, original)
+        source.events.removeAll()
+
+        for invalid in [IndexPath(row: -1, section: 0), IndexPath(row: 0, section: -1), IndexPath(row: 5, section: 0)] {
+            var returned = false
+            Fleet.swallowAnyErrors {
+                table.selectRow(at: invalid)
+                returned = true
+            }
+            XCTAssertFalse(returned, "\(invalid) should raise")
+            XCTAssertEqual(table.indexPathForSelectedRow, original)
+            XCTAssertTrue(source.events.isEmpty)
+        }
+
+        source.redirect = IndexPath(row: -1, section: 0)
+        var returned = false
+        Fleet.swallowAnyErrors {
+            table.selectRow(at: IndexPath(row: 1, section: 0))
+            returned = true
+        }
+        XCTAssertFalse(returned, "An invalid delegate redirect should raise")
+        XCTAssertEqual(table.indexPathForSelectedRow, original)
+        XCTAssertTrue(source.events.isEmpty, "No did(De)Select callbacks for an invalid redirect: \(source.events)")
+
+        source.redirect = nil
+        table.selectRow(at: IndexPath(row: 1, section: 0))
+        XCTAssertEqual(table.indexPathForSelectedRow, IndexPath(row: 1, section: 0))
+        XCTAssertEqual(source.events, ["didDeselect 0", "didSelect 1"])
+    }
+
     func testCompiledStoryboardMetadataAndBinding() throws {
         let metadata = Bundle(for: type(of: self)).url(forResource: "Info", withExtension: "plist", subdirectory: "StoryboardInfo/Consumer")
         XCTAssertNotNil(metadata, "The phase must run the metadata script bundled with the SwiftPM product")
@@ -204,3 +269,29 @@ private final class SwipeSource: NSObject, UITableViewDataSource, UITableViewDel
     }
 }
 #endif
+
+@MainActor
+private final class SelectionSource: NSObject, UITableViewDataSource, UITableViewDelegate {
+    var events: [String] = []
+    var redirect: IndexPath?
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { 2 }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        UITableViewCell(style: .default, reuseIdentifier: nil)
+    }
+
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        redirect ?? indexPath
+    }
+
+    func tableView(_ tableView: UITableView, willDeselectRowAt indexPath: IndexPath) -> IndexPath? { indexPath }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        events.append("didSelect \(indexPath.row)")
+    }
+
+    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        events.append("didDeselect \(indexPath.row)")
+    }
+}
