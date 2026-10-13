@@ -1,4 +1,4 @@
-import Foundation
+import UIKit
 
 extension Fleet {
     enum TableViewError: FleetErrorDefinition {
@@ -45,5 +45,20 @@ extension Fleet {
         }
 
         var name: NSExceptionName { get { return NSExceptionName(rawValue: "Fleet.TableViewError") } }
+    }
+}
+
+extension UITableView {
+    /// Raises a `FleetError` and returns false if the index path is not a row of this table view.
+    func fleet_validateExistingRow(at indexPath: IndexPath) -> Bool {
+        if indexPath.section < 0 || indexPath.section >= numberOfSections {
+            FleetError(Fleet.TableViewError.sectionDoesNotExist(sectionNumber: indexPath.section)).raise()
+            return false
+        }
+        if indexPath.row < 0 || indexPath.row >= numberOfRows(inSection: indexPath.section) {
+            FleetError(Fleet.TableViewError.rowDoesNotExist(at: indexPath)).raise()
+            return false
+        }
+        return true
     }
 }

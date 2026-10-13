@@ -52,4 +52,24 @@ class UITabBarController_FleetSpec: XCTestCase {
 
         expect(nextTabBarController.selectedViewController).toEventually(beAKindOf(UINavigationController.self))
     }
+
+    func test_selectTabAtIndex_whenIndexIsNegative_doesNothing() {
+        let original = subject.selectedViewController
+
+        subject.selectTab(atIndex: -1)
+
+        expect(self.subject.shouldSelectCallCount).to(equal(0))
+        expect(self.subject.didSelectCallCount).to(equal(0))
+        expect(self.subject.selectedViewController).to(beIdenticalTo(original))
+    }
+
+    func test_selectTabAtIndex_whenIndexIsOutOfRange_doesNothing() {
+        let original = subject.selectedViewController
+
+        subject.selectTab(atIndex: 1000)
+
+        expect(self.subject.shouldSelectCallCount).to(equal(0))
+        expect(self.subject.didSelectCallCount).to(equal(0))
+        expect(self.subject.selectedViewController).to(beIdenticalTo(original))
+    }
 }
