@@ -13,6 +13,16 @@ public final class FleetTestContext {
     /// `true` when the context created `window` for a scene and will dismantle it.
     public let ownsWindow: Bool
 
+    static var contextEnded: FleetFailure {
+        FleetFailure(
+            kind: .invalidSetup,
+            action: "use the test context",
+            target: "FleetTestContext",
+            state: "its `withContext` scope has already ended",
+            reason: "Use the context only inside the body passed to `Fleet.withContext`."
+        )
+    }
+
     private var cleanups: [@MainActor () -> Void] = []
     private(set) var isActive = true
 
@@ -29,14 +39,14 @@ public final class FleetTestContext {
     /// storyboard bindings or observers. Cleanups run before the window is restored and before
     /// the coordination lease is released.
     public func addCleanup(_ cleanup: @escaping @MainActor () -> Void) throws {
-        guard isActive else { throw FleetContextError.contextEnded }
+        guard isActive else { throw Self.contextEnded }
         cleanups.append(cleanup)
     }
 
     /// Installs `viewController` as this window's root, finishing any editing session first,
     /// then waits (bounded) until its view is in the window.
     public func setRoot(_ viewController: UIViewController, timeout: TimeInterval = 5) async throws {
-        guard isActive else { throw FleetContextError.contextEnded }
+        guard isActive else { throw Self.contextEnded }
         window.endEditing(true)
         window.rootViewController = viewController
         window.layoutIfNeeded()
@@ -54,28 +64,30 @@ public final class FleetTestContext {
     }
 
     /// Polls `condition` on the main actor, yielding between checks so UIKit can make progress.
-    /// Throws `FleetContextError.timedOut` (naming `description` and a snapshot of the window)
-    /// at the deadline, or `FleetContextError.cancelled` if the task is cancelled.
+    /// Throws a `FleetFailure` of kind `.timedOut` (naming `description` and a snapshot of the
+    /// window) at the deadline, or the task's unchanged `CancellationError` if it is cancelled.
     public func waitUntil(
         _ description: String,
         timeout: TimeInterval = 5,
         pollInterval: TimeInterval = 0.01,
         condition: @MainActor () -> Bool
     ) async throws {
-        guard isActive else { throw FleetContextError.contextEnded }
+        guard isActive else { throw Self.contextEnded }
         let deadline = Date().addingTimeInterval(timeout)
         while true {
-            if Task.isCancelled { throw FleetContextError.cancelled("while waiting for \(description)") }
+            try Task.checkCancellation()
             if condition() { return }
             let remaining = deadline.timeIntervalSinceNow
             if remaining <= 0 {
-                throw FleetContextError.timedOut(description: description, timeout: timeout, context: snapshot())
+                throw FleetFailure(
+                    kind: .timedOut,
+                    action: "wait for \(description)",
+                    target: "FleetTestContext window",
+                    state: "not observed within \(timeout)s. \(snapshot())",
+                    reason: "Wait for a state that occurs, or raise the timeout."
+                )
             }
-            do {
-                try await Task.sleep(nanoseconds: UInt64(min(pollInterval, remaining) * 1_000_000_000))
-            } catch {
-                throw FleetContextError.cancelled("while waiting for \(description)")
-            }
+            try await Task.sleep(nanoseconds: UInt64(min(pollInterval, remaining) * 1_000_000_000))
         }
     }
 
@@ -135,9 +147,9 @@ public final class FleetTestContext {
         } else {
             window.rootViewController = previousRoot
             window.layoutIfNeeded()
-            if wasHidden { window.isHidden = true }
+            window.isHidden = wasHidden
         }
-        if previousKeyWindow !== window, let previous = previousKeyWindow, !previous.isHidden {
+        if let previous = previousKeyWindow, !previous.isHidden {
             previous.makeKey()
         }
         previousRoot = nil

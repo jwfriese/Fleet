@@ -193,8 +193,6 @@
 		51B8AF774775B7B893F7E499 /* UICollectionView+FetchCellSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D01DBD7724E3CEAC94F9E2 /* UICollectionView+FetchCellSpec.swift */; };
 		5EF9C83B6DEB9FFACEBA82C9 /* UICollectionView+SelectItemSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47EF94C4103923DB084B60B3 /* UICollectionView+SelectItemSpec.swift */; };
 		A1F0000000000000000000F6 /* UICollectionView+RecoverableFailureSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F0000000000000000000F4 /* UICollectionView+RecoverableFailureSpec.swift */; };
-		F1EE70000000000000000066 /* FleetContextError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE70000000000000000065 /* FleetContextError.swift */; };
-		F1EE70000000000000000067 /* FleetContextError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE70000000000000000065 /* FleetContextError.swift */; };
 		F1EE70000000000000000069 /* FleetContextCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE70000000000000000068 /* FleetContextCoordinator.swift */; };
 		F1EE7000000000000000006A /* FleetContextCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE70000000000000000068 /* FleetContextCoordinator.swift */; };
 		F1EE7000000000000000006C /* FleetTestContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE7000000000000000006B /* FleetTestContext.swift */; };
@@ -358,7 +356,6 @@
 		37D01DBD7724E3CEAC94F9E2 /* UICollectionView+FetchCellSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+FetchCellSpec.swift"; sourceTree = "<group>"; };
 		47EF94C4103923DB084B60B3 /* UICollectionView+SelectItemSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+SelectItemSpec.swift"; sourceTree = "<group>"; };
 		A1F0000000000000000000F4 /* UICollectionView+RecoverableFailureSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+RecoverableFailureSpec.swift"; sourceTree = "<group>"; };
-		F1EE70000000000000000065 /* FleetContextError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FleetContextError.swift; sourceTree = "<group>"; };
 		F1EE70000000000000000068 /* FleetContextCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FleetContextCoordinator.swift; sourceTree = "<group>"; };
 		F1EE7000000000000000006B /* FleetTestContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FleetTestContext.swift; sourceTree = "<group>"; };
 		F1EE7000000000000000006F /* FleetTestContextSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FleetTestContextSpec.swift; sourceTree = "<group>"; };
@@ -900,7 +897,6 @@
 		F1EE70000000000000000064 /* Hosting */ = {
 			isa = PBXGroup;
 			children = (
-				F1EE70000000000000000065 /* FleetContextError.swift */,
 				F1EE70000000000000000068 /* FleetContextCoordinator.swift */,
 				F1EE7000000000000000006B /* FleetTestContext.swift */,
 			);
@@ -1218,7 +1214,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F1EE70000000000000000066 /* FleetContextError.swift in Sources */,
 				F1EE70000000000000000069 /* FleetContextCoordinator.swift in Sources */,
 				F1EE7000000000000000006C /* FleetTestContext.swift in Sources */,
 				C39E10AC9C85DC7C9B87B9C2 /* CollectionViewError.swift in Sources */,
@@ -1333,7 +1328,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F1EE70000000000000000067 /* FleetContextError.swift in Sources */,
 				F1EE7000000000000000006A /* FleetContextCoordinator.swift in Sources */,
 				F1EE7000000000000000006D /* FleetTestContext.swift in Sources */,
 				3DF370EBE1FB36C77DB6B886 /* CollectionViewError.swift in Sources */,

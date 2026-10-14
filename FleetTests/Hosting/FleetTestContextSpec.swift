@@ -94,10 +94,11 @@ class FleetTestContextSpec: XCTestCase {
                 try await context.waitUntil("a state that never occurs", timeout: 0.1) { false }
             }
             XCTFail("Expected a timeout")
-        } catch let FleetContextError.timedOut(description, timeout, context) {
-            XCTAssertEqual(description, "a state that never occurs")
-            XCTAssertEqual(timeout, 0.1)
-            XCTAssertTrue(context.contains("root=UIViewController"), context)
+        } catch let failure as FleetFailure {
+            XCTAssertEqual(failure.kind, .timedOut)
+            XCTAssertTrue(failure.action.contains("a state that never occurs"), failure.description)
+            XCTAssertTrue(failure.state.contains("0.1"), failure.description)
+            XCTAssertTrue(failure.state.contains("root=UIViewController"), failure.description)
         }
         XCTAssertTrue(hostWindow.rootViewController === originalRoot)
         try await assertLeaseFree()
@@ -117,7 +118,7 @@ class FleetTestContextSpec: XCTestCase {
         do {
             try await task.value
             XCTFail("Expected cancellation")
-        } catch FleetContextError.cancelled {}
+        } catch is CancellationError {}
         XCTAssertEqual(log.events, ["running", "cleanup"])
         try await assertLeaseFree()
     }
@@ -139,7 +140,7 @@ class FleetTestContextSpec: XCTestCase {
         do {
             try await waiter.value
             XCTFail("Expected cancellation while acquiring")
-        } catch FleetContextError.cancelled {}
+        } catch is CancellationError {}
         XCTAssertEqual(FleetContextCoordinator.shared.waiterCount, 0)
         log.events.append("release")
         try await holder.value
@@ -201,6 +202,37 @@ class FleetTestContextSpec: XCTestCase {
         do {
             try escaped?.addCleanup {}
             XCTFail("Expected contextEnded")
-        } catch FleetContextError.contextEnded {}
+        } catch let failure as FleetFailure {
+            XCTAssertEqual(failure.kind, .invalidSetup)
+        }
+    }
+
+    func test_borrowedWindow_restoresVisibilityAndKeyStatusAfterBodyChangesThem() async throws {
+        let other = UIWindow(windowScene: scene)
+        defer { other.isHidden = true }
+        try await Fleet.withContext(window: hostWindow) { context in
+            other.makeKeyAndVisible()
+            context.window.isHidden = true
+        }
+        XCTAssertFalse(hostWindow.isHidden)
+        XCTAssertTrue(hostWindow.isKeyWindow)
+    }
+
+    func test_cancelledQueuedContext_neverRunsBodyDuringHandoff() async throws {
+        let log = EventLog()
+        var waiter: Task<Void, Error>?
+        try await Fleet.withContext(window: hostWindow) { _ in
+            waiter = Task { @MainActor in
+                try await Fleet.withContext(window: self.hostWindow) { _ in log.events.append("waiter-ran") }
+            }
+            while FleetContextCoordinator.shared.waiterCount == 0 { await Task.yield() }
+            waiter?.cancel()
+        }
+        do {
+            try await waiter?.value
+            XCTFail("Expected cancellation")
+        } catch is CancellationError {}
+        XCTAssertFalse(log.events.contains("waiter-ran"))
+        try await assertLeaseFree()
     }
 }

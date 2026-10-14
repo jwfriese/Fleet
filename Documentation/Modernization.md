@@ -64,7 +64,7 @@ UI XCTest classes and helpers use `@MainActor`, with async setup/teardown. The e
 
 ## Scoped window hosting
 
-`Fleet.withContext(window:)` and `Fleet.withContext(scene:)` add a coordinated, cancellation-safe hosting scope with bounded waits and a cleanup registration path (see [Hosting](Hosting.md)). Native specs cover overlapping-attempt exclusion, thrown/timed-out/cancelled bodies, cancellation while queued, borrowed-host restoration and owned-controller deallocation; the package consumers add two tests per platform. Failures use a local `FleetContextError`; the broader typed-failure work from #45 was not present in this checkout.
+`Fleet.withContext(window:)` and `Fleet.withContext(scene:)` add a coordinated, cancellation-safe hosting scope with bounded waits and a cleanup registration path (see [Hosting](Hosting.md)). Native specs cover overlapping-attempt exclusion, thrown/timed-out/cancelled bodies, cancellation while queued, borrowed-host restoration and owned-controller deallocation; the package consumers add two tests per platform. Timeouts and misuse use `FleetFailure`; cancellation propagates as `CancellationError`.
 
 ## Milestone 1 Restore reproducible development
 

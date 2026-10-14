@@ -18,18 +18,17 @@ final class FleetContextCoordinator {
     var isHeld: Bool { held }
     var waiterCount: Int { waiters.count }
 
-    /// Suspends until the lease is granted. Throws `FleetContextError.cancelled` if the task is
+    /// Suspends until the lease is granted. Throws `CancellationError` if the task is
     /// cancelled before the lease is granted; a cancelled waiter never holds or leaks the lease.
     func acquire() async throws {
-        if Task.isCancelled { throw FleetContextError.cancelled("while acquiring the coordination lease") }
+        if Task.isCancelled { throw CancellationError() }
         if !held {
             held = true
             return
         }
         nextID += 1
         let id = nextID
-        do {
-            try await withTaskCancellationHandler {
+        try await withTaskCancellationHandler {
                 try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
                     if Task.isCancelled {
                         continuation.resume(throwing: CancellationError())
@@ -37,11 +36,13 @@ final class FleetContextCoordinator {
                         waiters.append(Waiter(id: id, continuation: continuation))
                     }
                 }
-            } onCancel: {
-                Task { @MainActor in self.cancelWaiter(id) }
-            }
-        } catch is CancellationError {
-            throw FleetContextError.cancelled("while acquiring the coordination lease")
+        } onCancel: {
+            Task { @MainActor in self.cancelWaiter(id) }
+        }
+        // The lease may have been handed to this waiter before its cancellation was processed.
+        if Task.isCancelled {
+            release()
+            throw CancellationError()
         }
     }
 

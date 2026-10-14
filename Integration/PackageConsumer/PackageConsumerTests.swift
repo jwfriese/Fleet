@@ -272,8 +272,9 @@ final class PackageConsumerTests: XCTestCase {
                 try await context.waitUntil("never", timeout: 0.05) { false }
             }
             XCTFail("Expected timeout")
-        } catch FleetContextError.timedOut(let description, _, _) {
-            XCTAssertEqual(description, "never")
+        } catch let failure as FleetFailure {
+            XCTAssertEqual(failure.kind, .timedOut)
+            XCTAssertTrue(failure.action.contains("never"))
         }
     }
 }
