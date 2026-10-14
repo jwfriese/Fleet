@@ -870,3 +870,392 @@ class UITextField_FleetSpec: XCTestCase {
         expect(self.subject.isFirstResponder).to(beFalse())
     }
 }
+
+// MARK: - Unicode, selection, and refusal semantics
+
+extension UITextField_FleetSpec {
+    private func select(_ range: NSRange) {
+        let start = subject.beginningOfDocument
+        let from = subject.position(from: start, offset: range.location)!
+        let to = subject.position(from: from, offset: range.length)!
+        subject.selectedTextRange = subject.textRange(from: from, to: to)
+    }
+
+    private func startEditing(withText text: String, selecting range: NSRange? = nil) {
+        subject.startEditing()
+        subject.text = text
+        select(range ?? NSRange(location: (text as NSString).length, length: 0))
+        delegate.resetState()
+    }
+
+    func test_startEditing_consultsShouldBeginEditingExactlyOnce() {
+        subject.startEditing()
+
+        expect(self.delegate.callLog).to(equal(["textFieldShouldBeginEditing", "textFieldDidBeginEditing"]))
+    }
+
+    func test_startEditing_whenDelegateRefuses_returnsFalseAndNeverBecomesFirstResponder() {
+        delegate.shouldAllowBeginEditing = false
+        let notificationListener = NotificationListener()
+        NotificationCenter.default.addObserver(notificationListener, selector: #selector(NotificationListener.listenTo(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(notificationListener, selector: #selector(NotificationListener.listenTo(notification:)), name: UIResponder.keyboardDidShowNotification, object: nil)
+
+        let result = subject.startEditing()
+
+        expect(result).to(beFalse())
+        expect(self.subject.isFirstResponder).to(beFalse())
+        expect(self.delegate.callLog).to(equal(["textFieldShouldBeginEditing"]))
+        expect(notificationListener.notificationsReceived).to(beEmpty())
+    }
+
+    func test_startEditing_whenAlreadyFirstResponder_returnsTrue() {
+        subject.startEditing()
+
+        expect(self.subject.startEditing()).to(beTrue())
+    }
+
+    func test_stopEditing_consultsShouldEndEditingExactlyOnce() {
+        subject.startEditing()
+        delegate.resetState()
+
+        let result = subject.stopEditing()
+
+        expect(result).to(beTrue())
+        expect(self.subject.isFirstResponder).to(beFalse())
+        expect(self.delegate.callLog).to(equal(["textFieldShouldEndEditing", "textFieldDidEndEditing"]))
+    }
+
+    func test_stopEditing_whenDelegateRefuses_returnsFalseAndKeepsFirstResponder() {
+        subject.startEditing()
+        delegate.resetState()
+        delegate.shouldAllowEndEditing = false
+        let notificationListener = NotificationListener()
+        NotificationCenter.default.addObserver(notificationListener, selector: #selector(NotificationListener.listenTo(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(notificationListener, selector: #selector(NotificationListener.listenTo(notification:)), name: UIResponder.keyboardDidHideNotification, object: nil)
+
+        let result = subject.stopEditing()
+
+        expect(result).to(beFalse())
+        expect(self.subject.isFirstResponder).to(beTrue())
+        expect(self.delegate.callLog).to(equal(["textFieldShouldEndEditing"]))
+        expect(notificationListener.notificationsReceived).to(beEmpty())
+    }
+
+    func test_enter_whenDelegateRefusesToBeginEditing_stopsBeforeChangingText() {
+        subject.text = "kept"
+        delegate.shouldAllowBeginEditing = false
+
+        let result = subject.enter(text: "new")
+
+        expect(result).to(beFalse())
+        expect(self.subject.text).to(equal("kept"))
+        expect(self.delegate.callLog).to(equal(["textFieldShouldBeginEditing"]))
+        expect(self.subject.isFirstResponder).to(beFalse())
+    }
+
+    func test_enter_whenDelegateRefusesToEndEditing_typesTextAndReportsFailure() {
+        delegate.shouldAllowEndEditing = false
+
+        let result = subject.enter(text: "ab")
+
+        expect(result).to(beFalse())
+        expect(self.subject.text).to(equal("ab"))
+        expect(self.subject.isFirstResponder).to(beTrue())
+        expect(self.delegate.didCallDidEndEditing).to(beFalse())
+    }
+
+    func test_enter_whenEverythingSucceeds_returnsTrue() {
+        expect(self.subject.enter(text: "ab")).to(beTrue())
+        expect(self.subject.text).to(equal("ab"))
+        expect(self.subject.isFirstResponder).to(beFalse())
+    }
+
+    func test_type_withEmojiAlreadyInText_reportsUTF16Locations() {
+        startEditing(withText: "a😀")
+
+        subject.type(text: "b😀")
+
+        expect(self.subject.text).to(equal("a😀b😀"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 3, length: 0), NSRange(location: 4, length: 0)]))
+        expect(self.delegate.callLog).to(equal(["shouldChange", "shouldChange"]))
+    }
+
+    func test_type_withCombiningCharacters_typesEachGraphemeClusterAsOneChange() {
+        startEditing(withText: "")
+
+        subject.type(text: "e\u{301}f")
+
+        expect(self.subject.text).to(equal("e\u{301}f"))
+        expect(self.delegate.textChanges).to(equal(["e\u{301}", "f"]))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 0, length: 0), NSRange(location: 2, length: 0)]))
+    }
+
+    func test_type_atCaretInMiddleOfText_insertsAtCaret() {
+        startEditing(withText: "hello", selecting: NSRange(location: 2, length: 0))
+
+        subject.type(text: "Z")
+
+        expect(self.subject.text).to(equal("heZllo"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 2, length: 0)]))
+    }
+
+    func test_type_withSelection_firstCharacterReplacesSelection() {
+        startEditing(withText: "hello", selecting: NSRange(location: 1, length: 2))
+
+        subject.type(text: "XY")
+
+        expect(self.subject.text).to(equal("hXYlo"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 1, length: 2), NSRange(location: 2, length: 0)]))
+    }
+
+    func test_type_whenDelegateRefusesChange_leavesSelectionAndTextUntouched() {
+        startEditing(withText: "hello", selecting: NSRange(location: 1, length: 2))
+        delegate.shouldAllowChangeText = false
+
+        subject.type(text: "X")
+
+        expect(self.subject.text).to(equal("hello"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 1, length: 2)]))
+    }
+
+    func test_type_emptyString_changesNothing() {
+        startEditing(withText: "hi")
+
+        subject.type(text: "")
+
+        expect(self.subject.text).to(equal("hi"))
+        expect(self.delegate.callLog).to(beEmpty())
+    }
+
+    func test_paste_withSelection_replacesSelectionInOneChange() {
+        startEditing(withText: "a😀bc", selecting: NSRange(location: 1, length: 2))
+
+        subject.paste(text: "XYZ")
+
+        expect(self.subject.text).to(equal("aXYZbc"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 1, length: 2)]))
+        expect(self.delegate.textChanges).to(equal(["XYZ"]))
+    }
+
+    func test_paste_atCaretInMiddleOfText_insertsAtCaretWithUTF16Location() {
+        startEditing(withText: "a😀bc", selecting: NSRange(location: 3, length: 0))
+
+        subject.paste(text: "😀")
+
+        expect(self.subject.text).to(equal("a😀😀bc"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 3, length: 0)]))
+    }
+
+    func test_paste_whenDelegateRefuses_leavesTextUnchanged() {
+        startEditing(withText: "hello", selecting: NSRange(location: 1, length: 2))
+        delegate.shouldAllowChangeText = false
+
+        subject.paste(text: "XYZ")
+
+        expect(self.subject.text).to(equal("hello"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 1, length: 2)]))
+    }
+
+    func test_backspace_afterEmoji_removesWholeEmojiAndReportsItsUTF16Range() {
+        startEditing(withText: "a😀")
+
+        subject.backspace()
+
+        expect(self.subject.text).to(equal("a"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 1, length: 2)]))
+    }
+
+    func test_backspace_afterJoinedEmojiSequence_removesWholeSequence() {
+        startEditing(withText: "a👨‍👩‍👧")
+
+        subject.backspace()
+
+        expect(self.subject.text).to(equal("a"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 1, length: 8)]))
+    }
+
+    func test_backspace_afterCombiningCharacter_removesWholeComposedSequence() {
+        startEditing(withText: "ae\u{301}")
+
+        subject.backspace()
+
+        expect(self.subject.text).to(equal("a"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 1, length: 2)]))
+    }
+
+    func test_backspace_withSelection_deletesSelectionOnly() {
+        startEditing(withText: "hello", selecting: NSRange(location: 1, length: 2))
+
+        subject.backspace()
+
+        expect(self.subject.text).to(equal("hlo"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 1, length: 2)]))
+    }
+
+    func test_backspace_atCaretInMiddleOfText_deletesCharacterBeforeCaret() {
+        startEditing(withText: "hello", selecting: NSRange(location: 3, length: 0))
+
+        subject.backspace()
+
+        expect(self.subject.text).to(equal("helo"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 2, length: 1)]))
+    }
+
+    func test_backspace_atStartOfNonEmptyText_changesNothing() {
+        startEditing(withText: "hello", selecting: NSRange(location: 0, length: 0))
+
+        subject.backspace()
+
+        expect(self.subject.text).to(equal("hello"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 0, length: 0)]))
+    }
+
+    func test_backspace_whenDelegateRefuses_leavesComposedCharacterInPlace() {
+        startEditing(withText: "a😀")
+        delegate.shouldAllowChangeText = false
+
+        subject.backspace()
+
+        expect(self.subject.text).to(equal("a😀"))
+        expect(self.delegate.textRanges).to(equal([NSRange(location: 1, length: 2)]))
+    }
+
+    func test_backspaceAll_withMixedUnicode_deletesEveryCharacterWithUTF16Ranges() {
+        startEditing(withText: "a😀e\u{301}")
+
+        subject.backspaceAll()
+
+        expect(self.subject.text).to(equal(""))
+        expect(self.delegate.textRanges).to(equal([
+            NSRange(location: 3, length: 2),
+            NSRange(location: 1, length: 2),
+            NSRange(location: 0, length: 1)
+        ]))
+    }
+
+    func test_backspaceAll_withSelectionInMiddle_deletesAllText() {
+        startEditing(withText: "hello", selecting: NSRange(location: 1, length: 2))
+
+        subject.backspaceAll()
+
+        expect(self.subject.text).to(equal(""))
+        expect(self.delegate.textRanges.count).to(equal(5))
+    }
+
+    func test_throwingForms_whenNotFirstResponder_throwInvalidSetupInsteadOfRaising() {
+        for call in [
+            { _ = try self.subject.stopEditingOrThrow() },
+            { _ = try self.subject.typeOrThrow(text: "a") },
+            { _ = try self.subject.pasteOrThrow(text: "a") },
+            { _ = try self.subject.backspaceOrThrow() },
+            { _ = try self.subject.backspaceAllOrThrow() },
+        ] as [() throws -> Void] {
+            XCTAssertThrowsError(try call()) { error in
+                XCTAssertEqual((error as? FleetFailure)?.kind, .invalidSetup)
+                XCTAssertEqual((error as? FleetFailure)?.target, "UITextField")
+            }
+        }
+    }
+
+    func test_startEditingOrThrow_whenHidden_throwsUnavailableInteraction() {
+        subject.isHidden = true
+        XCTAssertThrowsError(try subject.startEditingOrThrow()) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .unavailableInteraction)
+        }
+        XCTAssertFalse(subject.isFirstResponder)
+    }
+
+    func test_startEditingOrThrow_whenNotInWindow_throwsInvalidSetup() {
+        subject.removeFromSuperview()
+        XCTAssertThrowsError(try subject.startEditingOrThrow()) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .invalidSetup)
+        }
+    }
+
+    func test_throwingForms_reportPerformedAndEditText() throws {
+        XCTAssertEqual(try subject.enterOrThrow(text: "ab"), .performed)
+        XCTAssertEqual(subject.text, "ab")
+        _ = try subject.startEditingOrThrow()
+        XCTAssertEqual(try subject.backspaceAllOrThrow(), .performed)
+        XCTAssertEqual(subject.text, "")
+        XCTAssertEqual(try subject.pasteOrThrow(text: "xy"), .performed)
+        XCTAssertEqual(subject.text, "xy")
+    }
+
+    func test_startEditingOrThrow_whenDelegateRefuses_returnsRefusalNotError() throws {
+        delegate.shouldAllowBeginEditing = false
+        let outcome = try subject.startEditingOrThrow()
+        XCTAssertEqual(outcome, .refusedByDelegate(method: "textFieldShouldBeginEditing(_:)"))
+        XCTAssertFalse(subject.isFirstResponder)
+    }
+
+    func test_startEditingOrThrow_whenCannotBecomeFirstResponder_throwsUnavailableInsteadOfRefusal() {
+        let unfocusable = UnfocusableTextField()
+        subject.superview!.addSubview(unfocusable)
+        defer { unfocusable.removeFromSuperview() }
+        XCTAssertNil(unfocusable.delegate); XCTAssertFalse(unfocusable.canBecomeFirstResponder)
+        XCTAssertThrowsError(try unfocusable.startEditingOrThrow()) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .unavailableInteraction)
+            XCTAssertEqual((error as? FleetFailure)?.target, "UITextField")
+        }
+        XCTAssertFalse(unfocusable.isFirstResponder)
+    }
+
+    func test_startEditingOrThrow_whenCannotBecomeFirstResponderWithAcceptingDelegate_throwsUnavailableInsteadOfRefusal() {
+        let unfocusable = UnfocusableTextField()
+        subject.superview!.addSubview(unfocusable)
+        defer { unfocusable.removeFromSuperview() }
+        delegate.shouldAllowBeginEditing = true
+        unfocusable.delegate = delegate
+        XCTAssertFalse(unfocusable.canBecomeFirstResponder)
+        XCTAssertThrowsError(try unfocusable.startEditingOrThrow()) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .unavailableInteraction)
+        }
+        XCTAssertFalse(unfocusable.isFirstResponder)
+        XCTAssertTrue(unfocusable.delegate === delegate)
+    }
+
+    func test_stopEditingOrThrow_whenCannotResign_throwsUnavailableInsteadOfRefusal() throws {
+        let sticky = StickyTextField()
+        subject.superview!.addSubview(sticky)
+        defer { sticky.allowResign = true; sticky.resignFirstResponder(); sticky.removeFromSuperview() }
+        for acceptingDelegate in [false, true] {
+            sticky.allowResign = true
+            sticky.delegate = acceptingDelegate ? delegate : nil
+            delegate.shouldAllowEndEditing = true
+            try sticky.startEditingOrThrow()
+            XCTAssertTrue(sticky.isFirstResponder)
+            sticky.allowResign = false
+            XCTAssertThrowsError(try sticky.stopEditingOrThrow()) { error in
+                XCTAssertEqual((error as? FleetFailure)?.kind, .unavailableInteraction)
+                XCTAssertEqual((error as? FleetFailure)?.target, "UITextField")
+            }
+            XCTAssertTrue(sticky.isFirstResponder)
+            XCTAssertTrue(sticky.delegate === (acceptingDelegate ? delegate : nil))
+            sticky.allowResign = true
+            sticky.resignFirstResponder()
+        }
+    }
+
+    func test_startEditingOrThrow_preservesDelegateRemovedByDidBeginEditing() throws {
+        let removing = DelegateRemovingOnBegin()
+        subject.delegate = removing
+        _ = try subject.startEditingOrThrow()
+        XCTAssertTrue(subject.isFirstResponder)
+        XCTAssertNil(subject.delegate)
+    }
+}
+
+@MainActor
+private final class DelegateRemovingOnBegin: NSObject, UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) { textField.delegate = nil }
+}
+
+private final class UnfocusableTextField: UITextField {
+    override var canBecomeFirstResponder: Bool { false }
+}
+
+private final class StickyTextField: UITextField {
+    var allowResign = true
+    override var canResignFirstResponder: Bool { allowResign }
+}

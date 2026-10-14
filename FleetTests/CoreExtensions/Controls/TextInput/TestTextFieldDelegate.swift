@@ -9,6 +9,7 @@ class TestTextFieldDelegate: NSObject {
     var didCallShouldClear: Bool = false
     var textChanges: [String] = []
     var textRanges: [NSRange] = []
+    var callLog: [String] = []
     var shouldAllowBeginEditing = true
     var shouldAllowEndEditing = true
     var shouldAllowClearText = true
@@ -24,6 +25,7 @@ extension TestTextFieldDelegate: UITextFieldDelegate {
         didCallShouldClear = false
         textChanges = []
         textRanges = []
+        callLog = []
         shouldAllowBeginEditing = true
         shouldAllowEndEditing = true
         shouldAllowClearText = true
@@ -31,24 +33,29 @@ extension TestTextFieldDelegate: UITextFieldDelegate {
     }
 
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        callLog.append("textFieldShouldBeginEditing")
         didCallShouldBeginEditing = true
         return shouldAllowBeginEditing
     }
 
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
+        callLog.append("textFieldShouldEndEditing")
         didCallShouldEndEditing = true
         return shouldAllowEndEditing
     }
 
     func textFieldDidBeginEditing(_ textField: UITextField) {
+        callLog.append("textFieldDidBeginEditing")
         didCallDidBeginEditing = true
     }
 
     func textFieldDidEndEditing(_ textField: UITextField) {
+        callLog.append("textFieldDidEndEditing")
         didCallDidEndEditing = true
     }
 
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        callLog.append("shouldChange")
         textRanges.append(range)
         if shouldAllowChangeText {
             textChanges.append(string)
