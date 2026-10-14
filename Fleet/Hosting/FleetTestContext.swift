@@ -214,7 +214,7 @@ extension Fleet {
         window: UIWindow,
         _ body: @MainActor (FleetTestContext) async throws -> T
     ) async throws -> T {
-        try await run(FleetTestContext(window: window, ownsWindow: false), body)
+        try await run({ FleetTestContext(window: window, ownsWindow: false) }, body)
     }
 
     /// Runs `body` with a context that creates a window for the explicitly supplied `scene`,
@@ -225,17 +225,19 @@ extension Fleet {
         scene: UIWindowScene,
         _ body: @MainActor (FleetTestContext) async throws -> T
     ) async throws -> T {
-        let window = UIWindow(windowScene: scene)
-        return try await run(FleetTestContext(window: window, ownsWindow: true), body)
+        // The window is created only after the lease is acquired, so a queued context never
+        // touches the scene during another context's lifetime.
+        try await run({ FleetTestContext(window: UIWindow(windowScene: scene), ownsWindow: true) }, body)
     }
 
     @MainActor
     private static func run<T>(
-        _ context: FleetTestContext,
+        _ makeContext: @MainActor () -> FleetTestContext,
         _ body: @MainActor (FleetTestContext) async throws -> T
     ) async throws -> T {
         let coordinator = FleetContextCoordinator.shared
         try await coordinator.acquire()
+        let context = makeContext()
         context.setUp()
         do {
             let value = try await body(context)

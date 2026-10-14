@@ -273,4 +273,18 @@ class FleetTestContextSpec: XCTestCase {
         XCTAssertFalse(log.events.contains("waiter-ran"))
         try await assertLeaseFree()
     }
+
+    func test_queuedSceneContext_doesNotCreateWindowUntilLeaseIsHeld() async throws {
+        var waiter: Task<Void, Error>?
+        try await Fleet.withContext(window: hostWindow) { _ in
+            let before = self.scene.windows.map { ObjectIdentifier($0) }
+            waiter = Task { @MainActor in
+                try await Fleet.withContext(scene: self.scene) { _ in }
+            }
+            while FleetContextCoordinator.shared.waiterCount == 0 { await Task.yield() }
+            XCTAssertEqual(self.scene.windows.map { ObjectIdentifier($0) }, before)
+        }
+        try await waiter?.value
+        try await assertLeaseFree()
+    }
 }
