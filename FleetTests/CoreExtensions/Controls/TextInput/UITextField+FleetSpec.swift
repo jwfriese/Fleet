@@ -1200,6 +1200,20 @@ extension UITextField_FleetSpec {
         }
         XCTAssertFalse(unfocusable.isFirstResponder)
     }
+
+    func test_startEditingOrThrow_whenCannotBecomeFirstResponderWithAcceptingDelegate_throwsUnavailableInsteadOfRefusal() {
+        let unfocusable = UnfocusableTextField()
+        subject.superview!.addSubview(unfocusable)
+        defer { unfocusable.removeFromSuperview() }
+        delegate.shouldAllowBeginEditing = true
+        unfocusable.delegate = delegate
+        XCTAssertFalse(unfocusable.canBecomeFirstResponder)
+        XCTAssertThrowsError(try unfocusable.startEditingOrThrow()) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .unavailableInteraction)
+        }
+        XCTAssertFalse(unfocusable.isFirstResponder)
+        XCTAssertTrue(unfocusable.delegate === delegate)
+    }
 }
 
 private final class UnfocusableTextField: UITextField {

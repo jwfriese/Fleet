@@ -359,15 +359,20 @@ extension UITextField {
                                reason: "UITextField unavailable for editing: Text field is not enabled.")
         }
         sendActions(for: .touchDown)
-        guard becomeFirstResponder() else {
+        let vetoRecorder = BeginEditingVetoRecorder(wrapping: delegate)
+        let originalDelegate = delegate
+        if originalDelegate != nil { delegate = vetoRecorder }
+        let didBecome = becomeFirstResponder()
+        if originalDelegate != nil { delegate = originalDelegate }
+        guard didBecome else {
             if window == nil {
                 throw FleetFailure(kind: .invalidSetup, action: "start editing", target: "UITextField",
                                state: "the text field is not in a window",
                                reason: "Could not edit UITextField: Text field failed to become first responder. This can happen if the field is not part of the window's hierarchy.")
             }
-            // UIKit's canBecomeFirstResponder consults the delegate, so only a delegate implementing the
-            // selector can have vetoed; any other failure is an unavailable interaction.
-            if !(delegate?.responds(to: #selector(UITextFieldDelegate.textFieldShouldBeginEditing(_:))) ?? false) {
+            // UIKit consults the delegate from canBecomeFirstResponder, so a veto is only reported when the
+            // recorder observed the delegate return false; any other failure is an unavailable interaction.
+            if !vetoRecorder.vetoed {
                 throw FleetFailure(kind: .unavailableInteraction, action: "start editing", target: "UITextField",
                                    state: "cannot become first responder (no delegate veto)",
                                    reason: "UITextField unavailable for editing: the control failed to become first responder and no delegate refused.")
@@ -459,3 +464,30 @@ extension UITextField {
 }
 
 #endif
+
+/// Forwards every delegate message to the real delegate while remembering whether `textFieldShouldBeginEditing(_:)` returned `false`,
+/// so a veto can be told apart from other focus failures without dispatching the callback a second time.
+@MainActor
+private final class BeginEditingVetoRecorder: NSObject, UITextFieldDelegate {
+    private weak var target: (UITextFieldDelegate)?
+    private(set) var vetoed = false
+
+    init(wrapping target: UITextFieldDelegate?) {
+        self.target = target
+    }
+
+    @objc func textFieldShouldBeginEditing(_ tf: UITextField) -> Bool {
+        let result = target?.textFieldShouldBeginEditing?(tf) ?? true
+        if !result { vetoed = true }
+        return result
+    }
+
+    override func responds(to selector: Selector!) -> Bool {
+        if selector == #selector(UITextFieldDelegate.textFieldShouldBeginEditing(_:)) { return target?.responds(to: selector) ?? false }
+        return super.responds(to: selector) || (target?.responds(to: selector) ?? false)
+    }
+
+    override func forwardingTarget(for selector: Selector!) -> Any? {
+        target?.responds(to: selector) == true ? target : super.forwardingTarget(for: selector)
+    }
+}

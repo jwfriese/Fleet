@@ -268,15 +268,20 @@ extension UITextView {
                                state: "not editable",
                                reason: "UITextView unavailable for editing: Text view is not editable.")
         }
-        guard becomeFirstResponder() else {
+        let vetoRecorder = BeginEditingVetoRecorder(wrapping: delegate)
+        let originalDelegate = delegate
+        if originalDelegate != nil { delegate = vetoRecorder }
+        let didBecome = becomeFirstResponder()
+        if originalDelegate != nil { delegate = originalDelegate }
+        guard didBecome else {
             if window == nil {
                 throw FleetFailure(kind: .invalidSetup, action: "start editing", target: "UITextView",
                                state: "the text view is not in a window",
                                reason: "Could not edit UITextView: Text view failed to become first responder. This can happen if the view is not part of the window's hierarchy.")
             }
-            // UIKit's canBecomeFirstResponder consults the delegate, so only a delegate implementing the
-            // selector can have vetoed; any other failure is an unavailable interaction.
-            if !(delegate?.responds(to: #selector(UITextViewDelegate.textViewShouldBeginEditing(_:))) ?? false) {
+            // UIKit consults the delegate from canBecomeFirstResponder, so a veto is only reported when the
+            // recorder observed the delegate return false; any other failure is an unavailable interaction.
+            if !vetoRecorder.vetoed {
                 throw FleetFailure(kind: .unavailableInteraction, action: "start editing", target: "UITextView",
                                    state: "cannot become first responder (no delegate veto)",
                                    reason: "UITextView unavailable for editing: the control failed to become first responder and no delegate refused.")
@@ -368,3 +373,30 @@ extension UITextView {
 }
 
 #endif
+
+/// Forwards every delegate message to the real delegate while remembering whether `textViewShouldBeginEditing(_:)` returned `false`,
+/// so a veto can be told apart from other focus failures without dispatching the callback a second time.
+@MainActor
+private final class BeginEditingVetoRecorder: NSObject, UITextViewDelegate {
+    private weak var target: (UITextViewDelegate)?
+    private(set) var vetoed = false
+
+    init(wrapping target: UITextViewDelegate?) {
+        self.target = target
+    }
+
+    @objc func textViewShouldBeginEditing(_ tv: UITextView) -> Bool {
+        let result = target?.textViewShouldBeginEditing?(tv) ?? true
+        if !result { vetoed = true }
+        return result
+    }
+
+    override func responds(to selector: Selector!) -> Bool {
+        if selector == #selector(UITextViewDelegate.textViewShouldBeginEditing(_:)) { return target?.responds(to: selector) ?? false }
+        return super.responds(to: selector) || (target?.responds(to: selector) ?? false)
+    }
+
+    override func forwardingTarget(for selector: Selector!) -> Any? {
+        target?.responds(to: selector) == true ? target : super.forwardingTarget(for: selector)
+    }
+}
