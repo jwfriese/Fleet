@@ -787,4 +787,51 @@ extension UITextView_FleetSpec {
         expect(self.subject.text).to(equal(""))
         expect(self.delegate.textRanges.count).to(equal(5))
     }
+
+    func test_throwingForms_whenNotFirstResponder_throwInvalidSetupInsteadOfRaising() {
+        for call in [
+            { _ = try self.subject.stopEditingOrThrow() },
+            { _ = try self.subject.typeOrThrow(text: "a") },
+            { _ = try self.subject.pasteOrThrow(text: "a") },
+            { _ = try self.subject.backspaceOrThrow() },
+            { _ = try self.subject.backspaceAllOrThrow() },
+        ] as [() throws -> Void] {
+            XCTAssertThrowsError(try call()) { error in
+                XCTAssertEqual((error as? FleetFailure)?.kind, .invalidSetup)
+                XCTAssertEqual((error as? FleetFailure)?.target, "UITextView")
+            }
+        }
+    }
+
+    func test_startEditingOrThrow_whenHidden_throwsUnavailableInteraction() {
+        subject.isHidden = true
+        XCTAssertThrowsError(try subject.startEditingOrThrow()) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .unavailableInteraction)
+        }
+        XCTAssertFalse(subject.isFirstResponder)
+    }
+
+    func test_startEditingOrThrow_whenNotInWindow_throwsInvalidSetup() {
+        subject.removeFromSuperview()
+        XCTAssertThrowsError(try subject.startEditingOrThrow()) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .invalidSetup)
+        }
+    }
+
+    func test_throwingForms_reportPerformedAndEditText() throws {
+        XCTAssertEqual(try subject.enterOrThrow(text: "ab"), .performed)
+        XCTAssertEqual(subject.text, "ab")
+        _ = try subject.startEditingOrThrow()
+        XCTAssertEqual(try subject.backspaceAllOrThrow(), .performed)
+        XCTAssertEqual(subject.text, "")
+        XCTAssertEqual(try subject.pasteOrThrow(text: "xy"), .performed)
+        XCTAssertEqual(subject.text, "xy")
+    }
+
+    func test_startEditingOrThrow_whenDelegateRefuses_returnsRefusalNotError() throws {
+        delegate.shouldAllowBeginEditing = false
+        let outcome = try subject.startEditingOrThrow()
+        XCTAssertEqual(outcome, .refusedByDelegate(method: "textViewShouldBeginEditing(_:)"))
+        XCTAssertFalse(subject.isFirstResponder)
+    }
 }

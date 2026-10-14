@@ -111,9 +111,19 @@ controller?.textField.enter(text: "text")
 
 ## Notes
 
-- Methods raise Objective-C exceptions, not Swift errors. Do not use `try`. See the [FAQ](FAQ.md#why-does-fleet-raise-exceptions-and-how-should-i-handle-them).
+- The plain methods raise Objective-C exceptions, not Swift errors; do not use `try` with them. The `...OrThrow` forms below report recoverable `FleetFailure` errors. See the [FAQ](FAQ.md#why-does-fleet-raise-exceptions-and-how-should-i-handle-them).
 - The textField must be in the key window's hierarchy to become first responder.
 - These helpers dispatch the editing events programmatically. They do not prove that the system keyboard appears or that a user could reach the control.
+
+### Recoverable failures
+
+`enterOrThrow(text:)`, `startEditingOrThrow()`, `stopEditingOrThrow()`, `typeOrThrow(text:)`, `pasteOrThrow(text:)`,
+`backspaceOrThrow()`, and `backspaceAllOrThrow()` perform the same interaction as their plain counterparts but throw a
+`FleetFailure` instead of raising, and return a `FleetInteractionOutcome`. `.unavailableInteraction` means the control is
+hidden, disabled, or otherwise not editable; `.invalidSetup` means it is not in a window or is not first responder when
+required. A delegate veto is not an error: the call returns `.refusedByDelegate(method:)` (for `typeOrThrow` and
+`backspaceAllOrThrow`, if any step was vetoed) and the forbidden edit does not happen. The plain methods call these and
+raise the failure's reason as before.
 
 ## Selection, Unicode, and refusal semantics
 

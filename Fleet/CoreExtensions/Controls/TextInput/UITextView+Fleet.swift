@@ -5,9 +5,12 @@ extension Fleet {
     enum TextViewError: FleetErrorDefinition {
         case controlUnavailable(String)
         case editingFlow(String)
+        case legacy(FleetFailure)
 
         var errorMessage: String {
             switch self {
+            case .legacy(let failure):
+                return failure.reason
             case .controlUnavailable(let message):
                 return "UITextView unavailable for editing: \(message)"
             case .editingFlow(let message):
@@ -42,9 +45,15 @@ extension UITextView {
      */
     @discardableResult
     public func enter(text: String) -> Bool {
-        guard startEditing() else { return false }
-        type(text: text)
-        return stopEditing()
+        do {
+            return try enterOrThrow(text: text) == .performed
+        } catch let failure as FleetFailure {
+            Fleet.TextEditing.raise(failure, as: Fleet.TextViewError.legacy)
+            return false
+        } catch {
+            FleetError(Fleet.InternalError.unrecoverable(details: "\(error)")).raise()
+            return false
+        }
     }
 
     /**
@@ -67,34 +76,15 @@ extension UITextView {
      */
     @discardableResult
     public func startEditing() -> Bool {
-        if !isUserInteractionEnabled {
-            FleetError(Fleet.TextViewError.controlUnavailable("View does not allow user interaction.")).raise()
+        do {
+            return try startEditingOrThrow() == .performed
+        } catch let failure as FleetFailure {
+            Fleet.TextEditing.raise(failure, as: Fleet.TextViewError.legacy)
+            return false
+        } catch {
+            FleetError(Fleet.InternalError.unrecoverable(details: "\(error)")).raise()
             return false
         }
-        if isFirstResponder {
-            return true
-        }
-        guard !isHidden else {
-            FleetError(Fleet.TextViewError.controlUnavailable("Text view is not visible.")).raise()
-            return false
-        }
-        guard isSelectable else {
-            FleetError(Fleet.TextViewError.controlUnavailable("Text view is not selectable.")).raise()
-            return false
-        }
-        guard isEditable else {
-            FleetError(Fleet.TextViewError.controlUnavailable("Text view is not editable.")).raise()
-            return false
-        }
-        guard becomeFirstResponder() else {
-            if window == nil {
-                FleetError(Fleet.TextViewError.editingFlow("Text view failed to become first responder. This can happen if the view is not part of the window's hierarchy.")).raise()
-            }
-            return false
-        }
-        NotificationCenter.default.post(name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.post(name: UIResponder.keyboardDidShowNotification, object: nil)
-        return true
     }
 
     /**
@@ -116,16 +106,15 @@ extension UITextView {
      */
     @discardableResult
     public func stopEditing() -> Bool {
-        guard isFirstResponder else {
-            FleetError(Fleet.TextViewError.editingFlow("Must start editing the text view before you can stop editing it.")).raise()
+        do {
+            return try stopEditingOrThrow() == .performed
+        } catch let failure as FleetFailure {
+            Fleet.TextEditing.raise(failure, as: Fleet.TextViewError.legacy)
+            return false
+        } catch {
+            FleetError(Fleet.InternalError.unrecoverable(details: "\(error)")).raise()
             return false
         }
-        guard resignFirstResponder() else {
-            return false
-        }
-        NotificationCenter.default.post(name: UIResponder.keyboardWillHideNotification, object: nil)
-        NotificationCenter.default.post(name: UIResponder.keyboardDidHideNotification, object: nil)
-        return true
     }
 
     /**
@@ -145,13 +134,12 @@ extension UITextView {
      if it returns `false` that character is skipped and typing continues with the next.
      */
     public func type(text newText: String) {
-        guard isFirstResponder else {
-            FleetError(Fleet.TextViewError.editingFlow("Must start editing the text view before text can be typed into it.")).raise()
-            return
-        }
-
-        for character in newText {
-            replaceSelection(with: String(character))
+        do {
+            _ = try typeOrThrow(text: newText)
+        } catch let failure as FleetFailure {
+            Fleet.TextEditing.raise(failure, as: Fleet.TextViewError.legacy)
+        } catch {
+            FleetError(Fleet.InternalError.unrecoverable(details: "\(error)")).raise()
         }
     }
 
@@ -169,12 +157,13 @@ extension UITextView {
      to the delegate with a UTF-16 range. If the delegate refuses, the text is unchanged.
      */
     public func paste(text textToPaste: String) {
-        guard isFirstResponder else {
-            FleetError(Fleet.TextViewError.editingFlow("Must start editing the text view before text can be pasted into it.")).raise()
-            return
+        do {
+            _ = try pasteOrThrow(text: textToPaste)
+        } catch let failure as FleetFailure {
+            Fleet.TextEditing.raise(failure, as: Fleet.TextViewError.legacy)
+        } catch {
+            FleetError(Fleet.InternalError.unrecoverable(details: "\(error)")).raise()
         }
-
-        replaceSelection(with: textToPaste)
     }
 
     /**
@@ -191,14 +180,12 @@ extension UITextView {
      nothing changes.
      */
     public func backspace() {
-        guard isFirstResponder else {
-            FleetError(Fleet.TextViewError.editingFlow("Must start editing the text view before backspaces can be performed.")).raise()
-            return
-        }
-
-        let range = Fleet.TextEditing.backspaceRange(in: text ?? "", selection: Fleet.TextEditing.selectedRange(in: self))
-        if shouldChange(range, replacement: "") && range.length > 0 {
-            deleteBackward()
+        do {
+            _ = try backspaceOrThrow()
+        } catch let failure as FleetFailure {
+            Fleet.TextEditing.raise(failure, as: Fleet.TextViewError.legacy)
+        } catch {
+            FleetError(Fleet.InternalError.unrecoverable(details: "\(error)")).raise()
         }
     }
 
@@ -215,20 +202,16 @@ extension UITextView {
      text in place; each backspace is still offered to it.
      */
     public func backspaceAll() {
-        guard isFirstResponder else {
-            FleetError(Fleet.TextViewError.editingFlow("Must start editing the text view before backspaces can be performed.")).raise()
-            return
-        }
-
-        Fleet.TextEditing.moveCaretToEnd(of: self)
-        let characterCount = (text ?? "").count
-
-        for _ in 0..<characterCount {
-            backspace()
+        do {
+            _ = try backspaceAllOrThrow()
+        } catch let failure as FleetFailure {
+            Fleet.TextEditing.raise(failure, as: Fleet.TextViewError.legacy)
+        } catch {
+            FleetError(Fleet.InternalError.unrecoverable(details: "\(error)")).raise()
         }
     }
 
-    private func shouldChange(_ range: NSRange, replacement: String) -> Bool {
+    fileprivate func shouldChange(_ range: NSRange, replacement: String) -> Bool {
         guard let delegate = delegate,
               delegate.responds(to: #selector(UITextViewDelegate.textView(_:shouldChangeTextIn:replacementText:))) else {
             return true
@@ -236,11 +219,144 @@ extension UITextView {
         return delegate.textView!(self, shouldChangeTextIn: range, replacementText: replacement)
     }
 
-    private func replaceSelection(with replacement: String) {
+    @discardableResult
+    fileprivate func replaceSelection(with replacement: String) -> Bool {
         let range = Fleet.TextEditing.selectedRange(in: self)
-        if shouldChange(range, replacement: replacement) {
-            insertText(replacement)
+        guard shouldChange(range, replacement: replacement) else { return false }
+        insertText(replacement)
+        return true
+    }
+}
+
+extension UITextView {
+    /// Like `enter(text:)`, but reports failures as a `FleetFailure` instead of raising an `NSException`.
+    /// Stops before typing when beginning is refused; returns the refusal outcome of whichever step a delegate vetoed.
+    @discardableResult
+    public func enterOrThrow(text: String) throws -> FleetInteractionOutcome {
+        let began = try startEditingOrThrow()
+        guard began == .performed else { return began }
+        let typed = try typeOrThrow(text: text)
+        let ended = try stopEditingOrThrow()
+        guard ended == .performed else { return ended }
+        return typed
+    }
+
+    /// Like `startEditing()`, but throws a `FleetFailure` (`.unavailableInteraction` when the control cannot be edited,
+    /// `.invalidSetup` when it is not in a window) and returns `.refusedByDelegate` when `textViewShouldBeginEditing(_:)` returns `false`.
+    @discardableResult
+    public func startEditingOrThrow() throws -> FleetInteractionOutcome {
+        if !isUserInteractionEnabled {
+            throw FleetFailure(kind: .unavailableInteraction, action: "start editing", target: "UITextView",
+                               state: "user interaction is disabled",
+                               reason: "UITextView unavailable for editing: View does not allow user interaction.")
         }
+        if isFirstResponder {
+            return .performed
+        }
+        if isHidden {
+            throw FleetFailure(kind: .unavailableInteraction, action: "start editing", target: "UITextView",
+                               state: "hidden",
+                               reason: "UITextView unavailable for editing: Text view is not visible.")
+        }
+        if !isSelectable {
+            throw FleetFailure(kind: .unavailableInteraction, action: "start editing", target: "UITextView",
+                               state: "not selectable",
+                               reason: "UITextView unavailable for editing: Text view is not selectable.")
+        }
+        if !isEditable {
+            throw FleetFailure(kind: .unavailableInteraction, action: "start editing", target: "UITextView",
+                               state: "not editable",
+                               reason: "UITextView unavailable for editing: Text view is not editable.")
+        }
+        guard becomeFirstResponder() else {
+            if window == nil {
+                throw FleetFailure(kind: .invalidSetup, action: "start editing", target: "UITextView",
+                               state: "the text view is not in a window",
+                               reason: "Could not edit UITextView: Text view failed to become first responder. This can happen if the view is not part of the window's hierarchy.")
+            }
+            return .refusedByDelegate(method: "textViewShouldBeginEditing(_:)")
+        }
+        NotificationCenter.default.post(name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.post(name: UIResponder.keyboardDidShowNotification, object: nil)
+        return .performed
+    }
+
+    /// Like `stopEditing()`, but throws `.invalidSetup` when not first responder and returns
+    /// `.refusedByDelegate` when `textViewShouldEndEditing(_:)` returns `false`.
+    @discardableResult
+    public func stopEditingOrThrow() throws -> FleetInteractionOutcome {
+        guard isFirstResponder else {
+            throw FleetFailure(kind: .invalidSetup, action: "stop editing", target: "UITextView",
+                               state: "the text view is not first responder",
+                               reason: "Could not edit UITextView: Must start editing the text view before you can stop editing it.")
+        }
+        guard resignFirstResponder() else {
+            return .refusedByDelegate(method: "textViewShouldEndEditing(_:)")
+        }
+        NotificationCenter.default.post(name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.post(name: UIResponder.keyboardDidHideNotification, object: nil)
+        return .performed
+    }
+
+    /// Like `type(text:)`; returns `.refusedByDelegate` if the delegate vetoed any character.
+    @discardableResult
+    public func typeOrThrow(text newText: String) throws -> FleetInteractionOutcome {
+        guard isFirstResponder else {
+            throw FleetFailure(kind: .invalidSetup, action: "type text", target: "UITextView",
+                               state: "the text view is not first responder",
+                               reason: "Could not edit UITextView: Must start editing the text view before text can be typed into it.")
+        }
+        var outcome = FleetInteractionOutcome.performed
+        for character in newText where !replaceSelection(with: String(character)) {
+            outcome = .refusedByDelegate(method: "textView(_:shouldChangeTextIn:replacementText:)")
+        }
+        return outcome
+    }
+
+    /// Like `paste(text:)`; returns `.refusedByDelegate` if the delegate vetoed the change.
+    @discardableResult
+    public func pasteOrThrow(text textToPaste: String) throws -> FleetInteractionOutcome {
+        guard isFirstResponder else {
+            throw FleetFailure(kind: .invalidSetup, action: "paste text", target: "UITextView",
+                               state: "the text view is not first responder",
+                               reason: "Could not edit UITextView: Must start editing the text view before text can be pasted into it.")
+        }
+        return replaceSelection(with: textToPaste) ? .performed : .refusedByDelegate(method: "textView(_:shouldChangeTextIn:replacementText:)")
+    }
+
+    /// Like `backspace()`; returns `.refusedByDelegate` if the delegate vetoed the deletion.
+    @discardableResult
+    public func backspaceOrThrow() throws -> FleetInteractionOutcome {
+        guard isFirstResponder else {
+            throw FleetFailure(kind: .invalidSetup, action: "backspace", target: "UITextView",
+                               state: "the text view is not first responder",
+                               reason: "Could not edit UITextView: Must start editing the text view before backspaces can be performed.")
+        }
+        let range = Fleet.TextEditing.backspaceRange(in: text ?? "", selection: Fleet.TextEditing.selectedRange(in: self))
+        guard shouldChange(range, replacement: "") else {
+            return .refusedByDelegate(method: "textView(_:shouldChangeTextIn:replacementText:)")
+        }
+        if range.length > 0 {
+            deleteBackward()
+        }
+        return .performed
+    }
+
+    /// Like `backspaceAll()`; returns `.refusedByDelegate` if the delegate vetoed any deletion.
+    @discardableResult
+    public func backspaceAllOrThrow() throws -> FleetInteractionOutcome {
+        guard isFirstResponder else {
+            throw FleetFailure(kind: .invalidSetup, action: "backspace all", target: "UITextView",
+                               state: "the text view is not first responder",
+                               reason: "Could not edit UITextView: Must start editing the text view before backspaces can be performed.")
+        }
+        Fleet.TextEditing.moveCaretToEnd(of: self)
+        var outcome = FleetInteractionOutcome.performed
+        for _ in 0..<(text ?? "").count {
+            let step = try backspaceOrThrow()
+            if step != .performed { outcome = step }
+        }
+        return outcome
     }
 }
 
