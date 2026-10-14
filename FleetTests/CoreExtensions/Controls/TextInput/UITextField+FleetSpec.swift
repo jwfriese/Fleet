@@ -1215,6 +1215,28 @@ extension UITextField_FleetSpec {
         XCTAssertTrue(unfocusable.delegate === delegate)
     }
 
+    func test_stopEditingOrThrow_whenCannotResign_throwsUnavailableInsteadOfRefusal() throws {
+        let sticky = StickyTextField()
+        subject.superview!.addSubview(sticky)
+        defer { sticky.allowResign = true; sticky.resignFirstResponder(); sticky.removeFromSuperview() }
+        for acceptingDelegate in [false, true] {
+            sticky.allowResign = true
+            sticky.delegate = acceptingDelegate ? delegate : nil
+            delegate.shouldAllowEndEditing = true
+            try sticky.startEditingOrThrow()
+            XCTAssertTrue(sticky.isFirstResponder)
+            sticky.allowResign = false
+            XCTAssertThrowsError(try sticky.stopEditingOrThrow()) { error in
+                XCTAssertEqual((error as? FleetFailure)?.kind, .unavailableInteraction)
+                XCTAssertEqual((error as? FleetFailure)?.target, "UITextField")
+            }
+            XCTAssertTrue(sticky.isFirstResponder)
+            XCTAssertTrue(sticky.delegate === (acceptingDelegate ? delegate : nil))
+            sticky.allowResign = true
+            sticky.resignFirstResponder()
+        }
+    }
+
     func test_startEditingOrThrow_preservesDelegateRemovedByDidBeginEditing() throws {
         let removing = DelegateRemovingOnBegin()
         subject.delegate = removing
@@ -1231,4 +1253,9 @@ private final class DelegateRemovingOnBegin: NSObject, UITextFieldDelegate {
 
 private final class UnfocusableTextField: UITextField {
     override var canBecomeFirstResponder: Bool { false }
+}
+
+private final class StickyTextField: UITextField {
+    var allowResign = true
+    override var canResignFirstResponder: Bool { allowResign }
 }

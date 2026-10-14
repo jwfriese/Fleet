@@ -303,7 +303,19 @@ extension UITextView {
                                state: "the text view is not first responder",
                                reason: "Could not edit UITextView: Must start editing the text view before you can stop editing it.")
         }
-        guard resignFirstResponder() else {
+        let vetoRecorder = BeginEditingVetoRecorder(wrapping: delegate)
+        let originalDelegate = delegate
+        if originalDelegate != nil { delegate = vetoRecorder }
+        let didResign = resignFirstResponder()
+        // Restore only if the recorder is still installed, preserving delegate changes made by callbacks.
+        if originalDelegate != nil, delegate === vetoRecorder { delegate = originalDelegate }
+        guard didResign else {
+            // Only report a veto the recorder actually observed; any other resignation failure is unavailable.
+            if !vetoRecorder.endVetoed {
+                throw FleetFailure(kind: .unavailableInteraction, action: "stop editing", target: "UITextView",
+                                   state: "cannot resign first responder (no delegate veto)",
+                                   reason: "UITextView unavailable for editing: the control failed to resign first responder and no delegate refused.")
+            }
             return .refusedByDelegate(method: "textViewShouldEndEditing(_:)")
         }
         NotificationCenter.default.post(name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -379,6 +391,7 @@ extension UITextView {
 private final class BeginEditingVetoRecorder: NSObject, UITextViewDelegate {
     private weak var target: (UITextViewDelegate)?
     private(set) var vetoed = false
+    private(set) var endVetoed = false
 
     init(wrapping target: UITextViewDelegate?) {
         self.target = target
@@ -390,8 +403,14 @@ private final class BeginEditingVetoRecorder: NSObject, UITextViewDelegate {
         return result
     }
 
+    @objc func textViewShouldEndEditing(_ tv: UITextView) -> Bool {
+        let result = target?.textViewShouldEndEditing?(tv) ?? true
+        if !result { endVetoed = true }
+        return result
+    }
+
     override func responds(to selector: Selector!) -> Bool {
-        if selector == #selector(UITextViewDelegate.textViewShouldBeginEditing(_:)) { return target?.responds(to: selector) ?? false }
+        if selector == #selector(UITextViewDelegate.textViewShouldBeginEditing(_:)) || selector == #selector(UITextViewDelegate.textViewShouldEndEditing(_:)) { return target?.responds(to: selector) ?? false }
         return super.responds(to: selector) || (target?.responds(to: selector) ?? false)
     }
 

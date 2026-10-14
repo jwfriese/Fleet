@@ -394,7 +394,19 @@ extension UITextField {
                                state: "the text field is not first responder",
                                reason: "Could not edit UITextField: Must start editing the text field before you can stop editing it.")
         }
-        guard resignFirstResponder() else {
+        let vetoRecorder = BeginEditingVetoRecorder(wrapping: delegate)
+        let originalDelegate = delegate
+        if originalDelegate != nil { delegate = vetoRecorder }
+        let didResign = resignFirstResponder()
+        // Restore only if the recorder is still installed, preserving delegate changes made by callbacks.
+        if originalDelegate != nil, delegate === vetoRecorder { delegate = originalDelegate }
+        guard didResign else {
+            // Only report a veto the recorder actually observed; any other resignation failure is unavailable.
+            if !vetoRecorder.endVetoed {
+                throw FleetFailure(kind: .unavailableInteraction, action: "stop editing", target: "UITextField",
+                                   state: "cannot resign first responder (no delegate veto)",
+                                   reason: "UITextField unavailable for editing: the control failed to resign first responder and no delegate refused.")
+            }
             return .refusedByDelegate(method: "textFieldShouldEndEditing(_:)")
         }
         NotificationCenter.default.post(name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -470,6 +482,7 @@ extension UITextField {
 private final class BeginEditingVetoRecorder: NSObject, UITextFieldDelegate {
     private weak var target: (UITextFieldDelegate)?
     private(set) var vetoed = false
+    private(set) var endVetoed = false
 
     init(wrapping target: UITextFieldDelegate?) {
         self.target = target
@@ -481,8 +494,14 @@ private final class BeginEditingVetoRecorder: NSObject, UITextFieldDelegate {
         return result
     }
 
+    @objc func textFieldShouldEndEditing(_ tf: UITextField) -> Bool {
+        let result = target?.textFieldShouldEndEditing?(tf) ?? true
+        if !result { endVetoed = true }
+        return result
+    }
+
     override func responds(to selector: Selector!) -> Bool {
-        if selector == #selector(UITextFieldDelegate.textFieldShouldBeginEditing(_:)) { return target?.responds(to: selector) ?? false }
+        if selector == #selector(UITextFieldDelegate.textFieldShouldBeginEditing(_:)) || selector == #selector(UITextFieldDelegate.textFieldShouldEndEditing(_:)) { return target?.responds(to: selector) ?? false }
         return super.responds(to: selector) || (target?.responds(to: selector) ?? false)
     }
 
