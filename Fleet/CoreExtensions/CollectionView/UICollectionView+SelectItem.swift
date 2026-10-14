@@ -50,6 +50,15 @@ extension UICollectionView {
     @discardableResult
     public func selectItemOrThrow(at indexPath: IndexPath) throws -> FleetInteractionOutcome {
         let action = "select item"
+
+        // UIKit's `section`/`item` accessors trap when the path has fewer than two components.
+        guard indexPath.count >= 2 else {
+            throw FleetFailure(kind: .invalidInput, action: action,
+                               target: "UICollectionView index path \(Array(indexPath))",
+                               state: "the index path has \(indexPath.count) component(s)",
+                               reason: "A collection view index path needs a section and an item.")
+        }
+
         let target = "UICollectionView item \(indexPath.item) in section \(indexPath.section)"
 
         guard let _ = self.dataSource else {

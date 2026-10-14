@@ -37,6 +37,19 @@ class UICollectionView_RecoverableFailureSpec: XCTestCase {
         }
     }
 
+    func test_selectItemOrThrow_withMalformedIndexPath_throwsInvalidInputWithoutTrapping() {
+        let view = makeCollectionView(FailureSource())
+
+        for path in [IndexPath(), IndexPath(index: 0)] {
+            XCTAssertThrowsError(try view.selectItemOrThrow(at: path)) { error in
+                guard let failure = error as? FleetFailure else { return XCTFail("Unexpected error \(error)") }
+                XCTAssertEqual(failure.kind, .invalidInput)
+                XCTAssertEqual(failure.action, "select item")
+                XCTAssertEqual(failure.state, "the index path has \(path.count) component(s)")
+            }
+        }
+    }
+
     func test_selectItemOrThrow_withoutDataSource_throwsInvalidSetup() {
         let view = makeCollectionView(nil)
         XCTAssertThrowsError(try view.selectItemOrThrow(at: IndexPath(item: 0, section: 0))) { error in
