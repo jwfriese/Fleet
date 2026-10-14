@@ -15,6 +15,7 @@
 		7B0082181EB6D8B8006B8FED /* FleetObjC.h in Headers */ = {isa = PBXBuildFile; fileRef = 7B8F2B391DE2592C00B6F4C2 /* FleetObjC.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7B0082191EB6D8C6006B8FED /* Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E931D0DA7EA002E6B45 /* Fleet.swift */; };
 		7B00821A1EB6D8CE006B8FED /* FleetError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDB63B21E47725600515C22 /* FleetError.swift */; };
+		A1F0000000000000000000F2 /* FleetFailure.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F0000000000000000000F1 /* FleetFailure.swift */; };
 		7B00821B1EB6D8D8006B8FED /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B675E881D0C5AFB002E6B45 /* Logger.swift */; };
 		7B00821C1EB6D8DF006B8FED /* UIAlertAction+Fleet.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BDF61E81E935B4600990588 /* UIAlertAction+Fleet.m */; };
 		7B00821D1EB6D8E2006B8FED /* UIAlertAction+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDF61FF1E936BFB00990588 /* UIAlertAction+Fleet.swift */; };
@@ -143,6 +144,7 @@
 		7BB14A711D77B425002ABE82 /* FLTScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB14A6E1D77B425002ABE82 /* FLTScreen.swift */; };
 		7BB46890244AA58D00FFC241 /* UINavigationBar+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BB4688F244AA58D00FFC241 /* UINavigationBar+Fleet.swift */; };
 		7BDB63B31E47725600515C22 /* FleetError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDB63B21E47725600515C22 /* FleetError.swift */; };
+		A1F0000000000000000000F3 /* FleetFailure.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F0000000000000000000F1 /* FleetFailure.swift */; };
 		7BDF61EB1E935B4600990588 /* UIAlertAction+Fleet.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BDF61E81E935B4600990588 /* UIAlertAction+Fleet.m */; };
 		7BDF61EC1E935B4600990588 /* UIAlertController+Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDF61E91E935B4600990588 /* UIAlertController+Fleet.swift */; };
 		7BDF61F01E935B7500990588 /* UIAlertAction+FleetSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BDF61EE1E935B7500990588 /* UIAlertAction+FleetSpec.swift */; };
@@ -187,8 +189,10 @@
 		33DD260109631965A3037DE2 /* UICollectionView+SelectItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB60DF515018FB5C6E644563 /* UICollectionView+SelectItem.swift */; };
 		B6AC703746498EF7C7B0F79B /* UICollectionView+FetchCellSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D01DBD7724E3CEAC94F9E2 /* UICollectionView+FetchCellSpec.swift */; };
 		87B1E06ABE036012A5AE2C60 /* UICollectionView+SelectItemSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47EF94C4103923DB084B60B3 /* UICollectionView+SelectItemSpec.swift */; };
+		A1F0000000000000000000F5 /* UICollectionView+RecoverableFailureSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F0000000000000000000F4 /* UICollectionView+RecoverableFailureSpec.swift */; };
 		51B8AF774775B7B893F7E499 /* UICollectionView+FetchCellSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D01DBD7724E3CEAC94F9E2 /* UICollectionView+FetchCellSpec.swift */; };
 		5EF9C83B6DEB9FFACEBA82C9 /* UICollectionView+SelectItemSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47EF94C4103923DB084B60B3 /* UICollectionView+SelectItemSpec.swift */; };
+		A1F0000000000000000000F6 /* UICollectionView+RecoverableFailureSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F0000000000000000000F4 /* UICollectionView+RecoverableFailureSpec.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -306,6 +310,7 @@
 		7BB14A6E1D77B425002ABE82 /* FLTScreen.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FLTScreen.swift; sourceTree = "<group>"; };
 		7BB4688F244AA58D00FFC241 /* UINavigationBar+Fleet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigationBar+Fleet.swift"; sourceTree = "<group>"; };
 		7BDB63B21E47725600515C22 /* FleetError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FleetError.swift; sourceTree = "<group>"; };
+		A1F0000000000000000000F1 /* FleetFailure.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FleetFailure.swift; sourceTree = "<group>"; };
 		7BDF61E81E935B4600990588 /* UIAlertAction+Fleet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIAlertAction+Fleet.m"; sourceTree = "<group>"; };
 		7BDF61E91E935B4600990588 /* UIAlertController+Fleet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Fleet.swift"; sourceTree = "<group>"; };
 		7BDF61EE1E935B7500990588 /* UIAlertAction+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIAlertAction+FleetSpec.swift"; sourceTree = "<group>"; };
@@ -344,6 +349,7 @@
 		CB60DF515018FB5C6E644563 /* UICollectionView+SelectItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+SelectItem.swift"; sourceTree = "<group>"; };
 		37D01DBD7724E3CEAC94F9E2 /* UICollectionView+FetchCellSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+FetchCellSpec.swift"; sourceTree = "<group>"; };
 		47EF94C4103923DB084B60B3 /* UICollectionView+SelectItemSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+SelectItemSpec.swift"; sourceTree = "<group>"; };
+		A1F0000000000000000000F4 /* UICollectionView+RecoverableFailureSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+RecoverableFailureSpec.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -772,6 +778,7 @@
 			children = (
 				7B1AE9DC1F8B01F100A533C2 /* CatchError.swift */,
 				7BDB63B21E47725600515C22 /* FleetError.swift */,
+				A1F0000000000000000000F1 /* FleetFailure.swift */,
 				7B8DBD481F3BF9E000508E58 /* FleetInternalError.swift */,
 			);
 			path = Error;
@@ -871,6 +878,7 @@
 			children = (
 				37D01DBD7724E3CEAC94F9E2 /* UICollectionView+FetchCellSpec.swift */,
 				47EF94C4103923DB084B60B3 /* UICollectionView+SelectItemSpec.swift */,
+				A1F0000000000000000000F4 /* UICollectionView+RecoverableFailureSpec.swift */,
 			);
 			path = CollectionView;
 			sourceTree = "<group>";
@@ -1194,6 +1202,7 @@
 				7B0082211EB6D8EC006B8FED /* UIButton+Fleet.swift in Sources */,
 				7B0082321EB6D90A006B8FED /* UINavigationController+Fleet.m in Sources */,
 				7B00821A1EB6D8CE006B8FED /* FleetError.swift in Sources */,
+				A1F0000000000000000000F2 /* FleetFailure.swift in Sources */,
 				7B0082381EB6D917006B8FED /* FLTScreen.swift in Sources */,
 				7B00821E1EB6D8E2006B8FED /* UIAlertController+Fleet.swift in Sources */,
 				7B00822F1EB6D907006B8FED /* UIViewController+Fleet.m in Sources */,
@@ -1219,6 +1228,7 @@
 			files = (
 				51B8AF774775B7B893F7E499 /* UICollectionView+FetchCellSpec.swift in Sources */,
 				5EF9C83B6DEB9FFACEBA82C9 /* UICollectionView+SelectItemSpec.swift in Sources */,
+				A1F0000000000000000000F6 /* UICollectionView+RecoverableFailureSpec.swift in Sources */,
 				F10000000000000000000125 /* NotificationListener.swift in Sources */,
 				F10000000000000000000124 /* RaiseExceptionMatcherSpec.swift in Sources */,
 				F10000000000000000000123 /* RaiseExceptionMatcher.swift in Sources */,
@@ -1309,6 +1319,7 @@
 				7BB14A701D77B425002ABE82 /* Screen.swift in Sources */,
 				7B675E891D0C5AFB002E6B45 /* Logger.swift in Sources */,
 				7BDB63B31E47725600515C22 /* FleetError.swift in Sources */,
+				A1F0000000000000000000F3 /* FleetFailure.swift in Sources */,
 				7B8F2B261DE12CC700B6F4C2 /* MockFor.swift in Sources */,
 				7B2D724A1E292A1F0046EDFC /* StoryboardBindingError.swift in Sources */,
 				7BF9145D1E3CF59700019CF2 /* UITableView+FetchCell.swift in Sources */,
@@ -1336,6 +1347,7 @@
 			files = (
 				B6AC703746498EF7C7B0F79B /* UICollectionView+FetchCellSpec.swift in Sources */,
 				87B1E06ABE036012A5AE2C60 /* UICollectionView+SelectItemSpec.swift in Sources */,
+				A1F0000000000000000000F5 /* UICollectionView+RecoverableFailureSpec.swift in Sources */,
 				F10000000000000000000114 /* RaiseExceptionMatcherSpec.swift in Sources */,
 				F10000000000000000000113 /* RaiseExceptionMatcher.swift in Sources */,
 				F10000000000000000000111 /* ExceptionCatcher.m in Sources */,

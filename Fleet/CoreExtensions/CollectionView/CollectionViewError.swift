@@ -8,9 +8,12 @@ extension Fleet {
         case sectionDoesNotExist(sectionNumber: Int)
         case cellUnavailable(at: IndexPath)
         case mismatchedCellType(at: IndexPath, foundType: AnyClass, requestedType: AnyClass)
+        case legacy(FleetFailure)
 
         var errorMessage: String {
             switch self {
+            case .legacy(let failure):
+                return failure.reason
             case .dataSourceRequired(let userAction):
                 return "Data source required to \(userAction)."
             case .rejectedAction(let indexPath, let reason):

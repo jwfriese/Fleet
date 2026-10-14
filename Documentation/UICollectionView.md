@@ -22,3 +22,20 @@ Fleet's `selectItem(at:)` mimics a user tap:
 A `FleetError` is raised if the data source is missing, `allowsSelection` is `false`, or the index path does not exist.
 
 This is programmatic dispatch: it does not prove hit testing, and it does not call the highlight callbacks.
+
+### Recoverable failures
+`selectItemOrThrow(at:)` performs the same interaction as `selectItem(at:)` but reports problems as a typed Swift
+`FleetFailure` instead of raising an `NSException`, so the test process survives and the failure can be asserted:
+
+```swift
+XCTAssertThrowsError(try collectionView.selectItemOrThrow(at: IndexPath(item: 9, section: 0))) { error in
+    XCTAssertEqual((error as? FleetFailure)?.kind, .invalidInput)
+}
+
+// Swift Testing
+#expect(throws: FleetFailure.self) { try collectionView.selectItemOrThrow(at: IndexPath(item: 9, section: 0)) }
+```
+
+A `FleetFailure` carries its `kind`, the attempted `action`, the `target` control and index, the relevant `state`, and a `reason`.
+A delegate returning `false` from `shouldSelectItemAt`/`shouldDeselectItemAt` is not an error: the call returns
+`.refusedByDelegate(method:)`, otherwise `.performed`. See [the FAQ](FAQ.md#how-do-i-migrate-from-fleeterror-and-swallowanyerrors) for migration.
