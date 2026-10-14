@@ -62,6 +62,10 @@ All 14 maintained Xcode configurations, the SwiftPM package, and the independent
 
 UI XCTest classes and helpers use `@MainActor`, with async setup/teardown. The external consumers use bounded async XCTest completion waits. Native bounded Nimble polling retains its existing synchronous form: the published Nimble 14 async expectations produce non-Sendable diagnostics in Swift 6 callers. This dependency limitation remains in M2.4; no assertion or deadline is weakened and no concurrency suppression is added to work around it. Native suites retain 251 iOS and 121 tvOS tests. Swift 6 external consumers now have nine tests per platform, adding a detached-task/main-actor hop alongside the existing control, storyboard, lifecycle, exception, presentation, and alert coverage. The tooling suite has 43 checks, including rejection of the old default branch for publication. [Compatibility](Compatibility.md) documents the caller migration. Serial execution remains required; actor isolation does not solve cross-suite test interleaving or lifecycle cleanup.
 
+## Scoped window hosting
+
+`Fleet.withContext(window:)` and `Fleet.withContext(scene:)` add a coordinated, cancellation-safe hosting scope with bounded waits and a cleanup registration path (see [Hosting](Hosting.md)). Native specs cover overlapping-attempt exclusion, thrown/timed-out/cancelled bodies, cancellation while queued, borrowed-host restoration and owned-controller deallocation; the package consumers add two tests per platform. Timeouts and misuse use `FleetFailure`; cancellation propagates as `CancellationError`.
+
 ## Milestone 1 Restore reproducible development
 
 Finish this milestone before changing runtime behavior. A working test suite will preserve the useful coverage already in [FleetTests](../FleetTests).

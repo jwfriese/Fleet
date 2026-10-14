@@ -193,6 +193,12 @@
 		51B8AF774775B7B893F7E499 /* UICollectionView+FetchCellSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D01DBD7724E3CEAC94F9E2 /* UICollectionView+FetchCellSpec.swift */; };
 		5EF9C83B6DEB9FFACEBA82C9 /* UICollectionView+SelectItemSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47EF94C4103923DB084B60B3 /* UICollectionView+SelectItemSpec.swift */; };
 		A1F0000000000000000000F6 /* UICollectionView+RecoverableFailureSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F0000000000000000000F4 /* UICollectionView+RecoverableFailureSpec.swift */; };
+		F1EE70000000000000000069 /* FleetContextCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE70000000000000000068 /* FleetContextCoordinator.swift */; };
+		F1EE7000000000000000006A /* FleetContextCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE70000000000000000068 /* FleetContextCoordinator.swift */; };
+		F1EE7000000000000000006C /* FleetTestContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE7000000000000000006B /* FleetTestContext.swift */; };
+		F1EE7000000000000000006D /* FleetTestContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE7000000000000000006B /* FleetTestContext.swift */; };
+		F1EE70000000000000000070 /* FleetTestContextSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE7000000000000000006F /* FleetTestContextSpec.swift */; };
+		F1EE70000000000000000071 /* FleetTestContextSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE7000000000000000006F /* FleetTestContextSpec.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -350,6 +356,9 @@
 		37D01DBD7724E3CEAC94F9E2 /* UICollectionView+FetchCellSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+FetchCellSpec.swift"; sourceTree = "<group>"; };
 		47EF94C4103923DB084B60B3 /* UICollectionView+SelectItemSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+SelectItemSpec.swift"; sourceTree = "<group>"; };
 		A1F0000000000000000000F4 /* UICollectionView+RecoverableFailureSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+RecoverableFailureSpec.swift"; sourceTree = "<group>"; };
+		F1EE70000000000000000068 /* FleetContextCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FleetContextCoordinator.swift; sourceTree = "<group>"; };
+		F1EE7000000000000000006B /* FleetTestContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FleetTestContext.swift; sourceTree = "<group>"; };
+		F1EE7000000000000000006F /* FleetTestContextSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FleetTestContextSpec.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -650,6 +659,7 @@
 				7BDB63B11E47723300515C22 /* Error */,
 				7B9458171D4E470C00F16A64 /* Script */,
 				7B675E871D0C5AEE002E6B45 /* Logging */,
+				F1EE70000000000000000064 /* Hosting */,
 				7BA90ABE1CC3B5E30040B031 /* CoreExtensions */,
 				7B8F2B351DE2587100B6F4C2 /* ObjC */,
 				7B8F2B241DE12CA700B6F4C2 /* Mocking */,
@@ -686,6 +696,7 @@
 				7B8F2B361DE258DE00B6F4C2 /* ObjC */,
 				7B8F2B3D1DE2595300B6F4C2 /* Mocking */,
 				7B933C251D77B457001B98F0 /* Screen */,
+				F1EE7000000000000000006E /* Hosting */,
 			);
 			path = FleetTests;
 			sourceTree = "<group>";
@@ -881,6 +892,23 @@
 				A1F0000000000000000000F4 /* UICollectionView+RecoverableFailureSpec.swift */,
 			);
 			path = CollectionView;
+			sourceTree = "<group>";
+		};
+		F1EE70000000000000000064 /* Hosting */ = {
+			isa = PBXGroup;
+			children = (
+				F1EE70000000000000000068 /* FleetContextCoordinator.swift */,
+				F1EE7000000000000000006B /* FleetTestContext.swift */,
+			);
+			path = Hosting;
+			sourceTree = "<group>";
+		};
+		F1EE7000000000000000006E /* Hosting */ = {
+			isa = PBXGroup;
+			children = (
+				F1EE7000000000000000006F /* FleetTestContextSpec.swift */,
+			);
+			path = Hosting;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1186,6 +1214,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F1EE70000000000000000069 /* FleetContextCoordinator.swift in Sources */,
+				F1EE7000000000000000006C /* FleetTestContext.swift in Sources */,
 				C39E10AC9C85DC7C9B87B9C2 /* CollectionViewError.swift in Sources */,
 				AB96850BE53F3CD0DB3B698E /* UICollectionView+FetchCell.swift in Sources */,
 				33DD260109631965A3037DE2 /* UICollectionView+SelectItem.swift in Sources */,
@@ -1226,6 +1256,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F1EE70000000000000000070 /* FleetTestContextSpec.swift in Sources */,
 				51B8AF774775B7B893F7E499 /* UICollectionView+FetchCellSpec.swift in Sources */,
 				5EF9C83B6DEB9FFACEBA82C9 /* UICollectionView+SelectItemSpec.swift in Sources */,
 				A1F0000000000000000000F6 /* UICollectionView+RecoverableFailureSpec.swift in Sources */,
@@ -1297,6 +1328,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F1EE7000000000000000006A /* FleetContextCoordinator.swift in Sources */,
+				F1EE7000000000000000006D /* FleetTestContext.swift in Sources */,
 				3DF370EBE1FB36C77DB6B886 /* CollectionViewError.swift in Sources */,
 				10A4742C5277E4975776385A /* UICollectionView+FetchCell.swift in Sources */,
 				3E613E9A3A5879AAAEA2A7BD /* UICollectionView+SelectItem.swift in Sources */,
@@ -1345,6 +1378,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F1EE70000000000000000071 /* FleetTestContextSpec.swift in Sources */,
 				B6AC703746498EF7C7B0F79B /* UICollectionView+FetchCellSpec.swift in Sources */,
 				87B1E06ABE036012A5AE2C60 /* UICollectionView+SelectItemSpec.swift in Sources */,
 				A1F0000000000000000000F5 /* UICollectionView+RecoverableFailureSpec.swift in Sources */,

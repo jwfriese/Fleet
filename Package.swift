@@ -31,7 +31,7 @@ let package = Package(
             dependencies: ["FleetRuntime"],
             path: "Fleet",
             exclude: runtimeSources + ["Info.plist", "Fleet.h", "ObjC/FleetObjC.h", "ObjC/FleetSwizzle.h"],
-            sources: ["Fleet.swift", "CoreExtensions", "Error", "Logging", "Mocking", "Screen", "ObjC/Swizzle.swift"],
+            sources: ["Fleet.swift", "CoreExtensions", "Error", "Hosting", "Logging", "Mocking", "Screen", "ObjC/Swizzle.swift"],
             resources: [.copy("Script/copy_storyboard_info_files.sh")]
         ),
     ],
