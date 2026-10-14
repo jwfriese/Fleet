@@ -190,12 +190,13 @@ final class PackageConsumerTests: XCTestCase {
         let storyboard = storyboard()
         let loaded = UIViewController()
         loaded.loadViewIfNeeded()
-        var bindingReturned = false
-        Fleet.swallowAnyErrors {
-            try! storyboard.bind(viewController: loaded, toIdentifier: "Detail")
-            bindingReturned = true
+        XCTAssertThrowsError(try storyboard.bind(viewController: loaded, toIdentifier: "Detail"),
+                             "The Objective-C category must activate Fleet's viewDidLoad tracking") { error in
+            guard let failure = error as? FleetFailure else {
+                return XCTFail("Expected FleetFailure, got \(error)")
+            }
+            XCTAssertEqual(failure.kind, .invalidInput)
         }
-        XCTAssertFalse(bindingReturned, "The Objective-C category must activate Fleet's viewDidLoad tracking")
     }
 
     func testPublicExceptionBridgeCatchesRealObjectiveCException() {
