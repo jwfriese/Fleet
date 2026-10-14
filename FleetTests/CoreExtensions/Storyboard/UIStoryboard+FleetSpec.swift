@@ -401,10 +401,16 @@ class UIStoryboard_FleetSpec: XCTestCase {
                 sawCancellation = true
             } catch {}
         }
+        let deadline = Date().addingTimeInterval(10)
+        while weakController == nil, Date() < deadline {
+            await Task.yield()
+        }
+        XCTAssertNotNil(weakController, "The context body never registered a binding")
+        expect(weakController?.value).toNot(beNil())
+        expect(storyboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")).to(beIdenticalTo(weakController?.value))
         task.cancel()
         await task.value
-        // Cancelled before the body first ran is also fine; a body that ran must have been cleaned.
-        if let weakController { expect(weakController.value).to(beNil()) }
+        expect(weakController?.value).to(beNil())
         expect(sawCancellation).to(beTrue())
         expect(storyboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")).toNot(beNil())
     }
