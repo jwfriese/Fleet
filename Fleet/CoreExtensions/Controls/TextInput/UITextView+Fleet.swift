@@ -274,6 +274,13 @@ extension UITextView {
                                state: "the text view is not in a window",
                                reason: "Could not edit UITextView: Text view failed to become first responder. This can happen if the view is not part of the window's hierarchy.")
             }
+            // UIKit's canBecomeFirstResponder consults the delegate, so only a delegate implementing the
+            // selector can have vetoed; any other failure is an unavailable interaction.
+            if !(delegate?.responds(to: #selector(UITextViewDelegate.textViewShouldBeginEditing(_:))) ?? false) {
+                throw FleetFailure(kind: .unavailableInteraction, action: "start editing", target: "UITextView",
+                                   state: "cannot become first responder (no delegate veto)",
+                                   reason: "UITextView unavailable for editing: the control failed to become first responder and no delegate refused.")
+            }
             return .refusedByDelegate(method: "textViewShouldBeginEditing(_:)")
         }
         NotificationCenter.default.post(name: UIResponder.keyboardWillShowNotification, object: nil)

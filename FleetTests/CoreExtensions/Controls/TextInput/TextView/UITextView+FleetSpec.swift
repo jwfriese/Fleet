@@ -834,4 +834,20 @@ extension UITextView_FleetSpec {
         XCTAssertEqual(outcome, .refusedByDelegate(method: "textViewShouldBeginEditing(_:)"))
         XCTAssertFalse(subject.isFirstResponder)
     }
+
+    func test_startEditingOrThrow_whenCannotBecomeFirstResponder_throwsUnavailableInsteadOfRefusal() {
+        let unfocusable = UnfocusableTextView()
+        subject.superview!.addSubview(unfocusable)
+        defer { unfocusable.removeFromSuperview() }
+        XCTAssertNil(unfocusable.delegate); XCTAssertFalse(unfocusable.canBecomeFirstResponder)
+        XCTAssertThrowsError(try unfocusable.startEditingOrThrow()) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .unavailableInteraction)
+            XCTAssertEqual((error as? FleetFailure)?.target, "UITextView")
+        }
+        XCTAssertFalse(unfocusable.isFirstResponder)
+    }
+}
+
+private final class UnfocusableTextView: UITextView {
+    override var canBecomeFirstResponder: Bool { false }
 }

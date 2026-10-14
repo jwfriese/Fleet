@@ -365,6 +365,13 @@ extension UITextField {
                                state: "the text field is not in a window",
                                reason: "Could not edit UITextField: Text field failed to become first responder. This can happen if the field is not part of the window's hierarchy.")
             }
+            // UIKit's canBecomeFirstResponder consults the delegate, so only a delegate implementing the
+            // selector can have vetoed; any other failure is an unavailable interaction.
+            if !(delegate?.responds(to: #selector(UITextFieldDelegate.textFieldShouldBeginEditing(_:))) ?? false) {
+                throw FleetFailure(kind: .unavailableInteraction, action: "start editing", target: "UITextField",
+                                   state: "cannot become first responder (no delegate veto)",
+                                   reason: "UITextField unavailable for editing: the control failed to become first responder and no delegate refused.")
+            }
             return .refusedByDelegate(method: "textFieldShouldBeginEditing(_:)")
         }
         NotificationCenter.default.post(name: UIResponder.keyboardWillShowNotification, object: nil)
