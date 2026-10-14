@@ -104,6 +104,25 @@ class FleetTestContextSpec: XCTestCase {
         try await assertLeaseFree()
     }
 
+    func test_waitWithInvalidPollInterval_throwsInvalidInputAndCleansUp() async throws {
+        let originalRoot = hostWindow.rootViewController
+        for interval in [-0.01, 0, TimeInterval.nan, TimeInterval.infinity] {
+            do {
+                try await Fleet.withContext(window: hostWindow) { context in
+                    try await context.setRoot(UIViewController())
+                    try await context.waitUntil("state", pollInterval: interval) { false }
+                }
+                XCTFail("Expected invalid input for \(interval)")
+            } catch let failure as FleetFailure {
+                XCTAssertEqual(failure.kind, .invalidInput, failure.description)
+                XCTAssertTrue(failure.state.contains("pollInterval"), failure.description)
+            }
+            XCTAssertTrue(hostWindow.rootViewController === originalRoot)
+            XCTAssertFalse(FleetContextCoordinator.shared.isHeld)
+        }
+        try await assertLeaseFree()
+    }
+
     func test_cancelledWhileRunning_cleansUpAndReleasesLease() async throws {
         let log = EventLog()
         let task = Task { @MainActor in
