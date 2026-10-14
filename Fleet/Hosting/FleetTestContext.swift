@@ -65,7 +65,7 @@ public final class FleetTestContext {
 
     /// Polls `condition` on the main actor, yielding between checks so UIKit can make progress.
     /// Throws a `FleetFailure` of kind `.timedOut` (naming `description` and a snapshot of the
-    /// window) at the deadline, `.invalidInput` if `pollInterval` is not a finite positive number,
+    /// window) at the deadline, `.invalidInput` if `timeout` is not finite or `pollInterval` is not a finite positive number,
     /// or the task's unchanged `CancellationError` if it is cancelled.
     public func waitUntil(
         _ description: String,
@@ -81,6 +81,15 @@ public final class FleetTestContext {
                 target: "FleetTestContext window",
                 state: "pollInterval was \(pollInterval).",
                 reason: "Pass a finite pollInterval greater than zero."
+            )
+        }
+        guard timeout.isFinite else {
+            throw FleetFailure(
+                kind: .invalidInput,
+                action: "wait for \(description)",
+                target: "FleetTestContext window",
+                state: "timeout was \(timeout).",
+                reason: "Pass a finite timeout so the wait is bounded."
             )
         }
         let deadline = Date().addingTimeInterval(timeout)

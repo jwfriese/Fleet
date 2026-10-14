@@ -25,7 +25,7 @@ Both forms are `@MainActor` and available on iOS and tvOS (iOS/tvOS 15 and later
 
 ## Bounded waits
 
-`waitUntil(_:timeout:pollInterval:condition:)` polls an observable condition on the main actor, yielding between checks. `waitForTransitionsToFinish()` waits until no controller in the window's presentation/navigation chain has an active `transitionCoordinator`. Waits throw a `FleetFailure` of kind `.timedOut` (naming your description, the deadline and a snapshot of the window's root and topmost controllers); task cancellation propagates as the unchanged `CancellationError`, including while queued for the lease. They do not promise to flush unrelated application work. The body itself has no overall deadline: bound it with waits.
+`waitUntil(_:timeout:pollInterval:condition:)` polls an observable condition on the main actor, yielding between checks. `waitForTransitionsToFinish()` waits until no controller in the window's presentation/navigation chain has an active `transitionCoordinator`. A non-finite `timeout` or a non-positive or non-finite `pollInterval` throws `.invalidInput` before waiting. Waits throw a `FleetFailure` of kind `.timedOut` (naming your description, the deadline and a snapshot of the window's root and topmost controllers); task cancellation propagates as the unchanged `CancellationError`, including while queued for the lease. They do not promise to flush unrelated application work. The body itself has no overall deadline: bound it with waits.
 
 ## Legacy helpers and runtime hooks
 
