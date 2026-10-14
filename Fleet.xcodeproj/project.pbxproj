@@ -1320,7 +1320,6 @@
 				7B675E891D0C5AFB002E6B45 /* Logger.swift in Sources */,
 				7BDB63B31E47725600515C22 /* FleetError.swift in Sources */,
 				A1F0000000000000000000F3 /* FleetFailure.swift in Sources */,
-				7BDF61FC1E93691200990588 /* UITableViewRowAction+Fleet.m in Sources */,
 				7B8F2B261DE12CC700B6F4C2 /* MockFor.swift in Sources */,
 				7B2D724A1E292A1F0046EDFC /* StoryboardBindingError.swift in Sources */,
 				7BF9145D1E3CF59700019CF2 /* UITableView+FetchCell.swift in Sources */,
