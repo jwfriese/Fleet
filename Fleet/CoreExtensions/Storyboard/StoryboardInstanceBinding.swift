@@ -26,10 +26,10 @@ internal final class StoryboardInstanceBinding {
                     message = "Could not find identifier '\(identifier)' on storyboard with name '\(storyboardName)'"
                 }
 
-                FleetError(Fleet.StoryboardError.invalidViewControllerIdentifier(message)).raise()
+                throw FleetFailure.storyboard(.invalidInput, action: "bind view controller", target: "storyboard '\(storyboardName)' identifier '\(identifier)'", message: message, reason: "Use an identifier that exists on the storyboard.")
             }
         } else {
-            FleetError(Fleet.StoryboardError.internalInconsistency("Failed to build storyboard reference map. Check the documentation to ensure that you have set up Fleet correctly for storyboard testing")).raise()
+            throw FleetFailure.storyboard(.invalidSetup, action: "bind view controller", target: "storyboard '\(storyboardName)'", message: "Failed to build storyboard reference map. Check the documentation to ensure that you have set up Fleet correctly for storyboard testing", reason: "Set up Fleet's storyboard metadata script for the test target.")
         }
 
         binding[identifier] = viewController
@@ -49,7 +49,7 @@ internal final class StoryboardInstanceBinding {
         }
 
         if !referenceExists {
-            FleetError(Fleet.StoryboardError.invalidExternalStoryboardReference("Could not find identifier '\(identifier)' (external storyboard reference: '\(name)') on storyboard '\(storyboardName)'")).raise()
+            throw FleetFailure.storyboard(.invalidInput, action: "bind view controller", target: "storyboard '\(storyboardName)' external reference '\(name)'", message: "Could not find identifier '\(identifier)' (external storyboard reference: '\(name)') on storyboard '\(storyboardName)'", reason: "Use an identifier and reference name that exist on the storyboard.")
         }
     }
 
@@ -67,7 +67,7 @@ internal final class StoryboardInstanceBinding {
         }
 
         if !referenceExists {
-            FleetError(Fleet.StoryboardError.invalidExternalStoryboardReference("Could not find reference to an external storyboard with name '\(name)' on storyboard '\(storyboardName)'")).raise()
+            throw FleetFailure.storyboard(.invalidInput, action: "bind initial view controller", target: "storyboard '\(storyboardName)' external reference '\(name)'", message: "Could not find reference to an external storyboard with name '\(name)' on storyboard '\(storyboardName)'", reason: "Use the name of an external storyboard reference on this storyboard.")
         }
     }
 

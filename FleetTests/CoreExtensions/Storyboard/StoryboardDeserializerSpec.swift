@@ -8,6 +8,16 @@ import Nimble
     @testable import FleetTestApp_tvOS
 #endif
 
+/// Matches a thrown `FleetFailure`, optionally requiring its `state` text.
+func throwStoryboardFailure(state: String? = nil) -> Matcher<Void> {
+    return throwError { (error: Error) in
+        guard let failure = error as? FleetFailure else { return fail("Expected FleetFailure but got \(error)") }
+        if let state = state {
+            expect(failure.state).to(equal(state))
+        }
+    }
+}
+
 @MainActor
 class StoryboardDeserializerSpec: XCTestCase {
     override func setUp() async throws {
@@ -15,10 +25,10 @@ class StoryboardDeserializerSpec: XCTestCase {
         continueAfterFailure = false
     }
 
-    func test_deserializingStoryboard_whenStoryboardWithNameInBundleCannotBeFound_raisesException() {
+    func test_deserializingStoryboard_whenStoryboardWithNameInBundleCannotBeFound_throwsFailure() {
         let deserializer = StoryboardDeserializer()
         expect { _ = try deserializer.deserializeStoryboard(withName: "garbage") }.to(
-            raiseException(named: "Fleet.StoryboardError", reason: "Failed to build storyboard reference map for storyboard with name 'garbage'. Either this storyboard does not exist or Fleet is not set up for storyboard binding and mocking. Check the documentation to ensure that you have set up Fleet correctly to use its storyboard features.", userInfo: nil, closure: nil)
+            throwStoryboardFailure(state: "Failed to build storyboard reference map for storyboard with name 'garbage'. Either this storyboard does not exist or Fleet is not set up for storyboard binding and mocking. Check the documentation to ensure that you have set up Fleet correctly to use its storyboard features.")
         )
     }
 
@@ -96,14 +106,14 @@ class StoryboardDeserializerSpec: XCTestCase {
     func test_deserializingStoryboard_withExplicitBundleMissingMetadata_namesTheBundle() {
         let bundle = makeBundle(storyboard: "Shared", identifiers: nil)
         expect { _ = try StoryboardDeserializer().deserializeStoryboard(withName: "Shared", in: bundle) }.to(
-            raiseException(named: "Fleet.StoryboardError", reason: "Failed to build storyboard reference map for storyboard with name 'Shared': bundle '\(bundle.bundlePath)' has no StoryboardInfo/Shared/Info.plist. Check that the bundle is the one whose test target runs Fleet's storyboard metadata script, and that the storyboard name is correct.", userInfo: nil, closure: nil)
+            throwStoryboardFailure(state: "Failed to build storyboard reference map for storyboard with name 'Shared': bundle '\(bundle.bundlePath)' has no StoryboardInfo/Shared/Info.plist. Check that the bundle is the one whose test target runs Fleet's storyboard metadata script, and that the storyboard name is correct.")
         )
     }
 
-    func test_deserializingStoryboard_withMalformedMetadata_raisesException() {
+    func test_deserializingStoryboard_withMalformedMetadata_throwsFailure() {
         let bundle = makeBundle(storyboard: "Shared", identifiers: ["A"], malformed: true)
         expect { _ = try StoryboardDeserializer().deserializeStoryboard(withName: "Shared", in: bundle) }.to(
-            raiseException(named: "Fleet.StoryboardError")
+            throwStoryboardFailure()
         )
     }
 
@@ -125,7 +135,7 @@ class StoryboardDeserializerSpec: XCTestCase {
         let first = makeBundle(storyboard: "Shared", identifiers: ["A"])
         let second = makeBundle(storyboard: "Shared", identifiers: ["B"])
         expect { _ = try StoryboardDeserializer().deserializeStoryboard(withName: "Shared", searching: [first, second]) }.to(
-            raiseException(named: "Fleet.StoryboardError", reason: "Storyboard 'Shared' has conflicting metadata in more than one test bundle: \(first.bundlePath)/StoryboardInfo/Shared/Info.plist, \(second.bundlePath)/StoryboardInfo/Shared/Info.plist. Call useBindingMetadata(forStoryboardNamed:in:) on the storyboard to choose the bundle.", userInfo: nil, closure: nil)
+            throwStoryboardFailure(state: "Storyboard 'Shared' has conflicting metadata in more than one test bundle: \(first.bundlePath)/StoryboardInfo/Shared/Info.plist, \(second.bundlePath)/StoryboardInfo/Shared/Info.plist. Call useBindingMetadata(forStoryboardNamed:in:) on the storyboard to choose the bundle.")
         )
     }
 
@@ -136,9 +146,9 @@ class StoryboardDeserializerSpec: XCTestCase {
         expect(try! StoryboardDeserializer().deserializeStoryboard(withName: "Shared", in: second).viewControllerIdentifiers).to(equal(["B"]))
     }
 
-    func test_deserializingStoryboard_withNoTestBundles_raisesException() {
+    func test_deserializingStoryboard_withNoTestBundles_throwsFailure() {
         expect { _ = try StoryboardDeserializer().deserializeStoryboard(withName: "Shared", searching: []) }.to(
-            raiseException(named: "Fleet.StoryboardError", reason: "Could not find test bundle to load storyboard with name 'Shared'", userInfo: nil, closure: nil)
+            throwStoryboardFailure(state: "Could not find test bundle to load storyboard with name 'Shared'")
         )
     }
 }

@@ -39,15 +39,15 @@ class UIStoryboard_FleetSpec: XCTestCase {
         expect(storyboardViewController).to(beIdenticalTo(mockTabBarController))
     }
 
-    func test_mockIdentifier_whenInvalidIdentifier_raisesException() {
+    func test_mockIdentifier_whenInvalidIdentifier_throwsFailure() {
         expect { _ = try self.turtlesAndFriendsStoryboard.mockIdentifier("WatermelonViewController", usingMockFor: UIViewController.self) }.to(
-            raiseException(named: "Fleet.StoryboardError", reason: "Could not find identifier 'WatermelonViewController' on storyboard with name 'TurtlesAndFriendsStoryboard'", userInfo: nil, closure: nil)
+            throwStoryboardFailure(state: "Could not find identifier 'WatermelonViewController' on storyboard with name 'TurtlesAndFriendsStoryboard'")
         )
     }
 
-    func test_mockIdentifier_whenIdentifierExistsOnlyOnStoryboardRef_raisesException() {
+    func test_mockIdentifier_whenIdentifierExistsOnlyOnStoryboardRef_throwsFailure() {
         expect { _ = try self.turtlesAndFriendsStoryboard.mockIdentifier("CrabViewController", usingMockFor: CrabViewController.self) }.to(
-            raiseException(named: "Fleet.StoryboardError", reason: "Could not find identifier 'CrabViewController' on storyboard with name 'TurtlesAndFriendsStoryboard', but found this identifier on an external storyboard reference. Use UIStoryboard.bind(viewController:toIdentifier:forReferencedStoryboardWithName:) to bind to external references", userInfo: nil, closure: nil)
+            throwStoryboardFailure(state: "Could not find identifier 'CrabViewController' on storyboard with name 'TurtlesAndFriendsStoryboard', but found this identifier on an external storyboard reference. Use UIStoryboard.bind(viewController:toIdentifier:forReferencedStoryboardWithName:) to bind to external references")
         )
     }
 
@@ -65,9 +65,9 @@ class UIStoryboard_FleetSpec: XCTestCase {
         expect(testNavigationController.topViewController).to(beIdenticalTo(mockViewController))
     }
 
-    func test_mockIdentifierForReferenceToAnotherStoryboard_whenInvalidIdentifier_raisesException() {
+    func test_mockIdentifierForReferenceToAnotherStoryboard_whenInvalidIdentifier_throwsFailure() {
         expect { _ = try self.turtlesAndFriendsStoryboard.mockIdentifier("WatermelonViewController", forReferencedStoryboardWithName: "CrabStoryboard", usingMockFor: CrabViewController.self) }.to(
-            raiseException(named: "Fleet.StoryboardError", reason: "Could not find identifier 'WatermelonViewController' (external storyboard reference: 'CrabStoryboard') on storyboard 'TurtlesAndFriendsStoryboard'", userInfo: nil, closure: nil)
+            throwStoryboardFailure(state: "Could not find identifier 'WatermelonViewController' (external storyboard reference: 'CrabStoryboard') on storyboard 'TurtlesAndFriendsStoryboard'")
         )
     }
 
@@ -85,9 +85,9 @@ class UIStoryboard_FleetSpec: XCTestCase {
         expect(testNavigationController.topViewController).to(beIdenticalTo(mockInitialViewController))
     }
 
-    func test_mockInitialViewControllerOfReferenceToAnotherStoryboard_whenInvalidIdentifier_raisesException() {
+    func test_mockInitialViewControllerOfReferenceToAnotherStoryboard_whenInvalidIdentifier_throwsFailure() {
         expect { _ = try self.turtlesAndFriendsStoryboard.mockInitialViewController(forReferencedStoryboardWithName: "WatermelonStoryboard", usingMockFor: UIViewController.self) }.to(
-            raiseException(named: "Fleet.StoryboardError", reason: "Could not find reference to an external storyboard with name 'WatermelonStoryboard' on storyboard 'TurtlesAndFriendsStoryboard'", userInfo: nil, closure: nil)
+            throwStoryboardFailure(state: "Could not find reference to an external storyboard with name 'WatermelonStoryboard' on storyboard 'TurtlesAndFriendsStoryboard'")
         )
     }
 
@@ -99,25 +99,25 @@ class UIStoryboard_FleetSpec: XCTestCase {
         expect(boxTurtleViewController).to(beIdenticalTo(mockBoxTurtleViewController))
     }
 
-    func test_bindingViewController_whenInvalidIdentifier_raisesException() {
+    func test_bindingViewController_whenInvalidIdentifier_throwsFailure() {
         let whateverViewController = UIViewController()
         expect { try self.turtlesAndFriendsStoryboard.bind(viewController: whateverViewController, toIdentifier: "WhateverViewController") }.to(
-            raiseException(named: "Fleet.StoryboardError", reason: "Could not find identifier 'WhateverViewController' on storyboard with name 'TurtlesAndFriendsStoryboard'", userInfo: nil, closure: nil)
+            throwStoryboardFailure(state: "Could not find identifier 'WhateverViewController' on storyboard with name 'TurtlesAndFriendsStoryboard'")
         )
     }
 
-    func test_bindingViewController_whenIdentifierExistsOnlyOnStoryboardRef_raisesException() {
+    func test_bindingViewController_whenIdentifierExistsOnlyOnStoryboardRef_throwsFailure() {
         let whateverViewController = UIViewController()
         expect { try self.turtlesAndFriendsStoryboard.bind(viewController: whateverViewController, toIdentifier: "CrabViewController") }.to(
-            raiseException(named: "Fleet.StoryboardError", reason: "Could not find identifier 'CrabViewController' on storyboard with name 'TurtlesAndFriendsStoryboard', but found this identifier on an external storyboard reference. Use UIStoryboard.bind(viewController:toIdentifier:forReferencedStoryboardWithName:) to bind to external references", userInfo: nil, closure: nil)
+            throwStoryboardFailure(state: "Could not find identifier 'CrabViewController' on storyboard with name 'TurtlesAndFriendsStoryboard', but found this identifier on an external storyboard reference. Use UIStoryboard.bind(viewController:toIdentifier:forReferencedStoryboardWithName:) to bind to external references")
         )
     }
 
-    func test_bindingViewController_whenBoundViewControllerHasAlreadyLoadedItsView_raisesException() {
+    func test_bindingViewController_whenBoundViewControllerHasAlreadyLoadedItsView_throwsFailure() {
         let preloadedViewController = MockBoxTurtleViewController()
         preloadedViewController.viewDidLoad()
         expect { try self.turtlesAndFriendsStoryboard.bind(viewController: preloadedViewController, toIdentifier: "BoxTurtleViewController") }.to(
-            raiseException(named: "Fleet.StoryboardError", reason: "Attempted to bind a view controller whose view has already been loaded to storyboard identifier 'BoxTurtleViewController'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code.", userInfo: nil, closure: nil)
+            throwStoryboardFailure(state: "Attempted to bind a view controller whose view has already been loaded to storyboard identifier 'BoxTurtleViewController'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code.")
         )
     }
 
@@ -135,18 +135,18 @@ class UIStoryboard_FleetSpec: XCTestCase {
         expect(testNavigationController.topViewController).to(beIdenticalTo(mockCrabViewController))
     }
 
-    func test_bindingViewControllerToIdentifierReferenceToAnotherStoryboard_whenInvalidIdentifier_raisesException() {
+    func test_bindingViewControllerToIdentifierReferenceToAnotherStoryboard_whenInvalidIdentifier_throwsFailure() {
         let whateverViewController = UIViewController()
         expect { try self.turtlesAndFriendsStoryboard.bind(viewController: whateverViewController, toIdentifier: "WhateverViewController", forReferencedStoryboardWithName: "CrabStoryboard") }.to(
-            raiseException(named: "Fleet.StoryboardError", reason: "Could not find identifier 'WhateverViewController' (external storyboard reference: 'CrabStoryboard') on storyboard 'TurtlesAndFriendsStoryboard'", userInfo: nil, closure: nil)
+            throwStoryboardFailure(state: "Could not find identifier 'WhateverViewController' (external storyboard reference: 'CrabStoryboard') on storyboard 'TurtlesAndFriendsStoryboard'")
         )
     }
 
-    func test_bindingViewControllerToIdentifierReferenceToAnotherStoryboard_whenBoundViewControllerHasAlreadyLoadedItsView_raisesException() {
+    func test_bindingViewControllerToIdentifierReferenceToAnotherStoryboard_whenBoundViewControllerHasAlreadyLoadedItsView_throwsFailure() {
         let preloadedViewController = MockBoxTurtleViewController()
         preloadedViewController.viewDidLoad()
         expect { try self.turtlesAndFriendsStoryboard.bind(viewController: preloadedViewController, toIdentifier: "CrabViewController", forReferencedStoryboardWithName: "CrabStoryboard") }.to(
-            raiseException(named: "Fleet.StoryboardError", reason: "Attempted to bind a view controller whose view has already been loaded to view controller identifier 'CrabViewController' on storyboard 'CrabStoryboard'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code.", userInfo: nil, closure: nil)
+            throwStoryboardFailure(state: "Attempted to bind a view controller whose view has already been loaded to view controller identifier 'CrabViewController' on storyboard 'CrabStoryboard'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code.")
         )
     }
 
@@ -165,18 +165,18 @@ class UIStoryboard_FleetSpec: XCTestCase {
         expect(testNavigationController.topViewController).to(beIdenticalTo(mockPuppyListViewController))
     }
 
-    func test_bindingViewControllerToInitialViewControllerOfReferenceToAnotherStoryboard_whenInvalidIdentifier_raisesException() {
+    func test_bindingViewControllerToInitialViewControllerOfReferenceToAnotherStoryboard_whenInvalidIdentifier_throwsFailure() {
         let whateverViewController = UIViewController()
         expect { try self.turtlesAndFriendsStoryboard.bind(viewController: whateverViewController, asInitialViewControllerForReferencedStoryboardWithName: "WhateverStoryboard") }.to(
-            raiseException(named: "Fleet.StoryboardError", reason: "Could not find reference to an external storyboard with name 'WhateverStoryboard' on storyboard 'TurtlesAndFriendsStoryboard'", userInfo: nil, closure: nil)
+            throwStoryboardFailure(state: "Could not find reference to an external storyboard with name 'WhateverStoryboard' on storyboard 'TurtlesAndFriendsStoryboard'")
         )
     }
 
-    func test_bindingViewControllerToInitialViewControllerOfReferenceToAnotherStoryboard_whenBoundViewControllerHasAlreadyLoadedItsView_raisesException() {
+    func test_bindingViewControllerToInitialViewControllerOfReferenceToAnotherStoryboard_whenBoundViewControllerHasAlreadyLoadedItsView_throwsFailure() {
         let preloadedViewController = MockBoxTurtleViewController()
         preloadedViewController.viewDidLoad()
         expect { try self.turtlesAndFriendsStoryboard.bind(viewController: preloadedViewController, asInitialViewControllerForReferencedStoryboardWithName: "PuppyStoryboard") }.to(
-            raiseException(named: "Fleet.StoryboardError", reason: "Attempted to bind a view controller whose view has already been loaded to initial view controller of storyboard 'PuppyStoryboard'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code.", userInfo: nil, closure: nil)
+            throwStoryboardFailure(state: "Attempted to bind a view controller whose view has already been loaded to initial view controller of storyboard 'PuppyStoryboard'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code.")
         )
     }
 
@@ -306,16 +306,49 @@ class UIStoryboard_FleetSpec: XCTestCase {
         expect(weakController?.value).to(beNil())
     }
 
+    func test_withBindings_releasesControllersWhenAFleetBindingFails() {
+        var weakController: WeakController!
+        do {
+            try turtlesAndFriendsStoryboard.withBindings {
+                weakController = bindWeakly(to: turtlesAndFriendsStoryboard)
+                try turtlesAndFriendsStoryboard.bind(viewController: BoxTurtleViewController(), toIdentifier: "WatermelonViewController")
+            }
+            XCTFail("Expected the failing bind to throw")
+        } catch {
+            expect(error is FleetFailure).to(beTrue())
+        }
+        expect(weakController.value).to(beNil())
+        expect(self.turtlesAndFriendsStoryboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")).toNot(beNil())
+    }
+
+    func test_contextCleanup_releasesControllersAcrossSuccessiveContexts() async throws {
+        let storyboard = turtlesAndFriendsStoryboard!
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 320, height: 480))
+        var weakController: WeakController!
+        try await Fleet.withContext(window: window) { context in
+            try context.addCleanup { storyboard.removeBindings() }
+            weakController = self.bindWeakly(to: storyboard)
+            expect(weakController.value).toNot(beNil())
+        }
+        expect(weakController.value).to(beNil())
+
+        try await Fleet.withContext(window: window) { _ in
+            expect(storyboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")).toNot(beNil())
+        }
+    }
+
     func test_failedBinding_recordsNothingAndLeavesEarlierBindingsOwnedByTheStoryboard() {
-        // An Objective-C exception unwinding through Swift frames does not release the references
-        // they held, so the rejected controller itself is not asserted on here; the storyboard's own
-        // registrations are.
         let weakController = bindWeakly(to: turtlesAndFriendsStoryboard)
-        let rejected = BoxTurtleViewController()
-        expect { try self.turtlesAndFriendsStoryboard.bind(viewController: rejected, toIdentifier: "WatermelonViewController") }.to(
-            raiseException(named: "Fleet.StoryboardError")
-        )
-        expect(self.turtlesAndFriendsStoryboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")).toNot(beIdenticalTo(rejected))
+        weak var weakRejected: BoxTurtleViewController?
+        do {
+            let rejected = BoxTurtleViewController()
+            weakRejected = rejected
+            expect { try self.turtlesAndFriendsStoryboard.bind(viewController: rejected, toIdentifier: "WatermelonViewController") }.to(
+                throwStoryboardFailure()
+            )
+            expect(self.turtlesAndFriendsStoryboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")).toNot(beIdenticalTo(rejected))
+        }
+        expect(weakRejected).to(beNil())
 
         turtlesAndFriendsStoryboard.removeBindings()
         expect(weakController.value).to(beNil())
@@ -331,18 +364,18 @@ class UIStoryboard_FleetSpec: XCTestCase {
         expect(storyboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")).to(beIdenticalTo(controller))
     }
 
-    func test_useBindingMetadata_withBundleLackingMetadata_raisesActionableException() {
+    func test_useBindingMetadata_withBundleLackingMetadata_throwsActionableFailure() {
         let storyboard = UIStoryboard(name: "TurtlesAndFriendsStoryboard", bundle: nil)
         try! storyboard.useBindingMetadata(forStoryboardNamed: "TurtlesAndFriendsStoryboard", in: Bundle(for: UIView.self))
         expect { try storyboard.bind(viewController: BoxTurtleViewController(), toIdentifier: "BoxTurtleViewController") }.to(
-            raiseException(named: "Fleet.StoryboardError")
+            throwStoryboardFailure()
         )
     }
 
-    func test_useBindingMetadata_afterBindingWithDifferentIdentity_raisesException() {
+    func test_useBindingMetadata_afterBindingWithDifferentIdentity_throwsFailure() {
         try! turtlesAndFriendsStoryboard.bind(viewController: BoxTurtleViewController(), toIdentifier: "BoxTurtleViewController")
         expect { try self.turtlesAndFriendsStoryboard.useBindingMetadata(forStoryboardNamed: "Other", in: nil) }.to(
-            raiseException(named: "Fleet.StoryboardError")
+            throwStoryboardFailure()
         )
     }
 }

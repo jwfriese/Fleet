@@ -4,7 +4,7 @@ Platforms: iOS, tvOS
 
 Storyboard helpers replace the view controllers a storyboard returns, so one controller can be tested apart from its siblings. Call them before the storyboard instantiates the identifier.
 
-All methods are `throws`. Use `try`. Errors are `Fleet.StoryboardError` values that describe what is missing from the storyboard.
+All methods are `throws`. Use `try`. Failures are thrown as recoverable `FleetFailure` values whose `state` describes what is missing from the storyboard, so `XCTAssertThrowsError` and `withBindings` cleanup work after a failed bind.
 
 ## Methods
 
@@ -111,7 +111,16 @@ try storyboard.withBindings {
 }
 ```
 
-`removeBindings()` affects only the storyboard it is called on. An Objective-C exception raised by a failing `bind` unwinds through Swift frames without releasing the references they held, so a controller passed to a rejected call may stay alive; construct controllers for failing calls inside an `autoreleasepool` only if that matters to your test, and do not rely on their release.
+Inside `Fleet.withContext`, register the cleanup with the context so the bindings end with its scope even if the body throws or is cancelled:
+
+```swift
+try await Fleet.withContext(window: window) { context in
+    try context.addCleanup { storyboard.removeBindings() }
+    try storyboard.bind(viewController: controller, toIdentifier: "BoxTurtleViewController")
+}
+```
+
+`removeBindings()` affects only the storyboard it is called on. A failing `bind` throws a `FleetFailure` rather than raising an exception, so `withBindings` still releases earlier bindings and a rejected controller is not retained.
 
 ### Choosing metadata explicitly
 
@@ -126,4 +135,4 @@ A bundle without `StoryboardInfo/<name>/Info.plist`, or with an unreadable one, 
 
 ### Lifecycle suppression limits
 
-A mock suppresses `viewDidLoad`, `viewWillAppear(_:)`, `viewDidAppear(_:)`, `viewWillDisappear(_:)`, and `viewDidDisappear(_:)`. It does not stop initializers (`init(coder:)`, `init(nibName:bundle:)`, or designated initializers) from running, nor property initializers or `prepare(for:sender:)` on a source controller, so any side effects there still happen. `UICollectionViewController` subclasses cannot be mocked (see issue #23); mock a `UIViewController` subclass, or bind a real instance instead.
+A mock suppresses `viewDidLoad`, `viewWillAppear(_:)`, `viewDidAppear(_:)`, `viewWillDisappear(_:)`, and `viewDidDisappear(_:)`. It does not stop initializers (`init(coder:)`, `init(nibName:bundle:)`, or designated initializers) from running, nor property initializers or `prepare(for:sender:)` on a source controller, so any side effects there still happen. `UICollectionViewController` subclasses can be mocked: Fleet creates them with `init(collectionViewLayout:)` using a `UICollectionViewFlowLayout`, so a subclass whose only designated initializer takes different arguments is not initialized the way its own code expects. Collection-controller mocking is otherwise limited as described in issue #23; bind a real instance when you need custom initialization.

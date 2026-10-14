@@ -41,7 +41,7 @@ extension UIStoryboard {
         }
     }
 
-    fileprivate func resolvedStoryboardName() -> String {
+    fileprivate func resolvedStoryboardName() throws -> String {
         if let name = metadataIdentity.name {
             return name
         }
@@ -52,8 +52,7 @@ extension UIStoryboard {
         }
 
         let message = "Could not determine the name of this storyboard. Call useBindingMetadata(forStoryboardNamed:in:) with the storyboard's name before binding."
-        FleetError(Fleet.StoryboardError.internalInconsistency(message)).raise()
-        return ""
+        throw FleetFailure.storyboard(.invalidSetup, action: "determine storyboard name", target: "UIStoryboard", message: message, reason: "Call useBindingMetadata(forStoryboardNamed:in:) first.")
     }
 
     fileprivate func initializeStoryboardBindings() throws -> StoryboardInstanceBinding {
@@ -61,7 +60,7 @@ extension UIStoryboard {
             return existing
         }
 
-        let storyboardName = resolvedStoryboardName()
+        let storyboardName = try resolvedStoryboardName()
         let storyboardReference = try StoryboardDeserializer().deserializeStoryboard(withName: storyboardName, in: metadataIdentity.bundle)
         let binding = StoryboardInstanceBinding(fromStoryboardName: storyboardName, storyboardReferenceMap: storyboardReference)
         storyboardInstanceBinding = binding
@@ -88,7 +87,7 @@ extension UIStoryboard {
         let identity = StoryboardMetadataIdentity(name: name, bundle: bundle)
         if storyboardInstanceBinding != nil && identity != metadataIdentity {
             let message = "Cannot change the binding metadata of storyboard '\(name)' after view controllers have been bound. Call removeBindings() first."
-            FleetError(Fleet.StoryboardError.internalInconsistency(message)).raise()
+            throw FleetFailure.storyboard(.invalidSetup, action: "change binding metadata", target: "storyboard '\(name)'", message: message, reason: "Call removeBindings() before choosing different metadata.")
         }
         metadataIdentity = identity
     }
@@ -145,15 +144,9 @@ extension UIStoryboard {
      has no view controller with the given identifier.
      */
     public func mockIdentifier<T>(_ identifier: String, usingMockFor classToMock: T.Type) throws -> T where T: UIViewController {
-        var mock: T? = nil
-        do {
-            mock = try Fleet.mockFor(classToMock)
-        } catch let error as Fleet.MockError {
-            FleetError(Fleet.StoryboardError.invalidMockType(error.description)).raise()
-        }
-
-        try bind(viewController: mock!, toIdentifier: identifier)
-        return mock!
+        let mock = try makeMock(for: classToMock)
+        try bind(viewController: mock, toIdentifier: identifier)
+        return mock
     }
 
     /**
@@ -179,15 +172,9 @@ extension UIStoryboard {
      given name has no view controller with the given identifier.
      */
     public func mockIdentifier<T>(_ identifier: String, forReferencedStoryboardWithName referencedStoryboardName: String, usingMockFor classToMock: T.Type) throws -> T where T: UIViewController {
-        var mock: T? = nil
-        do {
-            mock = try Fleet.mockFor(classToMock)
-        } catch let error as Fleet.MockError {
-            FleetError(Fleet.StoryboardError.invalidMockType(error.description)).raise()
-        }
-
-        try bind(viewController: mock!, toIdentifier: identifier, forReferencedStoryboardWithName: referencedStoryboardName)
-        return mock!
+        let mock = try makeMock(for: classToMock)
+        try bind(viewController: mock, toIdentifier: identifier, forReferencedStoryboardWithName: referencedStoryboardName)
+        return mock
     }
 
     /**
@@ -215,15 +202,9 @@ extension UIStoryboard {
      reference to a storyboard with the given name.
      */
     public func mockInitialViewController<T>(forReferencedStoryboardWithName name: String, usingMockFor classToMock: T.Type) throws -> T where T: UIViewController {
-        var mock: T? = nil
-        do {
-            mock = try Fleet.mockFor(classToMock)
-        } catch let error as Fleet.MockError {
-            FleetError(Fleet.StoryboardError.invalidMockType(error.description)).raise()
-        }
-
-        try bind(viewController: mock!, asInitialViewControllerForReferencedStoryboardWithName: name)
-        return mock!
+        let mock = try makeMock(for: classToMock)
+        try bind(viewController: mock, asInitialViewControllerForReferencedStoryboardWithName: name)
+        return mock
     }
 
     /**
@@ -244,7 +225,7 @@ extension UIStoryboard {
     public func bind(viewController: UIViewController, toIdentifier identifier: String) throws {
         if viewController.viewDidLoadCallCount > 0 {
             let message = "Attempted to bind a view controller whose view has already been loaded to storyboard identifier '\(identifier)'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."
-            FleetError(Fleet.StoryboardError.invalidViewControllerState(message)).raise()
+            throw FleetFailure.storyboard(.invalidInput, action: "bind view controller", target: "UIStoryboard", message: message, reason: "Bind the view controller before its view loads.")
         }
         let storyboardInstanceBinding = try initializeStoryboardBindings()
         try storyboardInstanceBinding.bind(viewController: viewController, toIdentifier: identifier)
@@ -272,7 +253,7 @@ extension UIStoryboard {
     public func bind(viewController: UIViewController, toIdentifier identifier: String, forReferencedStoryboardWithName referencedStoryboardName: String) throws {
         if viewController.viewDidLoadCallCount > 0 {
             let message = "Attempted to bind a view controller whose view has already been loaded to view controller identifier '\(identifier)' on storyboard '\(referencedStoryboardName)'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."
-            FleetError(Fleet.StoryboardError.invalidViewControllerState(message)).raise()
+            throw FleetFailure.storyboard(.invalidInput, action: "bind view controller", target: "UIStoryboard", message: message, reason: "Bind the view controller before its view loads.")
         }
         let storyboardInstanceBinding = try initializeStoryboardBindings()
         try storyboardInstanceBinding.bind(viewController: viewController, toIdentifier: identifier,
@@ -298,10 +279,18 @@ extension UIStoryboard {
     public func bind(viewController: UIViewController, asInitialViewControllerForReferencedStoryboardWithName referencedStoryboardName: String) throws {
         if viewController.viewDidLoadCallCount > 0 {
             let message = "Attempted to bind a view controller whose view has already been loaded to initial view controller of storyboard '\(referencedStoryboardName)'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."
-            FleetError(Fleet.StoryboardError.invalidViewControllerState(message)).raise()
+            throw FleetFailure.storyboard(.invalidInput, action: "bind view controller", target: "UIStoryboard", message: message, reason: "Bind the view controller before its view loads.")
         }
         let storyboardInstanceBinding = try initializeStoryboardBindings()
         try storyboardInstanceBinding.bind(viewController: viewController, asInitialViewControllerForReferencedStoryboardWithName: referencedStoryboardName)
+    }
+
+    private func makeMock<T>(for classToMock: T.Type) throws -> T where T: UIViewController {
+        do {
+            return try Fleet.mockFor(classToMock)
+        } catch let error as Fleet.MockError {
+            throw FleetFailure.storyboard(.invalidInput, action: "create mock view controller", target: "\(classToMock)", message: error.description, reason: "Mock a supported UIViewController subclass.")
+        }
     }
 
     @objc nonisolated class func swizzleViewControllerInstantiationMethod() {
