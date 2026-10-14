@@ -1214,6 +1214,19 @@ extension UITextField_FleetSpec {
         XCTAssertFalse(unfocusable.isFirstResponder)
         XCTAssertTrue(unfocusable.delegate === delegate)
     }
+
+    func test_startEditingOrThrow_preservesDelegateRemovedByDidBeginEditing() throws {
+        let removing = DelegateRemovingOnBegin()
+        subject.delegate = removing
+        _ = try subject.startEditingOrThrow()
+        XCTAssertTrue(subject.isFirstResponder)
+        XCTAssertNil(subject.delegate)
+    }
+}
+
+@MainActor
+private final class DelegateRemovingOnBegin: NSObject, UITextFieldDelegate {
+    func textFieldDidBeginEditing(_ textField: UITextField) { textField.delegate = nil }
 }
 
 private final class UnfocusableTextField: UITextField {

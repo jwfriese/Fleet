@@ -272,7 +272,8 @@ extension UITextView {
         let originalDelegate = delegate
         if originalDelegate != nil { delegate = vetoRecorder }
         let didBecome = becomeFirstResponder()
-        if originalDelegate != nil { delegate = originalDelegate }
+        // Restore only if the recorder is still installed, preserving delegate changes made by callbacks.
+        if originalDelegate != nil, delegate === vetoRecorder { delegate = originalDelegate }
         guard didBecome else {
             if window == nil {
                 throw FleetFailure(kind: .invalidSetup, action: "start editing", target: "UITextView",
@@ -372,8 +373,6 @@ extension UITextView {
     }
 }
 
-#endif
-
 /// Forwards every delegate message to the real delegate while remembering whether `textViewShouldBeginEditing(_:)` returned `false`,
 /// so a veto can be told apart from other focus failures without dispatching the callback a second time.
 @MainActor
@@ -400,3 +399,5 @@ private final class BeginEditingVetoRecorder: NSObject, UITextViewDelegate {
         target?.responds(to: selector) == true ? target : super.forwardingTarget(for: selector)
     }
 }
+
+#endif

@@ -860,6 +860,19 @@ extension UITextView_FleetSpec {
         XCTAssertFalse(unfocusable.isFirstResponder)
         XCTAssertTrue(unfocusable.delegate === delegate)
     }
+
+    func test_startEditingOrThrow_preservesDelegateRemovedByDidBeginEditing() throws {
+        let removing = DelegateRemovingOnBegin()
+        subject.delegate = removing
+        _ = try subject.startEditingOrThrow()
+        XCTAssertTrue(subject.isFirstResponder)
+        XCTAssertNil(subject.delegate)
+    }
+}
+
+@MainActor
+private final class DelegateRemovingOnBegin: NSObject, UITextViewDelegate {
+    func textViewDidBeginEditing(_ textView: UITextView) { textView.delegate = nil }
 }
 
 private final class UnfocusableTextView: UITextView {
