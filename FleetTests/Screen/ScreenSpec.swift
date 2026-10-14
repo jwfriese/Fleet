@@ -177,6 +177,44 @@ class ScreenSpec: XCTestCase {
         expect(screen.topmostViewController).to(beIdenticalTo(modalRoot))
     }
 
+    func test_nestedPresentations_overTabNavigationStack_resolveContainerAndVisibleContent() {
+        let window = UIWindow()
+        let navigation = UINavigationController(rootViewController: UIViewController())
+        let tabBarController = UITabBarController()
+        tabBarController.viewControllers = [navigation]
+        window.rootViewController = tabBarController
+        window.makeKeyAndVisible()
+        let pushed = UIViewController()
+        navigation.pushViewController(pushed, animated: false)
+
+        expect(Screen(forWindow: window).topmostViewController).to(beIdenticalTo(pushed))
+        expect(Screen(forWindow: window).topmostContainer).to(beIdenticalTo(tabBarController))
+
+        let modalRoot = UIViewController()
+        let modalNavigation = UINavigationController(rootViewController: modalRoot)
+        tabBarController.present(modalNavigation, animated: false, completion: nil)
+
+        expect(Screen(forWindow: window).topmostContainer).to(beIdenticalTo(modalNavigation))
+        expect(Screen(forWindow: window).topmostViewController).to(beIdenticalTo(modalRoot))
+
+        // Settle the first presentation before presenting over it.
+        expect(modalNavigation.presentingViewController).toEventually(beIdenticalTo(tabBarController))
+        expect(modalNavigation.isBeingPresented).toEventually(beFalse())
+
+        let nested = UIViewController()
+        modalNavigation.present(nested, animated: false, completion: nil)
+
+        expect(Screen(forWindow: window).topmostContainer).toEventually(beIdenticalTo(nested))
+        expect(Screen(forWindow: window).topmostViewController).to(beIdenticalTo(nested))
+
+        var dismissed = false
+        tabBarController.dismiss(animated: false) { dismissed = true }
+        expect(dismissed).toEventually(beTrue())
+
+        expect(Screen(forWindow: window).topmostContainer).to(beIdenticalTo(tabBarController))
+        expect(Screen(forWindow: window).topmostViewController).to(beIdenticalTo(pushed))
+    }
+
     func test_topmostViewController_whenNavigationControllerPresentsDirectly_returnsPresentedController() {
         let window = UIWindow()
         let navigationController = UINavigationController(rootViewController: UIViewController())
