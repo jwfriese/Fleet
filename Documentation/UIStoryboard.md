@@ -111,16 +111,21 @@ try storyboard.withBindings {
 }
 ```
 
-Inside `Fleet.withContext`, register the cleanup with the context so the bindings end with its scope even if the body throws or is cancelled:
+Inside `Fleet.withContext`, no cleanup is needed. Every `bind` and `mock…` overload, including the external-reference ones, assigns the registration to the enclosing context:
 
 ```swift
 try await Fleet.withContext(window: window) { context in
-    try context.addCleanup { storyboard.removeBindings() }
-    try storyboard.bind(viewController: controller, toIdentifier: "BoxTurtleViewController")
+    let replacement = try storyboard.mockIdentifier("Detail", usingMockFor: DetailViewController.self)
+    // Exercise the UI and assert against replacement.
 }
+// This context's registrations are gone, even though `storyboard` is retained.
 ```
 
-`removeBindings()` affects only the storyboard it is called on. A failing `bind` throws a `FleetFailure` rather than raising an exception, so `withBindings` still releases earlier bindings and a rejected controller is not retained.
+When the scope ends (normally, by a thrown error or timeout, or by cancellation), Fleet removes only that context's registrations and releases their controllers, before the coordination lease is released. If the context overrode a registration made outside it for the same identifier, that registration is restored; other owners' registrations on the same storyboard are untouched. Controllers stay alive if your test retains them itself.
+
+Ownership follows the asynchronous scope: child tasks inherit the context, but detached tasks do not and register as ordinary (storyboard-owned) bindings. Work that still carries a context after its scope ended gets a `FleetFailure` instead of creating a stale registration.
+
+Outside `Fleet.withContext`, ownership stays with the storyboard instance and the explicit `removeBindings()` / `withBindings` options apply. `removeBindings()` removes every registration on the storyboard it is called on, whoever owns it, and affects no other storyboard. A failing `bind` throws a `FleetFailure` rather than raising an exception, so `withBindings` still releases earlier bindings and a rejected controller is not retained.
 
 ### Choosing metadata explicitly
 

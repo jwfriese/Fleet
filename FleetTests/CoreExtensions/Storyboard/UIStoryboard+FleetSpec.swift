@@ -199,9 +199,12 @@ class UIStoryboard_FleetSpec: XCTestCase {
     // MARK: Binding lifetime
 
     private func bindWeakly(to storyboard: UIStoryboard, identifier: String = "BoxTurtleViewController") -> WeakController {
-        let controller = BoxTurtleViewController()
-        try! storyboard.bind(viewController: controller, toIdentifier: identifier)
-        return WeakController(controller)
+        // Drain autoreleased temporaries so only real owners keep the controller alive.
+        return autoreleasepool {
+            let controller = BoxTurtleViewController()
+            try! storyboard.bind(viewController: controller, toIdentifier: identifier)
+            return WeakController(controller)
+        }
     }
 
     private struct WeakController {
@@ -308,14 +311,16 @@ class UIStoryboard_FleetSpec: XCTestCase {
 
     func test_withBindings_releasesControllersWhenAFleetBindingFails() {
         var weakController: WeakController!
-        do {
-            try turtlesAndFriendsStoryboard.withBindings {
-                weakController = bindWeakly(to: turtlesAndFriendsStoryboard)
-                try turtlesAndFriendsStoryboard.bind(viewController: BoxTurtleViewController(), toIdentifier: "WatermelonViewController")
+        autoreleasepool {
+            do {
+                try turtlesAndFriendsStoryboard.withBindings {
+                    weakController = bindWeakly(to: turtlesAndFriendsStoryboard)
+                    try turtlesAndFriendsStoryboard.bind(viewController: BoxTurtleViewController(), toIdentifier: "WatermelonViewController")
+                }
+                XCTFail("Expected the failing bind to throw")
+            } catch {
+                expect(error is FleetFailure).to(beTrue())
             }
-            XCTFail("Expected the failing bind to throw")
-        } catch {
-            expect(error is FleetFailure).to(beTrue())
         }
         expect(weakController.value).to(beNil())
         expect(self.turtlesAndFriendsStoryboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")).toNot(beNil())
@@ -333,6 +338,138 @@ class UIStoryboard_FleetSpec: XCTestCase {
         expect(weakController.value).to(beNil())
 
         try await Fleet.withContext(window: window) { _ in
+            expect(storyboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")).toNot(beNil())
+        }
+    }
+
+    // MARK: Automatic context ownership
+
+    private func makeWindow() -> UIWindow { UIWindow(frame: CGRect(x: 0, y: 0, width: 320, height: 480)) }
+
+    func test_context_releasesBindingsOnRetainedStoryboardWithoutManualCleanup() async throws {
+        let storyboard = turtlesAndFriendsStoryboard!
+        var weakController: WeakController!
+        try await Fleet.withContext(window: makeWindow()) { _ in
+            weakController = self.bindWeakly(to: storyboard)
+            expect(weakController.value).toNot(beNil())
+        }
+        expect(weakController.value).to(beNil())
+
+        try await Fleet.withContext(window: makeWindow()) { _ in
+            let instantiated = storyboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")
+            expect(instantiated).toNot(beNil())
+        }
+    }
+
+    func test_context_releasesMocksAndExternalReferenceBindings() async throws {
+        let storyboard = turtlesAndFriendsStoryboard!
+        weak var weakMock: BoxTurtleViewController?
+        try await Fleet.withContext(window: makeWindow()) { _ in
+            weakMock = try storyboard.mockIdentifier("BoxTurtleViewController", usingMockFor: BoxTurtleViewController.self)
+            expect(weakMock).toNot(beNil())
+        }
+        expect(weakMock).to(beNil())
+    }
+
+    func test_context_releasesBindingsWhenBodyThrowsAfterFailedBind() async {
+        let storyboard = turtlesAndFriendsStoryboard!
+        var weakController: WeakController!
+        do {
+            try await Fleet.withContext(window: makeWindow()) { _ in
+                weakController = self.bindWeakly(to: storyboard)
+                try storyboard.bind(viewController: BoxTurtleViewController(), toIdentifier: "WatermelonViewController")
+            }
+            XCTFail("Expected the failing bind to throw")
+        } catch {
+            expect(error is FleetFailure).to(beTrue())
+        }
+        expect(weakController.value).to(beNil())
+    }
+
+    func test_context_releasesBindingsWhenCancelled() async {
+        let storyboard = turtlesAndFriendsStoryboard!
+        let window = makeWindow()
+        var weakController: WeakController?
+        var sawCancellation = false
+        let task = Task { @MainActor in
+            do {
+                try await Fleet.withContext(window: window) { _ in
+                    weakController = self.bindWeakly(to: storyboard)
+                    try await Task.sleep(nanoseconds: 30_000_000_000)
+                }
+            } catch is CancellationError {
+                sawCancellation = true
+            } catch {}
+        }
+        task.cancel()
+        await task.value
+        // Cancelled before the body first ran is also fine; a body that ran must have been cleaned.
+        if let weakController { expect(weakController.value).to(beNil()) }
+        expect(sawCancellation).to(beTrue())
+        expect(storyboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")).toNot(beNil())
+    }
+
+    func test_context_restoresAnOutsideBindingItOverrode() async throws {
+        let storyboard = turtlesAndFriendsStoryboard!
+        let original = BoxTurtleViewController()
+        try storyboard.bind(viewController: original, toIdentifier: "BoxTurtleViewController")
+        var weakReplacement: WeakController!
+        try await Fleet.withContext(window: makeWindow()) { _ in
+            weakReplacement = self.bindWeakly(to: storyboard)
+            expect(storyboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")).to(beIdenticalTo(weakReplacement.value))
+        }
+        expect(weakReplacement.value).to(beNil())
+        expect(storyboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")).to(beIdenticalTo(original))
+    }
+
+    func test_context_preservesBindingsOfOtherIdentifiersMadeOutside() async throws {
+        let storyboard = turtlesAndFriendsStoryboard!
+        let outside = AnimalListViewController()
+        try storyboard.bind(viewController: outside, toIdentifier: "AnimalListViewController")
+        try await Fleet.withContext(window: makeWindow()) { _ in
+            _ = self.bindWeakly(to: storyboard)
+        }
+        expect(storyboard.instantiateViewController(withIdentifier: "AnimalListViewController")).to(beIdenticalTo(outside))
+    }
+
+    func test_context_isolatesStoryboards() async throws {
+        let other = UIStoryboard(name: "TurtlesAndFriendsStoryboard", bundle: nil)
+        let otherController = BoxTurtleViewController()
+        try other.bind(viewController: otherController, toIdentifier: "BoxTurtleViewController")
+        try await Fleet.withContext(window: makeWindow()) { _ in
+            _ = self.bindWeakly(to: self.turtlesAndFriendsStoryboard)
+        }
+        expect(other.instantiateViewController(withIdentifier: "BoxTurtleViewController")).to(beIdenticalTo(otherController))
+    }
+
+    func test_context_doesNotOwnBindingsFromDetachedWork() async throws {
+        let storyboard = turtlesAndFriendsStoryboard!
+        var weakController: WeakController!
+        try await Fleet.withContext(window: makeWindow()) { _ in
+            let detached = Task.detached { @MainActor in self.bindWeakly(to: storyboard) }
+            weakController = await detached.value
+        }
+        expect(weakController.value).toNot(beNil())
+        storyboard.removeBindings()
+        expect(weakController.value).to(beNil())
+    }
+
+    func test_workCarryingAnEndedContext_cannotCreateStaleRegistrations() async throws {
+        let storyboard = turtlesAndFriendsStoryboard!
+        var escaped: Task<Void, Error>?
+        try await Fleet.withContext(window: makeWindow()) { _ in
+            escaped = Task { @MainActor in
+                try await Task.sleep(nanoseconds: 200_000_000)
+                try storyboard.bind(viewController: BoxTurtleViewController(), toIdentifier: "BoxTurtleViewController")
+            }
+        }
+        do {
+            try await escaped?.value
+            XCTFail("Expected the ended context to reject the registration")
+        } catch {
+            expect(error is FleetFailure).to(beTrue())
+        }
+        try await Fleet.withContext(window: makeWindow()) { _ in
             expect(storyboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")).toNot(beNil())
         }
     }

@@ -258,6 +258,21 @@ final class PackageConsumerTests: XCTestCase {
     }
 #endif
 
+    func testContextReleasesBindingsOnRetainedStoryboardWithoutManualCleanup() async throws {
+        let host = try XCTUnwrap(window)
+        let storyboard = storyboard()
+        let original = UIViewController()
+        try storyboard.bind(viewController: original, toIdentifier: "Detail")
+        weak var replacement: UIViewController?
+        try await Fleet.withContext(window: host) { _ in
+            let mock = try storyboard.mockIdentifier("Detail", usingMockFor: UIViewController.self)
+            replacement = mock
+            XCTAssertTrue(storyboard.instantiateViewController(withIdentifier: "Detail") === mock)
+        }
+        XCTAssertNil(replacement)
+        XCTAssertTrue(storyboard.instantiateViewController(withIdentifier: "Detail") === original)
+    }
+
     func testScopedContextHostsExplicitWindowAndScene() async throws {
         let host = try XCTUnwrap(window)
         let scene = try XCTUnwrap(host.windowScene)

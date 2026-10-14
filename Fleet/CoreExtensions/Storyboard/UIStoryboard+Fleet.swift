@@ -85,6 +85,10 @@ extension UIStoryboard {
      */
     public func useBindingMetadata(forStoryboardNamed name: String, in bundle: Bundle?) throws {
         let identity = StoryboardMetadataIdentity(name: name, bundle: bundle)
+        if let existing = storyboardInstanceBinding, existing.isEmpty {
+            // Nothing is registered (for example after a context ended), so the metadata can change.
+            storyboardInstanceBinding = nil
+        }
         if storyboardInstanceBinding != nil && identity != metadataIdentity {
             let message = "Cannot change the binding metadata of storyboard '\(name)' after view controllers have been bound. Call removeBindings() first."
             throw FleetFailure.storyboard(.invalidSetup, action: "change binding metadata", target: "storyboard '\(name)'", message: message, reason: "Call removeBindings() before choosing different metadata.")
@@ -227,8 +231,9 @@ extension UIStoryboard {
             let message = "Attempted to bind a view controller whose view has already been loaded to storyboard identifier '\(identifier)'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."
             throw FleetFailure.storyboard(.invalidInput, action: "bind view controller", target: "UIStoryboard", message: message, reason: "Bind the view controller before its view loads.")
         }
+        let owner = try FleetTestContext.owningContext()
         let storyboardInstanceBinding = try initializeStoryboardBindings()
-        try storyboardInstanceBinding.bind(viewController: viewController, toIdentifier: identifier)
+        try storyboardInstanceBinding.bind(viewController: viewController, toIdentifier: identifier, owner: owner)
     }
 
     /**
@@ -255,9 +260,10 @@ extension UIStoryboard {
             let message = "Attempted to bind a view controller whose view has already been loaded to view controller identifier '\(identifier)' on storyboard '\(referencedStoryboardName)'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."
             throw FleetFailure.storyboard(.invalidInput, action: "bind view controller", target: "UIStoryboard", message: message, reason: "Bind the view controller before its view loads.")
         }
+        let owner = try FleetTestContext.owningContext()
         let storyboardInstanceBinding = try initializeStoryboardBindings()
         try storyboardInstanceBinding.bind(viewController: viewController, toIdentifier: identifier,
-                                           forReferencedStoryboardWithName:referencedStoryboardName)
+                                           forReferencedStoryboardWithName: referencedStoryboardName, owner: owner)
     }
 
     /**
@@ -281,8 +287,9 @@ extension UIStoryboard {
             let message = "Attempted to bind a view controller whose view has already been loaded to initial view controller of storyboard '\(referencedStoryboardName)'. Fleet throws an error when this occurs because UIKit does not load the view of a segue destination view controller before calling 'prepareForSegue:', and so binding a preloaded view controller invalidates the environment of the test code."
             throw FleetFailure.storyboard(.invalidInput, action: "bind view controller", target: "UIStoryboard", message: message, reason: "Bind the view controller before its view loads.")
         }
+        let owner = try FleetTestContext.owningContext()
         let storyboardInstanceBinding = try initializeStoryboardBindings()
-        try storyboardInstanceBinding.bind(viewController: viewController, asInitialViewControllerForReferencedStoryboardWithName: referencedStoryboardName)
+        try storyboardInstanceBinding.bind(viewController: viewController, asInitialViewControllerForReferencedStoryboardWithName: referencedStoryboardName, owner: owner)
     }
 
     private func makeMock<T>(for classToMock: T.Type) throws -> T where T: UIViewController {

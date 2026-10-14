@@ -21,7 +21,8 @@ Both forms are `@MainActor` and available on iOS and tvOS (iOS/tvOS 15 and later
 - **Whole-lifetime exclusion.** The scope holds a process-local FIFO lease from before setup until after cleanup. Overlapping contexts run one at a time, in arrival order. Test execution remains serial; the lease does not make UIKit parallel-safe or permit parallel test runs.
 - **Cleanup on every exit.** On return, a thrown error, a timeout or task cancellation, the context runs registered cleanups (last registered first), ends editing, dismisses presented controllers without animation (bounded at two seconds), and then restores or dismantles the window, before releasing the lease. A task cancelled while queued never holds the lease and cannot leak it.
 - **Borrowed windows** get their previous root controller, key-window status and visibility restored. **Owned windows** (scene form) are made key, then hidden and detached from the scene, with the previous key window restored; owned controllers deallocate once your code drops its references.
-- **Cleanup registration.** `context.addCleanup { }` registers context-owned resources (for example storyboard bindings or observers) to release during teardown. Using a context after its scope ends throws a `FleetFailure` of kind `.invalidSetup`.
+- **Storyboard bindings.** Storyboard binds and mocks made inside the scope belong to the context and are removed (restoring any registration they overrode) before the lease is released; see [UIStoryboard](UIStoryboard.md#binding-lifetime).
+- **Cleanup registration.** `context.addCleanup { }` registers context-owned resources (for example observers) to release during teardown. Using a context after its scope ends throws a `FleetFailure` of kind `.invalidSetup`.
 
 ## Bounded waits
 
