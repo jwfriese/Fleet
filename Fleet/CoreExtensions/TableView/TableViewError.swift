@@ -13,10 +13,14 @@ extension Fleet {
         case ambiguousContextualAction(at: IndexPath, edge: String, title: String, matchCount: Int)
         case contextualActionIndexOutOfRange(at: IndexPath, edge: String, index: Int, count: Int)
         case contextualActionDidNotComplete(at: IndexPath, edge: String, title: String?, timeout: TimeInterval)
+        case cellNotDisplayed(at: IndexPath)
         case mismatchedCellType(at: IndexPath, foundType: AnyClass, requestedType: AnyClass)
+        case legacy(FleetFailure)
 
         var errorMessage: String {
             switch self {
+            case .legacy(let failure):
+                return failure.reason
             case .dataSourceRequired(let userAction):
                 return "Data source required to \(userAction)."
             case .delegateRequired(let userAction):
@@ -39,6 +43,8 @@ extension Fleet {
                 return "Row \(indexPath.row) in section \(indexPath.section) has \(count) \(edge) contextual actions; no action at index \(index)."
             case .contextualActionDidNotComplete(let indexPath, let edge, let title, let timeout):
                 return "The \(edge) contextual action '\(title ?? "(untitled)")' at row \(indexPath.row) in section \(indexPath.section) did not call its completion handler within \(timeout) seconds."
+            case .cellNotDisplayed(let indexPath):
+                return "Cell at row \(indexPath.row) in section \(indexPath.section) is not currently displayed by the table view."
             case .mismatchedCellType(let indexPath, let foundType, let requestedType):
                 return "Cell at row \(indexPath.row) in section \(indexPath.section) is of type `\(foundType)` (wanted `\(requestedType)`)."
             }
@@ -49,16 +55,49 @@ extension Fleet {
 }
 
 extension UITableView {
-    /// Raises a `FleetError` and returns false if the index path is not a row of this table view.
-    func fleet_validateExistingRow(at indexPath: IndexPath) -> Bool {
+    /// Throws an `.invalidInput` failure if the index path is not a row of this table view.
+    /// The `reason` keeps the wording the raising helpers have always used.
+    func fleet_requireExistingRow(at indexPath: IndexPath, action: String) throws {
+        // UIKit's `section`/`row` accessors trap when the path has fewer than two components.
+        guard indexPath.count >= 2 else {
+            throw FleetFailure(kind: .invalidInput, action: action,
+                               target: "UITableView index path \(Array(indexPath))",
+                               state: "the index path has \(indexPath.count) component(s)",
+                               reason: "A table view index path needs a section and a row.")
+        }
+        let target = "UITableView row \(indexPath.row) in section \(indexPath.section)"
         if indexPath.section < 0 || indexPath.section >= numberOfSections {
-            FleetError(Fleet.TableViewError.sectionDoesNotExist(sectionNumber: indexPath.section)).raise()
-            return false
+            throw FleetFailure(kind: .invalidInput, action: action, target: target,
+                               state: "the table view has \(numberOfSections) section(s)",
+                               reason: "Table view has no section \(indexPath.section).")
         }
         if indexPath.row < 0 || indexPath.row >= numberOfRows(inSection: indexPath.section) {
-            FleetError(Fleet.TableViewError.rowDoesNotExist(at: indexPath)).raise()
-            return false
+            throw FleetFailure(kind: .invalidInput, action: action, target: target,
+                               state: "section \(indexPath.section) has \(numberOfRows(inSection: indexPath.section)) row(s)",
+                               reason: "Table view has no row \(indexPath.row) in section \(indexPath.section).")
         }
-        return true
     }
+
+    /// Throws `.invalidSetup` when the table view has no data source.
+    func fleet_requireDataSource(action: String, userAction: String, target: String) throws {
+        guard dataSource != nil else {
+            throw FleetFailure(kind: .invalidSetup, action: action, target: target,
+                               state: "the table view has no data source",
+                               reason: "Data source required to \(userAction).")
+        }
+    }
+}
+
+/// Runs a throwing table helper, converting a `FleetFailure` into the raised `FleetError` that the
+/// non-throwing helpers have always produced.
+@MainActor
+func fleet_raisingLegacy<T>(_ fallback: @autoclosure () -> T, _ body: () throws -> T) -> T {
+    do {
+        return try body()
+    } catch let failure as FleetFailure {
+        FleetError(Fleet.TableViewError.legacy(failure)).raise()
+    } catch {
+        FleetError(Fleet.InternalError.unrecoverable(details: "\(error)")).raise()
+    }
+    return fallback()
 }
