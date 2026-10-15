@@ -511,17 +511,23 @@ class UINavigationController_FleetSpec: XCTestCase {
         defer { withExtendedLifetime(delegate) {} }
         let a = TracingViewController(name: "a", trace: trace)
 
-        func settle(didShow name: String, after count: Int) async {
+        // Settle on both the delegate and the appearance callback: UIKit may deliver
+        // didShow and viewDidAppear in either order, and the initial root appearance can
+        // lag the window becoming visible, so each boundary waits for both.
+        func settle(_ event: String, after count: Int) async {
             let deadline = Date().addingTimeInterval(5)
-            while Date() < deadline, trace.events.filter({ $0.hasPrefix("delegate.didShow(\(name)") }).count < count {
+            while Date() < deadline, trace.events.filter({ $0 == event }).count < count {
                 try? await Task.sleep(nanoseconds: 20_000_000)
             }
         }
-        await settle(didShow: "root", after: 1)
+        await settle("root.viewDidAppear", after: 1)
+        await settle("delegate.didShow(root, animated: false)", after: 1)
         ops.push(navigation, a)
-        await settle(didShow: "a", after: 1)
+        await settle("a.viewDidAppear", after: 1)
+        await settle("delegate.didShow(a, animated: false)", after: 1)
         _ = ops.popTo(navigation, root)
-        await settle(didShow: "root", after: 2)
+        await settle("root.viewDidAppear", after: 2)
+        await settle("delegate.didShow(root, animated: false)", after: 2)
         window.isHidden = true
         return trace.events
     }
