@@ -284,6 +284,90 @@ class UITableView_SelectRowSpec: XCTestCase {
         expect(recorder.events).to(equal(["willSelect 2"]))
     }
 
+    func test_selectRow_whenDelegateRedirectsDeselectionToANonexistentRow_raisesAndChangesNothing() {
+        let viewController = makeBirdsViewController()
+        let table = viewController.birdsTableView!
+        let recorder = RecordingDelegate()
+        recorder.dataSource = table.dataSource
+        table.delegate = recorder
+        table.selectRow(at: IndexPath(row: 1, section: 0))
+        recorder.events = []
+        recorder.deselectRedirect = IndexPath(row: 500, section: 0)
+
+        expect { table.selectRow(at: IndexPath(row: 3, section: 0)) }.to(
+            raiseException(named: "Fleet.TableViewError", reason: "Table view has no row 500 in section 0.", userInfo: nil, closure: nil)
+        )
+        expect(table.indexPathsForSelectedRows).to(equal([IndexPath(row: 1, section: 0)]))
+        expect(recorder.events).to(equal(["willSelect 3", "willDeselect 1"]))
+    }
+
+    func test_selectRow_withMultipleSelection_whenDeselectionRedirectIsNonexistent_raisesAndChangesNothing() {
+        let viewController = makeBirdsViewController()
+        let table = viewController.birdsTableView!
+        table.allowsMultipleSelection = true
+        table.selectRow(at: IndexPath(row: 1, section: 0))
+        let recorder = RecordingDelegate()
+        recorder.dataSource = table.dataSource
+        recorder.deselectRedirect = IndexPath(row: 500, section: 0)
+        table.delegate = recorder
+
+        expect { table.selectRow(at: IndexPath(row: 1, section: 0)) }.to(raiseException())
+        expect(table.indexPathsForSelectedRows).to(equal([IndexPath(row: 1, section: 0)]))
+        expect(recorder.events).to(equal(["willSelect 1", "willDeselect 1"]))
+    }
+
+    func test_selectRowOrThrow_reportsFailuresAsSwiftErrors() {
+        let viewController = makeBirdsViewController()
+        let table = viewController.birdsTableView!
+
+        XCTAssertThrowsError(try table.selectRowOrThrow(at: IndexPath(row: 500, section: 0))) { error in
+            let failure = error as? FleetFailure
+            XCTAssertEqual(failure?.kind, .invalidInput)
+            XCTAssertEqual(failure?.action, "select row")
+            XCTAssertEqual(failure?.target, "UITableView row 500 in section 0")
+        }
+        XCTAssertThrowsError(try table.selectRowOrThrow(at: IndexPath(index: 0))) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .invalidInput)
+        }
+        table.allowsSelection = false
+        XCTAssertThrowsError(try table.selectRowOrThrow(at: IndexPath(row: 1, section: 0))) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .unavailableInteraction)
+        }
+        table.dataSource = nil
+        XCTAssertThrowsError(try table.selectRowOrThrow(at: IndexPath(row: 1, section: 0))) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .invalidSetup)
+        }
+    }
+
+    func test_selectRowOrThrow_reportsDelegateRefusalAsAnOutcome() throws {
+        let viewController = makeBirdsViewController()
+        let table = viewController.birdsTableView!
+
+        // The controller does not allow the first row to be selected.
+        let outcome = try table.selectRowOrThrow(at: IndexPath(row: 0, section: 0))
+
+        XCTAssertEqual(outcome, .refusedByDelegate(method: "tableView(_:willSelectRowAt:)"))
+        XCTAssertNil(table.indexPathsForSelectedRows)
+        XCTAssertEqual(try table.selectRowOrThrow(at: IndexPath(row: 1, section: 0)), .performed)
+    }
+
+    func test_selectRowOrThrow_withMultipleSelection_whenDelegateVetoesDeselection_reportsRefusal() throws {
+        let viewController = makeBirdsViewController()
+        let table = viewController.birdsTableView!
+        table.allowsMultipleSelection = true
+        try table.selectRowOrThrow(at: IndexPath(row: 1, section: 0))
+        let recorder = RecordingDelegate()
+        recorder.dataSource = table.dataSource
+        recorder.vetoDeselect = true
+        table.delegate = recorder
+
+        let outcome = try table.selectRowOrThrow(at: IndexPath(row: 1, section: 0))
+
+        XCTAssertEqual(outcome, .refusedByDelegate(method: "tableView(_:willDeselectRowAt:)"))
+        XCTAssertEqual(table.indexPathsForSelectedRows, [IndexPath(row: 1, section: 0)])
+        XCTAssertEqual(recorder.events, ["willSelect 1", "willDeselect 1"])
+    }
+
     func test_selectRow_whenRowIsAlreadySelected_reportsSelectionAgainWithoutDeselecting() {
         let viewController = makeBirdsViewController()
         let table = viewController.birdsTableView!
@@ -350,6 +434,8 @@ class UITableView_SelectRowSpec: XCTestCase {
 fileprivate class RecordingDelegate: NSObject, UITableViewDelegate {
     var events: [String] = []
     var redirect: IndexPath?
+    var deselectRedirect: IndexPath?
+    var vetoDeselect = false
     weak var dataSource: UITableViewDataSource?
 
     func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
@@ -359,7 +445,8 @@ fileprivate class RecordingDelegate: NSObject, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) { events.append("didSelect \(indexPath.row)") }
     func tableView(_ tableView: UITableView, willDeselectRowAt indexPath: IndexPath) -> IndexPath? {
         events.append("willDeselect \(indexPath.row)")
-        return indexPath
+        if vetoDeselect { return nil }
+        return deselectRedirect ?? indexPath
     }
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) { events.append("didDeselect \(indexPath.row)") }
 }

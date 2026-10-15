@@ -2,7 +2,10 @@
 
 Platforms: `fetchCell` and `selectRow`: iOS, tvOS. `performContextualAction`: iOS only.
 
-All methods raise a `Fleet.TableViewError` (`FleetError`) on failure.
+The classic methods raise a `Fleet.TableViewError` (`FleetError`) on failure. `selectRowOrThrow(at:)`, `fetchCellOrThrow`, and
+`fetchDisplayedCellOrThrow` perform the same work but throw a typed `FleetFailure` (see [UICollectionView](UICollectionView.md#recoverable-failures)),
+so the failure can be asserted with `XCTAssertThrowsError` / `#expect(throws:)`. `selectRowOrThrow` returns `.refusedByDelegate`
+when `willSelectRowAt` (or `willDeselectRowAt` in a multiple-selection toggle) returns `nil`; the classic form returns silently.
 
 ## Methods
 
@@ -59,7 +62,7 @@ iOS only.
 `selectRow(at:)` follows this order in single-selection mode: `willSelectRowAt`, `willDeselectRowAt` (previous row),
 `didDeselectRowAt`, `didSelectRowAt`. Delegate methods that are not implemented are skipped.
 - If `willSelectRowAt` returns `nil`, nothing changes (no deselection, no selection, no notification).
-- A redirected index path is validated before dispatch; a nonexistent one raises and changes nothing.
+- A redirected index path (from `willSelectRowAt` or `willDeselectRowAt`) is validated before any selection change or `did...` callback; a nonexistent one raises/throws and changes nothing.
 - If `willDeselectRowAt` returns `nil`, no deselect callback or notification is sent for that row.
 - `UITableView.selectionDidChangeNotification` is posted with the table view as its object after each selection or deselection.
 - Tapping the already selected row in single-selection mode reports select callbacks again and leaves it selected.
@@ -73,7 +76,7 @@ is derived from UIKit's documented behavior and verified by Fleet's own tests, n
 ### Fetching a cell
 `fetchCell(at:)` returns a *configured* cell: it asks the data source for one (`tableView(_:cellForRowAt:)`), so it is not
 necessarily the instance the table view displays. Use `fetchDisplayedCell(at:)` / `fetchDisplayedCell(at:asType:)` to get
-the displayed instance (`cellForRow(at:)`). It raises if the row is offscreen or not yet laid out (call `layoutIfNeeded()` first).
+the displayed instance (`cellForRow(at:)`). It raises if the row is not among `indexPathsForVisibleRows` (offscreen, retained-but-offscreen prepared cells, or not yet laid out) (call `layoutIfNeeded()` first).
 
 ```swift
 @discardableResult
