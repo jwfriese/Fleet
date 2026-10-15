@@ -62,14 +62,17 @@ public class Fleet {
     }
 
     /**
+     Every loaded `.xctest` bundle, in load order.
+     */
+    internal static var loadedTestBundles: [Bundle] {
+        return Bundle.allBundles.filter { $0.bundlePath.hasSuffix(".xctest") }
+    }
+
+    /**
      Note: The original file this func was taken from can be found in the Quick
      project (https://github.com/Quick/Quick) .
      */
     internal static var currentTestBundle: Bundle? {
-        return Bundle.allBundles.lazy
-            .filter {
-                $0.bundlePath.hasSuffix(".xctest")
-            }
-            .first
+        return loadedTestBundles.first
     }
 }

@@ -65,6 +65,45 @@ final class PackageConsumerTests: XCTestCase {
         XCTAssertTrue(result.matchesScreen)
     }
 
+    private func waitUntilSettled(_ condition: () -> Bool) async throws {
+        for _ in 0..<250 where !condition() {
+            try await Task.sleep(nanoseconds: 20_000_000)
+        }
+        XCTAssertTrue(condition(), "State did not settle within the bounded wait")
+    }
+
+    func testScreenSeparatesContainerFromVisibleContent() async throws {
+        let window = UIWindow()
+        let root = UIViewController()
+        let navigation = UINavigationController(rootViewController: root)
+        let tabs = UITabBarController()
+        tabs.viewControllers = [navigation]
+        window.rootViewController = tabs
+        window.makeKeyAndVisible()
+        let pushed = UIViewController()
+        navigation.pushViewController(pushed, animated: true)
+
+        var screen = Fleet.getScreen(forWindow: window)
+        XCTAssertTrue(screen.topmostViewController === pushed)
+        XCTAssertTrue(screen.topmostContainer === tabs)
+
+        let modalRoot = UIViewController()
+        let modalNavigation = UINavigationController(rootViewController: modalRoot)
+        tabs.present(modalNavigation, animated: false, completion: nil)
+        try await waitUntilSettled { modalNavigation.presentingViewController === tabs && !modalNavigation.isBeingPresented }
+        screen = Fleet.getScreen(forWindow: window)
+        XCTAssertTrue(screen.topmostContainer === modalNavigation)
+        XCTAssertTrue(screen.topmostViewController === modalRoot)
+
+        let secondModal = UIViewController()
+        modalNavigation.present(secondModal, animated: false, completion: nil)
+        try await waitUntilSettled { Fleet.getScreen(forWindow: window).topmostContainer === secondModal }
+
+        screen = Fleet.getScreen(forWindow: window)
+        XCTAssertTrue(screen.topmostContainer === secondModal)
+        XCTAssertTrue(screen.topmostViewController === secondModal)
+    }
+
     func testPublicButtonActionExecutesExactlyOnce() {
         let target = ActionTarget()
         let button = UIButton(type: .custom)
@@ -159,6 +198,22 @@ final class PackageConsumerTests: XCTestCase {
         XCTAssertTrue(storyboard.instantiateViewController(withIdentifier: "Detail") === replacement)
     }
 
+    func testStoryboardBindingsAreReleasedAndMetadataBundleIsExplicit() throws {
+        let storyboard = storyboard()
+        try storyboard.useBindingMetadata(forStoryboardNamed: "Consumer", in: Bundle(for: type(of: self)))
+        weak var weakController: UIViewController?
+        try autoreleasepool {
+            let controller = UIViewController()
+            weakController = controller
+            try storyboard.bind(viewController: controller, toIdentifier: "Detail")
+            XCTAssertTrue(storyboard.instantiateViewController(withIdentifier: "Detail") === controller)
+        }
+        XCTAssertNotNil(weakController)
+        storyboard.removeBindings()
+        XCTAssertNil(weakController)
+        XCTAssertFalse(storyboard.instantiateViewController(withIdentifier: "Detail") === weakController)
+    }
+
     func testStoryboardMockSuppressesProductionLifecycle() throws {
         let storyboard = storyboard()
         let mock = try storyboard.mockIdentifier("Detail", usingMockFor: LifecycleSpy.self)
@@ -174,12 +229,13 @@ final class PackageConsumerTests: XCTestCase {
         let storyboard = storyboard()
         let loaded = UIViewController()
         loaded.loadViewIfNeeded()
-        var bindingReturned = false
-        Fleet.swallowAnyErrors {
-            try! storyboard.bind(viewController: loaded, toIdentifier: "Detail")
-            bindingReturned = true
+        XCTAssertThrowsError(try storyboard.bind(viewController: loaded, toIdentifier: "Detail"),
+                             "The Objective-C category must activate Fleet's viewDidLoad tracking") { error in
+            guard let failure = error as? FleetFailure else {
+                return XCTFail("Expected FleetFailure, got \(error)")
+            }
+            XCTAssertEqual(failure.kind, .invalidInput)
         }
-        XCTAssertFalse(bindingReturned, "The Objective-C category must activate Fleet's viewDidLoad tracking")
     }
 
     func testPublicExceptionBridgeCatchesRealObjectiveCException() {
@@ -240,6 +296,21 @@ final class PackageConsumerTests: XCTestCase {
         XCTAssertFalse(raised)
     }
 #endif
+
+    func testContextReleasesBindingsOnRetainedStoryboardWithoutManualCleanup() async throws {
+        let host = try XCTUnwrap(window)
+        let storyboard = storyboard()
+        let original = UIViewController()
+        try storyboard.bind(viewController: original, toIdentifier: "Detail")
+        weak var replacement: UIViewController?
+        try await Fleet.withContext(window: host) { _ in
+            let mock = try storyboard.mockIdentifier("Detail", usingMockFor: UIViewController.self)
+            replacement = mock
+            XCTAssertTrue(storyboard.instantiateViewController(withIdentifier: "Detail") === mock)
+        }
+        XCTAssertNil(replacement)
+        XCTAssertTrue(storyboard.instantiateViewController(withIdentifier: "Detail") === original)
+    }
 
     func testScopedContextHostsExplicitWindowAndScene() async throws {
         let host = try XCTUnwrap(window)

@@ -10,7 +10,7 @@ Here is an exhaustive list of behavior-altering swizzles used by Fleet:
 
 This swizzling is done to make the processing of transitions between view controllers more
 consistent between tests. Fleet explicitly stops short of forcing transitions to happen
-immediately with swizzling -- your tests will still have to let the UI thread finish processing.
+immediately with swizzling -- your tests will still have to let the UI thread finish processing. Stack and presentation state are updated when the call returns, but delegate, appearance, and completion callbacks follow UIKit's timing: wait for them with bounded polling or expectations.
 
 ## I could accomplish the same thing by calling all the delegate methods and events myself, right?
 Yes, you could, and many projects and teams probably do this already. In fact, Fleet's very first feature was a
