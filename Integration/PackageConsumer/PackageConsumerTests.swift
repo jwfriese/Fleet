@@ -65,6 +65,45 @@ final class PackageConsumerTests: XCTestCase {
         XCTAssertTrue(result.matchesScreen)
     }
 
+    private func waitUntilSettled(_ condition: () -> Bool) async throws {
+        for _ in 0..<250 where !condition() {
+            try await Task.sleep(nanoseconds: 20_000_000)
+        }
+        XCTAssertTrue(condition(), "State did not settle within the bounded wait")
+    }
+
+    func testScreenSeparatesContainerFromVisibleContent() async throws {
+        let window = UIWindow()
+        let root = UIViewController()
+        let navigation = UINavigationController(rootViewController: root)
+        let tabs = UITabBarController()
+        tabs.viewControllers = [navigation]
+        window.rootViewController = tabs
+        window.makeKeyAndVisible()
+        let pushed = UIViewController()
+        navigation.pushViewController(pushed, animated: true)
+
+        var screen = Fleet.getScreen(forWindow: window)
+        XCTAssertTrue(screen.topmostViewController === pushed)
+        XCTAssertTrue(screen.topmostContainer === tabs)
+
+        let modalRoot = UIViewController()
+        let modalNavigation = UINavigationController(rootViewController: modalRoot)
+        tabs.present(modalNavigation, animated: false, completion: nil)
+        try await waitUntilSettled { modalNavigation.presentingViewController === tabs && !modalNavigation.isBeingPresented }
+        screen = Fleet.getScreen(forWindow: window)
+        XCTAssertTrue(screen.topmostContainer === modalNavigation)
+        XCTAssertTrue(screen.topmostViewController === modalRoot)
+
+        let secondModal = UIViewController()
+        modalNavigation.present(secondModal, animated: false, completion: nil)
+        try await waitUntilSettled { Fleet.getScreen(forWindow: window).topmostContainer === secondModal }
+
+        screen = Fleet.getScreen(forWindow: window)
+        XCTAssertTrue(screen.topmostContainer === secondModal)
+        XCTAssertTrue(screen.topmostViewController === secondModal)
+    }
+
     func testPublicButtonActionExecutesExactlyOnce() {
         let target = ActionTarget()
         let button = UIButton(type: .custom)

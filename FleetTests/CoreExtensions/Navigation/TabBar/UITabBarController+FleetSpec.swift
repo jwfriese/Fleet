@@ -36,7 +36,7 @@ class UITabBarController_FleetSpec: XCTestCase {
     func test_selectTabWithLabelText_switchesToTheViewControllerOfTheSelectedTab() {
         subject.selectTab(withLabel: "Fruit")
 
-        let presentedController = Fleet.getApplicationScreen()?.topmostViewController
+        let presentedController = Fleet.getApplicationScreen()?.topmostContainer
         expect(presentedController).toEventually(beAKindOf(HomeTabBarController.self))
 
         let tabBarController = presentedController as! HomeTabBarController
@@ -45,7 +45,7 @@ class UITabBarController_FleetSpec: XCTestCase {
 
         subject.selectTab(withLabel: "Animals")
 
-        let nextPresentedController = Fleet.getApplicationScreen()?.topmostViewController
+        let nextPresentedController = Fleet.getApplicationScreen()?.topmostContainer
         expect(nextPresentedController).toEventually(beAKindOf(HomeTabBarController.self))
 
         let nextTabBarController = nextPresentedController as! HomeTabBarController

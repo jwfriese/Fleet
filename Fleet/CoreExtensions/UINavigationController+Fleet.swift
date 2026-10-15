@@ -9,10 +9,10 @@ extension UINavigationController {
         )
     }
 
+    // After exchange, `fleet_pushViewController` is UIKit's implementation. Forward to it with the
+    // non-animated policy so UIKit performs stack mutation, delegate callbacks, and its own validation.
     @objc func fleet_pushViewController(_ viewController: UIViewController, animated: Bool) {
-        var newViewControllers = self.viewControllers
-        newViewControllers.append(viewController)
-        self.setViewControllers(newViewControllers, animated: false)
+        fleet_pushViewController(viewController, animated: false)
         let _ = viewController.view
     }
 
@@ -25,12 +25,7 @@ extension UINavigationController {
     }
 
     @objc func fleet_popViewControllerAnimated(_ animated: Bool) -> UIViewController? {
-        // Like UIKit, never pop the root view controller.
-        guard self.viewControllers.count > 1 else { return nil }
-        var newViewControllers = self.viewControllers
-        let poppedViewController = newViewControllers.removeLast()
-        self.setViewControllers(newViewControllers, animated: false)
-        return poppedViewController
+        return fleet_popViewControllerAnimated(false)
     }
 
     @objc nonisolated class func swizzlePopToViewController() {

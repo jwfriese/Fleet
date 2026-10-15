@@ -10,28 +10,34 @@ class Screen {
 }
 
 extension Screen: FLTScreen {
-    var topmostViewController: UIViewController? {
-        return topmostViewControllerRecursive(window.rootViewController)
+    var topmostContainer: UIViewController? {
+        return Screen.endOfPresentationChain(window.rootViewController)
     }
 
-    fileprivate func topmostViewControllerRecursive(_ rootViewController: UIViewController?) -> UIViewController? {
-        if let navigationController = rootViewController as? UINavigationController {
-            guard let topViewController = navigationController.topViewController else {
-                return navigationController
+    var topmostViewController: UIViewController? {
+        var current = Screen.endOfPresentationChain(window.rootViewController)
+        while let controller = current {
+            let child: UIViewController?
+            if let navigationController = controller as? UINavigationController {
+                child = navigationController.topViewController
+            } else if let tabBarController = controller as? UITabBarController {
+                child = tabBarController.selectedViewController
+            } else {
+                child = nil
             }
 
-            guard let presentedViewController = topViewController.presentedViewController else {
-                return topViewController
-            }
-
-            return presentedViewController
+            guard let child = child else { return controller }
+            current = Screen.endOfPresentationChain(child)
         }
+        return nil
+    }
 
-        if let presentedViewController = rootViewController?.presentedViewController {
-            return topmostViewControllerRecursive(presentedViewController)
+    private static func endOfPresentationChain(_ start: UIViewController?) -> UIViewController? {
+        var current = start
+        while let presented = current?.presentedViewController {
+            current = presented
         }
-
-        return rootViewController
+        return current
     }
 
     var presentedAlert: UIAlertController? {
