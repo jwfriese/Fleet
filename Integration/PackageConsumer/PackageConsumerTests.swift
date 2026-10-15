@@ -159,6 +159,22 @@ final class PackageConsumerTests: XCTestCase {
         XCTAssertTrue(storyboard.instantiateViewController(withIdentifier: "Detail") === replacement)
     }
 
+    func testStoryboardBindingsAreReleasedAndMetadataBundleIsExplicit() throws {
+        let storyboard = storyboard()
+        try storyboard.useBindingMetadata(forStoryboardNamed: "Consumer", in: Bundle(for: type(of: self)))
+        weak var weakController: UIViewController?
+        try autoreleasepool {
+            let controller = UIViewController()
+            weakController = controller
+            try storyboard.bind(viewController: controller, toIdentifier: "Detail")
+            XCTAssertTrue(storyboard.instantiateViewController(withIdentifier: "Detail") === controller)
+        }
+        XCTAssertNotNil(weakController)
+        storyboard.removeBindings()
+        XCTAssertNil(weakController)
+        XCTAssertFalse(storyboard.instantiateViewController(withIdentifier: "Detail") === weakController)
+    }
+
     func testStoryboardMockSuppressesProductionLifecycle() throws {
         let storyboard = storyboard()
         let mock = try storyboard.mockIdentifier("Detail", usingMockFor: LifecycleSpy.self)
@@ -174,12 +190,13 @@ final class PackageConsumerTests: XCTestCase {
         let storyboard = storyboard()
         let loaded = UIViewController()
         loaded.loadViewIfNeeded()
-        var bindingReturned = false
-        Fleet.swallowAnyErrors {
-            try! storyboard.bind(viewController: loaded, toIdentifier: "Detail")
-            bindingReturned = true
+        XCTAssertThrowsError(try storyboard.bind(viewController: loaded, toIdentifier: "Detail"),
+                             "The Objective-C category must activate Fleet's viewDidLoad tracking") { error in
+            guard let failure = error as? FleetFailure else {
+                return XCTFail("Expected FleetFailure, got \(error)")
+            }
+            XCTAssertEqual(failure.kind, .invalidInput)
         }
-        XCTAssertFalse(bindingReturned, "The Objective-C category must activate Fleet's viewDidLoad tracking")
     }
 
     func testPublicExceptionBridgeCatchesRealObjectiveCException() {
@@ -240,6 +257,21 @@ final class PackageConsumerTests: XCTestCase {
         XCTAssertFalse(raised)
     }
 #endif
+
+    func testContextReleasesBindingsOnRetainedStoryboardWithoutManualCleanup() async throws {
+        let host = try XCTUnwrap(window)
+        let storyboard = storyboard()
+        let original = UIViewController()
+        try storyboard.bind(viewController: original, toIdentifier: "Detail")
+        weak var replacement: UIViewController?
+        try await Fleet.withContext(window: host) { _ in
+            let mock = try storyboard.mockIdentifier("Detail", usingMockFor: UIViewController.self)
+            replacement = mock
+            XCTAssertTrue(storyboard.instantiateViewController(withIdentifier: "Detail") === mock)
+        }
+        XCTAssertNil(replacement)
+        XCTAssertTrue(storyboard.instantiateViewController(withIdentifier: "Detail") === original)
+    }
 
     func testScopedContextHostsExplicitWindowAndScene() async throws {
         let host = try XCTUnwrap(window)

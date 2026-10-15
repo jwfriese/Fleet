@@ -23,7 +23,27 @@ public final class FleetTestContext {
         )
     }
 
+    /// The context whose `withContext` scope encloses the current asynchronous task, if any.
+    /// Child tasks inherit it; detached tasks do not.
+    @TaskLocal static var current: FleetTestContext?
+
+    /// The context that should own a storyboard registration made now: the enclosing scope's
+    /// context, or `nil` outside any scope. Throws if that scope has already ended, so work that
+    /// outlives its context cannot leave a stale registration behind.
+    static func owningContext() throws -> FleetTestContext? {
+        guard let context = current else { return nil }
+        guard context.isActive else { throw contextEnded }
+        return context
+    }
+
     private var cleanups: [@MainActor () -> Void] = []
+    private var adoptedBindings: [WeakStoryboardBinding] = []
+
+    /// Arranges for this context's registrations on `binding` to be removed when the scope ends.
+    func adoptStoryboardBinding(_ binding: StoryboardInstanceBinding) {
+        guard !adoptedBindings.contains(where: { $0.value === binding }) else { return }
+        adoptedBindings.append(WeakStoryboardBinding(binding))
+    }
     private(set) var isActive = true
 
     init(window: UIWindow, ownsWindow: Bool) {
@@ -36,7 +56,7 @@ public final class FleetTestContext {
 
     /// Registers work to run (last registered first) when the scope ends, whether the body
     /// returns, throws, times out or is cancelled. Use it for resources the context owns, such as
-    /// storyboard bindings or observers. Cleanups run before the window is restored and before
+    /// observers (storyboard bindings made in the scope are removed automatically). Cleanups run before the window is restored and before
     /// the coordination lease is released.
     public func addCleanup(_ cleanup: @escaping @MainActor () -> Void) throws {
         guard isActive else { throw Self.contextEnded }
@@ -154,6 +174,9 @@ public final class FleetTestContext {
 
     func tearDown() async {
         isActive = false
+        let id = ObjectIdentifier(self)
+        for adopted in adoptedBindings { adopted.value?.removeRegistrations(ownedBy: id) }
+        adoptedBindings.removeAll()
         while let cleanup = cleanups.popLast() { cleanup() }
         window.endEditing(true)
         if let root = window.rootViewController, root.presentedViewController != nil {
@@ -189,6 +212,11 @@ public final class FleetTestContext {
             }
         }
     }
+}
+
+private final class WeakStoryboardBinding {
+    weak var value: StoryboardInstanceBinding?
+    init(_ value: StoryboardInstanceBinding) { self.value = value }
 }
 
 @MainActor
@@ -240,7 +268,9 @@ extension Fleet {
         let context = makeContext()
         context.setUp()
         do {
-            let value = try await body(context)
+            let value = try await FleetTestContext.$current.withValue(context) {
+                try await body(context)
+            }
             await context.tearDown()
             coordinator.release()
             return value
