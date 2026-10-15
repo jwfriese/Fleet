@@ -1,12 +1,12 @@
 import Foundation
 
-struct ExternalReferenceDefinition {
+struct ExternalReferenceDefinition: Equatable {
     var connectedViewControllerIdentifier = ""
     var externalViewControllerIdentifier = ""
     var externalStoryboardName = ""
 }
 
-struct StoryboardReferenceMap {
+struct StoryboardReferenceMap: Equatable {
     var viewControllerIdentifiers: [String] = []
     var externalReferences: [ExternalReferenceDefinition] = []
 
