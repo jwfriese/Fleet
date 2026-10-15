@@ -333,6 +333,19 @@ class UITableView_SelectRowSpec: XCTestCase {
         XCTAssertThrowsError(try table.selectRowOrThrow(at: IndexPath(row: 1, section: 0))) { error in
             XCTAssertEqual((error as? FleetFailure)?.kind, .unavailableInteraction)
         }
+        for malformed in [IndexPath(index: 0), IndexPath()] {
+            XCTAssertThrowsError(try table.selectRowOrThrow(at: malformed)) { error in
+                XCTAssertEqual((error as? FleetFailure)?.kind, .unavailableInteraction)
+            }
+        }
+        table.allowsSelection = true
+        table.setEditing(true, animated: false)
+        table.allowsSelectionDuringEditing = false
+        XCTAssertThrowsError(try table.selectRowOrThrow(at: IndexPath(index: 0))) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .unavailableInteraction)
+        }
+        table.setEditing(false, animated: false)
+        table.allowsSelection = false
         table.dataSource = nil
         XCTAssertThrowsError(try table.selectRowOrThrow(at: IndexPath(row: 1, section: 0))) { error in
             XCTAssertEqual((error as? FleetFailure)?.kind, .invalidSetup)

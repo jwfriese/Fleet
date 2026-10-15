@@ -81,7 +81,7 @@ extension UITableView {
             let reason = isEditing ? "Table view does not allow selection during editing." : "Table view does not allow selection."
             throw FleetFailure(kind: .unavailableInteraction, action: action, target: target,
                                state: isEditing ? "allowsSelectionDuringEditing is false" : "allowsSelection is false",
-                               reason: "Interaction with row \(indexPath.row) in section \(indexPath.section) rejected: \(reason)")
+                               reason: "Interaction with \(indexPath.count >= 2 ? "row \(indexPath.row) in section \(indexPath.section)" : "index path \(indexPath)") rejected: \(reason)")
         }
 
         try fleet_requireExistingRow(at: indexPath, action: action)
