@@ -414,8 +414,7 @@ final class PackageConsumerTests: XCTestCase {
         navBar.items = [navItem]
         XCTAssertThrowsError(try navBar.tapTopItemOrThrow(withTitle: "Go")) { error in
             XCTAssertEqual((error as? FleetFailure)?.kind, .invalidInput)
-            #endif
-    }
+        }
         XCTAssertEqual(target.count, 0)
     }
 
