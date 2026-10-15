@@ -207,6 +207,18 @@ class UIStoryboard_FleetSpec: XCTestCase {
         }
     }
 
+    /// Attempts a bind that Fleet rejects. The rejected controller is created and dropped inside
+    /// its own pool. Passing `BoxTurtleViewController()` inline to the throwing call made the earlier
+    /// bound instance outlive the context when this test ran alone (reproduced locally, and in CI),
+    /// although Fleet had already removed the registration; the exact holder was not identified, but
+    /// the outcome depends on how the temporary is scoped, not on Fleet's cleanup.
+    private func bindRejectedController(to storyboard: UIStoryboard) throws {
+        try autoreleasepool {
+            let rejected = BoxTurtleViewController()
+            try storyboard.bind(viewController: rejected, toIdentifier: "WatermelonViewController")
+        }
+    }
+
     private struct WeakController {
         weak var value: UIViewController?
         init(_ value: UIViewController) { self.value = value }
@@ -315,7 +327,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
             do {
                 try turtlesAndFriendsStoryboard.withBindings {
                     weakController = bindWeakly(to: turtlesAndFriendsStoryboard)
-                    try turtlesAndFriendsStoryboard.bind(viewController: BoxTurtleViewController(), toIdentifier: "WatermelonViewController")
+                    try bindRejectedController(to: turtlesAndFriendsStoryboard)
                 }
                 XCTFail("Expected the failing bind to throw")
             } catch {
@@ -377,7 +389,7 @@ class UIStoryboard_FleetSpec: XCTestCase {
         do {
             try await Fleet.withContext(window: makeWindow()) { _ in
                 weakController = self.bindWeakly(to: storyboard)
-                try storyboard.bind(viewController: BoxTurtleViewController(), toIdentifier: "WatermelonViewController")
+                try self.bindRejectedController(to: storyboard)
             }
             XCTFail("Expected the failing bind to throw")
         } catch {
