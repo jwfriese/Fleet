@@ -52,13 +52,20 @@ class UITableView_FetchCellSpec: XCTestCase {
         try await super.tearDown()
     }
 
+    /// UIKit raises "dataSource is not set" if a table view in the window is laid out without one,
+    /// which can happen at any run loop turn, so detach it before dropping the data source.
+    private func removeDataSource() {
+        subject.removeFromSuperview()
+        subject.dataSource = nil
+    }
+
     func test_fetchCell_whenTheCellExists_returnsTheCell() {
         let cell = subject.fetchCell(at: IndexPath(row: 0, section: 0))
         expect(cell).to(beAnInstanceOf(UITableViewCell.self))
     }
 
     func test_fetchCell_whenNoDataSource_raisesException() {
-        subject.dataSource = nil
+        removeDataSource()
         expect { self.subject.fetchCell(at: IndexPath(row: 0, section: 0)) }.to(
             raiseException(named: "Fleet.TableViewError", reason: "Data source required to fetch cells.", userInfo: nil, closure: nil)
         )
@@ -89,7 +96,7 @@ class UITableView_FetchCellSpec: XCTestCase {
     }
 
     func test_fetchCellAsType_whenNoDataSource_raisesException() {
-        subject.dataSource = nil
+        removeDataSource()
         expect { self.subject.fetchCell(at: IndexPath(row: 1, section: 0), asType: TestTableViewCell.self) }.to(
             raiseException(named: "Fleet.TableViewError", reason: "Data source required to fetch cells.", userInfo: nil, closure: nil)
         )
@@ -167,7 +174,7 @@ class UITableView_FetchCellSpec: XCTestCase {
         XCTAssertThrowsError(try subject.fetchDisplayedCellOrThrow(at: IndexPath(row: 0, section: 1))) { error in
             XCTAssertEqual((error as? FleetFailure)?.kind, .invalidInput)
         }
-        subject.dataSource = nil
+        removeDataSource()
         XCTAssertThrowsError(try subject.fetchDisplayedCellOrThrow(at: IndexPath(row: 0, section: 0))) { error in
             XCTAssertEqual((error as? FleetFailure)?.kind, .invalidSetup)
         }
@@ -184,7 +191,7 @@ class UITableView_FetchCellSpec: XCTestCase {
     }
 
     func test_fetchDisplayedCell_whenNoDataSource_raisesException() {
-        subject.dataSource = nil
+        removeDataSource()
         expect { self.subject.fetchDisplayedCell(at: IndexPath(row: 0, section: 0)) }.to(
             raiseException(named: "Fleet.TableViewError", reason: "Data source required to fetch displayed cells.", userInfo: nil, closure: nil)
         )
