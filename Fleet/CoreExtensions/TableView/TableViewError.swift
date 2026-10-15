@@ -40,7 +40,8 @@ extension Fleet {
                 return "Row \(indexPath.row) in section \(indexPath.section) has \(count) \(edge) contextual actions; no action at index \(index)."
             case .contextualActionDidNotComplete(let indexPath, let edge, let title, let timeout):
                 return "The \(edge) contextual action '\(title ?? "(untitled)")' at row \(indexPath.row) in section \(indexPath.section) did not call its completion handler within \(timeout) seconds."
-        case cellNotDisplayed(at: IndexPath)
+            case .cellNotDisplayed(let indexPath):
+                return "Cell at row \(indexPath.row) in section \(indexPath.section) is not currently displayed by the table view."
             case .mismatchedCellType(let indexPath, let foundType, let requestedType):
                 return "Cell at row \(indexPath.row) in section \(indexPath.section) is of type `\(foundType)` (wanted `\(requestedType)`)."
             }
