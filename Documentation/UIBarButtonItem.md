@@ -20,7 +20,9 @@ and an item with a nil target dispatches up the responder chain from the first r
 A `Fleet.BarButtonItemError` is raised when the item is disabled, when it only presents a menu (iOS), when it
 has neither action nor primary action, when it has no target and no responder in the chain handles the action,
 or when its explicit target does not respond to the action. Physical hit testing and menu presentation are not
-exercised.
+exercised. `UIBarButtonItem(primaryAction:menu:)` runs its primary action once (the menu is not opened); only an item with a menu and no primary action is rejected.
+
+`tapOrThrow()` is the recoverable form: it throws a `FleetFailure` (`.unavailableInteraction` for disabled, menu-only, or pre-16 primary-action items; `.invalidSetup` for a missing action or unresolved target) instead of raising.
 
 **Notes**
 

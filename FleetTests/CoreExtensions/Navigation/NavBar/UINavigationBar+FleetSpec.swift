@@ -44,4 +44,27 @@ class UINavigationBar_FleetSpec: XCTestCase {
 
         expect(self.boxTurtleViewController.informationLabel?.text).to(equal(""))
     }
+
+    func test_tapTopItemWithTitle_titleOnBothSides_throwsAnErrorAndTapsNothing() {
+        let navItem = boxTurtleViewController.navigationItem
+        let counter = DuplicateTitleCounter()
+        navItem.rightBarButtonItems = [UIBarButtonItem(title: "Same", style: .plain, target: counter, action: #selector(DuplicateTitleCounter.fire))]
+        navItem.leftBarButtonItems = [UIBarButtonItem(title: "Same", style: .plain, target: counter, action: #selector(DuplicateTitleCounter.fire))]
+
+        expect { self.navigationController.navigationBar.tapTopItem(withTitle: "Same") }.to(
+            raiseException(
+                named: "Fleet.NavBarError",
+                reason: "2 items with title 'Same' found in nav bar; Fleet will not guess which to tap.",
+                userInfo: nil,
+                closure: nil
+            )
+        )
+
+        expect(counter.count).to(equal(0))
+    }
+}
+
+private final class DuplicateTitleCounter: NSObject {
+    var count = 0
+    @objc func fire() { count += 1 }
 }

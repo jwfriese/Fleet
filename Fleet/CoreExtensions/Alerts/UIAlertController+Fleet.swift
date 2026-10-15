@@ -2,7 +2,7 @@ import UIKit
 import ObjectiveC
 
 extension Fleet {
-    enum AlertError: FleetErrorDefinition {
+    enum AlertError: FleetErrorDefinition, Error {
         case titleNotFound(title: String)
         case ambiguousTitle(title: String, count: Int)
         case actionDisabled(title: String)
@@ -46,26 +46,51 @@ extension UIAlertController {
      action is disabled, or if the alert is not currently presented.
      */
     public func tapAlertAction(withTitle title: String) {
+        do {
+            try performTap(withTitle: title)
+        } catch let error as Fleet.AlertError {
+            FleetError(error).raise()
+        } catch {
+            FleetError(Fleet.InternalError.unrecoverable(details: "\(error)")).raise()
+        }
+    }
+
+    /**
+     Like `tapAlertAction(withTitle:)`, but reports failures as a thrown `FleetFailure`
+     instead of raising an `NSException`: `.invalidInput` when no action or several actions
+     have the title, `.unavailableInteraction` when the action is disabled or the alert is
+     not presented. Nothing is dismissed or run when it throws.
+     */
+    public func tapAlertActionOrThrow(withTitle title: String) throws {
+        do {
+            try performTap(withTitle: title)
+        } catch let error as Fleet.AlertError {
+            let kind: FleetFailure.Kind
+            switch error {
+            case .titleNotFound, .ambiguousTitle: kind = .invalidInput
+            case .actionDisabled, .notPresented: kind = .unavailableInteraction
+            }
+            throw FleetFailure(error, kind: kind, action: "tap alert action", target: "UIAlertController action '\(title)'")
+        }
+    }
+
+    private func performTap(withTitle title: String) throws(Fleet.AlertError) {
         let matchingActions = actions.filter { $0.title == title }
 
         guard let actionWithTitle = matchingActions.first else {
-            FleetError(Fleet.AlertError.titleNotFound(title: title)).raise()
-            return
+            throw .titleNotFound(title: title)
         }
 
         guard matchingActions.count == 1 else {
-            FleetError(Fleet.AlertError.ambiguousTitle(title: title, count: matchingActions.count)).raise()
-            return
+            throw .ambiguousTitle(title: title, count: matchingActions.count)
         }
 
         guard actionWithTitle.isEnabled else {
-            FleetError(Fleet.AlertError.actionDisabled(title: title)).raise()
-            return
+            throw .actionDisabled(title: title)
         }
 
         guard let presenter = presentingViewController else {
-            FleetError(Fleet.AlertError.notPresented(title: title)).raise()
-            return
+            throw .notPresented(title: title)
         }
 
         var completionHandler: (() -> ())?

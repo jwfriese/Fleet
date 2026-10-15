@@ -24,6 +24,9 @@ The `tapAlertAction(withTitle:)` method raises a `Fleet.AlertError` when:
 
 In every case no handler runs and the alert is left as it was.
 
+`tapAlertActionOrThrow(withTitle:)` reports the same conditions as a thrown `FleetFailure` instead of raising:
+`.invalidInput` for a missing or ambiguous title and `.unavailableInteraction` for a disabled action or an alert that is not presented.
+
 ## Example
 
 ```swift

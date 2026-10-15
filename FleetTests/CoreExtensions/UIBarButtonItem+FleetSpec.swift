@@ -126,6 +126,18 @@ class UIBarButtonItem_FleetSpec: XCTestCase {
         )
         expect(count).to(equal(0))
     }
+
+    func test_tap_whenItemHasPrimaryActionAndMenu_invokesPrimaryActionExactlyOnce() {
+        var primaryCount = 0
+        var menuCount = 0
+        let item = UIBarButtonItem(
+            primaryAction: UIAction(title: "primary") { _ in primaryCount += 1 },
+            menu: UIMenu(children: [UIAction(title: "x") { _ in menuCount += 1 }])
+        )
+        item.tap()
+        expect(primaryCount).to(equal(1))
+        expect(menuCount).to(equal(0))
+    }
     #endif
 
     func test_tap_whenNoAction_raisesException() {

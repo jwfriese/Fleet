@@ -384,6 +384,41 @@ final class PackageConsumerTests: XCTestCase {
         XCTAssertTrue(root.presentedViewController === alert)
     }
 
+    func testRecoverableActionFailuresAreAssertableWithoutExceptions() throws {
+        let root = UIViewController()
+        Fleet.setAsAppWindowRoot(root)
+        let alert = UIAlertController(title: "Consumer", message: nil, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Same", style: .default))
+        alert.addAction(UIAlertAction(title: "Same", style: .cancel))
+        root.present(alert, animated: false)
+        XCTAssertThrowsError(try alert.tapAlertActionOrThrow(withTitle: "Same")) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .invalidInput)
+        }
+
+        let button = UIButton(type: .system)
+        button.isEnabled = false
+        XCTAssertThrowsError(try button.tapOrThrow()) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .unavailableInteraction)
+        }
+
+        let item = UIBarButtonItem(title: "none", style: .plain, target: nil, action: nil)
+        XCTAssertThrowsError(try item.tapOrThrow()) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .invalidSetup)
+        }
+
+        let target = ActionTarget()
+        let navBar = UINavigationBar()
+        let navItem = UINavigationItem(title: "t")
+        navItem.leftBarButtonItem = UIBarButtonItem(title: "Go", style: .plain, target: target, action: #selector(ActionTarget.tapped))
+        navItem.rightBarButtonItem = UIBarButtonItem(title: "Go", style: .plain, target: target, action: #selector(ActionTarget.tapped))
+        navBar.items = [navItem]
+        XCTAssertThrowsError(try navBar.tapTopItemOrThrow(withTitle: "Go")) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .invalidInput)
+            #endif
+    }
+        XCTAssertEqual(target.count, 0)
+    }
+
     func testScopedContextHostsExplicitWindowAndScene() async throws {
         let host = try XCTUnwrap(window)
         let scene = try XCTUnwrap(host.windowScene)

@@ -1,7 +1,7 @@
 import UIKit
 
 extension Fleet {
-    enum BarButtonItemError: FleetErrorDefinition {
+    enum BarButtonItemError: FleetErrorDefinition, Error {
         case controlUnavailable(message: String)
         case noTarget(title: String)
         case noAction(title: String)
@@ -40,30 +40,60 @@ extension UIBarButtonItem {
      handles the action, or if its target does not respond to the action.
      */
     public func tap() {
+        do {
+            try performTap()
+        } catch let error as Fleet.BarButtonItemError {
+            FleetError(error).raise()
+        } catch {
+            FleetError(Fleet.InternalError.unrecoverable(details: "\(error)")).raise()
+        }
+    }
+
+    /**
+     Like `tap()`, but reports failures as a thrown `FleetFailure` instead of raising an
+     `NSException`: `.unavailableInteraction` for a disabled, menu-only, or (before iOS/tvOS 16)
+     primary-action item, and `.invalidSetup` for a missing action or unresolved target.
+     */
+    public func tapOrThrow() throws {
+        do {
+            try performTap()
+        } catch let error as Fleet.BarButtonItemError {
+            let kind: FleetFailure.Kind
+            switch error {
+            case .controlUnavailable: kind = .unavailableInteraction
+            case .noTarget, .noAction, .unresolvedTarget: kind = .invalidSetup
+            }
+            throw FleetFailure(error, kind: kind, action: "tap bar button item", target: "UIBarButtonItem '\(safeTitle)'")
+        }
+    }
+
+    private func performTap() throws(Fleet.BarButtonItemError) {
         guard isEnabled else {
-            FleetError(Fleet.BarButtonItemError.controlUnavailable(message: "Control is not enabled.")).raise()
-            return
+            throw .controlUnavailable(message: "Control is not enabled.")
         }
 
+        // An item built with `init(primaryAction:menu:)` has a nil `action` but runs its primary
+        // action on tap; only an item with a menu and no primary action can merely open the menu.
         #if os(iOS)
-        if action == nil && menu != nil {
-            FleetError(Fleet.BarButtonItemError.controlUnavailable(message: "Item presents a menu, which tap() cannot open. Invoke the menu element's handler directly.")).raise()
-            return
+        if action == nil && primaryAction == nil && menu != nil {
+            throw .controlUnavailable(message: "Item presents a menu, which tap() cannot open. Invoke the menu element's handler directly.")
         }
         #endif
 
         guard let action = action else {
-            if let primaryAction = primaryAction {
-                perform(primaryAction)
+            guard let primaryAction = primaryAction else {
+                throw .noAction(title: safeTitle)
+            }
+            if #available(iOS 16.0, tvOS 16.0, *) {
+                primaryAction.performWithSender(self, target: nil)
             } else {
-                FleetError(Fleet.BarButtonItemError.noAction(title: safeTitle)).raise()
+                throw .controlUnavailable(message: "Tapping an item created with a primary action requires iOS or tvOS 16.")
             }
             return
         }
 
         if let explicitTarget = target, !explicitTarget.responds(to: action) {
-            FleetError(Fleet.BarButtonItemError.unresolvedTarget(title: safeTitle)).raise()
-            return
+            throw .unresolvedTarget(title: safeTitle)
         }
 
         let resolvedTarget = target ?? Self.firstResponderTarget(forAction: action, sender: self)
@@ -71,19 +101,7 @@ extension UIBarButtonItem {
             UIApplication.shared.sendAction(action, to: $0, from: self, for: nil)
         } ?? false
         if !handled {
-            if target == nil {
-                FleetError(Fleet.BarButtonItemError.noTarget(title: safeTitle)).raise()
-            } else {
-                FleetError(Fleet.BarButtonItemError.unresolvedTarget(title: safeTitle)).raise()
-            }
-        }
-    }
-
-    private func perform(_ primaryAction: UIAction) {
-        if #available(iOS 16.0, tvOS 16.0, *) {
-            primaryAction.performWithSender(self, target: nil)
-        } else {
-            FleetError(Fleet.BarButtonItemError.controlUnavailable(message: "Tapping an item created with a primary action requires iOS or tvOS 16.")).raise()
+            throw target == nil ? .noTarget(title: safeTitle) : .unresolvedTarget(title: safeTitle)
         }
     }
 

@@ -191,6 +191,8 @@
 		33DD260109631965A3037DE2 /* UICollectionView+SelectItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB60DF515018FB5C6E644563 /* UICollectionView+SelectItem.swift */; };
 		B6AC703746498EF7C7B0F79B /* UICollectionView+FetchCellSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D01DBD7724E3CEAC94F9E2 /* UICollectionView+FetchCellSpec.swift */; };
 		87B1E06ABE036012A5AE2C60 /* UICollectionView+SelectItemSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47EF94C4103923DB084B60B3 /* UICollectionView+SelectItemSpec.swift */; };
+		A1F0000000000000000000F8 /* ActionRecoverableFailureSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F0000000000000000000F7 /* ActionRecoverableFailureSpec.swift */; };
+		A1F0000000000000000000F9 /* ActionRecoverableFailureSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F0000000000000000000F7 /* ActionRecoverableFailureSpec.swift */; };
 		A1F0000000000000000000F5 /* UICollectionView+RecoverableFailureSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F0000000000000000000F4 /* UICollectionView+RecoverableFailureSpec.swift */; };
 		51B8AF774775B7B893F7E499 /* UICollectionView+FetchCellSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D01DBD7724E3CEAC94F9E2 /* UICollectionView+FetchCellSpec.swift */; };
 		5EF9C83B6DEB9FFACEBA82C9 /* UICollectionView+SelectItemSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47EF94C4103923DB084B60B3 /* UICollectionView+SelectItemSpec.swift */; };
@@ -358,6 +360,7 @@
 		CB60DF515018FB5C6E644563 /* UICollectionView+SelectItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+SelectItem.swift"; sourceTree = "<group>"; };
 		37D01DBD7724E3CEAC94F9E2 /* UICollectionView+FetchCellSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+FetchCellSpec.swift"; sourceTree = "<group>"; };
 		47EF94C4103923DB084B60B3 /* UICollectionView+SelectItemSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+SelectItemSpec.swift"; sourceTree = "<group>"; };
+		A1F0000000000000000000F7 /* ActionRecoverableFailureSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionRecoverableFailureSpec.swift; sourceTree = "<group>"; };
 		A1F0000000000000000000F4 /* UICollectionView+RecoverableFailureSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+RecoverableFailureSpec.swift"; sourceTree = "<group>"; };
 		F1EE70000000000000000068 /* FleetContextCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FleetContextCoordinator.swift; sourceTree = "<group>"; };
 		F1EE7000000000000000006B /* FleetTestContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FleetTestContext.swift; sourceTree = "<group>"; };
@@ -717,6 +720,7 @@
 				7B0D3B361CFA76170096DBC2 /* Storyboard */,
 				7BF913AF1E3A4BB200019CF2 /* ViewController */,
 				7B675E7C1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift */,
+				A1F0000000000000000000F7 /* ActionRecoverableFailureSpec.swift */,
 				7BB14A5E1D75065E002ABE82 /* UINavigationController+FleetSpec.swift */,
 			);
 			path = CoreExtensions;
@@ -1276,6 +1280,7 @@
 				7B0082431EB6DB57006B8FED /* UIControlEventRecorder.swift in Sources */,
 				7B00824E1EB6DB65006B8FED /* SegueDetailSpec.swift in Sources */,
 				7B0082511EB6DB65006B8FED /* UIBarButtonItem+FleetSpec.swift in Sources */,
+				A1F0000000000000000000F8 /* ActionRecoverableFailureSpec.swift in Sources */,
 				7B0082441EB6DB57006B8FED /* UIControlEventEqualityMatcher.swift in Sources */,
 				7B00823A1EB6DB47006B8FED /* EmbedView.swift in Sources */,
 				7B00824F1EB6DB65006B8FED /* UIViewController+FleetInternalSpec.swift in Sources */,
@@ -1421,6 +1426,7 @@
 				7B48F4942446A5B300BA2D65 /* UIToolbar+FleetSpec.swift in Sources */,
 				7BFABD721E3DA7BD002823B3 /* UIControlEventEqualityMatcher.swift in Sources */,
 				7B675E7D1D0C3FCE002E6B45 /* UIBarButtonItem+FleetSpec.swift in Sources */,
+				A1F0000000000000000000F9 /* ActionRecoverableFailureSpec.swift in Sources */,
 				7BDF61F01E935B7500990588 /* UIAlertAction+FleetSpec.swift in Sources */,
 				7B29F4211DDCAC8A008EA836 /* UITableView+ContextualActionsSpec.swift in Sources */,
 				4EC825C6FF6FAC4BBFBD3312 /* UINavigationBar+FleetSpec.swift in Sources */,
