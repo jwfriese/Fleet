@@ -42,6 +42,19 @@ To run one test class during development, use `script/test ios -only-testing:Fle
 
 Logs and result bundles are retained in unique run directories under `build/`; open a `TestResults.xcresult` bundle in Xcode to inspect failures. `FLEET_BUILD_DIR` changes the output directory. Tests run serially because Fleet shares application UI state, with XCTest timeouts enabled (30 seconds per test by default, maximum 60). The root `./test` command remains a compatibility wrapper.
 
+### Test reliability
+
+Lifetime assertions use `WeakProbe`, `lifetimeScope`, and `assertReleased` from `FleetTests/Helpers/Test.swift`. Create and exercise objects inside a synchronous `lifetimeScope` (including `instantiateViewController` calls and identity comparisons, which return autoreleased references), keep only a `WeakProbe` outside, then call `assertReleased` after the scope ends. It drains pools and polls to a bounded deadline, so a genuinely retained object still fails. Do not hold an autorelease pool across an `await`. Coordinate asynchronous work with explicit signals or bounded state waits that call `XCTFail` with the trace at their deadline; never use a sleep to establish readiness.
+
+To check a suite for flakiness, run it repeatedly with the canonical runner, once reusing the process and once relaunching, and record the source revision, Xcode/runtime, simulator, mode, counts, failures, and the `build/` result bundle. Retrying until success is not reliability evidence.
+
+```bash
+script/test ios  -only-testing:FleetTests/UIStoryboard_FleetSpec -test-iterations 20 -run-tests-until-failure -test-repetition-relaunch-enabled NO
+script/test ios  -only-testing:FleetTests/UIStoryboard_FleetSpec -test-iterations 20 -run-tests-until-failure -test-repetition-relaunch-enabled YES
+script/test tvos -only-testing:Fleet-tvOSTests/UIStoryboard_FleetSpec -test-iterations 20 -run-tests-until-failure -test-repetition-relaunch-enabled NO
+script/test tvos -only-testing:Fleet-tvOSTests/UIStoryboard_FleetSpec -test-iterations 20 -run-tests-until-failure -test-repetition-relaunch-enabled YES
+```
+
 For runner, release, packaging-checker, or storyboard-script changes, also run `python3 -m unittest discover -s script/tests -v` and `bash -n script/test script/release script/check-distribution test Fleet/Script/copy_storyboard_info_files.sh Integration/PackageConsumer/CopyStoryboardMetadata.sh`. Packaging and runtime-linking changes must pass `script/check-distribution` for both external hosted consumers on a clean committed revision. Use `script/check-distribution --allow-dirty` before committing for development; that run creates a separate Git snapshot and is not release evidence. GitHub Actions runs the tooling, native suites, and committed consumer checks. See [AGENTS.md](AGENTS.md) for repository structure and guidance for agent work.
 
 ## Pull Requests

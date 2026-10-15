@@ -485,6 +485,9 @@ class UINavigationController_FleetSpec: XCTestCase {
         while Date() < deadline, trace.events.last != "root.viewDidAppear" {
             try? await Task.sleep(nanoseconds: 20_000_000)
         }
+        if trace.events.last != "root.viewDidAppear" {
+            XCTFail("Timed out waiting for the final root.viewDidAppear; trace so far: \(trace.events)")
+        }
         window.isHidden = true
         return results + trace.events
     }
@@ -518,6 +521,10 @@ class UINavigationController_FleetSpec: XCTestCase {
             let deadline = Date().addingTimeInterval(5)
             while Date() < deadline, trace.events.filter({ $0 == event }).count < count {
                 try? await Task.sleep(nanoseconds: 20_000_000)
+            }
+            let seen = trace.events.filter({ $0 == event }).count
+            if seen < count {
+                XCTFail("Timed out waiting for \(count) x '\(event)' (saw \(seen)); trace so far: \(trace.events)")
             }
         }
         await settle("root.viewDidAppear", after: 1)
