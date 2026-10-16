@@ -49,12 +49,22 @@ func assertReleased<T: AnyObject>(
 final class HostedUIFixture {
     private weak var borrowedWindow: UIWindow?
     private var borrowedRoot: UIViewController?
+    /// The top of the borrowed root's presentation chain at `init`. Presentations above it belong to
+    /// the scenario; it and everything below it belong to the borrowed baseline and are preserved.
+    private var baselineTop: UIViewController?
     private var ownedWindows: [UIWindow] = []
     private var embeddedViews: [UIView] = []
 
     init() {
         borrowedWindow = UIApplication.shared.keyWindow
         borrowedRoot = borrowedWindow?.rootViewController
+        baselineTop = borrowedRoot.map(Self.top(of:))
+    }
+
+    private static func top(of controller: UIViewController) -> UIViewController {
+        var top = controller
+        while let next = top.presentedViewController { top = next }
+        return top
     }
 
     /// A window owned by the fixture, made key and visible with `root` installed.
@@ -83,9 +93,14 @@ final class HostedUIFixture {
         let windows = ownedWindows + [borrowedWindow].compactMap { $0 }
         windows.forEach { $0.endEditing(true) }
 
-        // The borrowed window's current root may differ from the one recorded (a test replaced it).
-        let presenters = windows.compactMap { $0.rootViewController }
-        presenters.forEach { $0.presentedViewController?.dismiss(animated: false) }
+        // Dismissing from a presenter dismisses its presented child and everything above it. The
+        // borrowed root only dismisses above its baseline chain; a root the test replaced has no
+        // baseline presentations, so it dismisses from itself.
+        var presenters = ownedWindows.compactMap { $0.rootViewController }
+        if let window = borrowedWindow, let root = window.rootViewController {
+            presenters.append(root === borrowedRoot ? (baselineTop ?? root) : root)
+        }
+        presenters.filter { $0.presentedViewController != nil }.forEach { $0.dismiss(animated: false) }
         let deadline = Date().addingTimeInterval(timeout)
         while presenters.contains(where: { $0.presentedViewController != nil }) && Date() < deadline {
             try? await Task.sleep(nanoseconds: 10_000_000)
@@ -116,7 +131,7 @@ final class HostedUIFixture {
         guard let window = borrowedWindow else { return true }
         return UIApplication.shared.keyWindow === window
             && window.rootViewController === borrowedRoot
-            && borrowedRoot?.presentedViewController == nil
+            && borrowedRoot.map(Self.top(of:)) === baselineTop
             && ownedWindows.isEmpty
             && embeddedViews.isEmpty
     }

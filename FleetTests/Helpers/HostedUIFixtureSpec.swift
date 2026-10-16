@@ -60,6 +60,72 @@ class HostedUIFixtureSpec: XCTestCase {
         expect(original?.rootViewController).to(beIdenticalTo(originalRoot))
     }
 
+    private func waitUntil(_ description: String, timeout: TimeInterval = 5, _ condition: () -> Bool) async throws {
+        let deadline = Date().addingTimeInterval(timeout)
+        while !condition() {
+            if Date() >= deadline { XCTFail("Timed out after \(timeout)s waiting until \(description)"); return }
+            try await Task.sleep(nanoseconds: 10_000_000)
+        }
+    }
+
+    func test_restore_dismissesTheWholeNestedPresentationChain() async throws {
+        let root = UIApplication.shared.keyWindow?.rootViewController
+        let baselineTop = root.flatMap { r -> UIViewController? in
+            var top = r
+            while let next = top.presentedViewController { top = next }
+            return top
+        }
+        let fixture = HostedUIFixture()
+
+        let first = UIViewController()
+        let second = UIViewController()
+        baselineTop?.present(first, animated: false)
+        try await waitUntil("first is presented") { first.presentingViewController != nil && first.view.window != nil }
+        first.present(second, animated: false)
+        try await waitUntil("second is presented") { first.presentedViewController === second }
+        await fixture.restore()
+
+        expect(baselineTop?.presentedViewController).to(beNil())
+        expect(first.presentedViewController).to(beNil())
+        expect(fixture.isRestored).to(beTrue())
+    }
+
+    func test_restore_preservesPresentationsThatBelongedToTheBorrowedBaseline() async throws {
+        let root = try XCTUnwrap(UIApplication.shared.keyWindow?.rootViewController)
+        let baselineModal = UIViewController()
+        root.present(baselineModal, animated: false)
+        try await waitUntil("baseline modal is presented") { baselineModal.view.window != nil }
+
+        let fixture = HostedUIFixture()
+        let scenarioModal = UIViewController()
+        baselineModal.present(scenarioModal, animated: false)
+        try await waitUntil("scenario modal is presented") { baselineModal.presentedViewController === scenarioModal }
+        await fixture.restore()
+
+        expect(root.presentedViewController).to(beIdenticalTo(baselineModal))
+        expect(baselineModal.presentedViewController).to(beNil())
+        expect(fixture.isRestored).to(beTrue())
+
+        // Return the application to the state other tests expect.
+        root.dismiss(animated: false)
+        let deadline = Date().addingTimeInterval(5)
+        while root.presentedViewController != nil && Date() < deadline {
+            try await Task.sleep(nanoseconds: 10_000_000)
+        }
+        expect(root.presentedViewController).to(beNil())
+    }
+
+    func test_restore_removesEveryViewEmbeddedThroughTheFixture() async throws {
+        let root = try XCTUnwrap(UIApplication.shared.keyWindow?.rootViewController)
+        let baseline = root.view.subviews
+        let fixture = HostedUIFixture()
+        try fixture.embed(UIView())
+        try fixture.embed(UIView())
+        expect(root.view.subviews.count).to(equal(baseline.count + 2))
+        await fixture.restore()
+        expect(root.view.subviews).to(equal(baseline))
+    }
+
     private func Fleet_setRoot(_ controller: UIViewController) {
         UIApplication.shared.keyWindow?.rootViewController = controller
         UIApplication.shared.keyWindow?.layoutIfNeeded()

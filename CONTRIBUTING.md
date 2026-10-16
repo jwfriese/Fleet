@@ -63,7 +63,9 @@ script/test tvos -only-testing:Fleet-tvOSTests/UIStoryboard_FleetSpec -test-iter
 for t in $(grep -o 'func test_[A-Za-z0-9_]*' FleetTests/CoreExtensions/Storyboard/UIStoryboard+FleetSpec.swift | sed 's/func //'); do
   script/test ios -only-testing:FleetTests/UIStoryboard_FleetSpec/$t -test-iterations 5 -run-tests-until-failure -test-repetition-relaunch-enabled YES || break
 done
+# Same loop on tvOS: use `script/test tvos` and the Fleet-tvOSTests/ selector prefix.
 script/test ios -only-testing:FleetTests/UIStoryboard_FleetSpec -only-testing:FleetTests/UINavigationController_FleetSpec -only-testing:FleetTests/ScreenSpec -only-testing:FleetTests/UIAlertController_FleetSpec -only-testing:FleetTests/UITextField_FleetSpec -test-iterations 10 -run-tests-until-failure -test-repetition-relaunch-enabled NO
+script/test tvos -only-testing:Fleet-tvOSTests/UIStoryboard_FleetSpec -only-testing:Fleet-tvOSTests/UINavigationController_FleetSpec -only-testing:Fleet-tvOSTests/ScreenSpec -only-testing:Fleet-tvOSTests/UIAlertController_FleetSpec -only-testing:Fleet-tvOSTests/UITextField_FleetSpec -test-iterations 10 -run-tests-until-failure -test-repetition-relaunch-enabled NO
 
 # Final-revision evidence: three consecutive complete suites per platform on the unchanged commit
 for i in 1 2 3; do script/test all || break; done
