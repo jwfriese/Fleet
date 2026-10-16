@@ -6,9 +6,18 @@ import Fleet
 
 @MainActor
 class UIAlertController_FleetSpec: XCTestCase {
+    private var fixture: HostedUIFixture!
+
     override func setUp() async throws {
         try await super.setUp()
         continueAfterFailure = false
+        fixture = HostedUIFixture()
+    }
+
+    override func tearDown() async throws {
+        await fixture.restore()
+        fixture = nil
+        try await super.tearDown()
     }
 
     func test_tapAlertActionWithTitle_whenActionWithThatTitleExistsOnAlert_executesTheActionHandlerAfterDismissingAlert() {
