@@ -422,12 +422,15 @@ class UIStoryboard_FleetSpec: XCTestCase {
 
     func test_context_releasesMocksAndExternalReferenceBindings() async throws {
         let storyboard = turtlesAndFriendsStoryboard!
-        weak var weakMock: BoxTurtleViewController?
+        var weakMock: WeakProbe<BoxTurtleViewController>!
         try await Fleet.withContext(window: makeWindow()) { _ in
-            weakMock = try storyboard.mockIdentifier("BoxTurtleViewController", usingMockFor: BoxTurtleViewController.self)
-            expect(weakMock).toNot(beNil())
+            weakMock = try lifetimeScope {
+                let mock = try storyboard.mockIdentifier("BoxTurtleViewController", usingMockFor: BoxTurtleViewController.self)
+                return WeakProbe(mock)
+            }
+            expect(weakMock.value).toNot(beNil())
         }
-        expect(weakMock).to(beNil())
+        assertReleased(weakMock)
     }
 
     func test_context_releasesBindingsWhenBodyThrowsAfterFailedBind() async {
