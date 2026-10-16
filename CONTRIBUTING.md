@@ -71,15 +71,14 @@ script/test tvos -only-testing:Fleet-tvOSTests/UIStoryboard_FleetSpec -only-test
 for i in 1 2 3; do script/test all || break; done
 ```
 
-**Recorded evidence (revision f780d56, Xcode 26.6 17F113, iPhone Air iOS 26.5 / Apple TV 4K tvOS 26.5, 2026-10-15).** All results below are on f780d56, before the one-test change described after them.
+**Recorded evidence (code revision 7ab4817, Xcode 26.6 17F113, iPhone Air iOS 26.5 / Apple TV 4K tvOS 26.5, 2026-10-16).** The studies ran on the tree whose test sources match the final code revision (later commits only edit this documentation). Earlier studies on f780d56 found a real failure, `test_context_releasesMocksAndExternalReferenceBindings` (immediate nil check, no `lifetimeScope`); it was fixed in 7ab4817 and everything below was rerun after that fix. No failures occurred.
 
-- `UIStoryboard_FleetSpec` x20, process reuse: iOS 860 tests, 0 failures (`build/ios-test-V6sVJC9C`); tvOS 860 tests, 0 failures (`build/tvos-test-GTM0C5VL`).
-- `UIStoryboard_FleetSpec` x20, relaunch: iOS passed (`build/ios-test-S5MKJvIR`); tvOS passed (`build/tvos-test-yC7dfyOe`).
-- Surrounding suites (Storyboard, Navigation, Screen, Alert, TextField; classes run alphabetically by xcodebuild) x10, process reuse: iOS 1850 tests, 0 failures (`build/ios-test-7WblqvrF`); tvOS 820 tests, 0 failures (`build/tvos-test-MNS1qofC`).
-- Three consecutive `script/test all`: iOS 453 tests and tvOS 239 tests each time, 0 failures (iOS `ios-test-D5RJ09u0`, `RydTCO8z`, `gaV05EKF`; tvOS `tvos-test-A9C45vrO`, `R0hsn15d`, `lQomdvWT`).
-- Each storyboard test alone in a fresh process, 5 relaunch iterations: iOS ran all 43 tests; 42 passed and `test_context_releasesMocksAndExternalReferenceBindings` **failed** (`UIStoryboard+FleetSpec.swift:430`, mock still non-nil; `build/ios-test-qeGNupYD`). tvOS reached only the first 8 tests before the time budget ended (all passed or were interrupted by the cut-off; incomplete).
-
-That failing test was one of the few still using an immediate `expect(weak).to(beNil())` with no `lifetimeScope`/`assertReleased`. It now uses the pattern; after the change `UIStoryboard_FleetSpec` x10 (process reuse, iOS) passed with 430 tests, 0 failures. The full per-test fresh-process study, the tvOS remainder, and the repeated full runs have **not** been repeated on the changed revision.
+- Three consecutive `script/test all`: iOS 453 tests and tvOS 239 tests each time, 0 failures (iOS `ios-test-kCf42If9`, `fvpSTv3o`, `ETDVpYBm`; tvOS `tvos-test-3MqQ1tMW`, `O3vJEFR2`, `U8axdFnh`).
+- `UIStoryboard_FleetSpec` x20, process reuse: iOS 860 tests, 0 failures (`ios-test-esrSXdWG`); tvOS 860 tests, 0 failures (`tvos-test-dzq7aaBk`).
+- `UIStoryboard_FleetSpec` x20, relaunch (20 fresh-process iterations each, 43 tests, 0 failures): iOS `ios-test-AIq9G4pG`; tvOS `tvos-test-emcglXcl`.
+- Surrounding suites (Storyboard, Navigation, Screen, Alert, TextField; run alphabetically by xcodebuild) x10, process reuse: iOS 1850 tests, 0 failures (`ios-test-A9tel9Qw`); tvOS 820 tests, 0 failures (`tvos-test-vOki9SIX`).
+- Each storyboard test alone in a fresh process, 5 relaunch iterations: iOS all 43 tests passed (bundles `build/ios-test-*`, one per test). tvOS: 13 of 43 passed, including the four recurring-failure tests (`test_context_releasesMocksAndExternalReferenceBindings`, `test_failedBinding_recordsNothingAndLeavesEarlierBindingsOwnedByTheStoryboard`, `test_removeBindings_onlyAffectsTheStoryboardItIsCalledOn`, `test_context_releasesBindingsWhenBodyThrowsAfterFailedBind`) and the first nine tests in file order; the remaining 30 tvOS tests were **not** run per-test because of the time budget.
+- Hosted GitHub CI was not observed; local runs are bounded evidence, not a guarantee.
 
 For runner, release, packaging-checker, or storyboard-script changes, also run `python3 -m unittest discover -s script/tests -v` and `bash -n script/test script/release script/check-distribution test Fleet/Script/copy_storyboard_info_files.sh Integration/PackageConsumer/CopyStoryboardMetadata.sh`. Packaging and runtime-linking changes must pass `script/check-distribution` for both external hosted consumers on a clean committed revision. Use `script/check-distribution --allow-dirty` before committing for development; that run creates a separate Git snapshot and is not release evidence. GitHub Actions runs the tooling, native suites, and committed consumer checks. See [AGENTS.md](AGENTS.md) for repository structure and guidance for agent work.
 
