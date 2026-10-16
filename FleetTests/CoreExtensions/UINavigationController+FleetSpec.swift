@@ -15,17 +15,24 @@ class UINavigationController_FleetSpec: XCTestCase {
         }
     }
 
+    private var fixture: HostedUIFixture!
+
     override func setUp() async throws {
         try await super.setUp()
         continueAfterFailure = false
+        fixture = HostedUIFixture()
+    }
+
+    override func tearDown() async throws {
+        await fixture.restore()
+        fixture = nil
+        try await super.tearDown()
     }
 
     func test_pushViewController_immediatelySetsTheViewControllerAsTheTopController() {
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
-        let window = UIWindow()
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
+        let window = fixture.makeKeyWindow(root: navigationController)
 
         let controllerToPush = UIViewController()
 
@@ -37,9 +44,7 @@ class UINavigationController_FleetSpec: XCTestCase {
     func test_pushViewController_immediatelyLoadsThePushedViewController() {
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
-        let window = UIWindow()
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
+        let window = fixture.makeKeyWindow(root: navigationController)
 
         let controllerToPush = TestViewController()
 
@@ -50,9 +55,7 @@ class UINavigationController_FleetSpec: XCTestCase {
     func test_pushViewController_doesNotCausePushedViewControllerToLoadMultipleTimes() {
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
-        let window = UIWindow()
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
+        let window = fixture.makeKeyWindow(root: navigationController)
 
         let controllerToPush = TestViewController()
 
@@ -64,9 +67,7 @@ class UINavigationController_FleetSpec: XCTestCase {
     func test_pushViewController_doesNotLoadThePushedViewControllerUntilItWouldHaveANavigationController() {
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
-        let window = UIWindow()
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
+        let window = fixture.makeKeyWindow(root: navigationController)
 
         let controllerToPush = TestViewController()
 
@@ -78,9 +79,7 @@ class UINavigationController_FleetSpec: XCTestCase {
     func test_popViewController_returnsPoppedViewController() {
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
-        let window = UIWindow()
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
+        let window = fixture.makeKeyWindow(root: navigationController)
 
         let controllerToPushThenPop = UIViewController()
 
@@ -93,9 +92,7 @@ class UINavigationController_FleetSpec: XCTestCase {
     func test_popViewController_immediatelySetsTheNextViewControllerInStackAsTopViewController() {
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
-        let window = UIWindow()
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
+        let window = fixture.makeKeyWindow(root: navigationController)
 
         let controllerToPushThenPop = UIViewController()
 
@@ -108,9 +105,7 @@ class UINavigationController_FleetSpec: XCTestCase {
     func test_popToViewController_immediatelySetsTheGivenViewControllerAsTopViewController() {
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
-        let window = UIWindow()
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
+        let window = fixture.makeKeyWindow(root: navigationController)
 
         let controllerOne = UIViewController()
         let controllerTwo = UIViewController()
@@ -128,9 +123,7 @@ class UINavigationController_FleetSpec: XCTestCase {
     func test_popToViewController_whenTheNavigationControllerIsInVisibleWindow_returnsThePoppedViewControllers() {
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
-        let window = UIWindow()
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
+        let window = fixture.makeKeyWindow(root: navigationController)
 
         let controllerOne = UIViewController()
         let controllerTwo = UIViewController()
@@ -154,7 +147,7 @@ class UINavigationController_FleetSpec: XCTestCase {
     func test_popToViewController_whenTheNavigationControllerNotInVisibleWindow_returnsPoppedControllers() {
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
-        let window = UIWindow()
+        let window = fixture.adopt(UIWindow())
         window.rootViewController = navigationController
 
         let controllerOne = UIViewController()
@@ -177,9 +170,7 @@ class UINavigationController_FleetSpec: XCTestCase {
     func test_popToRootViewController_immediatelySetsTheRootViewControllerAsTheTopViewController() {
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
-        let window = UIWindow()
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
+        let window = fixture.makeKeyWindow(root: navigationController)
 
         let controllerOne = UIViewController()
         let controllerTwo = UIViewController()
@@ -195,9 +186,7 @@ class UINavigationController_FleetSpec: XCTestCase {
     func test_popToRootViewController_whenTheNavigationControllerIsInVisibleWindow_returnsThePoppedViewControllers() {
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
-        let window = UIWindow()
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
+        let window = fixture.makeKeyWindow(root: navigationController)
 
         let controllerOne = UIViewController()
         let controllerTwo = UIViewController()
@@ -219,7 +208,7 @@ class UINavigationController_FleetSpec: XCTestCase {
     func test_popToRootViewController_whenTheNavigationControllerIsNotInVisibleWindow_returnsPoppedControllers() {
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
-        let window = UIWindow()
+        let window = fixture.adopt(UIWindow())
         window.rootViewController = navigationController
 
         let controllerOne = UIViewController()
@@ -248,9 +237,7 @@ class UINavigationController_FleetSpec: XCTestCase {
 
     func test_pushViewController_notifiesDelegateInOrder() {
         let navigationController = UINavigationController(rootViewController: UIViewController())
-        let window = UIWindow()
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
+        let window = fixture.makeKeyWindow(root: navigationController)
         let delegate = RecordingDelegate()
         navigationController.delegate = delegate
 
@@ -263,9 +250,7 @@ class UINavigationController_FleetSpec: XCTestCase {
 
     func test_popViewController_notifiesDelegateInOrder() {
         let navigationController = UINavigationController(rootViewController: UIViewController())
-        let window = UIWindow()
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
+        let window = fixture.makeKeyWindow(root: navigationController)
         navigationController.pushViewController(UIViewController(), animated: false)
         let delegate = RecordingDelegate()
         navigationController.delegate = delegate
@@ -280,9 +265,7 @@ class UINavigationController_FleetSpec: XCTestCase {
     func test_popViewController_whenOnlyRootIsInStack_returnsNilAndPreservesRoot() {
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
-        let window = UIWindow()
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
+        let window = fixture.makeKeyWindow(root: navigationController)
 
         let popped = navigationController.popViewController(animated: false)
 
@@ -303,9 +286,7 @@ class UINavigationController_FleetSpec: XCTestCase {
     func test_popToRootViewController_whenOnlyRootIsInStack_returnsNoControllersAndPreservesRoot() {
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
-        let window = UIWindow()
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
+        let window = fixture.makeKeyWindow(root: navigationController)
 
         let popped = navigationController.popToRootViewController(animated: false)
 
@@ -325,9 +306,7 @@ class UINavigationController_FleetSpec: XCTestCase {
     func test_popToViewController_whenAlreadyTop_returnsNoControllers() {
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
-        let window = UIWindow()
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
+        let window = fixture.makeKeyWindow(root: navigationController)
 
         let popped = navigationController.popToViewController(root, animated: true)
 
@@ -338,9 +317,7 @@ class UINavigationController_FleetSpec: XCTestCase {
     func test_pushViewController_repeatedPushesBuildStackInOrder() {
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
-        let window = UIWindow()
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
+        let window = fixture.makeKeyWindow(root: navigationController)
         let one = UIViewController()
         let two = UIViewController()
 
@@ -356,9 +333,7 @@ class UINavigationController_FleetSpec: XCTestCase {
         try! storyboard.bind(viewController: viewController, toIdentifier: "KittenImage")
 
         let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
-        let window = UIWindow()
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
+        let window = fixture.makeKeyWindow(root: navigationController)
 
         expect(navigationController?.visibleViewController).to(beIdenticalTo(viewController))
     }
@@ -450,9 +425,7 @@ class UINavigationController_FleetSpec: XCTestCase {
         let trace = TraceLog()
         let root = TracingViewController(name: "root", trace: trace)
         let navigation = UINavigationController(rootViewController: root)
-        let window = UIWindow()
-        window.rootViewController = navigation
-        window.makeKeyAndVisible()
+        let window = fixture.makeKeyWindow(root: navigation)
         let delegate = TracingDelegate(trace: trace)   // UIKit holds the delegate weakly
         navigation.delegate = delegate
         defer { withExtendedLifetime(delegate) {} }
@@ -506,9 +479,7 @@ class UINavigationController_FleetSpec: XCTestCase {
         let trace = TraceLog()
         let root = TracingViewController(name: "root", trace: trace)
         let navigation = UINavigationController(rootViewController: root)
-        let window = UIWindow()
-        window.rootViewController = navigation
-        window.makeKeyAndVisible()
+        let window = fixture.makeKeyWindow(root: navigation)
         let delegate = TracingDelegate(trace: trace)   // UIKit holds the delegate weakly
         navigation.delegate = delegate
         defer { withExtendedLifetime(delegate) {} }

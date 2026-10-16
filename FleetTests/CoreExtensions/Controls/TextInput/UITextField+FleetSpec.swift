@@ -7,6 +7,7 @@ class UITextField_FleetSpec: XCTestCase {
     var subject: UITextField!
     var delegate: TestTextFieldDelegate!
     var recorder: UIControlEventRecorder!
+    private var fixture: HostedUIFixture!
 
     override func setUp() async throws {
         try await super.setUp()
@@ -17,11 +18,17 @@ class UITextField_FleetSpec: XCTestCase {
         delegate = tuple.delegate
         recorder = UIControlEventRecorder()
         recorder.registerAllEvents(for: subject)
-        try! Test.embedViewIntoMainApplicationWindow(subject)
+        fixture = HostedUIFixture()
+        try fixture.embed(subject)
     }
 
     override func tearDown() async throws {
-        subject.removeFromSuperview()
+        subject.delegate = nil
+        await fixture.restore()
+        fixture = nil
+        recorder = nil
+        delegate = nil
+        subject = nil
         try await super.tearDown()
     }
 

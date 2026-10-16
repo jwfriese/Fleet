@@ -44,15 +44,29 @@ Logs and result bundles are retained in unique run directories under `build/`; o
 
 ### Test reliability
 
-Lifetime assertions use `WeakProbe`, `lifetimeScope`, and `assertReleased` from `FleetTests/Helpers/Test.swift`. Create and exercise objects inside a synchronous `lifetimeScope` (including `instantiateViewController` calls and identity comparisons, which return autoreleased references), keep only a `WeakProbe` outside, then call `assertReleased` after the scope ends. It drains pools and polls to a bounded deadline, so a genuinely retained object still fails. Do not hold an autorelease pool across an `await`. Coordinate asynchronous work with explicit signals or bounded state waits that call `XCTFail` with the trace at their deadline; never use a sleep to establish readiness.
+**Lifetime assertions.** Use `WeakProbe`, `lifetimeScope`, and `assertReleased` from `FleetTests/Helpers/Test.swift`. A synchronous test runs its whole body (creating objects, calling Fleet, identity checks) inside one `lifetimeScope`, returns only `WeakProbe`s, then calls `assertReleased` after the scope ends. This is required, not stylistic: the retention failures seen in CI were not a Fleet owner. Fleet's retain count is balanced (bind retains once, removal releases), and a `leaks --traceTree` trace of a failing fresh-process run showed the remaining holders were the test's stack and an entry in the test method's *outer* autorelease pool, added between smaller inner scopes. Anything autoreleased outside an inner pool lands there and lives until the test method returns. `assertReleased` drains pools and polls to a bounded deadline, so a genuinely retained object still fails. Do not hold an autorelease pool across an `await`; scope async work in synchronous helpers.
 
-To check a suite for flakiness, run it repeatedly with the canonical runner, once reusing the process and once relaunching, and record the source revision, Xcode/runtime, simulator, mode, counts, failures, and the `build/` result bundle. Retrying until success is not reliability evidence.
+**Hosted UI fixtures.** Tests that touch the application window use `HostedUIFixture` (same file): create it in `setUp`, make windows with `makeKeyWindow(root:)` or `adopt(_:)`, attach views with `embed(_:)`, and `await fixture.restore()` in `tearDown`. Restoration ends editing, dismisses presentations (bounded wait, failing at the deadline), detaches embedded views, hides owned windows, then returns the borrowed window's root and key status. Drop fixture properties (delegates, data sources, subjects) after detaching views. `HostedUIFixtureSpec` proves a successor starts from the original state after both normal and throwing paths. Coordinate asynchronous work with explicit signals or bounded state waits that call `XCTFail` with the trace at their deadline; never use a sleep to establish readiness.
+
+**Reliability runs (opt-in).** Repeating tests is the evidence for flakiness work; retrying until success is not. Run each class in both modes, then the whole suite, and record the source revision (`git rev-parse HEAD`), `xcodebuild -version`, simulator, mode, counts, failures, and the `build/` result-bundle path. Keep failures; do not retry them away.
 
 ```bash
+# Process reuse, then fresh process per iteration (separates accumulated state from cold-start behavior)
 script/test ios  -only-testing:FleetTests/UIStoryboard_FleetSpec -test-iterations 20 -run-tests-until-failure -test-repetition-relaunch-enabled NO
 script/test ios  -only-testing:FleetTests/UIStoryboard_FleetSpec -test-iterations 20 -run-tests-until-failure -test-repetition-relaunch-enabled YES
 script/test tvos -only-testing:Fleet-tvOSTests/UIStoryboard_FleetSpec -test-iterations 20 -run-tests-until-failure -test-repetition-relaunch-enabled NO
 script/test tvos -only-testing:Fleet-tvOSTests/UIStoryboard_FleetSpec -test-iterations 20 -run-tests-until-failure -test-repetition-relaunch-enabled YES
+
+# Order variation: xcodebuild always runs a class alphabetically, so vary the neighbors instead.
+# Each test alone in a fresh process (the "first test in the process" case), then the class with its
+# surrounding suites (the other hosted fixture suites run before and after it).
+for t in $(grep -o 'func test_[A-Za-z0-9_]*' FleetTests/CoreExtensions/Storyboard/UIStoryboard+FleetSpec.swift | sed 's/func //'); do
+  script/test ios -only-testing:FleetTests/UIStoryboard_FleetSpec/$t -test-iterations 5 -run-tests-until-failure -test-repetition-relaunch-enabled YES || break
+done
+script/test ios -only-testing:FleetTests/UIStoryboard_FleetSpec -only-testing:FleetTests/UINavigationController_FleetSpec -only-testing:FleetTests/ScreenSpec -only-testing:FleetTests/UIAlertController_FleetSpec -only-testing:FleetTests/UITextField_FleetSpec -test-iterations 10 -run-tests-until-failure -test-repetition-relaunch-enabled NO
+
+# Final-revision evidence: three consecutive complete suites per platform on the unchanged commit
+for i in 1 2 3; do script/test all || break; done
 ```
 
 For runner, release, packaging-checker, or storyboard-script changes, also run `python3 -m unittest discover -s script/tests -v` and `bash -n script/test script/release script/check-distribution test Fleet/Script/copy_storyboard_info_files.sh Integration/PackageConsumer/CopyStoryboardMetadata.sh`. Packaging and runtime-linking changes must pass `script/check-distribution` for both external hosted consumers on a clean committed revision. Use `script/check-distribution --allow-dirty` before committing for development; that run creates a separate Git snapshot and is not release evidence. GitHub Actions runs the tooling, native suites, and committed consumer checks. See [AGENTS.md](AGENTS.md) for repository structure and guidance for agent work.

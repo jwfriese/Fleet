@@ -208,10 +208,16 @@ class UIStoryboard_FleetSpec: XCTestCase {
     }
 
     /// Attempts a bind that Fleet rejects. The rejected controller is created and dropped inside
-    /// its own pool. Passing `BoxTurtleViewController()` inline to the throwing call made the earlier
-    /// bound instance outlive the context when this test ran alone (reproduced locally, and in CI),
-    /// although Fleet had already removed the registration; the exact holder was not identified, but
-    /// the outcome depends on how the temporary is scoped, not on Fleet's cleanup.
+    /// its own pool.
+    ///
+    /// Diagnosis of the CI retention failures (an earlier bound controller still alive after
+    /// `removeBindings()`): Fleet's ownership is balanced (bind adds one retain and removal releases
+    /// it, checked with `CFGetRetainCount`), and a leaks reverse-reference trace of a failing
+    /// fresh-process run showed the remaining holders were the test's own stack and an entry in the
+    /// test method's outer autorelease pool. Autorelease dumps showed that entry appearing
+    /// between two statements that Fleet and UIKit ran outside any inner pool, so it is
+    /// intermittent and depends on the process, not on Fleet's cleanup. A sync test therefore runs
+    /// its whole body in one `lifetimeScope` and checks release afterwards.
     private func bindRejectedController(to storyboard: UIStoryboard) throws {
         try autoreleasepool {
             let rejected = BoxTurtleViewController()
@@ -256,24 +262,50 @@ class UIStoryboard_FleetSpec: XCTestCase {
     }
 
     func test_removeBindings_releasesControllersAndRestoresStoryboardInstantiation() {
-        let weakController = bindWeakly(to: turtlesAndFriendsStoryboard)
-        turtlesAndFriendsStoryboard.removeBindings()
+        let weakController: WeakController = lifetimeScope {
+            let weakController = bindWeakly(to: turtlesAndFriendsStoryboard)
+            turtlesAndFriendsStoryboard.removeBindings()
+            return weakController
+        }
 
         assertReleased(weakController)
         let instantiated = turtlesAndFriendsStoryboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")
         expect(instantiated).toNot(beNil())
     }
 
-    func test_removeBindings_onlyAffectsTheStoryboardItIsCalledOn() {
-        let other = UIStoryboard(name: "TurtlesAndFriendsStoryboard", bundle: nil)
-        let ownedWeak = bindWeakly(to: turtlesAndFriendsStoryboard)
-        let otherController = BoxTurtleViewController()
-        try! other.bind(viewController: otherController, toIdentifier: "BoxTurtleViewController")
+    /// Regression for the retention diagnosis (see `bindRejectedController`): Fleet's registration is
+    /// gone after `removeBindings()`, and an autorelease pool that received a reference during the
+    /// scope keeps the controller alive only until that scope ends. Were Fleet itself to keep an
+    /// owner, the controller would survive the scope too and `assertReleased` would fail.
+    func test_removeBindings_leavesOnlyScopedAutoreleasedReferencesAsHolders() {
+        let probe: WeakController = lifetimeScope {
+            let weakController = bindWeakly(to: turtlesAndFriendsStoryboard)
+            // The swizzled instantiation returns an autoreleased reference that this scope's pool owns.
+            _ = turtlesAndFriendsStoryboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")
+            turtlesAndFriendsStoryboard.removeBindings()
+            // Fleet no longer registers the controller: instantiation yields a fresh one.
+            let fresh = turtlesAndFriendsStoryboard.instantiateViewController(withIdentifier: "BoxTurtleViewController")
+            expect(fresh).toNot(beIdenticalTo(weakController.value))
+            return weakController
+        }
+        assertReleased(probe, "controller after removeBindings and the scope that received its instantiation result")
+    }
 
-        turtlesAndFriendsStoryboard.removeBindings()
+    func test_removeBindings_onlyAffectsTheStoryboardItIsCalledOn() {
+        // Everything runs inside one scope: references autoreleased between smaller scopes would
+        // otherwise land in the test's outer pool and outlive the release check.
+        let (ownedWeak, otherIsStillBound) = lifetimeScope { () -> (WeakController, Bool) in
+            let other = UIStoryboard(name: "TurtlesAndFriendsStoryboard", bundle: nil)
+            let ownedWeak = bindWeakly(to: turtlesAndFriendsStoryboard)
+            let otherController = BoxTurtleViewController()
+            try! other.bind(viewController: otherController, toIdentifier: "BoxTurtleViewController")
+
+            turtlesAndFriendsStoryboard.removeBindings()
+            return (ownedWeak, isBound(other, to: otherController))
+        }
 
         assertReleased(ownedWeak)
-        expect(self.isBound(other, to: otherController)).to(beTrue())
+        expect(otherIsStillBound).to(beTrue())
     }
 
     func test_sequentialStoryboardsWithTheSameName_doNotSeeEachOthersBindings() {
@@ -286,10 +318,12 @@ class UIStoryboard_FleetSpec: XCTestCase {
     }
 
     func test_withBindings_releasesControllersAfterNormalCompletion() {
-        var weakController: WeakController!
-        turtlesAndFriendsStoryboard.withBindings {
-            weakController = bindWeakly(to: turtlesAndFriendsStoryboard)
-            expect(weakController.value).toNot(beNil())
+        let weakController: WeakController = lifetimeScope {
+            turtlesAndFriendsStoryboard.withBindings {
+                let weakController = bindWeakly(to: turtlesAndFriendsStoryboard)
+                expect(weakController.value).toNot(beNil())
+                return weakController
+            }
         }
         assertReleased(weakController)
     }
@@ -297,14 +331,16 @@ class UIStoryboard_FleetSpec: XCTestCase {
     func test_withBindings_releasesControllersWhenBodyThrows() {
         struct Failure: Error {}
         var weakController: WeakController!
-        do {
-            try turtlesAndFriendsStoryboard.withBindings {
-                weakController = bindWeakly(to: turtlesAndFriendsStoryboard)
-                throw Failure()
+        lifetimeScope {
+            do {
+                try turtlesAndFriendsStoryboard.withBindings {
+                    weakController = bindWeakly(to: turtlesAndFriendsStoryboard)
+                    throw Failure()
+                }
+                XCTFail("Expected the body's error to propagate")
+            } catch {
+                expect(error is Failure).to(beTrue())
             }
-            XCTFail("Expected the body's error to propagate")
-        } catch {
-            expect(error is Failure).to(beTrue())
         }
         assertReleased(weakController)
     }
@@ -508,20 +544,21 @@ class UIStoryboard_FleetSpec: XCTestCase {
     }
 
     func test_failedBinding_recordsNothingAndLeavesEarlierBindingsOwnedByTheStoryboard() {
-        let weakController = bindWeakly(to: turtlesAndFriendsStoryboard)
-        let weakRejected: WeakProbe<UIViewController> = lifetimeScope {
+        let (weakController, weakRejected, earlierStillBound): (WeakController, WeakController, Bool) = lifetimeScope {
+            let weakController = bindWeakly(to: turtlesAndFriendsStoryboard)
             let rejected = BoxTurtleViewController()
             expect { try self.turtlesAndFriendsStoryboard.bind(viewController: rejected, toIdentifier: "WatermelonViewController") }.to(
                 throwStoryboardFailure()
             )
             expect(self.isBound(self.turtlesAndFriendsStoryboard, to: rejected)).to(beFalse())
-            return WeakProbe(rejected)
+            // The earlier registration is still owned by the storyboard, and the rejected one left no trace.
+            let earlierStillBound = self.isBound(self.turtlesAndFriendsStoryboard, to: weakController)
+            return (weakController, WeakProbe(rejected), earlierStillBound)
         }
         assertReleased(weakRejected, "rejected controller")
+        expect(earlierStillBound).to(beTrue())
 
-        // The earlier registration is still owned by the storyboard, and the rejected one left no trace.
-        expect(self.isBound(self.turtlesAndFriendsStoryboard, to: weakController)).to(beTrue())
-        turtlesAndFriendsStoryboard.removeBindings()
+        lifetimeScope { turtlesAndFriendsStoryboard.removeBindings() }
         assertReleased(weakController)
     }
 
