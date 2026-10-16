@@ -7,6 +7,7 @@ class UITextField_FleetSpec: XCTestCase {
     var subject: UITextField!
     var delegate: TestTextFieldDelegate!
     var recorder: UIControlEventRecorder!
+    private var fixture: HostedUIFixture!
 
     override func setUp() async throws {
         try await super.setUp()
@@ -17,11 +18,17 @@ class UITextField_FleetSpec: XCTestCase {
         delegate = tuple.delegate
         recorder = UIControlEventRecorder()
         recorder.registerAllEvents(for: subject)
-        try! Test.embedViewIntoMainApplicationWindow(subject)
+        fixture = HostedUIFixture()
+        try fixture.embed(subject)
     }
 
     override func tearDown() async throws {
-        subject.removeFromSuperview()
+        subject.delegate = nil
+        await fixture.restore()
+        fixture = nil
+        recorder = nil
+        delegate = nil
+        subject = nil
         try await super.tearDown()
     }
 
@@ -144,7 +151,7 @@ class UITextField_FleetSpec: XCTestCase {
         let tuple = createCompleteTextFieldAndDelegate()
         let otherTextField = tuple.textField
         let otherDelegate = tuple.delegate
-        try! Test.embedViewIntoMainApplicationWindow(otherTextField)
+        try! fixture.embed(otherTextField)
 
         otherDelegate.shouldAllowBeginEditing = true
         delegate.shouldAllowBeginEditing = true
@@ -162,7 +169,7 @@ class UITextField_FleetSpec: XCTestCase {
         let tuple = createCompleteTextFieldAndDelegate()
         let otherTextField = tuple.textField
         let otherDelegate = tuple.delegate
-        try! Test.embedViewIntoMainApplicationWindow(otherTextField)
+        try! fixture.embed(otherTextField)
 
         otherDelegate.shouldAllowBeginEditing = true
         delegate.shouldAllowBeginEditing = true
@@ -182,7 +189,7 @@ class UITextField_FleetSpec: XCTestCase {
         let tuple = createCompleteTextFieldAndDelegate()
         let otherTextField = tuple.textField
         let otherDelegate = tuple.delegate
-        try! Test.embedViewIntoMainApplicationWindow(otherTextField)
+        try! fixture.embed(otherTextField)
 
         otherDelegate.shouldAllowBeginEditing = true
         delegate.shouldAllowBeginEditing = false
@@ -838,11 +845,20 @@ class UITextField_FleetSpec: XCTestCase {
         override init() {}
     } // implements none of the methods
 
+    // Sorts after every other scenario in the class, which embed auxiliary fields through the
+    // fixture; only this scenario's subject may be attached to the application root.
+    func test_zz_successorScenario_startsWithOnlyItsOwnTextFieldAttached() throws {
+        let root = try XCTUnwrap(UIApplication.shared.keyWindow?.rootViewController)
+        let fields = root.view.subviews.compactMap { $0 as? UITextField }
+        expect(fields.count).to(equal(1))
+        expect(fields.first).to(beIdenticalTo(subject))
+    }
+
     func test_whenUsingDelegateWithNoImplementations_performsAsExpected() {
         let textField = UITextField()
         let minimallyImplementedDelegate = BarebonesTextFieldDelegate()
         textField.delegate = minimallyImplementedDelegate
-        try! Test.embedViewIntoMainApplicationWindow(textField)
+        try! fixture.embed(textField)
 
         textField.enter(text: "turtle magic")
         expect(textField.text).to(equal("turtle magic"))

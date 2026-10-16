@@ -10,16 +10,23 @@ import Nimble
 
 @MainActor
 class ScreenSpec: XCTestCase {
+    private var fixture: HostedUIFixture!
+
     override func setUp() async throws {
         try await super.setUp()
         continueAfterFailure = false
+        fixture = HostedUIFixture()
+    }
+
+    override func tearDown() async throws {
+        await fixture.restore()
+        fixture = nil
+        try await super.tearDown()
     }
 
     func test_topmostViewController_returnsTopmostViewController() {
-        let window = UIWindow()
-        let rootViewController = UIViewController()
-        window.rootViewController = rootViewController
-        window.makeKeyAndVisible()
+                let rootViewController = UIViewController()
+        let window = fixture.makeKeyWindow(root: rootViewController)
 
         let screen = Screen(forWindow: window)
 
@@ -32,10 +39,8 @@ class ScreenSpec: XCTestCase {
     }
 
     func test_topmostViewController_whenNavigationControllerIsInWindowViewStack_returnsVisibleViewController() {
-        let window = UIWindow()
-        let rootNavigationController = UINavigationController()
-        window.rootViewController = rootNavigationController
-        window.makeKeyAndVisible()
+                let rootNavigationController = UINavigationController()
+        let window = fixture.makeKeyWindow(root: rootNavigationController)
 
         let screen = Screen(forWindow: window)
 
@@ -46,10 +51,8 @@ class ScreenSpec: XCTestCase {
     }
 
     func test_topmostViewController_whenOnlyANavigationControllerIsInViewStack_returnsTheNavigationController() {
-        let window = UIWindow()
-        let rootNavigationController = UINavigationController()
-        window.rootViewController = rootNavigationController
-        window.makeKeyAndVisible()
+                let rootNavigationController = UINavigationController()
+        let window = fixture.makeKeyWindow(root: rootNavigationController)
 
         let screen = Screen(forWindow: window)
 
@@ -57,10 +60,8 @@ class ScreenSpec: XCTestCase {
     }
 
     func test_topmostViewController_whenTheTopViewControllerHasAPresentedViewController_returnsThatPresentedViewController() {
-        let window = UIWindow()
-        let rootNavigationController = UINavigationController()
-        window.rootViewController = rootNavigationController
-        window.makeKeyAndVisible()
+                let rootNavigationController = UINavigationController()
+        let window = fixture.makeKeyWindow(root: rootNavigationController)
 
         let screen = Screen(forWindow: window)
 
@@ -74,10 +75,8 @@ class ScreenSpec: XCTestCase {
     }
 
     func test_topmostViewController_whenAViewControllerIsModallyPresentedOverTopViewControllerInNavigationStack_returnsModallyPresentedController() {
-        let window = UIWindow()
-        let rootNavigationController = UINavigationController()
-        window.rootViewController = rootNavigationController
-        window.makeKeyAndVisible()
+                let rootNavigationController = UINavigationController()
+        let window = fixture.makeKeyWindow(root: rootNavigationController)
 
         let screen = Screen(forWindow: window)
 
@@ -91,10 +90,8 @@ class ScreenSpec: XCTestCase {
     }
 
     func test_topmostContainer_whenNavigationControllerIsRoot_returnsNavigationControllerWhileTopmostViewControllerReturnsVisibleChild() {
-        let window = UIWindow()
-        let navigationController = UINavigationController(rootViewController: UIViewController())
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
+                let navigationController = UINavigationController(rootViewController: UIViewController())
+        let window = fixture.makeKeyWindow(root: navigationController)
         let pushed = UIViewController()
         navigationController.pushViewController(pushed, animated: false)
 
@@ -105,10 +102,8 @@ class ScreenSpec: XCTestCase {
     }
 
     func test_topmostContainer_whenNavigationControllerIsEmpty_returnsTheNavigationControllerForBoth() {
-        let window = UIWindow()
-        let navigationController = UINavigationController()
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
+                let navigationController = UINavigationController()
+        let window = fixture.makeKeyWindow(root: navigationController)
 
         let screen = Screen(forWindow: window)
 
@@ -117,7 +112,7 @@ class ScreenSpec: XCTestCase {
     }
 
     func test_topmostViewController_whenTabBarControllerIsRoot_returnsSelectedViewController() {
-        let window = UIWindow()
+        let window = fixture.adopt(UIWindow())
         let first = UIViewController()
         let second = UIViewController()
         let tabBarController = UITabBarController()
@@ -133,10 +128,8 @@ class ScreenSpec: XCTestCase {
     }
 
     func test_topmostViewController_whenTabBarControllerHasNoViewControllers_returnsTheTabBarController() {
-        let window = UIWindow()
-        let tabBarController = UITabBarController()
-        window.rootViewController = tabBarController
-        window.makeKeyAndVisible()
+                let tabBarController = UITabBarController()
+        let window = fixture.makeKeyWindow(root: tabBarController)
 
         let screen = Screen(forWindow: window)
 
@@ -144,7 +137,7 @@ class ScreenSpec: XCTestCase {
     }
 
     func test_topmostViewController_whenTabContainsNavigationController_returnsNavigationTopController() {
-        let window = UIWindow()
+        let window = fixture.adopt(UIWindow())
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
         let tabBarController = UITabBarController()
@@ -161,7 +154,7 @@ class ScreenSpec: XCTestCase {
     }
 
     func test_topmostViewController_whenNavigationControllerIsPresentedFromTab_descendsIntoPresentedContainer() {
-        let window = UIWindow()
+        let window = fixture.adopt(UIWindow())
         let tabBarController = UITabBarController()
         tabBarController.viewControllers = [UIViewController()]
         window.rootViewController = tabBarController
@@ -178,7 +171,7 @@ class ScreenSpec: XCTestCase {
     }
 
     func test_nestedPresentations_overTabNavigationStack_resolveContainerAndVisibleContent() {
-        let window = UIWindow()
+        let window = fixture.adopt(UIWindow())
         let navigation = UINavigationController(rootViewController: UIViewController())
         let tabBarController = UITabBarController()
         tabBarController.viewControllers = [navigation]
@@ -216,10 +209,8 @@ class ScreenSpec: XCTestCase {
     }
 
     func test_topmostViewController_whenNavigationControllerPresentsDirectly_returnsPresentedController() {
-        let window = UIWindow()
-        let navigationController = UINavigationController(rootViewController: UIViewController())
-        window.rootViewController = navigationController
-        window.makeKeyAndVisible()
+                let navigationController = UINavigationController(rootViewController: UIViewController())
+        let window = fixture.makeKeyWindow(root: navigationController)
         let presented = UIViewController()
         navigationController.present(presented, animated: false, completion: nil)
 
@@ -233,9 +224,7 @@ class ScreenSpec: XCTestCase {
         let storyboard = UIStoryboard.init(name: "TurtlesAndFriendsStoryboard", bundle: nil)
         let viewControllerThatPresentsAlerts = storyboard.instantiateViewController(withIdentifier: "SpottedTurtleViewController") as! SpottedTurtleViewController
 
-        let window = UIWindow()
-        window.rootViewController = viewControllerThatPresentsAlerts
-        window.makeKeyAndVisible()
+        let window = fixture.makeKeyWindow(root: viewControllerThatPresentsAlerts)
 
         let screen = Screen(forWindow: window)
 
@@ -246,9 +235,7 @@ class ScreenSpec: XCTestCase {
         let storyboard = UIStoryboard.init(name: "TurtlesAndFriendsStoryboard", bundle: nil)
         let viewControllerThatPresentsAlerts = storyboard.instantiateViewController(withIdentifier: "SpottedTurtleViewController") as! SpottedTurtleViewController
 
-        let window = UIWindow()
-        window.rootViewController = viewControllerThatPresentsAlerts
-        window.makeKeyAndVisible()
+        let window = fixture.makeKeyWindow(root: viewControllerThatPresentsAlerts)
 
         viewControllerThatPresentsAlerts.alertButtonOne?.tap()
 
