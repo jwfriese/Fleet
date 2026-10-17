@@ -9,6 +9,10 @@ does not exist. `fetchCell(at:asType:)` also raises if the cell is not of the re
 let cell = collectionView.fetchCell(at: IndexPath(item: 1, section: 0), asType: PhotoCell.self)
 ```
 
+`fetchCellOrThrow(at:)` and `fetchCellOrThrow(at:asType:)` do the same work but throw a `FleetFailure` instead of raising:
+`.invalidSetup` without a data source, `.invalidInput` for a missing section or item (or a mistyped cell), and
+`.unavailableInteraction` when UIKit cannot display the cell.
+
 ### Item selection
 `UICollectionView.selectItem(at:animated:scrollPosition:)` changes the selection but does not call delegate methods.
 Fleet's `selectItem(at:)` mimics a user tap:

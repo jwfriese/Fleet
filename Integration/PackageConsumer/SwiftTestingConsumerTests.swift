@@ -27,6 +27,17 @@ struct SwiftTestingConsumerTests {
         let item = UIBarButtonItem(title: "none", style: .plain, target: nil, action: nil)
         let itemFailure = #expect(throws: FleetFailure.self) { try item.tapOrThrow() }
         #expect(itemFailure?.kind == .invalidSetup)
+
+        #if os(iOS)
+        let toggle = UISwitch()
+        toggle.isEnabled = false
+        let switchFailure = #expect(throws: FleetFailure.self) { try toggle.flipOrThrow() }
+        #expect(switchFailure?.kind == .unavailableInteraction)
+        #endif
+
+        let collection = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+        let collectionFailure = #expect(throws: FleetFailure.self) { try collection.fetchCellOrThrow(at: IndexPath(item: 0, section: 0)) }
+        #expect(collectionFailure?.kind == .invalidSetup)
     }
 
     @Test func timeoutIsATypedFailureThatNamesTheCondition() async throws {

@@ -9,6 +9,30 @@ class UISwitch_FleetSpec: XCTestCase {
         continueAfterFailure = false
     }
 
+    func test_flipOrThrow_whenUnavailable_throwsTypedFailureAndLeavesTheValue() {
+        let subject = UISwitch()
+        subject.isEnabled = false
+        XCTAssertThrowsError(try subject.flipOrThrow()) { error in
+            guard let failure = error as? FleetFailure else { return XCTFail("Unexpected error \(error)") }
+            XCTAssertEqual(failure.kind, .unavailableInteraction)
+            XCTAssertEqual(failure.action, "flip switch")
+            XCTAssertTrue(failure.state.contains("Control is not enabled."))
+        }
+        subject.isEnabled = true
+        subject.isHidden = true
+        XCTAssertThrowsError(try subject.flipOrThrow())
+        subject.isHidden = false
+        subject.isUserInteractionEnabled = false
+        XCTAssertThrowsError(try subject.flipOrThrow())
+        XCTAssertFalse(subject.isOn)
+    }
+
+    func test_flipOrThrow_whenAvailable_togglesTheValue() throws {
+        let subject = UISwitch()
+        try subject.flipOrThrow()
+        XCTAssertTrue(subject.isOn)
+    }
+
     func test_flip_whenSwitchIsVisibleAndEnabled_togglesTheValueOfTheSwitch() {
         let subject = UISwitch()
         subject.isHidden = false

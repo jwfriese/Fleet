@@ -24,6 +24,49 @@ private func makeCollectionView(_ source: FailureSource?) -> UICollectionView {
 
 @MainActor
 class UICollectionView_RecoverableFailureSpec: XCTestCase {
+    func test_fetchCellOrThrow_withoutDataSource_throwsInvalidSetup() {
+        let view = makeCollectionView(nil)
+
+        XCTAssertThrowsError(try view.fetchCellOrThrow(at: IndexPath(item: 0, section: 0))) { error in
+            guard let failure = error as? FleetFailure else { return XCTFail("Unexpected error \(error)") }
+            XCTAssertEqual(failure.kind, .invalidSetup)
+            XCTAssertEqual(failure.action, "fetch cell")
+        }
+    }
+
+    func test_fetchCellOrThrow_withMissingSectionOrItem_throwsInvalidInput() {
+        let source = FailureSource()
+        let view = makeCollectionView(source)
+        defer { withExtendedLifetime(source) {} }
+
+        for path in [IndexPath(item: 0, section: 3), IndexPath(item: 9, section: 0), IndexPath(item: -1, section: 0), IndexPath(index: 0)] {
+            XCTAssertThrowsError(try view.fetchCellOrThrow(at: path)) { error in
+                guard let failure = error as? FleetFailure else { return XCTFail("Unexpected error \(error)") }
+                XCTAssertEqual(failure.kind, .invalidInput)
+            }
+        }
+    }
+
+    func test_fetchCellOrThrow_withMismatchedType_throwsInvalidInput() {
+        final class OtherCell: UICollectionViewCell {}
+        let source = FailureSource()
+        let view = makeCollectionView(source)
+        defer { withExtendedLifetime(source) {} }
+
+        XCTAssertThrowsError(try view.fetchCellOrThrow(at: IndexPath(item: 0, section: 0), asType: OtherCell.self)) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .invalidInput)
+        }
+    }
+
+    func test_fetchCellOrThrow_withExistingItem_returnsTheCell() throws {
+        let source = FailureSource()
+        let view = makeCollectionView(source)
+        defer { withExtendedLifetime(source) {} }
+
+        let cell = try view.fetchCellOrThrow(at: IndexPath(item: 1, section: 0), asType: UICollectionViewCell.self)
+        XCTAssertNotNil(cell)
+    }
+
     func test_selectItemOrThrow_withMissingItem_throwsInvalidInputWithContext() {
         let source = FailureSource()
         let view = makeCollectionView(source)

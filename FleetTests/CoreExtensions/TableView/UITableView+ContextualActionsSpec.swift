@@ -119,6 +119,60 @@ class UITableView_ContextualActionsSpec: XCTestCase {
         expect(self.viewController.didEndEditingRowCallArgs).to(beEmpty())
     }
 
+    // MARK: Recoverable failures
+
+    private func expectFailure(kind: FleetFailure.Kind, _ body: () throws -> Void, file: StaticString = #filePath, line: UInt = #line) {
+        XCTAssertThrowsError(try body(), file: file, line: line) { error in
+            guard let failure = error as? FleetFailure else { return XCTFail("Unexpected error \(error)", file: file, line: line) }
+            XCTAssertEqual(failure.kind, kind, file: file, line: line)
+            XCTAssertEqual(failure.action, "perform contextual action", file: file, line: line)
+        }
+    }
+
+    func test_performContextualActionOrThrow_withMissingTitleOrIndex_throwsInvalidInput() {
+        expectFailure(kind: .invalidInput) {
+            try self.tableView.performContextualActionOrThrow(withTitle: "Nope", edge: .trailing, at: IndexPath(row: 5, section: 0))
+        }
+        expectFailure(kind: .invalidInput) {
+            try self.tableView.performContextualActionOrThrow(atIndex: 99, edge: .trailing, at: IndexPath(row: 5, section: 0))
+        }
+        expectFailure(kind: .invalidInput) {
+            try self.tableView.performContextualActionOrThrow(withTitle: "Two", edge: .trailing, at: IndexPath(row: 999, section: 0))
+        }
+        expectFailure(kind: .invalidInput) {
+            try self.tableView.performContextualActionOrThrow(withTitle: "Two", edge: .trailing, at: IndexPath(index: 0))
+        }
+    }
+
+    func test_performContextualActionOrThrow_withoutDataSource_throwsInvalidSetup() {
+        tableView.dataSource = nil
+        expectFailure(kind: .invalidSetup) {
+            try self.tableView.performContextualActionOrThrow(withTitle: "Two", edge: .trailing, at: IndexPath(row: 1, section: 0))
+        }
+    }
+
+    func test_performContextualActionOrThrow_whenHandlerNeverCompletes_throwsTimedOut() {
+        expectFailure(kind: .timedOut) {
+            try self.tableView.performContextualActionOrThrow(withTitle: "Never", edge: .trailing, at: IndexPath(row: 5, section: 0), completionTimeout: 0.2)
+        }
+    }
+
+    func test_performContextualActionOrThrow_async_whenHandlerNeverCompletes_throwsTimedOut() async {
+        do {
+            _ = try await tableView.performContextualActionOrThrow(withTitle: "Never", edge: .trailing, at: IndexPath(row: 5, section: 0), completionTimeout: 0.2)
+            XCTFail("Expected a timeout failure")
+        } catch let failure as FleetFailure {
+            XCTAssertEqual(failure.kind, .timedOut)
+        } catch {
+            XCTFail("Unexpected error \(error)")
+        }
+    }
+
+    func test_performContextualActionOrThrow_whenValid_returnsTheCompletionValue() throws {
+        let result = try tableView.performContextualActionOrThrow(withTitle: "Two", edge: .trailing, at: IndexPath(row: 10, section: 0))
+        XCTAssertTrue(result)
+    }
+
     // MARK: Invalid requests
 
     func test_performContextualAction_whenTitleDoesNotExist_raisesException() {
