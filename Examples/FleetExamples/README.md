@@ -1,3 +1,5 @@
+> **Historical example.** This project pins Fleet 3.0.0 with Carthage and old Quick/Nimble revisions and is not built by Fleet's test suite or CI. For a maintained example that is compiled against the current package, see the [quick start](../../Documentation/QuickStart.md).
+
 Included in this folder is an example project totally test-driven using Fleet. As you learn
 Fleet, we encourage you to check out its tests for guidance and best practices.
 

@@ -47,6 +47,7 @@ def create_project(destination, fixtures, package_url, revision):
 
         app_file = file("AppDelegate.swift", "sourcecode.swift")
         test_file = file("PackageConsumerTests.swift", "sourcecode.swift")
+        swift_testing_file = file("SwiftTestingConsumerTests.swift", "sourcecode.swift")
         storyboard = file(platform + "/Consumer.storyboard", "file.storyboard")
         app_product = add(platform + "app-product", "PBXFileReference", explicitFileType="wrapper.application",
                           path="ConsumerHost-" + platform + ".app", sourceTree="BUILT_PRODUCTS_DIR")
@@ -62,7 +63,8 @@ def create_project(destination, fixtures, package_url, revision):
 
         app_sources = phase("app-sources", "PBXSourcesBuildPhase", files=[build_file("app-build-file", app_file)])
         resources = phase("app-resources", "PBXResourcesBuildPhase", files=[build_file("storyboard-build-file", storyboard)])
-        test_sources = phase("test-sources", "PBXSourcesBuildPhase", files=[build_file("test-build-file", test_file)])
+        test_sources = phase("test-sources", "PBXSourcesBuildPhase", files=[build_file("test-build-file", test_file),
+                                                                  build_file("swift-testing-build-file", swift_testing_file)])
         test_resources = phase("test-resources", "PBXResourcesBuildPhase", files=[])
         script = phase("metadata", "PBXShellScriptBuildPhase", files=[], alwaysOutOfDate="1",
                        inputPaths=["$(SRCROOT)/Sources/CopyStoryboardMetadata.sh"],

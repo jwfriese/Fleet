@@ -158,16 +158,40 @@ Sources: [navigation implementation](../Fleet/CoreExtensions/UINavigationControl
 
 Sources: [example dependencies](../Examples/FleetExamples/Cartfile), [example tests](../Examples/FleetExamples/FleetExamplesTests), [presentation docs](UIViewController.md), [FAQ](FAQ.md), [contribution guide](../CONTRIBUTING.md), [release commands](../script/release.py), and [release guide](Releasing.md). Swift Testing can run alongside XCTest and runs tests in parallel by default; see its [official repository](https://github.com/swiftlang/swift-testing).
 
+## Feature readiness versus publication readiness
+
+These are separate milestones. Passing one never satisfies the other.
+
+- **Feature readiness** (the gate below) means retained contracts are ready for expansion. It requires: tested ownership and isolation (scoped contexts, whole-lifetime coordination, cleanup on success, failure, and cancellation); clear retained contracts (typed failures, documented limits and deprecations); passing native suites on both platforms and passing independent XCTest and Swift Testing consumers; and repeatability evidence from a plan recorded before it was run, with every attempt's counts, failures, logs, and result bundles preserved.
+- **Publication readiness** additionally requires a selected release version, migration notes and changelog, and full release validation (`script/release check` on a clean committed revision, including external consumers and passing CI). See [Releasing Fleet](Releasing.md). Meeting the feature gate selects no version and publishes nothing.
+
+Adopting this gate is a deliberate policy change made by the review of the pull request that introduces it.
+
+### Readiness evidence and repetition plan
+
+The plan below was written before any of its runs started, following the reliability guidance in [CONTRIBUTING.md](../CONTRIBUTING.md). Execution is serial. Failures are investigated, never retried away. Results are in the evidence record that follows the plan once recorded.
+
+| ID | Case | Platforms | Count | Mode |
+| --- | --- | --- | --- | --- |
+| R1 | Complete native suite, `script/test all`, consecutive on the unchanged final commit | iOS, tvOS | 2 | Fresh process per run |
+| R2 | `FleetTestContextSpec` (ownership, isolation, overlapping attempts, typed timeouts, cleanup) | iOS, tvOS | 20 iterations | Process reuse (`-test-repetition-relaunch-enabled NO`) |
+| R3 | `FleetTestContextSpec` | iOS, tvOS | 10 iterations | Relaunch each iteration (`YES`) |
+| R4 | Neighbor-order variation: `FleetTestContextSpec`, `UIStoryboard_FleetSpec`, `UIViewController_FleetSpec`, `UIAlertController_FleetSpec`, `ScreenSpec` together (xcodebuild runs classes alphabetically, so this varies the neighbors of the context suite) | iOS, tvOS | 5 iterations | Process reuse |
+| R5 | Independent consumers (XCTest plus Swift Testing: typed failures, scoped hosting, overlapping async attempts, presentation, cleanup), `script/check-distribution --allow-dirty` | iOS, tvOS | 2 each | New test process per run |
+| R6 | Same consumers on the committed revision, `script/check-distribution` | iOS, tvOS | 1 | Certification of the committed tree |
+
+Not planned: parallel execution (unsupported), per-test fresh-process loops (covered for storyboard tests by the earlier reliability study in CONTRIBUTING.md), and hosted CI (not observable locally).
+
 ## Gate for resuming regular feature development
 
 Resume regular feature work when these conditions hold. An experimental integration with an unsupported UIKit feature does not need to hold up the release; its unsupported status must be explicit.
 
 - [x] A fresh checkout has a documented setup and test command, and CI runs the selected iOS/tvOS matrix.
 - [x] The package works in external test targets, including hosted resources and retained runtime features.
-- [ ] The chosen Swift 6 configuration passes, and shared UI state has a tested isolation policy.
+- [x] The chosen Swift 6 configuration passes, and shared UI state has a tested isolation policy (scoped contexts serialize whole lifetimes; consumer tests overlap attempts).
 - [ ] Retained APIs have clear error, lifecycle, cleanup, and interaction contracts, with known defects resolved or explicitly deprecated.
-- [ ] Existing tests and representative consumer tests pass repeatedly without unexplained failures.
-- [ ] The example, quick start, contributor instructions, and migration guide match the tested release.
+- [ ] Existing tests and representative consumer tests pass repeatedly without unexplained failures (plan R1-R6 above; see the evidence record).
+- [ ] The example, quick start, contributor instructions, and migration guide match the tested release. The [quick start](QuickStart.md) is compiled and run by the consumers; the Carthage example is labeled historical (M5.3 stays open); the migration guide waits for publication.
 - [ ] Release preparation validates the same revision that will be distributed.
 
 ## Expansion after the modernization gate
