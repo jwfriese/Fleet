@@ -196,6 +196,8 @@ Executed on code revision 141deb9 (Xcode 26.6 17F113, iOS 26.5 and tvOS 26.5 sim
 
 R1 and R5 counts are reported by `xcodebuild`; the Swift Testing count is 7 context tests plus the compiled quick-start test. An earlier consumer compile failure (a region-isolation diagnostic in the first draft of the overlapping-attempts test) was fixed by restructuring the test before any of the runs above. R6 is recorded in the pull request after the committed-tree run. Hosted CI was not observed.
 
+**Re-run after the typed-failure migration (`UISwitch.flipOrThrow`, `UICollectionView.fetchCellOrThrow`, `performContextualActionOrThrow`).** This changed library code after the table above, so the complete suites and consumers were re-run on the changed tree: the first iOS run (`ios-test-iT93HuE1`) failed three new collection-view tests because the test fixture let the weak data source deallocate; the fixture was fixed (not the assertions) and the next `script/test all` passed with iOS 507 tests and tvOS 268 tests, 0 failures (`ios-test-4CbJA6EJ`, `tvos-test-hPMOldue`). `script/check-distribution` on the committed tree passed: iOS XCTest 24 + Swift Testing 8, tvOS XCTest 23 + Swift Testing 8, 0 failures (`distribution-fud03ut4`). The R2-R4 repetition loops were not repeated after this change; they cover context, storyboard, controller, alert, and screen suites that it does not touch.
+
 ## Gate for resuming regular feature development
 
 Resume regular feature work when these conditions hold. An experimental integration with an unsupported UIKit feature does not need to hold up the release; its unsupported status must be explicit.
