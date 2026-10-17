@@ -57,9 +57,9 @@ methods. For more discussion on why, go to [the relevant section in the FAQ](./D
 - [Why should I make sure all UIViewController unit tests happen in a UIWindow?](./Documentation/FAQ.md#why-should-i-make-sure-all-uiviewcontroller-tests-happen-in-a-uiwindow)
 
 ## Examples
-To get you started with Fleet, we've created a [real, working project](./Examples/FleetExamples) that is fully test-driven with the help of Fleet, and which
-contains many examples of basic tests that you'll likely write in any Swift iOS application.
+Start with the [quick start](./Documentation/QuickStart.md): a minimal Swift Testing example that the package consumers compile and run against this checkout on iOS and tvOS.
 
+The [FleetExamples](./Examples/FleetExamples) project is **historical**. It still uses Carthage, Fleet 3.0.0, and old Quick/Nimble revisions, and the canonical suite and CI do not build it. Treat it as illustrative only; migrating it is tracked as M5.3 in the [modernization checklist](./Documentation/Modernization.md).
 
 For more complicated, larger-scale projects that use Fleet, check out the following projects:
 

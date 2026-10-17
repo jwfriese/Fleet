@@ -1,5 +1,7 @@
 # Fleet documentation
 
+[Quick start](QuickStart.md) is a compiled Swift Testing example and lists current limits.
+
 ## Reference
 
 | Type | Platforms | Provides |
