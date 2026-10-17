@@ -182,6 +182,20 @@ The plan below was written before any of its runs started, following the reliabi
 
 Not planned: parallel execution (unsupported), per-test fresh-process loops (covered for storyboard tests by the earlier reliability study in CONTRIBUTING.md), and hosted CI (not observable locally).
 
+#### Evidence record
+
+Executed on code revision 141deb9 (Xcode 26.6 17F113, iOS 26.5 and tvOS 26.5 simulators, 2026-10-17); later commits change documentation only. Result bundles and logs are under `build/` (not committed) and are retained with the run. All planned cases ran once; none failed, and none was retried.
+
+| ID | iOS | tvOS |
+| --- | --- | --- |
+| R1 (two complete suites each) | 496 tests, 0 failures, twice (`ios-test-Q31eLSbi`, `NwoxSThI`) | 264 tests, 0 failures, twice (`tvos-test-cZemDbpu`, `t0WyBhhd`) |
+| R2 (x20, process reuse) | 280 tests, 0 failures (`ios-test-RVwybjUh`) | 280 tests, 0 failures (`tvos-test-xVbYk4UM`) |
+| R3 (x10, relaunch) | 10 fresh-process iterations of 14 tests, 0 failures (`ios-test-s1zs9LiR`) | same (`tvos-test-ciRXl1wQ`) |
+| R4 (x5, neighbor suites) | 435 tests, 0 failures (`ios-test-VSHpLjuG`) | 390 tests, 0 failures (`tvos-test-Mi7bkMjT`) |
+| R5 (consumers, two runs each) | XCTest 24 + Swift Testing 8 tests, 0 failures, twice (`distribution-kflrn0nd`, `sampo51j`) | XCTest 23 + Swift Testing 8 tests, 0 failures, twice (`distribution-7folurxh`, `lero2sc5`) |
+
+R1 and R5 counts are reported by `xcodebuild`; the Swift Testing count is 7 context tests plus the compiled quick-start test. An earlier consumer compile failure (a region-isolation diagnostic in the first draft of the overlapping-attempts test) was fixed by restructuring the test before any of the runs above. R6 is recorded in the pull request after the committed-tree run. Hosted CI was not observed.
+
 ## Gate for resuming regular feature development
 
 Resume regular feature work when these conditions hold. An experimental integration with an unsupported UIKit feature does not need to hold up the release; its unsupported status must be explicit.
