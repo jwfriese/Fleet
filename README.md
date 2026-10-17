@@ -25,6 +25,7 @@ Fleet extends UIKit classes in order to make it easier to test your code's inter
 - [UINavigationController](./Documentation/UINavigationController.md) - Allows specs to test pushing and popping on the navigation stack without waiting for the UI run-loop.
 - [UIButton](./Documentation/UIButton.md) - Provides convenience methods for interacting with buttons in test.
 - [UIBarButtonItem](./Documentation/UIBarButtonItem.md) - Provides convenience methods similar to those provided for UIButton.
+- [Runtime hooks](./Documentation/RuntimeHooks.md) - Inventory of the Objective-C hooks Fleet installs, their effects, and unsupported configurations.
 - [UIAlertController](./Documentation/UIAlertController.md) - Allows specs to simply tap on alert actions in order to test their behavior.
 - [UITabBarController](./Documentation/UITabBarController.md) - Provides convenience methods for selecting tabs.
 - [UINavigationBar](./Documentation/UINavigationBar.md) - Tap on items in a navigation bar.

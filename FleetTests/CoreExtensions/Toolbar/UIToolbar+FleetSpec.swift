@@ -57,4 +57,24 @@ class UIToolbar_FleetSpec: XCTestCase {
 
         expect(self.rootViewController.flag).to(beFalse())
     }
+
+    func test_tapButtonWithTitle_duplicateTitles_throwsAnErrorAndTapsNothing() {
+        let other = TestViewController()
+        navigationController.toolbar.items = [
+            UIBarButtonItem(title: "dup", style: .plain, target: rootViewController, action: #selector(TestViewController.setFlag)),
+            UIBarButtonItem(title: "dup", style: .plain, target: other, action: #selector(TestViewController.setFlag)),
+        ]
+
+        expect { self.navigationController.toolbar.tapItem(withTitle: "dup") }.to(
+            raiseException(
+                named: "Fleet.ToolbarError",
+                reason: "2 items with title 'dup' found in toolbar; Fleet will not guess which to tap.",
+                userInfo: nil,
+                closure: nil
+            )
+        )
+
+        expect(self.rootViewController.flag).to(beFalse())
+        expect(other.flag).to(beFalse())
+    }
 }

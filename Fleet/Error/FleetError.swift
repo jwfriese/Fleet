@@ -12,3 +12,11 @@ protocol FleetErrorDefinition {
     var errorMessage: String { get }
     var name: NSExceptionName { get }
 }
+
+extension FleetFailure {
+    /// Bridges a legacy exception definition to the recoverable error, keeping its message as the reason.
+    init(_ definition: FleetErrorDefinition, kind: Kind, action: String, target: String) {
+        self.init(kind: kind, action: action, target: target,
+                  state: definition.errorMessage, reason: "See the state for what prevented the action.")
+    }
+}
