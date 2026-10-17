@@ -18,6 +18,9 @@ Toggles the switch without animation, then sends `.valueChanged` and `.touchUpIn
 - is not enabled, or
 - is hidden.
 
+`flipOrThrow()` performs the same work but throws a `FleetFailure` of kind `.unavailableInteraction` instead of raising,
+so the failure can be asserted with `XCTAssertThrowsError` / `#expect(throws:)`.
+
 **Notes**
 
 - `setOn(_:animated:)` performs none of these checks, so it can change state the user could not.

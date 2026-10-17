@@ -6,6 +6,9 @@ The classic methods raise a `Fleet.TableViewError` (`FleetError`) on failure. `s
 `fetchDisplayedCellOrThrow` perform the same work but throw a typed `FleetFailure` (see [UICollectionView](UICollectionView.md#recoverable-failures)),
 so the failure can be asserted with `XCTAssertThrowsError` / `#expect(throws:)`. `selectRowOrThrow` returns `.refusedByDelegate`
 when `willSelectRowAt` (or `willDeselectRowAt` in a multiple-selection toggle) returns `nil`; the classic form returns silently.
+`performContextualActionOrThrow(withTitle:edge:at:completionTimeout:)` and `performContextualActionOrThrow(atIndex:edge:at:completionTimeout:)`
+(each with an `async` form) throw `.invalidSetup`, `.invalidInput`, `.unavailableInteraction`, or `.timedOut` failures; the async forms
+propagate task cancellation as `CancellationError`.
 
 ## Methods
 

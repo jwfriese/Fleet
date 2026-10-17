@@ -98,7 +98,7 @@ Sources: [Objective-C bridge](../Fleet/ObjC), [runtime categories](../Fleet/Core
 
 Settle public API changes together so users receive one coherent migration. Prefer a small explicit testing context that owns resources and cleanup. Exact type and method names remain design decisions.
 
-- [ ] **M3.1 Introduce Swift error reporting.** *(Foundation done: `FleetFailure`, `FleetInteractionOutcome`, and `UICollectionView.selectItemOrThrow(at:)`, and the `UITableView` select/fetch `...OrThrow` helpers; remaining helper families migrate with their behavioral repairs.)* Ordinary helper failures currently raise `NSException`, even where documentation describes throwing Swift errors. Introduce typed Swift errors with enough context to diagnose the failed action, and define migration from `FleetError` and `swallowAnyErrors`. Add optional test-framework reporting adapters only where they improve source-location reporting. **Done when:** an invalid action is assertable in XCTest and Swift Testing, identifies the relevant control/state, and does not crash the test process.
+- [ ] **M3.1 Introduce Swift error reporting.** *(Typed failures exist for the retained control families: `FleetFailure`, `FleetInteractionOutcome`, `UIButton.tapOrThrow`, `UIBarButtonItem.tapOrThrow`, `UISwitch.flipOrThrow`, `UICollectionView.selectItemOrThrow`/`fetchCellOrThrow`, and the `UITableView` select/fetch/`performContextualActionOrThrow` helpers. The classic helpers still raise `FleetError` for compatibility. Text-input, alert, toolbar, and navigation-bar helpers and their remaining behavioral repairs are tracked under M4.)* Ordinary helper failures currently raise `NSException`, even where documentation describes throwing Swift errors. Introduce typed Swift errors with enough context to diagnose the failed action, and define migration from `FleetError` and `swallowAnyErrors`. Add optional test-framework reporting adapters only where they improve source-location reporting. **Done when:** an invalid action is assertable in XCTest and Swift Testing, identifies the relevant control/state, and does not crash the test process.
 
 - [ ] **M3.2 Provide explicit window and scene hosting.** Replace reliance on the application's global key window with a context that accepts a known window or scene and can own a test window. Support both scene-based hosts and any older lifecycle retained by M1.1. Missing host/window state should produce a useful failure. **Done when:** view loading, layout, presentation, and first-responder tests work in the documented host configurations. Apple's application-wide [`keyWindow` property is deprecated](https://developer.apple.com/documentation/uikit/uiapplication/keywindow).
 
@@ -205,8 +205,14 @@ Resume regular feature work when these conditions hold. An experimental integrat
 - [x] The chosen Swift 6 configuration passes, and shared UI state has a tested isolation policy (scoped contexts serialize whole lifetimes; consumer tests overlap attempts).
 - [ ] Retained APIs have clear error, lifecycle, cleanup, and interaction contracts, with known defects resolved or explicitly deprecated.
 - [ ] Existing tests and representative consumer tests pass repeatedly without unexplained failures (plan R1-R6 above; see the evidence record).
-- [ ] The example, quick start, contributor instructions, and migration guide match the tested release. The [quick start](QuickStart.md) is compiled and run by the consumers; the Carthage example is labeled historical (M5.3 stays open); the migration guide waits for publication.
-- [ ] Release preparation validates the same revision that will be distributed.
+- [ ] The quick start, sample, and contributor instructions match the implemented APIs. The [quick start](QuickStart.md) is compiled and run by the consumers; the Carthage example is labeled historical (M5.3 stays open).
+
+### Publication checklist (separate from the gate above)
+
+Publishing a release additionally requires all of these; none of them blocks regular feature work.
+
+- [ ] A release version is selected and the changelog and migration notes match the tested release.
+- [ ] Release preparation validates the same revision that will be distributed (`script/release check`, external consumers, and passing CI).
 
 ## Expansion after the modernization gate
 
