@@ -107,7 +107,7 @@ extension UICollectionView {
         return .performed
     }
 
-    private func deselectItemWithDelegateCallbacks(at indexPath: IndexPath) -> Bool {
+    internal func deselectItemWithDelegateCallbacks(at indexPath: IndexPath) -> Bool {
         if let shouldDeselect = delegate?.collectionView?(self, shouldDeselectItemAt: indexPath), !shouldDeselect {
             return false
         }
