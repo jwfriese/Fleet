@@ -108,47 +108,29 @@ class UICollectionView_InspectCellSpec: XCTestCase {
         expect { _ = self.subject.displayedCell(at: self.visible) }.to(
             raiseException(named: "Fleet.CollectionViewError", reason: "Data source required to inspect cells.", userInfo: nil, closure: nil)
         )
+        subject.dataSource = dataSource // UIKit lays out with the data source set when the test ends
     }
 
-    func test_configuredCell_forOffscreenItem_buildsACellThatIsNotDisplayed() {
-        let offsetBefore = subject.contentOffset
-        let cell = subject.configuredCell(at: offscreen, asType: LabeledCell.self)
+    func test_displayedCell_validatesIndexPathShapeBeforeReadingSectionOrItem() {
+        for path in [IndexPath(), IndexPath(index: 0)] {
+            expect { _ = self.subject.displayedCell(at: path) }.to(
+                raiseException(named: "Fleet.CollectionViewError", reason: nil, userInfo: nil, closure: nil)
+            )
+        }
+    }
 
+    func test_fetchCell_forOffscreenItem_remainsUsableAfterInspection() {
+        expect(self.subject.displayedCell(at: self.offscreen)).to(beNil())
+        let cell = subject.fetchCell(at: offscreen, asType: LabeledCell.self)
         expect(cell.label).to(equal("item 50"))
-        expect(self.subject.cellForItem(at: self.offscreen)).to(beNil())
-        expect(self.subject.contentOffset).to(equal(offsetBefore))
+        subject.setNeedsLayout()
+        subject.layoutIfNeeded()
+        expect(self.subject.displayedCell(at: self.offscreen)).to(beIdenticalTo(cell))
     }
 
-    func test_configuredCell_forVisibleItem_isNotTheDisplayedCell() {
-        let configured = subject.configuredCell(at: visible)
-        expect(configured).toNot(beIdenticalTo(self.subject.displayedCell(at: self.visible)))
-    }
-
-    func test_configuredCell_runsTheDataSourceEachTime() {
-        dataSource.cellProviderCalls = 0
-        _ = subject.configuredCell(at: offscreen)
-        _ = subject.configuredCell(at: offscreen)
-        expect(self.dataSource.cellProviderCalls).to(equal(2))
-    }
-
-    func test_configuredCell_asType_whenTypeMismatches_raisesDescriptiveException() {
-        expect { _ = self.subject.configuredCell(at: IndexPath(item: 1, section: 0), asType: LabeledCell.self) }.to(
+    func test_fetchCell_asType_whenTypeMismatches_raisesDescriptiveException() {
+        expect { _ = self.subject.fetchCell(at: IndexPath(item: 1, section: 0), asType: LabeledCell.self) }.to(
             raiseException(named: "Fleet.CollectionViewError", reason: "Cell at item 1 in section 0 is of type `OtherCell` (wanted `LabeledCell`).", userInfo: nil, closure: nil)
-        )
-    }
-
-    func test_configuredCell_validatesIndexPathsBeforeCallingDataSource() {
-        dataSource.cellProviderCalls = 0
-        expect { _ = self.subject.configuredCell(at: IndexPath(item: 60, section: 0)) }.to(
-            raiseException(named: "Fleet.CollectionViewError", reason: "Collection view has no item 60 in section 0.", userInfo: nil, closure: nil)
-        )
-        expect { _ = self.subject.configuredCell(at: IndexPath(item: -1, section: 0)) }.to(
-            raiseException(named: "Fleet.CollectionViewError", reason: "Collection view has no item -1 in section 0.", userInfo: nil, closure: nil)
-        )
-        expect(self.dataSource.cellProviderCalls).to(equal(0))
-        subject.dataSource = nil
-        expect { _ = self.subject.configuredCell(at: self.visible) }.to(
-            raiseException(named: "Fleet.CollectionViewError", reason: "Data source required to configure cells.", userInfo: nil, closure: nil)
         )
     }
 }
@@ -207,10 +189,13 @@ class UICollectionView_DiffableSpec: XCTestCase {
         expect(self.subject.displayedCell(at: IndexPath(item: 0, section: 0), asType: LabeledCell.self)?.label).to(equal("fruit 0"))
     }
 
-    func test_configuredCell_withStableSnapshot_runsTheCellProvider() {
-        let cell = subject.configuredCell(at: IndexPath(item: 50, section: 0), asType: LabeledCell.self)
-        expect(cell.label).to(equal("fruit 50"))
-        expect(self.subject.cellForItem(at: IndexPath(item: 50, section: 0))).to(beNil())
+    func test_fetchCell_withStableSnapshot_remainsUsableAfterInspection() {
+        let path = IndexPath(item: 50, section: 0)
+        expect(self.subject.displayedCell(at: path)).to(beNil())
+        let cell = subject.fetchCell(at: path, asType: LabeledCell.self)
+        subject.setNeedsLayout()
+        subject.layoutIfNeeded()
+        expect(self.subject.displayedCell(at: path)).to(beIdenticalTo(cell))
     }
 
     func test_selectItem_withStableSnapshot_runsDelegateAndSelectsByIdentifier() {
@@ -247,5 +232,87 @@ fileprivate class DiffableDelegate: NSObject, UICollectionViewDelegate {
     }
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         events.append("didDeselect \(indexPath.item)")
+    }
+}
+
+// MARK: - UIKit reference traces
+
+fileprivate class TraceDelegate: NSObject, UICollectionViewDelegate {
+    var events: [String] = []
+    func collectionView(_ c: UICollectionView, shouldSelectItemAt i: IndexPath) -> Bool { events.append("shouldSelect \(i.item)"); return true }
+    func collectionView(_ c: UICollectionView, didSelectItemAt i: IndexPath) { events.append("didSelect \(i.item)") }
+    func collectionView(_ c: UICollectionView, shouldDeselectItemAt i: IndexPath) -> Bool { events.append("shouldDeselect \(i.item)"); return true }
+    func collectionView(_ c: UICollectionView, didDeselectItemAt i: IndexPath) { events.append("didDeselect \(i.item)") }
+}
+
+/// Records what UIKit itself does for its public programmatic selection API, the baseline Fleet's
+/// delegate-dispatching helpers build on. Real touches cannot be synthesized with public APIs.
+@MainActor
+class UICollectionView_UIKitReferenceSpec: XCTestCase {
+    var subject: UICollectionView!
+    fileprivate var dataSource: OrdinaryDataSource!
+    fileprivate var delegate: TraceDelegate!
+
+    override func setUp() async throws {
+        try await super.setUp()
+        continueAfterFailure = false
+        dataSource = OrdinaryDataSource()
+        delegate = TraceDelegate()
+        subject = makeCollectionView()
+        subject.dataSource = dataSource
+        subject.delegate = delegate
+        subject.reloadData()
+        try! Test.embedViewIntoMainApplicationWindow(subject)
+        subject.layoutIfNeeded()
+    }
+
+    override func tearDown() async throws {
+        subject.removeFromSuperview()
+        subject.dataSource = nil
+        subject.delegate = nil
+        subject = nil
+        try await super.tearDown()
+    }
+
+    func test_uikitSelectItem_changesSelectionWithoutCallingTheDelegate() {
+        subject.selectItem(at: IndexPath(item: 2, section: 0), animated: false, scrollPosition: [])
+        expect(self.subject.indexPathsForSelectedItems).to(equal([IndexPath(item: 2, section: 0)]))
+        expect(self.delegate.events).to(beEmpty())
+    }
+
+    func test_uikitDeselectItem_changesSelectionWithoutCallingTheDelegate() {
+        subject.selectItem(at: IndexPath(item: 2, section: 0), animated: false, scrollPosition: [])
+        subject.deselectItem(at: IndexPath(item: 2, section: 0), animated: false)
+        expect(self.subject.indexPathsForSelectedItems ?? []).to(beEmpty())
+        expect(self.delegate.events).to(beEmpty())
+    }
+
+    func test_uikitSelectItem_inSingleSelectionMode_keepsOnlyTheLatestSelection() {
+        subject.selectItem(at: IndexPath(item: 2, section: 0), animated: false, scrollPosition: [])
+        subject.selectItem(at: IndexPath(item: 3, section: 0), animated: false, scrollPosition: [])
+        expect(self.subject.indexPathsForSelectedItems).to(equal([IndexPath(item: 3, section: 0)]))
+        expect(self.delegate.events).to(beEmpty())
+    }
+
+    func test_uikitSelectItem_reselectingKeepsTheSelection() {
+        subject.selectItem(at: IndexPath(item: 2, section: 0), animated: false, scrollPosition: [])
+        subject.selectItem(at: IndexPath(item: 2, section: 0), animated: false, scrollPosition: [])
+        expect(self.subject.indexPathsForSelectedItems).to(equal([IndexPath(item: 2, section: 0)]))
+    }
+
+    func test_uikitSelectItem_whenSelectionDisallowed_selectsNothing() {
+        subject.allowsSelection = false
+        subject.selectItem(at: IndexPath(item: 2, section: 0), animated: false, scrollPosition: [])
+        expect(self.subject.indexPathsForSelectedItems ?? []).to(beEmpty())
+    }
+
+    func test_fleetSelectItem_addsTheDelegateCallbacksUIKitOmits() {
+        subject.selectItem(at: IndexPath(item: 2, section: 0))
+        subject.selectItem(at: IndexPath(item: 3, section: 0))
+        expect(self.delegate.events).to(equal([
+            "shouldSelect 2", "didSelect 2",
+            "shouldSelect 3", "shouldDeselect 2", "didDeselect 2", "didSelect 3",
+        ]))
+        expect(self.subject.indexPathsForSelectedItems).to(equal([IndexPath(item: 3, section: 0)]))
     }
 }

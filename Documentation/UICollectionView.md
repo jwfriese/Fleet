@@ -14,17 +14,18 @@ let cell = collectionView.fetchCell(at: IndexPath(item: 1, section: 0), asType: 
 `.unavailableInteraction` when UIKit cannot display the cell.
 
 ### Inspecting cells
-Three differently named paths exist because they answer different questions:
+Two differently named paths exist because they answer different questions:
 
 | Method | Returns | Mutates the collection view? |
 | --- | --- | --- |
 | `displayedCell(at:)` / `displayedCell(at:asType:)` | The live cell UIKit is displaying, or `nil` if the item has no live cell (e.g. off screen) | No |
 | `fetchCell(at:)` / `fetchCell(at:asType:)` | The live cell, after laying out and (if needed) scrolling to the item | Yes (layout, scroll position) |
-| `configuredCell(at:)` / `configuredCell(at:asType:)` | A new cell produced by calling the data source's `collectionView(_:cellForItemAt:)` directly | No (but runs your data source code each call, and takes a cell from the reuse queue) |
 
-Live cells are reused by UIKit, so do not hold one across a scroll or reload. A configured cell is dequeued by UIKit (which may attach it to the collection view) but is never laid out or tracked as the item's displayed cell, even for a visible item. `configuredCell` works with an ordinary data source and with
-`UICollectionViewDiffableDataSource` (whose cell provider it runs), provided the reuse identifier the data source uses is registered
-on the collection view. All of them raise a `FleetError` if the data source or index path is missing, and the typed variants raise a diagnostic naming
+Live cells are reused by UIKit, so do not hold one across a scroll or reload. Fleet deliberately has no "configured cell" helper that
+calls `collectionView(_:cellForItemAt:)` or a diffable cell provider directly: those call `dequeueReusableCell`, which UIKit only supports during its own
+cell request, and a cell dequeued outside one makes later layout raise `NSInternalInconsistencyException`. Use `fetchCell(at:)` to get a
+data-source-configured cell for any item (it works with ordinary data sources and with stable `UICollectionViewDiffableDataSource` snapshots).
+Index paths with fewer than two components, a missing data source, or a missing section/item raise a `FleetError`, and the typed variants raise a diagnostic naming
 the found and requested types when the cell is of another type.
 
 ### Item selection
@@ -64,7 +65,7 @@ func testSelectingAPhoto() async {
     await dataSource.apply(snapshot, animatingDifferences: false)
 
     let selected = IndexPath(item: 1, section: 0)
-    XCTAssertEqual(collectionView.configuredCell(at: selected, asType: PhotoCell.self).name, "Fern")
+    XCTAssertEqual(collectionView.fetchCell(at: selected, asType: PhotoCell.self).name, "Fern")
     collectionView.selectItem(at: selected)
     XCTAssertEqual(collectionView.indexPathsForSelectedItems, [selected])
     collectionView.deselectItem(at: selected)
@@ -76,7 +77,8 @@ func testSelectingAPhoto() async {
 ### Limits of programmatic interaction
 These helpers dispatch what the data source and delegate would receive from a tap; they do not prove hit testing, gesture recognition,
 accessibility, focus movement (tvOS), or highlight callbacks (`shouldHighlightItemAt`, `didHighlightItemAt`). The callback sequences are
-Fleet's documented model, verified by the hosted specs, not a recorded UIKit touch trace. Supplementary views, in-flight or animated snapshot
+Fleet's documented model, verified by the hosted specs. `UICollectionView_UIKitReferenceSpec` records what UIKit itself does for the public programmatic
+APIs (no delegate callbacks, single-selection replacement, `allowsSelection = false`); real touch traces need private APIs and are not recorded. Supplementary views, in-flight or animated snapshot
 updates (apply snapshots with `animatingDifferences: false` and await completion first), complex multiple-selection gestures, and `UICollectionViewController` mocking
 (see issue #23) are not covered.
 

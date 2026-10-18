@@ -321,7 +321,7 @@ final class PackageConsumerTests: XCTestCase {
 
         let item = IndexPath(item: 1, section: 0)
         XCTAssertNotNil(collectionView.displayedCell(at: item))
-        XCTAssertFalse(collectionView.configuredCell(at: item) === collectionView.fetchCell(at: item))
+        XCTAssertTrue(collectionView.displayedCell(at: item) === collectionView.fetchCell(at: item))
         collectionView.selectItem(at: item)
         XCTAssertEqual(collectionView.indexPathsForSelectedItems, [item])
         collectionView.deselectItem(at: item)

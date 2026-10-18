@@ -7,6 +7,7 @@ extension Fleet {
         case itemDoesNotExist(at: IndexPath)
         case sectionDoesNotExist(sectionNumber: Int)
         case cellUnavailable(at: IndexPath)
+        case invalidIndexPath(IndexPath)
         case mismatchedCellType(at: IndexPath, foundType: AnyClass, requestedType: AnyClass)
         case legacy(FleetFailure)
 
@@ -22,6 +23,8 @@ extension Fleet {
                 return "Collection view has no item \(indexPath.item) in section \(indexPath.section)."
             case .sectionDoesNotExist(let sectionNumber):
                 return "Collection view has no section \(sectionNumber)."
+            case .invalidIndexPath(let indexPath):
+                return "Collection view index path \(Array(indexPath)) needs a section and an item."
             case .cellUnavailable(let indexPath):
                 return "Collection view could not display a cell at item \(indexPath.item) in section \(indexPath.section)."
             case .mismatchedCellType(let indexPath, let foundType, let requestedType):
