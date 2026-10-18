@@ -33,6 +33,11 @@ struct SwiftTestingConsumerTests {
         toggle.isEnabled = false
         let switchFailure = #expect(throws: FleetFailure.self) { try toggle.flipOrThrow() }
         #expect(switchFailure?.kind == .unavailableInteraction)
+
+        let field = UITextField()
+        field.clearButtonMode = .never
+        let clearFailure = #expect(throws: FleetFailure.self) { try field.clearTextOrThrow() }
+        #expect(clearFailure?.kind == .unavailableInteraction)
         #endif
 
         let collection = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
