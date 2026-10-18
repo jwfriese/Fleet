@@ -28,6 +28,32 @@ Both forms are `@MainActor` and available on iOS and tvOS (iOS/tvOS 15 and later
 
 `waitUntil(_:timeout:pollInterval:condition:)` polls an observable condition on the main actor, yielding between checks. `waitForTransitionsToFinish()` waits until no controller in the window's presentation/navigation chain has an active `transitionCoordinator`. A non-finite `timeout` or a non-positive or non-finite `pollInterval` throws `.invalidInput` before waiting. Waits throw a `FleetFailure` of kind `.timedOut` (naming your description, the deadline and a snapshot of the window's root and topmost controllers); task cancellation propagates as the unchanged `CancellationError`, including while queued for the lease. They do not promise to flush unrelated application work. The body itself has no overall deadline: bound it with waits.
 
+## Screen environments
+
+`context.configure(_:)` applies a `FleetEnvironment` to the context's window and waits (bounded) until layout and the window's trait collection reflect it:
+
+```swift
+try await Fleet.withContext(window: hostWindow) { context in
+    try await context.setRoot(SettingsViewController())
+    try await context.configure(FleetEnvironment(
+        size: CGSize(width: 320, height: 568),
+        userInterfaceStyle: .dark,
+        contentSizeCategory: .accessibilityExtraExtraLarge))
+    XCTAssertTrue(context.screen.topmostViewController!.traitCollection.preferredContentSizeCategory.isAccessibilityCategory)
+}
+```
+
+| Setting | Mechanism | Support |
+| --- | --- | --- |
+| `size` | `UIWindow.frame` (origin kept) | iOS/tvOS 15+ |
+| `userInterfaceStyle` | `overrideUserInterfaceStyle` on the window | iOS/tvOS 15+ |
+| `contentSizeCategory` | `window.traitOverrides` (Dynamic Type) | iOS/tvOS 17+; earlier runtimes throw `.invalidSetup` |
+
+- Unset fields are untouched; repeated calls compose. The values present before the first change are restored on every exit path (return, error, timeout, cancellation), before the lease is released, so overlapping scopes always start from the restored state. Invalid sizes throw `.invalidInput` before anything changes.
+- `context.currentEnvironment` reports the window's resolved size, appearance and category for assertions.
+- **Not offered:** locale, language, region, right-to-left and system accessibility switches. UIKit has no public per-window control for them; changing them is process-wide and cannot be restored safely, so Fleet does not advertise them. Test localized content by injecting the bundle or locale into the object under test.
+- Verified behavior is that of the current reference runtime (iOS/tvOS 26.5); iOS/tvOS 15 remains the minimum deployment target and the iOS/tvOS 17 requirement above is from the API's availability, not from running older runtimes. A window-size change does not simulate device metrics such as safe areas or scale.
+
 ## Legacy helpers and runtime hooks
 
 `getApplicationScreen()`, `setAsAppWindowRoot(_:)` and `setInAppWindowRootNavigation(_:)` look up the key window without coordination. Use them serially and do not mix them with a running context. Runtime hooks (swizzles) remain installed process-wide; contexts do not toggle them.

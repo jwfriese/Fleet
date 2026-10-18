@@ -206,9 +206,13 @@
 		F1EE70000000000000000069 /* FleetContextCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE70000000000000000068 /* FleetContextCoordinator.swift */; };
 		F1EE7000000000000000006A /* FleetContextCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE70000000000000000068 /* FleetContextCoordinator.swift */; };
 		F1EE7000000000000000006C /* FleetTestContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE7000000000000000006B /* FleetTestContext.swift */; };
+		F1EE700000000000000000A0 /* FleetEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE700000000000000000A1 /* FleetEnvironment.swift */; };
 		F1EE7000000000000000006D /* FleetTestContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE7000000000000000006B /* FleetTestContext.swift */; };
+		F1EE700000000000000000A2 /* FleetEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE700000000000000000A1 /* FleetEnvironment.swift */; };
 		F1EE70000000000000000070 /* FleetTestContextSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE7000000000000000006F /* FleetTestContextSpec.swift */; };
+		F1EE700000000000000000A3 /* FleetEnvironmentSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE700000000000000000A4 /* FleetEnvironmentSpec.swift */; };
 		F1EE70000000000000000071 /* FleetTestContextSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE7000000000000000006F /* FleetTestContextSpec.swift */; };
+		F1EE700000000000000000A5 /* FleetEnvironmentSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE700000000000000000A4 /* FleetEnvironmentSpec.swift */; };
 		328A90828726B2FA42F6DA2F /* UICollectionView+InspectCellSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF510F984DDDFA20D4860155 /* UICollectionView+InspectCellSpec.swift */; };
 		8067A9C0B8B36B9C1067C846 /* UICollectionView+DeselectItemSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = E91B749513AED7DBC469C474 /* UICollectionView+DeselectItemSpec.swift */; };
 		8232DAB98B9E35067DD6A10F /* UICollectionView+InspectCellSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF510F984DDDFA20D4860155 /* UICollectionView+InspectCellSpec.swift */; };
@@ -377,7 +381,9 @@
 		A1F0000000000000000000F4 /* UICollectionView+RecoverableFailureSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+RecoverableFailureSpec.swift"; sourceTree = "<group>"; };
 		F1EE70000000000000000068 /* FleetContextCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FleetContextCoordinator.swift; sourceTree = "<group>"; };
 		F1EE7000000000000000006B /* FleetTestContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FleetTestContext.swift; sourceTree = "<group>"; };
+		F1EE700000000000000000A1 /* FleetEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FleetEnvironment.swift; sourceTree = "<group>"; };
 		F1EE7000000000000000006F /* FleetTestContextSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FleetTestContextSpec.swift; sourceTree = "<group>"; };
+		F1EE700000000000000000A4 /* FleetEnvironmentSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FleetEnvironmentSpec.swift; sourceTree = "<group>"; };
 		AF510F984DDDFA20D4860155 /* UICollectionView+InspectCellSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+InspectCellSpec.swift"; sourceTree = "<group>"; };
 		E91B749513AED7DBC469C474 /* UICollectionView+DeselectItemSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UICollectionView+DeselectItemSpec.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -927,6 +933,7 @@
 			children = (
 				F1EE70000000000000000068 /* FleetContextCoordinator.swift */,
 				F1EE7000000000000000006B /* FleetTestContext.swift */,
+				F1EE700000000000000000A1 /* FleetEnvironment.swift */,
 			);
 			path = Hosting;
 			sourceTree = "<group>";
@@ -935,6 +942,7 @@
 			isa = PBXGroup;
 			children = (
 				F1EE7000000000000000006F /* FleetTestContextSpec.swift */,
+				F1EE700000000000000000A4 /* FleetEnvironmentSpec.swift */,
 			);
 			path = Hosting;
 			sourceTree = "<group>";
@@ -1244,6 +1252,7 @@
 			files = (
 				F1EE70000000000000000069 /* FleetContextCoordinator.swift in Sources */,
 				F1EE7000000000000000006C /* FleetTestContext.swift in Sources */,
+				F1EE700000000000000000A0 /* FleetEnvironment.swift in Sources */,
 				C39E10AC9C85DC7C9B87B9C2 /* CollectionViewError.swift in Sources */,
 				AB96850BE53F3CD0DB3B698E /* UICollectionView+FetchCell.swift in Sources */,
 				33DD260109631965A3037DE2 /* UICollectionView+SelectItem.swift in Sources */,
@@ -1287,6 +1296,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F1EE70000000000000000070 /* FleetTestContextSpec.swift in Sources */,
+				F1EE700000000000000000A3 /* FleetEnvironmentSpec.swift in Sources */,
 				51B8AF774775B7B893F7E499 /* UICollectionView+FetchCellSpec.swift in Sources */,
 				5EF9C83B6DEB9FFACEBA82C9 /* UICollectionView+SelectItemSpec.swift in Sources */,
 				A1F0000000000000000000F6 /* UICollectionView+RecoverableFailureSpec.swift in Sources */,
@@ -1365,6 +1375,7 @@
 			files = (
 				F1EE7000000000000000006A /* FleetContextCoordinator.swift in Sources */,
 				F1EE7000000000000000006D /* FleetTestContext.swift in Sources */,
+				F1EE700000000000000000A2 /* FleetEnvironment.swift in Sources */,
 				3DF370EBE1FB36C77DB6B886 /* CollectionViewError.swift in Sources */,
 				10A4742C5277E4975776385A /* UICollectionView+FetchCell.swift in Sources */,
 				3E613E9A3A5879AAAEA2A7BD /* UICollectionView+SelectItem.swift in Sources */,
@@ -1416,6 +1427,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F1EE70000000000000000071 /* FleetTestContextSpec.swift in Sources */,
+				F1EE700000000000000000A5 /* FleetEnvironmentSpec.swift in Sources */,
 				B6AC703746498EF7C7B0F79B /* UICollectionView+FetchCellSpec.swift in Sources */,
 				87B1E06ABE036012A5AE2C60 /* UICollectionView+SelectItemSpec.swift in Sources */,
 				A1F0000000000000000000F5 /* UICollectionView+RecoverableFailureSpec.swift in Sources */,

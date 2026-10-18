@@ -159,6 +159,7 @@ public final class FleetTestContext {
 
     // MARK: Lifecycle
 
+    var savedEnvironment = SavedWindowEnvironment()
     private var previousRoot: UIViewController?
     private var previousKeyWindow: UIWindow?
     private var wasHidden = false
@@ -182,6 +183,8 @@ public final class FleetTestContext {
         if let root = window.rootViewController, root.presentedViewController != nil {
             await dismissPresented(of: root)
         }
+        savedEnvironment.restore(on: window)
+        savedEnvironment = SavedWindowEnvironment()
         if ownsWindow {
             window.rootViewController = nil
             window.isHidden = true

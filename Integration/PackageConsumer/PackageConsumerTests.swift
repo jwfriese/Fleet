@@ -533,3 +533,25 @@ private final class SelectionSource: NSObject, UITableViewDataSource, UITableVie
         events.append("didDeselect \(indexPath.row)")
     }
 }
+
+@MainActor
+final class EnvironmentConsumerTests: XCTestCase {
+    func test_publicEnvironmentConfiguration_appliesAndRestores() async throws {
+        let window = try XCTUnwrap(UIApplication.shared.keyWindow)
+        let frame = window.frame
+        let style = window.overrideUserInterfaceStyle
+        let size = CGSize(width: frame.width / 2, height: frame.height / 2)
+        try await Fleet.withContext(window: window) { context in
+            try await context.setRoot(UIViewController())
+            try await context.configure(FleetEnvironment(size: size, userInterfaceStyle: .dark))
+            XCTAssertEqual(window.bounds.size, size)
+            XCTAssertEqual(window.traitCollection.userInterfaceStyle, .dark)
+            if #available(iOS 17, tvOS 17, *) {
+                try await context.configure(FleetEnvironment(contentSizeCategory: .accessibilityLarge))
+                XCTAssertEqual(window.traitCollection.preferredContentSizeCategory, .accessibilityLarge)
+            }
+        }
+        XCTAssertEqual(window.frame, frame)
+        XCTAssertEqual(window.overrideUserInterfaceStyle, style)
+    }
+}
