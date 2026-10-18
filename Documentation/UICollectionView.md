@@ -78,7 +78,7 @@ func testSelectingAPhoto() async {
 These helpers dispatch what the data source and delegate would receive from a tap; they do not prove hit testing, gesture recognition,
 accessibility, focus movement (tvOS), or highlight callbacks (`shouldHighlightItemAt`, `didHighlightItemAt`). The callback sequences are
 Fleet's documented model, verified by the hosted specs. `UICollectionView_UIKitReferenceSpec` records what UIKit itself does for the public programmatic
-APIs (no delegate callbacks, single-selection replacement, `allowsSelection = false`); real touch traces need private APIs and are not recorded. Supplementary views, in-flight or animated snapshot
+APIs (no delegate callbacks, single-selection replacement, `allowsSelection = false`); real touch traces need private APIs and are not recorded. A probe of the only public activation route, `UICollectionViewCell.accessibilityActivate()`, returned `false` in a hosted test and fired no delegate callbacks or selection, so it cannot serve as a UIKit-driven reference. Supplementary views, in-flight or animated snapshot
 updates (apply snapshots with `animatingDifferences: false` and await completion first), complex multiple-selection gestures, and `UICollectionViewController` mocking
 (see issue #23) are not covered.
 
