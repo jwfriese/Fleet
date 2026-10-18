@@ -3,7 +3,8 @@ import UIKit
 extension UICollectionView {
     /**
      Returns the cell UIKit is currently displaying for the given index path, or `nil`
-     if that item has no live cell (for example, because it is scrolled off screen).
+     if that item is not currently visible (for example, because it is scrolled off screen
+     or is only a prepared, prefetched cell).
 
      Unlike `fetchCell(at:)`, this never lays out, scrolls, or otherwise mutates the
      collection view. The returned cell is the live instance, so its identity is only
@@ -18,6 +19,8 @@ extension UICollectionView {
      */
     public func displayedCell(at indexPath: IndexPath) -> UICollectionViewCell? {
         guard validateItemExists(at: indexPath, userAction: "inspect cells") else { return nil }
+        // `cellForItem(at:)` also returns prepared (prefetched/cached) cells UIKit is not displaying.
+        guard indexPathsForVisibleItems.contains(indexPath) else { return nil }
         return cellForItem(at: indexPath)
     }
 

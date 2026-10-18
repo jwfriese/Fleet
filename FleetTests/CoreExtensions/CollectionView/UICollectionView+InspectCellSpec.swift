@@ -75,6 +75,18 @@ class UICollectionView_InspectCellSpec: XCTestCase {
         expect(self.subject.contentOffset).to(equal(offsetBefore))
     }
 
+    func test_displayedCell_excludesPreparedCellsThatAreNotVisible() {
+        subject.setContentOffset(CGPoint(x: 0, y: 40), animated: true)
+        subject.layoutIfNeeded()
+        let visibleItems = Set(subject.indexPathsForVisibleItems)
+        for item in 0..<30 {
+            let path = IndexPath(item: item, section: 0)
+            if !visibleItems.contains(path) {
+                expect(self.subject.displayedCell(at: path)).to(beNil())
+            }
+        }
+    }
+
     func test_displayedCell_asType_returnsTypedCell() {
         expect(self.subject.displayedCell(at: self.visible, asType: LabeledCell.self)?.label).to(equal("item 0"))
     }
