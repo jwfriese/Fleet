@@ -280,45 +280,12 @@ extension UITextField {
      visible.
      */
     public func clearText() {
-        guard !isHidden else {
-            FleetError(Fleet.TextFieldError.controlUnavailable("Text field is not visible.")).raise()
-            return
-        }
-        guard isEnabled else {
-            FleetError(Fleet.TextFieldError.controlUnavailable("Text field is not enabled.")).raise()
-            return
-        }
-        switch clearButtonMode {
-        case .never:
-            FleetError(Fleet.TextFieldError.cannotClear(reason: "Clear button is never displayed.")).raise()
-            return
-        case.whileEditing:
-            guard isFirstResponder else {
-                FleetError(Fleet.TextFieldError.cannotClear(reason: "Clear button is hidden when not editing.")).raise()
-                return
-            }
-        case.unlessEditing:
-            if isFirstResponder {
-                FleetError(Fleet.TextFieldError.cannotClear(reason: "Clear button is hidden when editing.")).raise()
-                return
-            }
-        case .always:
-            break
-        default:
-            break
-        }
-
-        var shouldClear = true
-        if let delegate = delegate {
-            let doesImplementShouldClearText = delegate.responds(to: #selector(UITextFieldDelegate.textFieldShouldClear(_:)))
-            if doesImplementShouldClearText {
-                shouldClear = delegate.textFieldShouldClear!(self)
-            }
-        }
-
-        if shouldClear {
-            self.text = ""
-            sendActions(for: .editingChanged)
+        do {
+            try clearTextOrThrow()
+        } catch let failure as FleetFailure {
+            Fleet.TextEditing.raise(failure, as: Fleet.TextFieldError.legacy)
+        } catch {
+            FleetError(Fleet.InternalError.unrecoverable(details: "\(error)")).raise()
         }
     }
 }
@@ -411,6 +378,46 @@ extension UITextField {
         }
         NotificationCenter.default.post(name: UIResponder.keyboardWillHideNotification, object: nil)
         NotificationCenter.default.post(name: UIResponder.keyboardDidHideNotification, object: nil)
+        return .performed
+    }
+
+    /// Like `clearText()`, but throws a `FleetFailure` instead of raising: `.unavailableInteraction` when the
+    /// field is hidden or disabled, or when its clear button is not displayed in the current editing state.
+    /// Returns `.refusedByDelegate` when `textFieldShouldClear(_:)` returns `false`; the text is left unchanged.
+    @discardableResult
+    public func clearTextOrThrow() throws -> FleetInteractionOutcome {
+        func unavailable(_ state: String, _ reason: String) -> FleetFailure {
+            FleetFailure(kind: .unavailableInteraction, action: "clear text", target: "UITextField",
+                         state: state, reason: reason)
+        }
+        guard !isHidden else {
+            throw unavailable("hidden", "UITextField unavailable for editing: Text field is not visible.")
+        }
+        guard isEnabled else {
+            throw unavailable("not enabled", "UITextField unavailable for editing: Text field is not enabled.")
+        }
+        let cannotClear = "Could not clear text from UITextField: "
+        switch clearButtonMode {
+        case .never:
+            throw unavailable("clear button never displayed", cannotClear + "Clear button is never displayed.")
+        case .whileEditing:
+            guard isFirstResponder else {
+                throw unavailable("clear button hidden when not editing", cannotClear + "Clear button is hidden when not editing.")
+            }
+        case .unlessEditing:
+            if isFirstResponder {
+                throw unavailable("clear button hidden when editing", cannotClear + "Clear button is hidden when editing.")
+            }
+        default:
+            break
+        }
+
+        if let delegate = delegate, delegate.responds(to: #selector(UITextFieldDelegate.textFieldShouldClear(_:))),
+           !delegate.textFieldShouldClear!(self) {
+            return .refusedByDelegate(method: "textFieldShouldClear(_:)")
+        }
+        self.text = ""
+        sendActions(for: .editingChanged)
         return .performed
     }
 

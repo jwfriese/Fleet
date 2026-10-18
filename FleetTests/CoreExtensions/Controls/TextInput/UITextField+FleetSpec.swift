@@ -783,6 +783,52 @@ class UITextField_FleetSpec: XCTestCase {
         expect(self.recorder.recordedEvents).to(equal([]))
     }
 
+    func test_clearTextOrThrow_whenUnavailable_throwsTypedFailureWithoutChangingText() {
+        subject.enter(text: "turtle magic")
+
+        subject.clearButtonMode = .never
+        XCTAssertThrowsError(try subject.clearTextOrThrow()) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .unavailableInteraction)
+            XCTAssertEqual((error as? FleetFailure)?.reason, "Could not clear text from UITextField: Clear button is never displayed.")
+        }
+
+        subject.clearButtonMode = .always
+        subject.isEnabled = false
+        XCTAssertThrowsError(try subject.clearTextOrThrow()) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .unavailableInteraction)
+        }
+        subject.isEnabled = true
+
+        subject.isHidden = true
+        XCTAssertThrowsError(try subject.clearTextOrThrow()) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .unavailableInteraction)
+        }
+        subject.isHidden = false
+
+        subject.clearButtonMode = .whileEditing
+        XCTAssertThrowsError(try subject.clearTextOrThrow())
+        expect(self.subject.text).to(equal("turtle magic"))
+        expect(self.delegate.didCallShouldClear).to(beFalse())
+    }
+
+    func test_clearTextOrThrow_whenItWorks_clearsAndReportsPerformed() throws {
+        subject.clearButtonMode = .always
+        subject.enter(text: "turtle magic")
+
+        XCTAssertEqual(try subject.clearTextOrThrow(), .performed)
+        expect(self.subject.text).to(equal(""))
+    }
+
+    func test_clearTextOrThrow_whenDelegateRefuses_reportsRefusalAndKeepsText() throws {
+        subject.clearButtonMode = .always
+        subject.enter(text: "turtle magic")
+        delegate.shouldAllowClearText = false
+
+        XCTAssertEqual(try subject.clearTextOrThrow(), .refusedByDelegate(method: "textFieldShouldClear(_:)"))
+        expect(self.subject.text).to(equal("turtle magic"))
+        expect(self.delegate.didCallShouldClear).to(beTrue())
+    }
+
     func test_enter_convenienceMethod_startsEditingATextFieldTypesTextAndStopsEditingAllInOneAction() {
         subject.enter(text: "turtle magic")
 

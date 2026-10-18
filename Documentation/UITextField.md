@@ -102,6 +102,14 @@ Clears all text, calling the delegate's `textFieldShouldClear(_:)`. Text is clea
 
 **Raises** if the field is hidden or not enabled, or if its `clearButtonMode` makes the clear button unavailable (`.never`; `.whileEditing` when not editing; `.unlessEditing` when editing).
 
+### `clearTextOrThrow()`
+
+```swift
+@discardableResult func clearTextOrThrow() throws -> FleetInteractionOutcome
+```
+
+Like `clearText()`, but throws `FleetFailure` (`.unavailableInteraction`) instead of raising when the field is hidden, not enabled, or its clear button is unavailable. Returns `.refusedByDelegate(method: "textFieldShouldClear(_:)")` when the delegate refuses; the text is unchanged.
+
 ## Example
 
 ```swift
