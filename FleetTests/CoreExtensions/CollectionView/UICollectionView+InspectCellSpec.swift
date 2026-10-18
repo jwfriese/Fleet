@@ -323,7 +323,7 @@ class UICollectionView_UIKitReferenceSpec: XCTestCase {
         subject.selectItem(at: IndexPath(item: 3, section: 0))
         expect(self.delegate.events).to(equal([
             "shouldSelect 2", "didSelect 2",
-            "shouldSelect 3", "shouldDeselect 2", "didDeselect 2", "didSelect 3",
+            "shouldSelect 3", "didDeselect 2", "didSelect 3",
         ]))
         expect(self.subject.indexPathsForSelectedItems).to(equal([IndexPath(item: 3, section: 0)]))
     }

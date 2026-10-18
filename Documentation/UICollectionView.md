@@ -33,13 +33,13 @@ the found and requested types when the cell is of another type.
 Fleet's `selectItem(at:)` mimics a user tap:
 
 - `collectionView(_:shouldSelectItemAt:)` is consulted; if it returns `false`, nothing changes
-- When the collection view does not allow multiple selection, previously selected items are deselected (if `shouldDeselectItemAt` returns `false`, nothing changes), calling
-`collectionView(_:shouldDeselectItemAt:)` and `collectionView(_:didDeselectItemAt:)`
-- When it allows multiple selection, tapping an already-selected item deselects it (with the deselection callbacks)
+- When the collection view does not allow multiple selection, previously selected items are replaced, calling
+`collectionView(_:didDeselectItemAt:)` only. As for a real touch, `shouldDeselectItemAt` is not consulted, so the replacement cannot be refused
+- When it allows multiple selection, tapping an already-selected item deselects it (with `shouldDeselectItemAt` and `didDeselectItemAt`; this path is not covered by a UIKit trace)
 - The item is selected and `collectionView(_:didSelectItemAt:)` is called
 
 Selecting an already-selected item in single-selection mode runs `shouldSelectItemAt` and `didSelectItemAt` again. Callback order for a
-selection that replaces another is `shouldSelect`, `shouldDeselect`, `didDeselect`, `didSelect`.
+selection that replaces another is `shouldSelect`, `didDeselect`, `didSelect`.
 
 A `FleetError` is raised if the data source is missing, `allowsSelection` is `false`, or the index path (including negative values) does not exist. Validation happens before any state changes.
 
@@ -76,9 +76,13 @@ func testSelectingAPhoto() async {
 
 ### Limits of programmatic interaction
 These helpers dispatch what the data source and delegate would receive from a tap; they do not prove hit testing, gesture recognition,
-accessibility, focus movement (tvOS), or highlight callbacks (`shouldHighlightItemAt`, `didHighlightItemAt`). The callback sequences are
-Fleet's documented model, verified by the hosted specs. `UICollectionView_UIKitReferenceSpec` records what UIKit itself does for the public programmatic
-APIs (no delegate callbacks, single-selection replacement, `allowsSelection = false`); real touch traces need private APIs and are not recorded. A probe of the only public activation route, `UICollectionViewCell.accessibilityActivate()`, returned `false` in a hosted test and fired no delegate callbacks or selection, so it cannot serve as a UIKit-driven reference. Supplementary views, in-flight or animated snapshot
+accessibility, focus movement (tvOS), or highlight callbacks (`shouldHighlightItemAt`, `didHighlightItemAt`). Single-selection callback sequences are
+compared with UIKit itself: `Integration/UIKitTraceHarness` is an instrumented host app (it does not link Fleet) driven by XCUIAutomation, using
+`XCUIElement.tap()` on iOS and `XCUIRemote` on tvOS. Run it with `script/check-traces [ios|tvos|all]`. It records UIKit's delegate callbacks for selecting,
+replacing, reselecting, and a delegate refusing selection, and found that UIKit does not consult `shouldDeselectItemAt` when a touch replaces the selection;
+Fleet's helper matches that. The same sequences are asserted for Fleet in the hosted specs. Highlight callbacks, multiple-selection taps, and explicit `deselectItem(at:)` are not traced.
+`UICollectionView_UIKitReferenceSpec` separately records UIKit's public programmatic APIs (no delegate callbacks, single-selection replacement, `allowsSelection = false`).
+Supplementary views, in-flight or animated snapshot
 updates (apply snapshots with `animatingDifferences: false` and await completion first), complex multiple-selection gestures, and `UICollectionViewController` mocking
 (see issue #23) are not covered.
 

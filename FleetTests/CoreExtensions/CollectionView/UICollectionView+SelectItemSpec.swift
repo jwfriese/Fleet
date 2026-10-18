@@ -75,7 +75,7 @@ class UICollectionView_SelectItemSpec: XCTestCase {
 
         expect(self.subject.indexPathsForSelectedItems).to(equal([IndexPath(item: 3, section: 1)]))
         expect(self.controller.events).to(equal([
-            "shouldSelect 1.3", "shouldDeselect 0.1", "didDeselect 0.1", "didSelect 1.3"
+            "shouldSelect 1.3", "didDeselect 0.1", "didSelect 1.3"
         ]))
     }
 
@@ -107,14 +107,15 @@ class UICollectionView_SelectItemSpec: XCTestCase {
         expect(self.controller.events).to(equal(["shouldDeselect 0.0", "didDeselect 0.0"]))
     }
 
-    func test_selectItem_whenDelegateRejectsDeselection_keepsPreviousSelection() {
+    /// Matches the recorded UIKit touch trace (see Integration/UIKitTraceHarness): replacement never consults shouldDeselect.
+    func test_selectItem_whenDelegateWouldRejectDeselection_stillReplacesSelectionWithoutConsultingIt() {
         subject.selectItem(at: IndexPath(item: 0, section: 0))
         controller.rejectedDeselections = [IndexPath(item: 0, section: 0)]
         controller.events = []
         subject.selectItem(at: IndexPath(item: 1, section: 0))
 
-        expect(self.subject.indexPathsForSelectedItems).to(equal([IndexPath(item: 0, section: 0)]))
-        expect(self.controller.events).to(equal(["shouldSelect 0.1", "shouldDeselect 0.0"]))
+        expect(self.subject.indexPathsForSelectedItems).to(equal([IndexPath(item: 1, section: 0)]))
+        expect(self.controller.events).to(equal(["shouldSelect 0.1", "didDeselect 0.0", "didSelect 0.1"]))
     }
 
     func test_selectItem_whenNoDataSource_raisesException() {
