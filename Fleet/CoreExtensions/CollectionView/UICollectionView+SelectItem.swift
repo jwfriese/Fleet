@@ -7,10 +7,10 @@ extension UICollectionView {
      method fires the collection view's delegate callbacks.
 
      When the collection view does not allow multiple selection, any previously selected
-     item is deselected first (if the delegate allows it). With multiple selection, tapping a selected item deselects it. The delegate's
-     `collectionView(_:shouldSelectItemAt:)` and `collectionView(_:shouldDeselectItemAt:)`
-     are honored; a rejection of either the selection or of the deselection of a previously selected
-     item leaves the selection unchanged.
+     item is replaced, as UIKit does for a touch: the delegate receives `didDeselectItemAt` for the old item
+     but `shouldDeselectItemAt` is not consulted, so the replacement cannot be refused. With multiple selection,
+     tapping a selected item deselects it and does consult `collectionView(_:shouldDeselectItemAt:)`.
+     `collectionView(_:shouldSelectItemAt:)` is always honored; a rejection leaves the selection unchanged.
 
      This does not exercise hit testing or highlight callbacks.
 
@@ -44,7 +44,7 @@ extension UICollectionView {
      when `allowsSelection` is `false`, or `.invalidInput` when the section or item does not exist.
 
      - returns:
-     `.performed`, or `.refusedByDelegate` when `shouldSelectItemAt` or a needed `shouldDeselectItemAt`
+     `.performed`, or `.refusedByDelegate` when `shouldSelectItemAt` or (with multiple selection) `shouldDeselectItemAt`
      returned `false`. A delegate veto is not an error and leaves the selection unchanged.
      */
     @discardableResult
@@ -95,10 +95,10 @@ extension UICollectionView {
         }
 
         if !allowsMultipleSelection {
+            // Recorded UIKit touch behavior: replacing the selection sends didDeselect only; shouldDeselect is not consulted.
             for selectedIndexPath in indexPathsForSelectedItems ?? [] where selectedIndexPath != indexPath {
-                if !deselectItemWithDelegateCallbacks(at: selectedIndexPath) {
-                    return .refusedByDelegate(method: "collectionView(_:shouldDeselectItemAt:)")
-                }
+                deselectItem(at: selectedIndexPath, animated: false)
+                delegate?.collectionView?(self, didDeselectItemAt: selectedIndexPath)
             }
         }
 
@@ -107,7 +107,7 @@ extension UICollectionView {
         return .performed
     }
 
-    private func deselectItemWithDelegateCallbacks(at indexPath: IndexPath) -> Bool {
+    internal func deselectItemWithDelegateCallbacks(at indexPath: IndexPath) -> Bool {
         if let shouldDeselect = delegate?.collectionView?(self, shouldDeselectItemAt: indexPath), !shouldDeselect {
             return false
         }
