@@ -184,19 +184,23 @@ Not planned: parallel execution (unsupported), per-test fresh-process loops (cov
 
 #### Evidence record
 
-Executed on code revision 141deb9 (Xcode 26.6 17F113, iOS 26.5 and tvOS 26.5 simulators, 2026-10-17); later commits change documentation only. Result bundles and logs are under `build/` (not committed) and are retained with the run. All planned cases ran once; none failed, and none was retried.
+The first evidence set below ran on revision 141deb9 and is **historical**: later commits changed library code (`UISwitch.flipOrThrow`, `UICollectionView.fetchCellOrThrow`, `performContextualActionOrThrow`, `UITextField.clearTextOrThrow`) and the Swift Testing consumer, so it does not establish repeatability of the final code. It is kept for the record. A first iOS run after the migration (`ios-test-iT93HuE1`) failed three new collection-view tests because the test fixture let the weak data source deallocate; the fixture was fixed (not the assertions) and the failed bundle is retained.
+
+Historical set (revision 141deb9; Xcode 26.6 17F113, iOS 26.5 and tvOS 26.5 simulators, 2026-10-17): R1 iOS 496 and tvOS 264 tests twice, R2 280 tests per platform, R3 10 relaunch iterations of 14 tests, R4 iOS 435 and tvOS 390 tests, R5 consumers twice (iOS XCTest 24 + Swift Testing 8, tvOS XCTest 23 + Swift Testing 8); all with 0 failures.
+
+#### Final-code evidence (revision ca6be09 library and consumer code)
+
+The complete plan R1-R5 was re-run on the final library, test, and consumer code after the last runtime change (`clearTextOrThrow`); only documentation changed afterward. Same toolchain and simulators. Logs are `build/final-R*.log` and result bundles are under `build/` (not committed), retained with the run. All cases ran once; none failed, and none was retried.
 
 | ID | iOS | tvOS |
 | --- | --- | --- |
-| R1 (two complete suites each) | 496 tests, 0 failures, twice (`ios-test-Q31eLSbi`, `NwoxSThI`) | 264 tests, 0 failures, twice (`tvos-test-cZemDbpu`, `t0WyBhhd`) |
-| R2 (x20, process reuse) | 280 tests, 0 failures (`ios-test-RVwybjUh`) | 280 tests, 0 failures (`tvos-test-xVbYk4UM`) |
-| R3 (x10, relaunch) | 10 fresh-process iterations of 14 tests, 0 failures (`ios-test-s1zs9LiR`) | same (`tvos-test-ciRXl1wQ`) |
-| R4 (x5, neighbor suites) | 435 tests, 0 failures (`ios-test-VSHpLjuG`) | 390 tests, 0 failures (`tvos-test-Mi7bkMjT`) |
-| R5 (consumers, two runs each) | XCTest 24 + Swift Testing 8 tests, 0 failures, twice (`distribution-kflrn0nd`, `sampo51j`) | XCTest 23 + Swift Testing 8 tests, 0 failures, twice (`distribution-7folurxh`, `lero2sc5`) |
+| R1 (two complete suites each) | 510 tests, 0 failures, twice (`ios-test-QVRnucAT`, `ios-test-GtoWluOZ`) | 268 tests, 0 failures, twice (`tvos-test-oCPJiOEy`, `tvos-test-kZotyTSu`) |
+| R2 (x20, process reuse) | 280 tests, 0 failures (`ios-test-j4YowS0C`) | 280 tests, 0 failures (`tvos-test-0GGCftH8`) |
+| R3 (x10, relaunch) | 10 fresh-process iterations of 14 tests, 0 failures (`ios-test-vHAao5q6`) | same (`tvos-test-r1IB8Wyy`) |
+| R4 (x5, neighbor suites) | 435 tests, 0 failures (`ios-test-LUSVXcHF`) | 390 tests, 0 failures (`tvos-test-DJpNtBkY`) |
+| R5 (consumers, two runs each) | XCTest 24 + Swift Testing 8 tests, 0 failures, twice (`distribution-gdxkma7a`, `distribution-gceg9ohb`) | XCTest 23 + Swift Testing 8 tests, 0 failures, twice (same bundles) |
 
-R1 and R5 counts are reported by `xcodebuild`; the Swift Testing count is 7 context tests plus the compiled quick-start test. An earlier consumer compile failure (a region-isolation diagnostic in the first draft of the overlapping-attempts test) was fixed by restructuring the test before any of the runs above. R6 is recorded in the pull request after the committed-tree run. Hosted CI was not observed.
-
-**Re-run after the typed-failure migration (`UISwitch.flipOrThrow`, `UICollectionView.fetchCellOrThrow`, `performContextualActionOrThrow`).** This changed library code after the table above, so the complete suites and consumers were re-run on the changed tree: the first iOS run (`ios-test-iT93HuE1`) failed three new collection-view tests because the test fixture let the weak data source deallocate; the fixture was fixed (not the assertions) and the next `script/test all` passed with iOS 507 tests and tvOS 268 tests, 0 failures (`ios-test-4CbJA6EJ`, `tvos-test-hPMOldue`). `script/check-distribution` on the committed tree passed: iOS XCTest 24 + Swift Testing 8, tvOS XCTest 23 + Swift Testing 8, 0 failures (`distribution-fud03ut4`). The R2-R4 repetition loops were not repeated after this change; they cover context, storyboard, controller, alert, and screen suites that it does not touch.
+Counts are reported by `xcodebuild`; the Swift Testing count is 7 context tests plus the compiled quick-start test. R6 (clean committed tree, `script/check-distribution`) is recorded in the pull request. Hosted CI was not observed.
 
 ## Gate for resuming regular feature development
 
