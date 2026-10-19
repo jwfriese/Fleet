@@ -260,8 +260,9 @@ class FleetTestContextSpec: XCTestCase {
         let log = EventLog()
         var waiter: Task<Void, Error>?
         try await Fleet.withContext(window: hostWindow) { _ in
-            waiter = Task { @MainActor in
-                try await Fleet.withContext(window: self.hostWindow) { _ in log.events.append("waiter-ran") }
+            let window = self.hostWindow!
+            waiter = detachedTask {
+                try await Fleet.withContext(window: window) { _ in log.events.append("waiter-ran") }
             }
             while FleetContextCoordinator.shared.waiterCount == 0 { await Task.yield() }
             waiter?.cancel()
@@ -278,13 +279,109 @@ class FleetTestContextSpec: XCTestCase {
         var waiter: Task<Void, Error>?
         try await Fleet.withContext(window: hostWindow) { _ in
             let before = self.scene.windows.map { ObjectIdentifier($0) }
-            waiter = Task { @MainActor in
-                try await Fleet.withContext(scene: self.scene) { _ in }
+            let scene = self.scene!
+            waiter = detachedTask {
+                try await Fleet.withContext(scene: scene) { _ in }
             }
             while FleetContextCoordinator.shared.waiterCount == 0 { await Task.yield() }
             XCTAssertEqual(self.scene.windows.map { ObjectIdentifier($0) }, before)
         }
         try await waiter?.value
+        try await assertLeaseFree()
+    }
+
+    // MARK: Nested acquisition
+
+    /// An independent caller. A plain `Task` started inside a scope inherits its task-local
+    /// context and would count as nested; clearing the task-local models a detached task, which does not.
+    private func detachedTask(_ operation: @escaping @MainActor @Sendable () async throws -> Void) -> Task<Void, Error> {
+        Task { @MainActor in
+            try await FleetTestContext.$current.withValue(nil) { try await operation() }
+        }
+    }
+
+    /// Runs `operation` in a child task, cancelling it after 2 seconds so a regression that waits
+    /// on its own lease fails promptly (as a cancellation) instead of hitting the XCTest timeout.
+    private func nestedFailure(_ operation: @escaping @MainActor () async throws -> Void) async -> Error? {
+        let work = Task { @MainActor in try await operation() }
+        let watchdog = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            work.cancel()
+        }
+        defer { watchdog.cancel() }
+        do {
+            try await work.value
+            return nil
+        } catch {
+            return error
+        }
+    }
+
+    private func assertNestedRejected(_ error: Error?, file: StaticString = #filePath, line: UInt = #line) {
+        let failure = error as? FleetFailure
+        XCTAssertEqual(failure?.kind, .invalidSetup, "Got \(String(describing: error))", file: file, line: line)
+    }
+
+    func test_nestedWindowContext_isRejectedWithoutWaiting() async throws {
+        var queued: Task<Void, Error>?
+        var error: Error?
+        try await Fleet.withContext(window: hostWindow) { outer in
+            let marker = UIViewController()
+            try await outer.setRoot(marker)
+            error = await self.nestedFailure {
+                try await Fleet.withContext(window: self.hostWindow) { _ in XCTFail("Nested body ran") }
+            }
+            XCTAssertEqual(FleetContextCoordinator.shared.waiterCount, 0)
+            XCTAssertTrue(self.hostWindow.rootViewController === marker)
+            XCTAssertTrue(outer.isActive)
+            let window = self.hostWindow!
+            queued = detachedTask { try await Fleet.withContext(window: window) { _ in } }
+            while FleetContextCoordinator.shared.waiterCount == 0 { await Task.yield() }
+        }
+        assertNestedRejected(error)
+        try await queued?.value
+        try await assertLeaseFree()
+    }
+
+    func test_nestedSceneContext_isRejectedWithoutCreatingWindow() async throws {
+        var error: Error?
+        try await Fleet.withContext(window: hostWindow) { _ in
+            let before = self.scene.windows.map { ObjectIdentifier($0) }
+            error = await self.nestedFailure {
+                try await Fleet.withContext(scene: self.scene) { _ in XCTFail("Nested body ran") }
+            }
+            XCTAssertEqual(self.scene.windows.map { ObjectIdentifier($0) }, before)
+        }
+        assertNestedRejected(error)
+        try await assertLeaseFree()
+    }
+
+    func test_nestedContextInsideSceneContext_isRejected() async throws {
+        var error: Error?
+        try await Fleet.withContext(scene: scene) { outer in
+            error = await self.nestedFailure {
+                try await Fleet.withContext(window: outer.window) { _ in XCTFail("Nested body ran") }
+            }
+        }
+        assertNestedRejected(error)
+        try await assertLeaseFree()
+    }
+
+    func test_nestedFailure_propagatesOuterBodyErrorAndCleansUp() async throws {
+        struct Boom: Error {}
+        var cleaned = false
+        do {
+            try await Fleet.withContext(window: hostWindow) { outer in
+                try outer.addCleanup { cleaned = true }
+                let error = await self.nestedFailure {
+                    try await Fleet.withContext(window: self.hostWindow) { _ in }
+                }
+                self.assertNestedRejected(error)
+                throw Boom()
+            }
+            XCTFail("Expected Boom")
+        } catch is Boom {}
+        XCTAssertTrue(cleaned)
         try await assertLeaseFree()
     }
 }
