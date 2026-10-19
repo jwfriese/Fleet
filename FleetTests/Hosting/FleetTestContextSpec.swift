@@ -234,6 +234,93 @@ class FleetTestContextSpec: XCTestCase {
         XCTAssertTrue(hostWindow.rootViewController === originalRoot)
     }
 
+    // MARK: Nested-container transition probes (issue #74)
+
+    private func allControllers(from root: UIViewController?) -> [UIViewController] {
+        guard let root else { return [] }
+        var result = [root]
+        for child in root.children { result.append(contentsOf: allControllers(from: child)) }
+        result.append(contentsOf: allControllers(from: root.presentedViewController))
+        return result
+    }
+
+    private func assertNoTransitionInFlight(_ context: FleetTestContext, file: StaticString = #filePath, line: UInt = #line) {
+        for controller in allControllers(from: context.window.rootViewController) {
+            XCTAssertNil(controller.transitionCoordinator, "\(type(of: controller)) still transitioning after wait", file: file, line: line)
+        }
+    }
+
+    func test_tabNavigation_pushInSelectedTabAndSwitchTab_waitCoversWholeTree() async throws {
+        try await Fleet.withContext(window: hostWindow) { context in
+            let firstRoot = UIViewController()
+            let secondRoot = UIViewController()
+            let first = UINavigationController(rootViewController: firstRoot)
+            let second = UINavigationController(rootViewController: secondRoot)
+            let tabs = UITabBarController()
+            tabs.viewControllers = [first, second]
+            try await context.setRoot(tabs)
+
+            let pushed = UIViewController()
+            first.pushViewController(pushed, animated: true)
+            tabs.selectedIndex = 1
+            let pushedSecond = UIViewController()
+            second.pushViewController(pushedSecond, animated: true)
+            try await context.waitForTransitionsToFinish()
+            self.assertNoTransitionInFlight(context)
+            XCTAssertTrue(first.topViewController === pushed)
+            XCTAssertTrue(second.topViewController === pushedSecond)
+            XCTAssertTrue(tabs.selectedViewController === second)
+            XCTAssertTrue(context.screen.topmostViewController === pushedSecond)
+
+            second.popViewController(animated: true)
+            try await context.waitForTransitionsToFinish()
+            self.assertNoTransitionInFlight(context)
+            XCTAssertTrue(second.topViewController === secondRoot)
+        }
+    }
+
+    func test_presentedNavigation_inTabRoot_waitCoversWholeTree() async throws {
+        try await Fleet.withContext(window: hostWindow) { context in
+            let tabs = UITabBarController()
+            tabs.viewControllers = [UINavigationController(rootViewController: UIViewController())]
+            try await context.setRoot(tabs)
+
+            let modalRoot = UIViewController()
+            let modal = UINavigationController(rootViewController: modalRoot)
+            tabs.present(modal, animated: true)
+            let pushed = UIViewController()
+            modal.pushViewController(pushed, animated: true)
+            try await context.waitForTransitionsToFinish()
+            self.assertNoTransitionInFlight(context)
+            XCTAssertTrue(tabs.presentedViewController === modal)
+            XCTAssertTrue(modal.topViewController === pushed)
+            XCTAssertTrue(context.screen.topmostViewController === pushed)
+
+            modal.popToRootViewController(animated: true)
+            try await context.waitForTransitionsToFinish()
+            self.assertNoTransitionInFlight(context)
+            XCTAssertTrue(modal.topViewController === modalRoot)
+        }
+    }
+
+    func test_presentedTabsWithNavigation_waitCoversWholeTree() async throws {
+        try await Fleet.withContext(window: hostWindow) { context in
+            let root = UIViewController()
+            try await context.setRoot(root)
+            let nav = UINavigationController(rootViewController: UIViewController())
+            let tabs = UITabBarController()
+            tabs.viewControllers = [UIViewController(), nav]
+            root.present(tabs, animated: true)
+            tabs.selectedIndex = 1
+            let pushed = UIViewController()
+            nav.pushViewController(pushed, animated: true)
+            try await context.waitForTransitionsToFinish()
+            self.assertNoTransitionInFlight(context)
+            XCTAssertTrue(nav.topViewController === pushed)
+            XCTAssertTrue(context.screen.topmostViewController === pushed)
+        }
+    }
+
     func test_contextUsedAfterScope_throwsContextEnded() async throws {
         var escaped: FleetTestContext?
         try await Fleet.withContext(window: hostWindow) { escaped = $0 }
