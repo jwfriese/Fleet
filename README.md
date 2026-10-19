@@ -57,7 +57,7 @@ methods. For more discussion on why, go to [the relevant section in the FAQ](./D
 - [Why should I make sure all UIViewController unit tests happen in a UIWindow?](./Documentation/FAQ.md#why-should-i-make-sure-all-uiviewcontroller-tests-happen-in-a-uiwindow)
 
 ## Examples
-Start with the [quick start](./Documentation/QuickStart.md): a minimal Swift Testing example that the package consumers compile and run against this checkout on iOS and tvOS.
+Moving from 4.x? See the [migration guide](./Documentation/Migration.md). Start with the [quick start](./Documentation/QuickStart.md): minimal Swift Testing and XCTest examples that the package consumers compile and run against this checkout on iOS and tvOS. [Readiness reports](./Documentation/ReadinessReport.md) describe how the validation of an exact revision is recorded.
 
 The [FleetExamples](./Examples/FleetExamples) project is **historical**. It still uses Carthage, Fleet 3.0.0, and old Quick/Nimble revisions, and the canonical suite and CI do not build it. Treat it as illustrative only; migrating it is tracked as M5.3 in the [modernization checklist](./Documentation/Modernization.md).
 

@@ -617,3 +617,32 @@ final class EnvironmentConsumerTests: XCTestCase {
         XCTAssertEqual(window.overrideUserInterfaceStyle, style)
     }
 }
+
+// xctest-starter:begin
+@MainActor
+private final class XCTestGreetingViewController: UIViewController {
+    let button = UIButton(type: .system)
+    private(set) var taps = 0
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        button.addAction(UIAction { [weak self] _ in self?.taps += 1 }, for: .touchUpInside)
+        view.addSubview(button)
+    }
+}
+
+@MainActor
+final class XCTestStarterTests: XCTestCase {
+    func testTappingTheButtonRunsItsAction() async throws {
+        let host = try XCTUnwrap(UIApplication.shared.keyWindow)
+        try await Fleet.withContext(window: host) { context in
+            let controller = XCTestGreetingViewController()
+            try await context.setRoot(controller)
+
+            try controller.button.tapOrThrow()
+
+            XCTAssertEqual(controller.taps, 1)
+        }
+    }
+}
+// xctest-starter:end
