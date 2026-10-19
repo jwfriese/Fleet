@@ -101,6 +101,13 @@ XCTAssertThrowsError(try collectionView.selectItemOrThrow(at: IndexPath(item: 9,
 #expect(throws: FleetFailure.self) { try collectionView.selectItemOrThrow(at: IndexPath(item: 9, section: 0)) }
 ```
 
+`deselectItemOrThrow(at:)` does the same for deselection (`.invalidSetup` without a data source; `.invalidInput` for malformed,
+negative, or out-of-range paths; `.unavailableInteraction` when selection is disabled or the item is not selected) and returns
+`.performed` or `.refusedByDelegate(method:)`. `displayedCellOrThrow(at:)` and `displayedCellOrThrow(at:asType:)` throw `.invalidSetup`/`.invalidInput`
+(including a wrong cell type) and return `nil` for a valid item with no visible cell; they stay read-only (no layout, scrolling, dequeuing or data source calls).
+Failed calls neither change the selection nor call delegate callbacks. The classic `deselectItem(at:)` and `displayedCell` forms wrap these and still raise
+`Fleet.CollectionViewError` with unchanged messages. Both are available on iOS and tvOS.
+
 A `FleetFailure` carries its `kind`, the attempted `action`, the `target` control and index, the relevant `state`, and a `reason`.
 A delegate returning `false` from `shouldSelectItemAt`/`shouldDeselectItemAt` is not an error: the call returns
 `.refusedByDelegate(method:)`, otherwise `.performed`. See [the FAQ](FAQ.md#how-do-i-migrate-from-fleeterror-and-swallowanyerrors) for migration.
