@@ -5,11 +5,19 @@ import Fleet
 
 private final class FailureSource: NSObject, UICollectionViewDataSource, UICollectionViewDelegate {
     var allowSelection = true
+    var allowDeselection = true
+    var events: [String] = []
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int { 2 }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
     }
     func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool { allowSelection }
+    func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
+        events.append("shouldDeselect \(indexPath.item)"); return allowDeselection
+    }
+    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        events.append("didDeselect \(indexPath.item)")
+    }
 }
 
 @MainActor
@@ -127,6 +135,92 @@ class UICollectionView_RecoverableFailureSpec: XCTestCase {
         XCTAssertEqual(try view.selectItemOrThrow(at: IndexPath(item: 1, section: 0)), .performed)
         XCTAssertEqual(view.indexPathsForSelectedItems, [IndexPath(item: 1, section: 0)])
     }
+
+    func test_deselectItemOrThrow_onSuccess_deselectsAndReportsPerformed() throws {
+        let source = FailureSource()
+        let view = makeCollectionView(source)
+        defer { withExtendedLifetime(source) {} }
+        _ = try view.selectItemOrThrow(at: IndexPath(item: 1, section: 0))
+        XCTAssertEqual(try view.deselectItemOrThrow(at: IndexPath(item: 1, section: 0)), .performed)
+        XCTAssertEqual(view.indexPathsForSelectedItems ?? [], [])
+    }
+
+    func test_deselectItemOrThrow_whenDelegateRefuses_returnsOutcomeAndKeepsSelection() throws {
+        let source = FailureSource()
+        let view = makeCollectionView(source)
+        defer { withExtendedLifetime(source) {} }
+        _ = try view.selectItemOrThrow(at: IndexPath(item: 0, section: 0))
+        source.allowDeselection = false
+        XCTAssertEqual(try view.deselectItemOrThrow(at: IndexPath(item: 0, section: 0)),
+                       .refusedByDelegate(method: "collectionView(_:shouldDeselectItemAt:)"))
+        XCTAssertEqual(view.indexPathsForSelectedItems, [IndexPath(item: 0, section: 0)])
+    }
+
+    func test_deselectItemOrThrow_failures_throwContextWithoutMutatingOrCallingDelegate() throws {
+        let source = FailureSource()
+        let view = makeCollectionView(source)
+        defer { withExtendedLifetime(source) {} }
+        _ = try view.selectItemOrThrow(at: IndexPath(item: 0, section: 0))
+        source.events = []
+
+        for path in [IndexPath(), IndexPath(index: 0), IndexPath(item: 0, section: -1), IndexPath(item: -1, section: 0),
+                     IndexPath(item: 9, section: 0), IndexPath(item: 1, section: 0)] {
+            XCTAssertThrowsError(try view.deselectItemOrThrow(at: path)) { error in
+                guard let failure = error as? FleetFailure else { return XCTFail("Unexpected error \(error)") }
+                XCTAssertEqual(failure.action, "deselect item")
+                XCTAssertEqual(failure.kind, path == IndexPath(item: 1, section: 0) ? .unavailableInteraction : .invalidInput)
+            }
+        }
+        XCTAssertEqual(view.indexPathsForSelectedItems, [IndexPath(item: 0, section: 0)])
+        XCTAssertEqual(source.events, [])
+        view.allowsSelection = false  // UIKit itself clears the selection here.
+        source.events = []
+        XCTAssertThrowsError(try view.deselectItemOrThrow(at: IndexPath(item: 0, section: 0))) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .unavailableInteraction)
+        }
+        XCTAssertEqual(source.events, [])
+
+        let bare = makeCollectionView(nil)
+        XCTAssertThrowsError(try bare.deselectItemOrThrow(at: IndexPath(item: 0, section: 0))) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .invalidSetup)
+        }
+    }
+
+    func test_displayedCellOrThrow_returnsLiveVisibleCellOrNil() throws {
+        let source = FailureSource()
+        let view = makeCollectionView(source)
+        defer { withExtendedLifetime(source) {} }
+        view.layoutIfNeeded()
+        let live = try XCTUnwrap(view.cellForItem(at: IndexPath(item: 0, section: 0)))
+        XCTAssertTrue(try view.displayedCellOrThrow(at: IndexPath(item: 0, section: 0)) === live)
+        XCTAssertTrue(try view.displayedCellOrThrow(at: IndexPath(item: 0, section: 0), asType: UICollectionViewCell.self) === live)
+
+        let unlaidOut = makeCollectionView(source)
+        unlaidOut.frame = .zero
+        XCTAssertNil(try unlaidOut.displayedCellOrThrow(at: IndexPath(item: 1, section: 0)))
+    }
+
+    func test_displayedCellOrThrow_failures_throwContext() throws {
+        final class OtherCell: UICollectionViewCell {}
+        let source = FailureSource()
+        let view = makeCollectionView(source)
+        defer { withExtendedLifetime(source) {} }
+        view.layoutIfNeeded()
+
+        for path in [IndexPath(), IndexPath(index: 0), IndexPath(item: 0, section: 4), IndexPath(item: -1, section: 0), IndexPath(item: 5, section: 0)] {
+            XCTAssertThrowsError(try view.displayedCellOrThrow(at: path)) { error in
+                guard let failure = error as? FleetFailure else { return XCTFail("Unexpected error \(error)") }
+                XCTAssertEqual(failure.kind, .invalidInput)
+                XCTAssertEqual(failure.action, "inspect cell")
+            }
+        }
+        XCTAssertThrowsError(try view.displayedCellOrThrow(at: IndexPath(item: 0, section: 0), asType: OtherCell.self)) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .invalidInput)
+        }
+        XCTAssertThrowsError(try makeCollectionView(nil).displayedCellOrThrow(at: IndexPath(item: 0, section: 0))) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .invalidSetup)
+        }
+    }
 }
 
 @MainActor
@@ -137,6 +231,8 @@ struct CollectionViewRecoverableFailureTests {
         #expect(throws: FleetFailure.self) {
             try view.selectItemOrThrow(at: IndexPath(item: 9, section: 0))
         }
+        #expect(throws: FleetFailure.self) { try view.deselectItemOrThrow(at: IndexPath(item: 9, section: 0)) }
+        #expect(throws: FleetFailure.self) { try view.displayedCellOrThrow(at: IndexPath(item: 9, section: 0)) }
         withExtendedLifetime(source) {}
     }
 }
