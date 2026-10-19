@@ -59,6 +59,10 @@ struct SwiftTestingConsumerTests {
         #expect(deselectFailure?.kind == .invalidSetup)
         let inspectFailure = #expect(throws: FleetFailure.self) { try collection.displayedCellOrThrow(at: IndexPath(item: 0, section: 0)) }
         #expect(inspectFailure?.kind == .invalidSetup)
+        let supplementaryFailure = #expect(throws: FleetFailure.self) {
+            try collection.displayedSupplementaryViewOrThrow(ofKind: UICollectionView.elementKindSectionHeader, at: IndexPath(item: 0, section: 0))
+        }
+        #expect(supplementaryFailure?.kind == .invalidSetup)
     }
 
     @Test func timeoutIsATypedFailureThatNamesTheCondition() async throws {
