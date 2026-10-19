@@ -350,6 +350,35 @@ final class PackageConsumerTests: XCTestCase {
         XCTAssertEqual(collectionView.indexPathsForSelectedItems ?? [], [])
     }
 
+    func testSupplementaryViewInspectionDistinguishesMissingViewFromInvalidRequest() async throws {
+        let layout = UICollectionViewFlowLayout()
+        layout.headerReferenceSize = CGSize(width: 300, height: 40)
+        let collectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: 320, height: 480), collectionViewLayout: layout)
+        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+        collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "header")
+        let dataSource = UICollectionViewDiffableDataSource<Int, String>(collectionView: collectionView) { view, indexPath, _ in
+            view.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+        }
+        dataSource.supplementaryViewProvider = { view, kind, indexPath in
+            view.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "header", for: indexPath)
+        }
+        var snapshot = NSDiffableDataSourceSnapshot<Int, String>()
+        snapshot.appendSections([0])
+        snapshot.appendItems(["Dune"])
+        await dataSource.apply(snapshot, animatingDifferences: false)
+        let root = UIViewController()
+        root.view.addSubview(collectionView)
+        Fleet.setAsAppWindowRoot(root)
+        collectionView.layoutIfNeeded()
+
+        let kind = UICollectionView.elementKindSectionHeader
+        XCTAssertNotNil(try collectionView.displayedSupplementaryViewOrThrow(ofKind: kind, at: IndexPath(item: 0, section: 0)))
+        XCTAssertNil(try collectionView.displayedSupplementaryViewOrThrow(ofKind: kind, at: IndexPath(item: 3, section: 0)))
+        XCTAssertThrowsError(try collectionView.displayedSupplementaryViewOrThrow(ofKind: kind, at: IndexPath(item: 0, section: 4))) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .invalidInput)
+        }
+    }
+
     func testContextReleasesBindingsOnRetainedStoryboardWithoutManualCleanup() async throws {
         let host = try XCTUnwrap(window)
         let storyboard = storyboard()

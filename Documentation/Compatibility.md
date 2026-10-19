@@ -17,6 +17,16 @@ The framework, test targets, host applications, project defaults, and historical
 
 The SwiftPM tools version controls manifest features and the minimum tools capable of reading the package. It is distinct from the language mode used to compile Fleet; see the [SwiftPM manifest documentation](https://docs.swift.org/package-manager/PackageDescription/PackageDescription.html). This checkout separately selects Swift 6 language mode for Fleet; dependencies retain their own declared modes.
 
+## Availability by layer
+
+The three notions below are different and must not be conflated:
+
+- **Minimum deployment support**: iOS/tvOS 15, set in every target and the package manifest.
+- **Per-feature availability**: some features need a newer OS than the minimum. For example, `FleetEnvironment.contentSizeCategory` uses `traitOverrides` and requires iOS/tvOS 17; on earlier runtimes `context.configure(_:)` throws `FleetFailure` of kind `.invalidSetup`. Several helpers are iOS-only (text input, switches, toolbars). Each reference page states its platforms.
+- **Verified runtime/toolchain combinations**: only Xcode 26.6 (Swift 6.3.3) with the iOS and tvOS 26.5 simulators. Availability annotations and the 15 deployment target are not evidence that runtimes 15 through 25 were run.
+
+Feature readiness and publication readiness are separate gates; see [Modernization](Modernization.md#feature-readiness-versus-publication-readiness).
+
 ## Distribution policy
 
 SwiftPM is the supported distribution route for the next major release. [Installation instructions](Installation/SwiftPM.md) describe the dynamic `Fleet` product and storyboard setup. `script/check-distribution` exercises external iOS and tvOS test hosts importing Fleet, Objective-C runtime initialization, control actions, navigation, and storyboard metadata and binding. Successful manifest resolution or a framework build is insufficient. See [Releasing Fleet](Releasing.md) for the publication gate.
@@ -33,4 +43,4 @@ Fleet's UI helpers and `FLTScreen` run on `@MainActor`, as do storyboard binding
 
 The Objective-C `+load` installers remain synchronous and nonisolated and touch only runtime method tables. The instance hooks preserve UIKit's main-thread requirement; Objective-C does not enforce Swift actor annotations, so its callers must follow that requirement too. `Fleet.swallowAnyErrors` remains a synchronous, actor-neutral exception catcher: its closure executes on the calling actor without dispatch or storage. Hosted consumers verify exception closures, presentation completions, alert callbacks, and automatic hook activation in Swift 6 mode. Concurrency checking is not disabled globally, and this migration adds no unsafe Sendable conformances or unsafe isolation annotations.
 
-Keep using hosted tests for UIKit behavior and preserve serial execution around shared application UI state. Actor isolation protects UI access but does not serialize whole async tests. Scene hosting, test cleanup, typed errors, and overlapping Swift Testing suites remain separate modernization work. A release with raised OS requirements and retired installation routes must use a new major version; this document does not select or publish that version.
+Keep using hosted tests for UIKit behavior and preserve serial execution around shared application UI state. Actor isolation protects UI access but does not serialize whole async tests; `Fleet.withContext` does ([Hosting](Hosting.md)): it provides scoped window/scene hosting, whole-lifetime exclusion, cancellation-safe cleanup, and cleanup of storyboard bindings, and is exercised by both XCTest and Swift Testing consumers. Typed `FleetFailure` errors exist as `...OrThrow` forms for most control families (see the [FAQ](FAQ.md#how-do-i-migrate-from-fleeterror-and-swallowanyerrors) for the exact list and what still only raises). Remaining modernization work is tracked in the [checklist](Modernization.md). A release with raised OS requirements and retired installation routes must use a new major version; this document does not select or publish that version.

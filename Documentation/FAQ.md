@@ -72,9 +72,10 @@ Fleet.swallowAnyErrors {
 ```
 
 ## How do I migrate from `FleetError` and `swallowAnyErrors`?
-Most helpers still raise a `FleetError` (an `NSException`) and are non-throwing, so call them without `try`/`try!`;
-the `try!` in older examples does not apply to them. Helpers are moving to throwing Swift signatures that report a
-`FleetFailure` (see `Fleet/Error/FleetFailure.swift`), with a distinct documented outcome for each situation:
+The classic helpers (`tap()`, `selectRow(at:)`, `enter(text:)` and so on) still raise a `FleetError` (an `NSException`) and are
+non-throwing, so call them without `try`/`try!`; the `try!` in older examples does not apply to them. Most control families
+also have a parallel `...OrThrow` form that reports a `FleetFailure` (see `Fleet/Error/FleetFailure.swift`), with a distinct
+documented outcome for each situation:
 
 | Situation | Behavior |
 | --- | --- |
@@ -83,13 +84,27 @@ the `try!` in older examples does not apply to them. Helpers are moving to throw
 | Task cancellation | `CancellationError` propagates unchanged; it is never wrapped |
 | Delegate veto (`shouldSelect…` returns `false`) | not an error; returns `FleetInteractionOutcome.refusedByDelegate` |
 
-Migration: replace `Fleet.swallowAnyErrors { helper() }` with `try? helper()` or `do/catch` once the helper has a
-throwing form, and replace `raiseException` expectations with `XCTAssertThrowsError` / `#expect(throws:)`. Today
-`UICollectionView.selectItemOrThrow(at:)` is the migrated representative; the other families will follow with their
-behavioral repairs, and `selectItem(at:)` will then become throwing in the major release. Deliberate policy change:
-invalid input that currently raises will throw, so tests that relied on a crash must now handle or propagate the error.
-`Fleet.swallowAnyErrors` and the Objective-C exception bridge remain only for genuine `NSException` use and are not used
-to translate ordinary failures.
+Migration: replace `Fleet.swallowAnyErrors { helper() }` with `try? helperOrThrow()` or `do/catch`, and replace
+`raiseException` expectations with `XCTAssertThrowsError` / `#expect(throws:)`. The classic forms remain as wrappers over the
+same checks and keep raising `FleetError`; making them throwing is a planned change for the next major release, not current
+behavior. Tests that relied on a crash would then have to handle or propagate the error.
+
+Throwing forms available today:
+
+| Family | Throwing forms |
+| --- | --- |
+| `UIButton`, `UIBarButtonItem` | `tapOrThrow()` |
+| `UIAlertController` | `tapAlertActionOrThrow(withTitle:)` |
+| `UIToolbar`, `UINavigationBar` | `tapItemOrThrow(withTitle:)`, `tapTopItemOrThrow(withTitle:)` |
+| `UISwitch` (iOS) | `flipOrThrow()` |
+| `UITextField`, `UITextView` (iOS) | `enterOrThrow`, `startEditingOrThrow`, `stopEditingOrThrow`, `typeOrThrow`, `pasteOrThrow`, `backspaceOrThrow`, `backspaceAllOrThrow`; `UITextField` also `clearTextOrThrow` |
+| `UITableView` | `selectRowOrThrow`, `fetchCellOrThrow`, `fetchDisplayedCellOrThrow`, `performContextualActionOrThrow` |
+| `UICollectionView` | `selectItemOrThrow`, `deselectItemOrThrow(at:)`, `fetchCellOrThrow`, `displayedCellOrThrow` (both overloads), `displayedSupplementaryViewOrThrow(ofKind:at:)` and its typed `asType:` overload |
+| `UIStoryboard` | Already `throws` (binding and mocking) |
+
+Still raising only (no throwing form yet): `UITabBarController` tab selection, `UINavigationController` push/pop, and `UIViewController` presentation helpers. See
+the [modernization checklist](Modernization.md) (M3.1, M4) for the remaining scope. `Fleet.swallowAnyErrors` and the
+Objective-C exception bridge remain for genuine `NSException` use and are not used to translate ordinary failures.
 
 ## Why should I make sure all `UIViewController` tests happen in a `UIWindow`?
 Fleet recommends that all view controller tests happen specifically in the `UIWindow` object that is
