@@ -8,6 +8,18 @@ private final class IntervalLog {
     var events: [String] = []
 }
 
+/// Starts an independent caller; a detached task does not inherit the active scope.
+@MainActor
+private func queuedAttempt(log: IntervalLog) -> Task<Void, Error> {
+    Task.detached { try await runQueued(log) }
+}
+
+@MainActor
+private func runQueued(_ log: IntervalLog) async throws {
+    let host = try #require(UIApplication.shared.keyWindow)
+    try await Fleet.withContext(window: host) { _ in log.events.append("queued ran") }
+}
+
 /// Swift Testing coverage through the public API only. These tests deliberately do not rely on
 /// `.serialized`: whole-lifetime coordination comes from `Fleet.withContext`, which also covers
 /// attempts that start from different suites or tasks.
@@ -116,6 +128,50 @@ struct SwiftTestingConsumerTests {
         }
         #expect(cleaned)
         #expect(host.rootViewController === previousRoot)
+    }
+
+    @Test func nestedScopedContextIsRejectedWithoutWaitingAndRecovers() async throws {
+        let host = try hostWindow()
+        let scene = try #require(host.windowScene)
+        let log = IntervalLog()
+        var failures: [FleetFailure] = []
+        var queued: Task<Void, Error>?
+        var child: Task<Void, Error>?
+        let scenario = Task { @MainActor in
+            try await Fleet.withContext(scene: scene) { _ in
+                // Direct nesting, both overloads.
+                do { try await Fleet.withContext(window: host) { _ in log.events.append("nested body ran") } } catch let failure as FleetFailure { failures.append(failure) }
+                do { try await Fleet.withContext(scene: scene) { _ in log.events.append("nested body ran") } } catch let failure as FleetFailure { failures.append(failure) }
+                // An awaited child task inherits the active context.
+                let inherited = Task { @MainActor in
+                    try await Fleet.withContext(window: host) { _ in log.events.append("nested body ran") }
+                }
+                child = inherited
+                do { try await inherited.value } catch let failure as FleetFailure { failures.append(failure) }
+                // A detached task does not inherit ownership, so it queues behind this scope.
+                queued = queuedAttempt(log: log)
+                for _ in 0..<20 { await Task.yield() }
+            }
+        }
+        let watchdog = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
+            scenario.cancel()
+            child?.cancel()
+            queued?.cancel()
+        }
+        defer { watchdog.cancel() }
+        try await scenario.value
+        if let queued { try await queued.value }
+        #expect(failures.map(\.kind) == [.invalidSetup, .invalidSetup, .invalidSetup])
+        #expect(log.events == ["queued ran"])
+        let successorTask = Task { @MainActor in try await Fleet.withContext(window: host) { _ in true } }
+        let successorWatchdog = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
+            successorTask.cancel()
+        }
+        defer { successorWatchdog.cancel() }
+        let successor = try await successorTask.value
+        #expect(successor)
     }
 
     @Test func overlappingAttemptsRunOneAtATimeForTheirWholeLifetime() async throws {

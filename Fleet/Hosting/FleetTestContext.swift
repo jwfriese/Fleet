@@ -240,6 +240,12 @@ extension Fleet {
     /// cancellation. Runtime hooks stay process-wide; they are not toggled per context. The
     /// legacy global helpers (`getApplicationScreen`, `setAsAppWindowRoot`) look up the key
     /// window without coordination and must only be used serially, outside of contexts.
+    ///
+    /// Nesting is unsupported: calling `withContext` from inside an active scope, directly or
+    /// from an awaited child task that inherits it, throws `FleetFailure(.invalidSetup)` before
+    /// the lease is acquired or any UI is touched. Detached tasks do not inherit ownership, so
+    /// awaiting a detached `withContext` from an active scope is also unsupported and would wait
+    /// on the enclosing lease; this cannot be detected from the task-local value.
     @MainActor
     public static func withContext<T>(
         window: UIWindow,
@@ -266,6 +272,15 @@ extension Fleet {
         _ makeContext: @MainActor () -> FleetTestContext,
         _ body: @MainActor (FleetTestContext) async throws -> T
     ) async throws -> T {
+        if let enclosing = FleetTestContext.current, enclosing.isActive {
+            throw FleetFailure(
+                kind: .invalidSetup,
+                action: "start a nested `Fleet.withContext` scope",
+                target: "FleetTestContext",
+                state: "an enclosing `withContext` scope is still active in this task and holds the coordination lease.",
+                reason: "Use the enclosing context, or end it before starting another. Detached tasks do not inherit the context, and awaiting a detached `withContext` from inside an active scope is unsupported."
+            )
+        }
         let coordinator = FleetContextCoordinator.shared
         try await coordinator.acquire()
         let context = makeContext()

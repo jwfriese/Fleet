@@ -24,6 +24,10 @@ Both forms are `@MainActor` and available on iOS and tvOS (iOS/tvOS 15 and later
 - **Storyboard bindings.** Storyboard binds and mocks made inside the scope belong to the context and are removed (restoring any registration they overrode) before the lease is released; see [UIStoryboard](UIStoryboard.md#binding-lifetime).
 - **Cleanup registration.** `context.addCleanup { }` registers context-owned resources (for example observers) to release during teardown. Using a context after its scope ends throws a `FleetFailure` of kind `.invalidSetup`.
 
+## Nesting
+
+`withContext` scopes do not nest. Calling `Fleet.withContext(window:)` or `withContext(scene:)` from inside an active scope, directly or from an awaited child task that inherits the scope's task-local context, throws `FleetFailure` of kind `.invalidSetup` immediately, before the lease is acquired or any UI is touched. The enclosing scope, its cleanup and the lease are unaffected, and the error is recoverable. Detached tasks do not inherit ownership: awaiting a detached `withContext` from an active scope is unsupported and would wait on the enclosing lease, which cannot be detected from the task-local value. Run independent contexts from separate tasks; they queue in FIFO order.
+
 ## Bounded waits
 
 `waitUntil(_:timeout:pollInterval:condition:)` polls an observable condition on the main actor, yielding between checks. `waitForTransitionsToFinish()` waits until no controller in the window's presentation/navigation chain has an active `transitionCoordinator`. A non-finite `timeout` or a non-positive or non-finite `pollInterval` throws `.invalidInput` before waiting. Waits throw a `FleetFailure` of kind `.timedOut` (naming your description, the deadline and a snapshot of the window's root and topmost controllers); task cancellation propagates as the unchanged `CancellationError`, including while queued for the lease. They do not promise to flush unrelated application work. The body itself has no overall deadline: bound it with waits.

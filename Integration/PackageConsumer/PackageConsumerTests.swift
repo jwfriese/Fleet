@@ -24,6 +24,23 @@ private class LifecycleSpy: UIViewController {
 }
 
 @MainActor
+private final class ConsumerFlag {
+    var value = false
+}
+
+/// Starts an independent caller; a detached task does not inherit the active scope.
+@MainActor
+private func queuedAttempt(flag: ConsumerFlag) -> Task<Void, Error> {
+    Task.detached { try await runQueued(flag) }
+}
+
+@MainActor
+private func runQueued(_ flag: ConsumerFlag) async throws {
+    let host = try XCTUnwrap(UIApplication.shared.keyWindow)
+    try await Fleet.withContext(window: host) { _ in flag.value = true }
+}
+
+@MainActor
 final class PackageConsumerTests: XCTestCase {
     private var window: UIWindow!
     private var previousRoot: UIViewController?
@@ -464,6 +481,51 @@ final class PackageConsumerTests: XCTestCase {
         }
         XCTAssertNil(ownedRoot)
         XCTAssertTrue(host.isKeyWindow)
+    }
+
+    func testNestedScopedContextIsRejectedWithoutWaitingAndRecovers() async throws {
+        let host = try XCTUnwrap(window)
+        let scene = try XCTUnwrap(host.windowScene)
+        let queuedRan = ConsumerFlag()
+        var failures: [FleetFailure] = []
+        var queued: Task<Void, Error>?
+        var child: Task<Void, Error>?
+        let scenario = Task { @MainActor in
+            try await Fleet.withContext(window: host) { _ in
+                // Direct nesting, both overloads.
+                do { try await Fleet.withContext(window: host) { _ in XCTFail("Nested body ran") } } catch let failure as FleetFailure { failures.append(failure) }
+                do { try await Fleet.withContext(scene: scene) { _ in XCTFail("Nested body ran") } } catch let failure as FleetFailure { failures.append(failure) }
+                // An awaited child task inherits the active context.
+                let inherited = Task { @MainActor in
+                    try await Fleet.withContext(window: host) { _ in XCTFail("Nested body ran") }
+                }
+                child = inherited
+                do { try await inherited.value } catch let failure as FleetFailure { failures.append(failure) }
+                // A detached task does not inherit ownership, so it queues behind this scope.
+                queued = queuedAttempt(flag: queuedRan)
+                for _ in 0..<20 { await Task.yield() }
+            }
+        }
+        let watchdog = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
+            scenario.cancel()
+            child?.cancel()
+            queued?.cancel()
+        }
+        defer { watchdog.cancel() }
+        try await scenario.value
+        if let queued { try await queued.value }
+        XCTAssertEqual(failures.map(\.kind), [.invalidSetup, .invalidSetup, .invalidSetup])
+        XCTAssertTrue(queuedRan.value)
+        let successorTask = Task { @MainActor in try await Fleet.withContext(window: host) { _ in true } }
+        let successorWatchdog = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
+            successorTask.cancel()
+        }
+        defer { successorWatchdog.cancel() }
+        let successor = try await successorTask.value
+        XCTAssertTrue(successor)
+        XCTAssertTrue(host.rootViewController === previousRoot)
     }
 
     func testScopedContextWaitTimesOutWithTypedFailure() async throws {
