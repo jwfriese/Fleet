@@ -28,6 +28,20 @@ data-source-configured cell for any item (it works with ordinary data sources an
 Index paths with fewer than two components, a missing data source, or a missing section/item raise a `FleetError`, and the typed variants raise a diagnostic naming
 the found and requested types when the cell is of another type.
 
+### Inspecting supplementary views
+`displayedSupplementaryViewOrThrow(ofKind:at:)` and `displayedSupplementaryViewOrThrow(ofKind:at:asType:)` return the live header, footer, or
+other supplementary view UIKit is displaying for an element kind and index path (for section headers and footers, `IndexPath(item: 0, section: n)`; for collection-level compositional boundary supplementary items, the one-component path `IndexPath(index: n)`, which is valid even with no sections).
+They use only `indexPathsForVisibleSupplementaryElements(ofKind:)` and `supplementaryView(forElementKind:at:)`: nothing is laid out, scrolled, dequeued,
+or requested from the data source, and prepared-but-not-visible views are not returned.
+
+- A valid request with no matching visible view (off screen, unknown kind, or an element the layout does not produce) returns `nil`.
+- An invalid request throws a `FleetFailure`: `.invalidSetup` without a data source, `.invalidInput` for an empty kind, an empty index path, a missing section or a negative index, or a displayed view of another type than requested.
+- Validation does not depend on the section's item count, so a header in an empty section can be inspected.
+
+The view is reused by UIKit; do not hold it across a scroll or reload. Availability: iOS and tvOS 15+. Layouts differ per platform
+(for example, tvOS's flow layout does not produce footers or empty-section headers in the same cases as iOS), so the result is whatever UIKit reports as visible.
+Not covered: context menus, snapshots, and list-configuration emulation.
+
 ### Item selection
 `UICollectionView.selectItem(at:animated:scrollPosition:)` changes the selection but does not call delegate methods.
 Fleet's `selectItem(at:)` mimics a user tap:
@@ -82,7 +96,7 @@ compared with UIKit itself: `Integration/UIKitTraceHarness` is an instrumented h
 replacing, reselecting, and a delegate refusing selection, and found that UIKit does not consult `shouldDeselectItemAt` when a touch replaces the selection;
 Fleet's helper matches that. The same sequences are asserted for Fleet in the hosted specs. Highlight callbacks, multiple-selection taps, and explicit `deselectItem(at:)` are not traced.
 `UICollectionView_UIKitReferenceSpec` separately records UIKit's public programmatic APIs (no delegate callbacks, single-selection replacement, `allowsSelection = false`).
-Supplementary views, in-flight or animated snapshot
+In-flight or animated snapshot
 updates (apply snapshots with `animatingDifferences: false` and await completion first), complex multiple-selection gestures, and `UICollectionViewController` mocking
 (see issue #23) are not covered.
 
@@ -100,6 +114,13 @@ XCTAssertThrowsError(try collectionView.selectItemOrThrow(at: IndexPath(item: 9,
 // Swift Testing
 #expect(throws: FleetFailure.self) { try collectionView.selectItemOrThrow(at: IndexPath(item: 9, section: 0)) }
 ```
+
+`deselectItemOrThrow(at:)` does the same for deselection (`.invalidSetup` without a data source; `.invalidInput` for malformed,
+negative, or out-of-range paths; `.unavailableInteraction` when selection is disabled or the item is not selected) and returns
+`.performed` or `.refusedByDelegate(method:)`. `displayedCellOrThrow(at:)` and `displayedCellOrThrow(at:asType:)` throw `.invalidSetup`/`.invalidInput`
+(including a wrong cell type) and return `nil` for a valid item with no visible cell; they stay read-only (no layout, scrolling, dequeuing or data source calls).
+Failed calls neither change the selection nor call delegate callbacks. The classic `deselectItem(at:)` and `displayedCell` forms wrap these and still raise
+`Fleet.CollectionViewError` with unchanged messages. Both are available on iOS and tvOS.
 
 A `FleetFailure` carries its `kind`, the attempted `action`, the `target` control and index, the relevant `state`, and a `reason`.
 A delegate returning `false` from `shouldSelectItemAt`/`shouldDeselectItemAt` is not an error: the call returns
