@@ -11,22 +11,24 @@ extension UICollectionView {
 
      A supplementary index path identifies the section and the element's index within it (for a
      section header or footer, the item is normally `0`). It is validated independently of the
-     section's item count, so a header can be inspected in an empty section.
+     section's item count, so a header can be inspected in an empty section. A collection-level
+     supplementary view (such as a compositional layout boundary supplementary item) uses a
+     one-component path, `[index]`, which is not tied to any section, so it is valid even with no sections.
 
      - throws:
      A `FleetFailure` of kind `.invalidSetup` without a data source, or `.invalidInput` for an empty
-     element kind, an index path with fewer than two components, or a missing section or negative index.
+     element kind, an empty index path, or a missing section or negative index.
      A valid request for a view that is not currently displayed returns `nil` instead.
      */
     public func displayedSupplementaryViewOrThrow(ofKind elementKind: String, at indexPath: IndexPath) throws -> UICollectionReusableView? {
         let action = "inspect supplementary view"
-        guard indexPath.count >= 2 else {
+        guard indexPath.count >= 1 else {
             throw FleetFailure(kind: .invalidInput, action: action,
                                target: "UICollectionView index path \(Array(indexPath))",
-                               state: "the index path has \(indexPath.count) component(s)",
+                               state: "the index path has no components",
                                reason: Fleet.CollectionViewError.invalidIndexPath(indexPath).errorMessage)
         }
-        let target = "UICollectionView supplementary view `\(elementKind)` \(indexPath.item) in section \(indexPath.section)"
+        let target = supplementaryTarget(elementKind, indexPath)
         guard dataSource != nil else {
             throw FleetFailure(kind: .invalidSetup, action: action, target: target,
                                state: "the collection view has no data source",
@@ -37,12 +39,18 @@ extension UICollectionView {
                                state: "the element kind is empty",
                                reason: "Pass the supplementary element kind, such as UICollectionView.elementKindSectionHeader.")
         }
-        if indexPath.section < 0 || numberOfSections <= indexPath.section {
+        if indexPath.count == 1 {
+            if indexPath[0] < 0 {
+                throw FleetFailure(kind: .invalidInput, action: action, target: target,
+                                   state: "the supplementary index is negative",
+                                   reason: "A supplementary view index must not be negative.")
+            }
+        } else if indexPath.section < 0 || numberOfSections <= indexPath.section {
             throw FleetFailure(kind: .invalidInput, action: action, target: target,
                                state: "the collection view has \(numberOfSections) section(s)",
                                reason: Fleet.CollectionViewError.sectionDoesNotExist(sectionNumber: indexPath.section).errorMessage)
         }
-        if indexPath.item < 0 {
+        if indexPath.count > 1 && indexPath.item < 0 {
             throw FleetFailure(kind: .invalidInput, action: action, target: target,
                                state: "the supplementary index is negative",
                                reason: "A supplementary view index must not be negative.")
@@ -63,10 +71,15 @@ extension UICollectionView {
         guard let view = try displayedSupplementaryViewOrThrow(ofKind: elementKind, at: indexPath) else { return nil }
         guard let castedView = view as? T else {
             throw FleetFailure(kind: .invalidInput, action: "inspect supplementary view",
-                               target: "UICollectionView supplementary view `\(elementKind)` \(indexPath.item) in section \(indexPath.section)",
+                               target: supplementaryTarget(elementKind, indexPath),
                                state: "the view is of type `\(Swift.type(of: view))`",
                                reason: "Supplementary view is of type `\(Swift.type(of: view))` (wanted `\(type)`).")
         }
         return castedView
+    }
+
+    private func supplementaryTarget(_ elementKind: String, _ indexPath: IndexPath) -> String {
+        if indexPath.count == 1 { return "UICollectionView collection-level supplementary view `\(elementKind)` \(indexPath[0])" }
+        return "UICollectionView supplementary view `\(elementKind)` \(indexPath.item) in section \(indexPath.section)"
     }
 }

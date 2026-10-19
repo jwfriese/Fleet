@@ -11,12 +11,17 @@ fileprivate class OtherSupplementary: UICollectionReusableView {}
 fileprivate class PlainCell: UICollectionViewCell {}
 
 fileprivate let badgeKind = "badge"
+fileprivate let globalKind = "global-header"
 fileprivate let itemCounts = [3, 0, 40, 1]
 
 fileprivate class SupplementaryDataSource: NSObject, UICollectionViewDataSource {
     var providerCalls = 0
+    var sections = itemCounts.count
 
-    func numberOfSections(in collectionView: UICollectionView) -> Int { return itemCounts.count }
+    override init() { super.init() }
+    init(sections: Int) { self.sections = sections }
+
+    func numberOfSections(in collectionView: UICollectionView) -> Int { return sections }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int { return itemCounts[section] }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         return collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
@@ -27,7 +32,7 @@ fileprivate class SupplementaryDataSource: NSObject, UICollectionViewDataSource 
             return collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "other", for: indexPath)
         }
         let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "header", for: indexPath) as! TitledHeader
-        header.title = "\(kind) \(indexPath.section)"
+        header.title = "\(kind) \(indexPath.count > 1 ? indexPath.section : indexPath[0])"
         return header
     }
 }
@@ -35,7 +40,7 @@ fileprivate class SupplementaryDataSource: NSObject, UICollectionViewDataSource 
 @MainActor
 private func registerViews(_ view: UICollectionView) {
     view.register(PlainCell.self, forCellWithReuseIdentifier: "cell")
-    for kind in [UICollectionView.elementKindSectionHeader, UICollectionView.elementKindSectionFooter, badgeKind] {
+    for kind in [UICollectionView.elementKindSectionHeader, UICollectionView.elementKindSectionFooter, badgeKind, globalKind] {
         view.register(TitledHeader.self, forSupplementaryViewOfKind: kind, withReuseIdentifier: "header")
         view.register(OtherSupplementary.self, forSupplementaryViewOfKind: kind, withReuseIdentifier: "other")
     }
@@ -166,7 +171,7 @@ class UICollectionView_InspectSupplementaryViewSpec: XCTestCase {
     }
 
     func test_invalidRequests_throwContextualFailures() {
-        expectFailure(.invalidInput) { try self.subject.displayedSupplementaryViewOrThrow(ofKind: header, at: IndexPath(index: 0)) }
+        expect(try self.subject.displayedSupplementaryViewOrThrow(ofKind: header, at: IndexPath(index: 0))).to(beNil())
         expectFailure(.invalidInput) { try self.subject.displayedSupplementaryViewOrThrow(ofKind: header, at: IndexPath()) }
         expectFailure(.invalidInput) { try self.subject.displayedSupplementaryViewOrThrow(ofKind: header, at: IndexPath(item: 0, section: 4)) }
         expectFailure(.invalidInput) { try self.subject.displayedSupplementaryViewOrThrow(ofKind: header, at: IndexPath(item: 0, section: -1)) }
@@ -274,5 +279,48 @@ class UICollectionView_CompositionalSupplementarySpec: XCTestCase {
         let calls = dataSource.providerCalls
         expect(try self.subject.displayedSupplementaryViewOrThrow(ofKind: header, at: IndexPath(item: 0, section: 3))).to(beNil())
         expect(self.dataSource.providerCalls).to(equal(calls))
+    }
+}
+
+// MARK: - Collection-level (global) supplementary views
+
+@MainActor
+class UICollectionView_GlobalSupplementarySpec: XCTestCase {
+
+    private func makeSubject(sections: Int) throws -> (UICollectionView, SupplementaryDataSource) {
+        let layout = UICollectionViewCompositionalLayout { _, _ in
+            let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(100)))
+            let group = NSCollectionLayoutGroup.vertical(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(100)), subitems: [item])
+            return NSCollectionLayoutSection(group: group)
+        }
+        let configuration = UICollectionViewCompositionalLayoutConfiguration()
+        configuration.boundarySupplementaryItems = [
+            .init(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(40)), elementKind: globalKind, alignment: .top),
+        ]
+        layout.configuration = configuration
+        let view = UICollectionView(frame: CGRect(x: 0, y: 0, width: 320, height: 480), collectionViewLayout: layout)
+        registerViews(view)
+        let source = SupplementaryDataSource(sections: sections)
+        view.dataSource = source
+        view.reloadData()
+        try Test.embedViewIntoMainApplicationWindow(view)
+        view.layoutIfNeeded()
+        return (view, source)
+    }
+
+    func test_globalHeader_isInspectableWithAndWithoutSections() throws {
+        for sections in [0, 1] {
+            let (view, source) = try makeSubject(sections: sections)
+            defer { withExtendedLifetime(source) {} }
+            defer { view.removeFromSuperview(); view.dataSource = nil }
+            let visible = view.indexPathsForVisibleSupplementaryElements(ofKind: globalKind)
+            expect(visible).to(equal([IndexPath(index: 0)]))
+            let live = try view.displayedSupplementaryViewOrThrow(ofKind: globalKind, at: IndexPath(index: 0), asType: TitledHeader.self)
+            expect(live).to(beIdenticalTo(view.supplementaryView(forElementKind: globalKind, at: IndexPath(index: 0))))
+            expect(try view.displayedSupplementaryViewOrThrow(ofKind: globalKind, at: IndexPath(index: 1))).to(beNil())
+            expectFailure(.invalidInput) { try view.displayedSupplementaryViewOrThrow(ofKind: globalKind, at: IndexPath(index: -1)) }
+            expectFailure(.invalidInput) { try view.displayedSupplementaryViewOrThrow(ofKind: globalKind, at: IndexPath()) }
+            expectFailure(.invalidInput) { try view.displayedSupplementaryViewOrThrow(ofKind: globalKind, at: IndexPath(index: 0), asType: OtherSupplementary.self) }
+        }
     }
 }

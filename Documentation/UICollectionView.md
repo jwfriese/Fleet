@@ -30,13 +30,12 @@ the found and requested types when the cell is of another type.
 
 ### Inspecting supplementary views
 `displayedSupplementaryViewOrThrow(ofKind:at:)` and `displayedSupplementaryViewOrThrow(ofKind:at:asType:)` return the live header, footer, or
-other supplementary view UIKit is displaying for an element kind and index path (for section headers and footers, `IndexPath(item: 0, section: n)`).
+other supplementary view UIKit is displaying for an element kind and index path (for section headers and footers, `IndexPath(item: 0, section: n)`; for collection-level compositional boundary supplementary items, the one-component path `IndexPath(index: n)`, which is valid even with no sections).
 They use only `indexPathsForVisibleSupplementaryElements(ofKind:)` and `supplementaryView(forElementKind:at:)`: nothing is laid out, scrolled, dequeued,
 or requested from the data source, and prepared-but-not-visible views are not returned.
 
 - A valid request with no matching visible view (off screen, unknown kind, or an element the layout does not produce) returns `nil`.
-- An invalid request throws a `FleetFailure`: `.invalidSetup` without a data source, `.invalidInput` for an empty kind, an index path with fewer than
-two components, a missing section or a negative index, or a displayed view of another type than requested.
+- An invalid request throws a `FleetFailure`: `.invalidSetup` without a data source, `.invalidInput` for an empty kind, an empty index path, a missing section or a negative index, or a displayed view of another type than requested.
 - Validation does not depend on the section's item count, so a header in an empty section can be inspected.
 
 The view is reused by UIKit; do not hold it across a scroll or reload. Availability: iOS and tvOS 15+. Layouts differ per platform
