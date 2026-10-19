@@ -250,6 +250,7 @@ class FleetEnvironmentSpec: XCTestCase {
     }
 
     func test_configure_rejectsUnspecifiedSizeClassBeforeChangingAnything() async throws {
+        guard #available(iOS 17, tvOS 17, *) else { throw XCTSkip("Per-window trait overrides need iOS/tvOS 17") }
         try await Fleet.withContext(window: hostWindow) { context in
             let before = snapshot()
             do {

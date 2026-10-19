@@ -205,6 +205,36 @@ struct SwiftTestingConsumerTests {
     }
 }
 
+/// Public-API environment coverage: size-class overrides reach the window after hosting, survive
+/// reconfiguration, and the preexisting state is restored.
+@MainActor
+@Suite("Fleet Swift Testing environment consumer")
+struct EnvironmentSwiftTestingConsumerTests {
+    @Test func sizeClassOverridesApplyReconfigureAndRestore() async throws {
+        guard #available(iOS 17, tvOS 17, *) else { return }
+        let window = try #require(UIApplication.shared.keyWindow)
+        let hadOverride = window.traitOverrides.contains(UITraitHorizontalSizeClass.self)
+        try await Fleet.withContext(window: window) { context in
+            try await context.setRoot(UIViewController())
+            try await context.configure(FleetEnvironment(horizontalSizeClass: .compact, verticalSizeClass: .regular))
+            try await context.waitUntil("compact/regular size classes", timeout: 5) {
+                window.traitCollection.horizontalSizeClass == .compact
+                    && window.traitCollection.verticalSizeClass == .regular
+            }
+            try await context.configure(FleetEnvironment(horizontalSizeClass: .regular))
+            try await context.waitUntil("regular horizontal size class", timeout: 5) {
+                window.traitCollection.horizontalSizeClass == .regular
+            }
+            #expect(context.currentEnvironment.horizontalSizeClass == .regular)
+            let failure = await #expect(throws: FleetFailure.self) {
+                try await context.configure(FleetEnvironment(horizontalSizeClass: .unspecified))
+            }
+            #expect(failure?.kind == .invalidInput)
+        }
+        #expect(window.traitOverrides.contains(UITraitHorizontalSizeClass.self) == hadOverride)
+    }
+}
+
 // quick-start:begin
 @MainActor
 private final class GreetingViewController: UIViewController {
