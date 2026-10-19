@@ -11,7 +11,7 @@ On a clean checkout of the candidate commit (`git status --short` empty, `git re
 3. `script/check-distribution` — external consumers, which write `validation.json`, lockfiles and result bundles under `build/distribution-*`.
 4. Link the CI runs for the same commit: the Tests workflow jobs (iOS, tvOS, consumers) and their uploaded artifacts.
 
-Record, from the logs rather than from memory: test counts and failures per suite, with the build step distinguished from test execution (a successful build is not a pass; consumers report "Executed N tests"). If a check was not run, or ran on a development snapshot (`--allow-dirty`), say so.
+Record, from the logs or result bundles rather than from memory: test counts and failures per suite, with the build step distinguished from test execution (a successful build is not a pass). Count both frameworks. The consumer log line "Executed N tests" is the XCTest summary only; Swift Testing prints a separate "Test run with N tests" summary. Report XCTest and Swift Testing counts separately and their total, or take the total from `xcrun xcresulttool get test-results summary --path TestResults.xcresult` for each result bundle. If a check was not run, or ran on a development snapshot (`--allow-dirty`), say so.
 
 ## Report contents
 
