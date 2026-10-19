@@ -20,18 +20,47 @@ extension UICollectionView {
      the item is not currently selected.
      */
     public func deselectItem(at indexPath: IndexPath) {
-        guard validateItemExists(at: indexPath, userAction: "deselect item") else { return }
+        do {
+            _ = try deselectItemOrThrow(at: indexPath)
+        } catch let failure as FleetFailure {
+            FleetError(Fleet.CollectionViewError.legacy(failure)).raise()
+        } catch {
+            FleetError(Fleet.InternalError.unrecoverable(details: "\(error)")).raise()
+        }
+    }
+
+    /**
+     Like `deselectItem(at:)`, but reports failures as Swift errors instead of raising an `NSException`.
+     Failed validation neither changes the selection nor calls the delegate.
+
+     - throws:
+     A `FleetFailure` of kind `.invalidSetup` without a data source, `.invalidInput` when the index path is
+     malformed or the section or item does not exist, or `.unavailableInteraction` when `allowsSelection` is
+     `false` or the item is not selected.
+
+     - returns:
+     `.performed`, or `.refusedByDelegate` when `shouldDeselectItemAt` returned `false`. A delegate veto is
+     not an error and leaves the item selected.
+     */
+    @discardableResult
+    public func deselectItemOrThrow(at indexPath: IndexPath) throws -> FleetInteractionOutcome {
+        let action = "deselect item"
+        try validateItemExistsOrThrow(at: indexPath, action: action, userAction: "deselect item")
+        let target = "UICollectionView item \(indexPath.item) in section \(indexPath.section)"
 
         guard allowsSelection else {
-            FleetError(Fleet.CollectionViewError.rejectedAction(at: indexPath, reason: "Collection view does not allow selection.")).raise()
-            return
+            throw FleetFailure(kind: .unavailableInteraction, action: action, target: target,
+                               state: "allowsSelection is false",
+                               reason: Fleet.CollectionViewError.rejectedAction(at: indexPath, reason: "Collection view does not allow selection.").errorMessage)
         }
 
         guard (indexPathsForSelectedItems ?? []).contains(indexPath) else {
-            FleetError(Fleet.CollectionViewError.rejectedAction(at: indexPath, reason: "Item is not selected.")).raise()
-            return
+            throw FleetFailure(kind: .unavailableInteraction, action: action, target: target,
+                               state: "the item is not selected",
+                               reason: Fleet.CollectionViewError.rejectedAction(at: indexPath, reason: "Item is not selected.").errorMessage)
         }
 
-        _ = deselectItemWithDelegateCallbacks(at: indexPath)
+        return deselectItemWithDelegateCallbacks(at: indexPath)
+            ? .performed : .refusedByDelegate(method: "collectionView(_:shouldDeselectItemAt:)")
     }
 }
