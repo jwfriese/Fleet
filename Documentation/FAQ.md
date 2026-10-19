@@ -99,11 +99,10 @@ Throwing forms available today:
 | `UISwitch` (iOS) | `flipOrThrow()` |
 | `UITextField`, `UITextView` (iOS) | `enterOrThrow`, `startEditingOrThrow`, `stopEditingOrThrow`, `typeOrThrow`, `pasteOrThrow`, `backspaceOrThrow`, `backspaceAllOrThrow`; `UITextField` also `clearTextOrThrow` |
 | `UITableView` | `selectRowOrThrow`, `fetchCellOrThrow`, `fetchDisplayedCellOrThrow`, `performContextualActionOrThrow` |
-| `UICollectionView` | `selectItemOrThrow`, `fetchCellOrThrow` |
+| `UICollectionView` | `selectItemOrThrow`, `deselectItemOrThrow(at:)`, `fetchCellOrThrow`, `displayedCellOrThrow` (both overloads) |
 | `UIStoryboard` | Already `throws` (binding and mocking) |
 
-Still raising only (no throwing form yet): `UICollectionView.deselectItem(at:)` and `displayedCell(at:)`,
-`UITabBarController` tab selection, `UINavigationController` push/pop, and `UIViewController` presentation helpers. See
+Still raising only (no throwing form yet): `UITabBarController` tab selection, `UINavigationController` push/pop, and `UIViewController` presentation helpers. See
 the [modernization checklist](Modernization.md) (M3.1, M4) for the remaining scope. `Fleet.swallowAnyErrors` and the
 Objective-C exception bridge remain for genuine `NSException` use and are not used to translate ordinary failures.
 
