@@ -14,15 +14,25 @@ public struct FleetEnvironment: Equatable, Sendable {
     /// Applied as a trait override on the window. Requires iOS/tvOS 17; earlier runtimes throw
     /// a `FleetFailure` of kind `.invalidSetup` because no public per-window mechanism exists.
     public var contentSizeCategory: UIContentSizeCategory?
+    /// Applied as a trait override on the window. Requires iOS/tvOS 17, like `contentSizeCategory`.
+    /// `.unspecified` is not a valid override and throws `.invalidInput`.
+    public var horizontalSizeClass: UIUserInterfaceSizeClass?
+    /// Applied as a trait override on the window. Requires iOS/tvOS 17, like `contentSizeCategory`.
+    /// `.unspecified` is not a valid override and throws `.invalidInput`.
+    public var verticalSizeClass: UIUserInterfaceSizeClass?
 
     public init(
         size: CGSize? = nil,
         userInterfaceStyle: UIUserInterfaceStyle? = nil,
-        contentSizeCategory: UIContentSizeCategory? = nil
+        contentSizeCategory: UIContentSizeCategory? = nil,
+        horizontalSizeClass: UIUserInterfaceSizeClass? = nil,
+        verticalSizeClass: UIUserInterfaceSizeClass? = nil
     ) {
         self.size = size
         self.userInterfaceStyle = userInterfaceStyle
         self.contentSizeCategory = contentSizeCategory
+        self.horizontalSizeClass = horizontalSizeClass
+        self.verticalSizeClass = verticalSizeClass
     }
 }
 
@@ -33,6 +43,12 @@ struct SavedWindowEnvironment {
     var categoryWasOverridden = false
     var category: UIContentSizeCategory?
     var touchedCategory = false
+    var touchedHorizontal = false
+    var horizontalWasOverridden = false
+    var horizontal: UIUserInterfaceSizeClass?
+    var touchedVertical = false
+    var verticalWasOverridden = false
+    var vertical: UIUserInterfaceSizeClass?
 
     @MainActor
     func restore(on window: UIWindow) {
@@ -45,6 +61,20 @@ struct SavedWindowEnvironment {
                 window.traitOverrides.remove(UITraitPreferredContentSizeCategory.self)
             }
         }
+        if touchedHorizontal, #available(iOS 17, tvOS 17, *) {
+            if horizontalWasOverridden, let horizontal {
+                window.traitOverrides.horizontalSizeClass = horizontal
+            } else {
+                window.traitOverrides.remove(UITraitHorizontalSizeClass.self)
+            }
+        }
+        if touchedVertical, #available(iOS 17, tvOS 17, *) {
+            if verticalWasOverridden, let vertical {
+                window.traitOverrides.verticalSizeClass = vertical
+            } else {
+                window.traitOverrides.remove(UITraitVerticalSizeClass.self)
+            }
+        }
     }
 }
 
@@ -55,16 +85,26 @@ extension FleetTestContext {
     /// captured by the first call to touch a setting are the ones restored.
     public func configure(_ environment: FleetEnvironment, timeout: TimeInterval = 5) async throws {
         guard isActive else { throw Self.contextEnded }
-        if environment.contentSizeCategory != nil {
+        if environment.contentSizeCategory != nil
+            || environment.horizontalSizeClass != nil || environment.verticalSizeClass != nil {
             guard #available(iOS 17, tvOS 17, *) else {
                 throw FleetFailure(
                     kind: .invalidSetup,
-                    action: "configure the content size category",
+                    action: "configure the content size category or size classes",
                     target: "FleetTestContext window",
                     state: "this runtime predates per-window trait overrides (iOS/tvOS 17).",
-                    reason: "Run on iOS/tvOS 17 or later, or omit contentSizeCategory."
+                    reason: "Run on iOS/tvOS 17 or later, or omit contentSizeCategory and the size classes."
                 )
             }
+        }
+        for sizeClass in [environment.horizontalSizeClass, environment.verticalSizeClass] where sizeClass == .unspecified {
+            throw FleetFailure(
+                kind: .invalidInput,
+                action: "configure a size class",
+                target: "FleetTestContext window",
+                state: "size class was unspecified.",
+                reason: "Pass .compact or .regular, or omit the size class."
+            )
         }
         if let size = environment.size {
             guard size.width.isFinite, size.height.isFinite, size.width > 0, size.height > 0 else {
@@ -94,6 +134,28 @@ extension FleetTestContext {
             }
             window.traitOverrides.preferredContentSizeCategory = category
         }
+        if #available(iOS 17, tvOS 17, *) {
+            if let horizontal = environment.horizontalSizeClass {
+                if !savedEnvironment.touchedHorizontal {
+                    savedEnvironment.touchedHorizontal = true
+                    savedEnvironment.horizontalWasOverridden = window.traitOverrides.contains(UITraitHorizontalSizeClass.self)
+                    if savedEnvironment.horizontalWasOverridden {
+                        savedEnvironment.horizontal = window.traitOverrides.horizontalSizeClass
+                    }
+                }
+                window.traitOverrides.horizontalSizeClass = horizontal
+            }
+            if let vertical = environment.verticalSizeClass {
+                if !savedEnvironment.touchedVertical {
+                    savedEnvironment.touchedVertical = true
+                    savedEnvironment.verticalWasOverridden = window.traitOverrides.contains(UITraitVerticalSizeClass.self)
+                    if savedEnvironment.verticalWasOverridden {
+                        savedEnvironment.vertical = window.traitOverrides.verticalSizeClass
+                    }
+                }
+                window.traitOverrides.verticalSizeClass = vertical
+            }
+        }
         window.layoutIfNeeded()
         try await waitUntil("window environment to take effect", timeout: timeout) {
             if let size = environment.size, self.window.bounds.size != size { return false }
@@ -101,16 +163,20 @@ extension FleetTestContext {
                self.window.traitCollection.userInterfaceStyle != style { return false }
             if let category = environment.contentSizeCategory,
                self.window.traitCollection.preferredContentSizeCategory != category { return false }
+            if let h = environment.horizontalSizeClass, self.window.traitCollection.horizontalSizeClass != h { return false }
+            if let v = environment.verticalSizeClass, self.window.traitCollection.verticalSizeClass != v { return false }
             return true
         }
     }
 
-    /// The window's current size, resolved appearance and Dynamic Type category.
+    /// The window's current size, resolved appearance, Dynamic Type category and size classes.
     public var currentEnvironment: FleetEnvironment {
         FleetEnvironment(
             size: window.bounds.size,
             userInterfaceStyle: window.traitCollection.userInterfaceStyle,
-            contentSizeCategory: window.traitCollection.preferredContentSizeCategory
+            contentSizeCategory: window.traitCollection.preferredContentSizeCategory,
+            horizontalSizeClass: window.traitCollection.horizontalSizeClass,
+            verticalSizeClass: window.traitCollection.verticalSizeClass
         )
     }
 }
