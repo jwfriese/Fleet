@@ -136,16 +136,18 @@ struct SwiftTestingConsumerTests {
         let log = IntervalLog()
         var failures: [FleetFailure] = []
         var queued: Task<Void, Error>?
+        var child: Task<Void, Error>?
         let scenario = Task { @MainActor in
             try await Fleet.withContext(scene: scene) { _ in
                 // Direct nesting, both overloads.
                 do { try await Fleet.withContext(window: host) { _ in log.events.append("nested body ran") } } catch let failure as FleetFailure { failures.append(failure) }
                 do { try await Fleet.withContext(scene: scene) { _ in log.events.append("nested body ran") } } catch let failure as FleetFailure { failures.append(failure) }
                 // An awaited child task inherits the active context.
-                let child = Task { @MainActor in
+                let inherited = Task { @MainActor in
                     try await Fleet.withContext(window: host) { _ in log.events.append("nested body ran") }
                 }
-                do { try await child.value } catch let failure as FleetFailure { failures.append(failure) }
+                child = inherited
+                do { try await inherited.value } catch let failure as FleetFailure { failures.append(failure) }
                 // A detached task does not inherit ownership, so it queues behind this scope.
                 queued = queuedAttempt(log: log)
                 for _ in 0..<20 { await Task.yield() }
@@ -154,6 +156,7 @@ struct SwiftTestingConsumerTests {
         let watchdog = Task { @MainActor in
             try? await Task.sleep(nanoseconds: 3_000_000_000)
             scenario.cancel()
+            child?.cancel()
             queued?.cancel()
         }
         defer { watchdog.cancel() }
@@ -161,7 +164,13 @@ struct SwiftTestingConsumerTests {
         if let queued { try await queued.value }
         #expect(failures.map(\.kind) == [.invalidSetup, .invalidSetup, .invalidSetup])
         #expect(log.events == ["queued ran"])
-        let successor = try await Fleet.withContext(window: host) { _ in true }
+        let successorTask = Task { @MainActor in try await Fleet.withContext(window: host) { _ in true } }
+        let successorWatchdog = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
+            successorTask.cancel()
+        }
+        defer { successorWatchdog.cancel() }
+        let successor = try await successorTask.value
         #expect(successor)
     }
 
