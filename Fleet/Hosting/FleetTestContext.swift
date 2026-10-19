@@ -154,7 +154,14 @@ public final class FleetTestContext {
     func snapshot() -> String {
         let root = window.rootViewController.map { String(describing: type(of: $0)) } ?? "nil"
         let top = Screen(forWindow: window).topmostViewController.map { String(describing: type(of: $0)) } ?? "nil"
-        return "Window state: root=\(root), topmost=\(top), isKey=\(window.isKeyWindow), isHidden=\(window.isHidden)."
+        return "Window state: root=\(root), topmost=\(top), isKey=\(window.isKeyWindow), isHidden=\(window.isHidden). Resolved environment: \(resolvedEnvironmentDescription())."
+    }
+
+    private func resolvedEnvironmentDescription() -> String {
+        let traits = window.traitCollection
+        return "size=\(window.bounds.size), style=\(traits.userInterfaceStyle.rawValue), "
+            + "category=\(traits.preferredContentSizeCategory.rawValue), "
+            + "horizontalSizeClass=\(traits.horizontalSizeClass.rawValue), verticalSizeClass=\(traits.verticalSizeClass.rawValue)"
     }
 
     // MARK: Lifecycle

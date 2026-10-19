@@ -321,7 +321,7 @@ final class PackageConsumerTests: XCTestCase {
     }
 #endif
 
-    func testCollectionViewSelectionAndCellInspectionWithDiffableDataSource() async {
+    func testCollectionViewSelectionAndCellInspectionWithDiffableDataSource() async throws {
         let collectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: 320, height: 480), collectionViewLayout: UICollectionViewFlowLayout())
         collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
         let dataSource = UICollectionViewDiffableDataSource<Int, String>(collectionView: collectionView) { view, indexPath, _ in
@@ -340,6 +340,11 @@ final class PackageConsumerTests: XCTestCase {
         XCTAssertNotNil(collectionView.displayedCell(at: item))
         XCTAssertTrue(collectionView.displayedCell(at: item) === collectionView.fetchCell(at: item))
         collectionView.selectItem(at: item)
+        XCTAssertEqual(collectionView.indexPathsForSelectedItems, [item])
+        XCTAssertTrue(try collectionView.displayedCellOrThrow(at: item) === collectionView.displayedCell(at: item))
+        XCTAssertThrowsError(try collectionView.deselectItemOrThrow(at: IndexPath(item: 99, section: 0))) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .invalidInput)
+        }
         XCTAssertEqual(collectionView.indexPathsForSelectedItems, [item])
         collectionView.deselectItem(at: item)
         XCTAssertEqual(collectionView.indexPathsForSelectedItems ?? [], [])
@@ -611,6 +616,9 @@ final class EnvironmentConsumerTests: XCTestCase {
             if #available(iOS 17, tvOS 17, *) {
                 try await context.configure(FleetEnvironment(contentSizeCategory: .accessibilityLarge))
                 XCTAssertEqual(window.traitCollection.preferredContentSizeCategory, .accessibilityLarge)
+                try await context.configure(FleetEnvironment(horizontalSizeClass: .compact, verticalSizeClass: .regular))
+                XCTAssertEqual(context.currentEnvironment.horizontalSizeClass, .compact)
+                XCTAssertEqual(window.traitCollection.verticalSizeClass, .regular)
             }
         }
         XCTAssertEqual(window.frame, frame)

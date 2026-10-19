@@ -52,9 +52,12 @@ try await Fleet.withContext(window: hostWindow) { context in
 | `size` | `UIWindow.frame` (origin kept) | iOS/tvOS 15+ |
 | `userInterfaceStyle` | `overrideUserInterfaceStyle` on the window | iOS/tvOS 15+ |
 | `contentSizeCategory` | `window.traitOverrides` (Dynamic Type) | iOS/tvOS 17+; earlier runtimes throw `.invalidSetup` |
+| `horizontalSizeClass`, `verticalSizeClass` | `window.traitOverrides` | iOS/tvOS 17+; earlier runtimes throw `.invalidSetup`; `.unspecified` throws `.invalidInput` |
 
 - Unset fields are untouched; repeated calls compose. The values present before the first change are restored on every exit path (return, error, timeout, cancellation), before the lease is released, so overlapping scopes always start from the restored state. Invalid sizes throw `.invalidInput` before anything changes.
-- `context.currentEnvironment` reports the window's resolved size, appearance and category for assertions.
+- `context.currentEnvironment` reports the window's resolved size, appearance, category and size classes for assertions. Changes made after content is hosted propagate to UIKit descendants (`traitCollection`, `traitCollectionDidChange`, layout) and through a `UIHostingController` into SwiftUI's `colorScheme` (iOS and tvOS) and `horizontalSizeClass`/`sizeCategory` (iOS only); this is coverage of hosting, not a SwiftUI interaction API. On tvOS the window reports the requested size class and category, but SwiftUI does not surface them and fonts do not scale with the Dynamic Type category, so do not wait for those changes there.
+- Size-class overrides apply to the window's trait collection; a restored override that was absent is removed, and one that was present returns to its previous value. Wait timeouts include the resolved size, style, category and size classes.
+- Localization: inject a `Bundle` or `Locale` into the object under test rather than changing the process language.
 - **Not offered:** locale, language, region, right-to-left and system accessibility switches. UIKit has no public per-window control for them; changing them is process-wide and cannot be restored safely, so Fleet does not advertise them. Test localized content by injecting the bundle or locale into the object under test.
 - Verified behavior is that of the current reference runtime (iOS/tvOS 26.5); iOS/tvOS 15 remains the minimum deployment target and the iOS/tvOS 17 requirement above is from the API's availability, not from running older runtimes. A window-size change does not simulate device metrics such as safe areas or scale.
 
