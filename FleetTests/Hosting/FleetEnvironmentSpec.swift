@@ -1,3 +1,4 @@
+import SwiftUI
 import XCTest
 @testable import Fleet
 
@@ -189,5 +190,144 @@ class FleetEnvironmentSpec: XCTestCase {
         }
         XCTAssertNil(owned?.windowScene)
         XCTAssertEqual(snapshot(), before)
+    }
+
+    // MARK: Size classes, adaptive layout, hosting
+
+    private final class AdaptiveProbe: UIViewController {
+        let label = UILabel()
+        var compactHorizontal = false
+        override func viewDidLoad() {
+            super.viewDidLoad()
+            label.numberOfLines = 0
+            label.adjustsFontForContentSizeCategory = true
+            label.font = UIFont.preferredFont(forTextStyle: .body)
+            label.text = "A reasonably long line of text that wraps when type grows large enough to matter."
+            view.addSubview(label)
+        }
+        override func viewDidLayoutSubviews() {
+            super.viewDidLayoutSubviews()
+            compactHorizontal = traitCollection.horizontalSizeClass == .compact
+            let width = compactHorizontal ? view.bounds.width / 2 : view.bounds.width
+            label.frame = CGRect(origin: .zero, size: label.sizeThatFits(CGSize(width: width, height: .greatestFiniteMagnitude)))
+        }
+    }
+
+    func test_configure_sizeClassesReachDescendantsAndAreRestored() async throws {
+        guard #available(iOS 17, tvOS 17, *) else { throw XCTSkip("Per-window trait overrides need iOS/tvOS 17") }
+        let probe = AdaptiveProbe()
+        let before = hostWindow.traitCollection
+        try await Fleet.withContext(window: hostWindow) { context in
+            try await context.setRoot(probe)
+            try await context.configure(FleetEnvironment(horizontalSizeClass: .compact, verticalSizeClass: .regular))
+            XCTAssertEqual(probe.traitCollection.horizontalSizeClass, .compact)
+            XCTAssertEqual(probe.traitCollection.verticalSizeClass, .regular)
+            XCTAssertEqual(context.currentEnvironment.horizontalSizeClass, .compact)
+            XCTAssertTrue(probe.compactHorizontal)
+            try await context.configure(FleetEnvironment(horizontalSizeClass: .regular))
+            XCTAssertEqual(probe.traitCollection.horizontalSizeClass, .regular)
+            XCTAssertEqual(probe.traitCollection.verticalSizeClass, .regular, "Unset fields are untouched")
+            try await context.waitUntil("regular layout", timeout: 2) { !probe.compactHorizontal }
+        }
+        XCTAssertEqual(hostWindow.traitCollection.horizontalSizeClass, before.horizontalSizeClass)
+        XCTAssertEqual(hostWindow.traitCollection.verticalSizeClass, before.verticalSizeClass)
+        XCTAssertFalse(hostWindow.traitOverrides.contains(UITraitHorizontalSizeClass.self))
+        XCTAssertFalse(hostWindow.traitOverrides.contains(UITraitVerticalSizeClass.self))
+    }
+
+    func test_configure_restoresPreexistingSizeClassOverride() async throws {
+        guard #available(iOS 17, tvOS 17, *) else { throw XCTSkip("Per-window trait overrides need iOS/tvOS 17") }
+        hostWindow.traitOverrides.horizontalSizeClass = .compact
+        defer { hostWindow.traitOverrides.remove(UITraitHorizontalSizeClass.self) }
+        try await Fleet.withContext(window: hostWindow) { context in
+            try await context.configure(FleetEnvironment(horizontalSizeClass: .regular))
+            try await context.configure(FleetEnvironment(horizontalSizeClass: .regular))
+            XCTAssertEqual(hostWindow.traitCollection.horizontalSizeClass, .regular)
+        }
+        XCTAssertTrue(hostWindow.traitOverrides.contains(UITraitHorizontalSizeClass.self))
+        XCTAssertEqual(hostWindow.traitOverrides.horizontalSizeClass, .compact)
+        XCTAssertEqual(hostWindow.traitCollection.horizontalSizeClass, .compact)
+    }
+
+    func test_configure_rejectsUnspecifiedSizeClassBeforeChangingAnything() async throws {
+        try await Fleet.withContext(window: hostWindow) { context in
+            let before = snapshot()
+            do {
+                try await context.configure(FleetEnvironment(userInterfaceStyle: .dark, horizontalSizeClass: .unspecified))
+                XCTFail("Expected invalid input")
+            } catch let failure as FleetFailure {
+                XCTAssertEqual(failure.kind, .invalidInput)
+            }
+            XCTAssertEqual(snapshot(), before)
+        }
+    }
+
+    func test_configure_dynamicTypeChangesTextLayoutAfterHosting() async throws {
+        #if os(tvOS)
+            throw XCTSkip("tvOS fonts do not scale with the Dynamic Type category")
+        #endif
+        guard #available(iOS 17, tvOS 17, *) else { throw XCTSkip("Per-window trait overrides need iOS/tvOS 17") }
+        let probe = AdaptiveProbe()
+        try await Fleet.withContext(window: hostWindow) { context in
+            try await context.setRoot(probe)
+            try await context.configure(FleetEnvironment(contentSizeCategory: .extraSmall))
+            let fit = CGSize(width: 200, height: CGFloat.greatestFiniteMagnitude)
+            let smallHeight = probe.label.sizeThatFits(fit).height
+            try await context.configure(FleetEnvironment(contentSizeCategory: .accessibilityExtraExtraExtraLarge))
+            XCTAssertGreaterThan(probe.label.sizeThatFits(fit).height, smallHeight, "Larger type wraps to a taller label")
+        }
+    }
+
+    private struct HostedProbeView: View {
+        @Environment(\.colorScheme) var scheme
+        @Environment(\.horizontalSizeClass) var horizontal
+        @Environment(\.sizeCategory) var category
+        let report: (ColorScheme, UserInterfaceSizeClass?, ContentSizeCategory) -> Void
+        var body: some View {
+            report(scheme, horizontal, category)
+            return Text("hosted")
+        }
+    }
+
+    func test_configure_propagatesAcrossUIKitSwiftUIBoundary() async throws {
+        guard #available(iOS 17, tvOS 17, *) else { throw XCTSkip("Per-window trait overrides need iOS/tvOS 17") }
+        var latest: (ColorScheme, UserInterfaceSizeClass?, ContentSizeCategory)?
+        let hosting = UIHostingController(rootView: HostedProbeView { latest = ($0, $1, $2) })
+        let container = UIViewController()
+        container.addChild(hosting)
+        container.view.addSubview(hosting.view)
+        hosting.view.frame = container.view.bounds
+        hosting.didMove(toParent: container)
+        try await Fleet.withContext(window: hostWindow) { context in
+            try await context.setRoot(container)
+            try await context.configure(FleetEnvironment(
+                userInterfaceStyle: .dark,
+                contentSizeCategory: .accessibilityLarge,
+                horizontalSizeClass: .compact))
+            #if os(iOS)
+                try await context.waitUntil("SwiftUI content to observe the environment", timeout: 5) {
+                    latest?.0 == .dark && latest?.1 == .compact && latest?.2 == .accessibilityLarge
+                }
+            #else
+                // SwiftUI does not surface size classes or Dynamic Type through its tvOS environment.
+                try await context.waitUntil("SwiftUI content to observe the appearance", timeout: 5) {
+                    latest?.0 == .dark
+                }
+            #endif
+            XCTAssertEqual(hosting.traitCollection.userInterfaceStyle, .dark)
+        }
+    }
+
+    func test_waitTimeout_includesResolvedEnvironment() async throws {
+        do {
+            try await Fleet.withContext(window: hostWindow) { context in
+                try await context.configure(FleetEnvironment(userInterfaceStyle: .dark))
+                try await context.waitUntil("never", timeout: 0.05) { false }
+            }
+            XCTFail("Expected a timeout")
+        } catch let failure as FleetFailure {
+            XCTAssertTrue("\(failure)".contains("Resolved environment"), "\(failure)")
+            XCTAssertTrue("\(failure)".contains("horizontalSizeClass="), "\(failure)")
+        }
     }
 }

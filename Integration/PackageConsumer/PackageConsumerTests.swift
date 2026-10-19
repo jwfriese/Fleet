@@ -611,6 +611,9 @@ final class EnvironmentConsumerTests: XCTestCase {
             if #available(iOS 17, tvOS 17, *) {
                 try await context.configure(FleetEnvironment(contentSizeCategory: .accessibilityLarge))
                 XCTAssertEqual(window.traitCollection.preferredContentSizeCategory, .accessibilityLarge)
+                try await context.configure(FleetEnvironment(horizontalSizeClass: .compact, verticalSizeClass: .regular))
+                XCTAssertEqual(context.currentEnvironment.horizontalSizeClass, .compact)
+                XCTAssertEqual(window.traitCollection.verticalSizeClass, .regular)
             }
         }
         XCTAssertEqual(window.frame, frame)
