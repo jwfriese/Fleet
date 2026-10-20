@@ -9,6 +9,9 @@ For existing Fleet 4.x releases, consult the historical [iOS](./Documentation/In
 
 ## Features
 
+### Scoped hosting
+Fleet's `Fleet.withContext(window:)` and `withContext(scene:)` give each async test explicit ownership of its window, with whole-lifetime exclusion, bounded waits, cancellation-safe cleanup, and configurable screen environments. Start with the [quick start](./Documentation/QuickStart.md) and read [Hosting](./Documentation/Hosting.md). The global helpers below remain for existing suites.
+
 ### Storyboard injection and mocking
 Fleet allows test code to inject into and pull mocks from storyboards. This gives you the best of both worlds -- ability to test
 your view controllers and their interactions with each other exactly as they are in production code without compromising the ability
@@ -67,7 +70,7 @@ For more complicated, larger-scale projects that use Fleet, check out the follow
 
 ## Modernization
 
-The [modernization checklist](./Documentation/Modernization.md) tracks the work needed to restore a maintained build, verify current UIKit behavior, and resume regular feature development.
+The [modernization checklist](./Documentation/Modernization.md) records what has been implemented, what remains, and the historical audit and repetition evidence. Feature readiness and publication readiness are separate gates there.
 
 For development, run `script/test` for iOS or `script/test all` for iOS and tvOS. See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup and [AGENTS.md](./AGENTS.md) for repository guidance.
 
