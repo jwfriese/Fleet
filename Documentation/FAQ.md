@@ -99,7 +99,7 @@ Throwing forms available today:
 | `UISwitch` (iOS) | `flipOrThrow()` |
 | `UITextField`, `UITextView` (iOS) | `enterOrThrow`, `startEditingOrThrow`, `stopEditingOrThrow`, `typeOrThrow`, `pasteOrThrow`, `backspaceOrThrow`, `backspaceAllOrThrow`; `UITextField` also `clearTextOrThrow` |
 | `UITableView` | `selectRowOrThrow`, `fetchCellOrThrow`, `fetchDisplayedCellOrThrow`, `performContextualActionOrThrow` |
-| `UICollectionView` | `selectItemOrThrow`, `deselectItemOrThrow(at:)`, `fetchCellOrThrow`, `displayedCellOrThrow` (both overloads) |
+| `UICollectionView` | `selectItemOrThrow`, `deselectItemOrThrow(at:)`, `fetchCellOrThrow`, `displayedCellOrThrow` (both overloads), `displayedSupplementaryViewOrThrow(ofKind:at:)` and its typed `asType:` overload |
 | `UIStoryboard` | Already `throws` (binding and mocking) |
 
 Still raising only (no throwing form yet): `UITabBarController` tab selection, `UINavigationController` push/pop, and `UIViewController` presentation helpers. See
