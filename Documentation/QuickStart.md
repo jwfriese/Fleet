@@ -36,7 +36,38 @@ struct QuickStartTests {
 }
 ```
 
-XCTest works the same way: call the same context APIs from an `async` test method on `@MainActor`. See [Hosting](Hosting.md) for context semantics.
+## XCTest starter
+
+The same scenario for plain XCTest is the `xctest-starter` region of [`PackageConsumerTests.swift`](../Integration/PackageConsumer/PackageConsumerTests.swift), compiled and run by the same consumers (a tooling test keeps this page in sync). Use an `async` test method on a `@MainActor` class. See [Hosting](Hosting.md) for context semantics and [Migration](Migration.md) for moving an existing suite.
+
+```swift
+@MainActor
+private final class XCTestGreetingViewController: UIViewController {
+    let button = UIButton(type: .system)
+    private(set) var taps = 0
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        button.addAction(UIAction { [weak self] _ in self?.taps += 1 }, for: .touchUpInside)
+        view.addSubview(button)
+    }
+}
+
+@MainActor
+final class XCTestStarterTests: XCTestCase {
+    func testTappingTheButtonRunsItsAction() async throws {
+        let host = try XCTUnwrap(UIApplication.shared.keyWindow)
+        try await Fleet.withContext(window: host) { context in
+            let controller = XCTestGreetingViewController()
+            try await context.setRoot(controller)
+
+            try controller.button.tapOrThrow()
+
+            XCTAssertEqual(controller.taps, 1)
+        }
+    }
+}
+```
 
 ## Limits
 
