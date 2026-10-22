@@ -12,6 +12,11 @@
  */
 + (BOOL)_isClass:(Class)klass kindOf:(Class)superclass;
 
+/**
+ Internal Fleet use only
+ */
++ (NSString *)_hostingPolicyName;
+
 + (BOOL)_catchException:(void(^)(void))tryBlock error:(__autoreleasing NSError **)error;
 
 @end

@@ -24,3 +24,13 @@ The presentation, dismissal, and navigation hooks are process-wide. They change 
 - Fleet does not add any new private-handler hook to support further UIKit types, such as `UIContextualAction` or menu elements. The former `UITableViewRowAction` handler hook was removed in this major release (see [UITableView](UITableView.md#migrating-from-selectcellaction)). Invoke the handlers you own directly.
 - Hooks are installed once per process. Statically linking Fleet in a way that drops the Objective-C categories (for example without `-ObjC`) leaves them uninstalled; the dynamic SwiftPM product used by the supported route does not.
 - Hosted tests must run on the main thread; the instance hooks do not make UIKit thread-safe.
+
+## Hosting policy
+
+The presentation, dismissal and navigation hooks above are the `legacy` policy, which remains the default. A process can instead start with `preserve-timing`, which does not install them: production `present`, `dismiss`, `push`, `pop` calls forward UIKit's own animated arguments, timing, delegate ordering and lazy view loading.
+
+- Select it with the `FLEET_HOSTING_POLICY` environment variable (`legacy` or `preserve-timing`) in the test plan, scheme or launch environment of the test host process. It is read once, before any `+load` chooses hooks, and never changes afterwards. Do not set it per test; the hooks are not installed or removed around contexts.
+- An unset or empty value resolves to `legacy`. Any other value raises `FleetInvalidHostingPolicy` at load, naming the accepted values; there is no fallback.
+- `Fleet.hostingPolicy` reports the active policy read-only so a consumer can verify its setup.
+- Under `preserve-timing`, the retained hooks are exactly: `UIViewController.viewDidLoad` (load counting for storyboard binding), `UIStoryboard.instantiateViewController(withIdentifier:)` (binding/mocking) and the private `UIAlertAction.setHandler:` capture. Fleet is therefore not runtime-free in this mode; extracting a hook-free product was not needed for the timing contract.
+- Context setup, explicit readiness and the nonanimated cleanup performed by `Fleet.withContext` remain documented, intentional operations under both policies, and do not depend on these hooks. Code that relied on synchronous presentation must wait for the state it asserts with bounded waits under `preserve-timing`.

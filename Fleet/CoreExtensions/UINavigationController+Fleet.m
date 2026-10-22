@@ -8,10 +8,12 @@ BOOL didSwizzleUINavigationController = NO;
 + (void)load {
     if (self == [UINavigationController class]) {
         if (!didSwizzleUINavigationController) {
-            [self objc_swizzlePushViewController];
-            [self objc_swizzlePopViewController];
-            [self objc_swizzlePopToViewController];
-            [self objc_swizzlePopToRootViewControllerAnimated];
+            if (FleetPolicyInstallsTimingHooks()) {
+                [self objc_swizzlePushViewController];
+                [self objc_swizzlePopViewController];
+                [self objc_swizzlePopToViewController];
+                [self objc_swizzlePopToRootViewControllerAnimated];
+            }
             didSwizzleUINavigationController = YES;
         }
     }

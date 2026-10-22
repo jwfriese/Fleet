@@ -9,8 +9,10 @@ BOOL didSwizzleUIViewController = NO;
     if (self == [UIViewController class]) {
         if (!didSwizzleUIViewController) {
             [self objc_swizzleViewDidLoad];
-            [self objc_swizzlePresent];
-            [self objc_swizzleDismiss];
+            if (FleetPolicyInstallsTimingHooks()) {
+                [self objc_swizzlePresent];
+                [self objc_swizzleDismiss];
+            }
             didSwizzleUIViewController = YES;
         }
     }
