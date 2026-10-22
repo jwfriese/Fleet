@@ -224,6 +224,14 @@ final class PackageConsumerTests: XCTestCase {
                           try XCTUnwrap(log.events.firstIndex(of: "delegate.didShow(detail, animated: \(expectedAnimated))")))
     }
 
+    /// Records the shared UIKit-only scenario in this Fleet-linked process. `script/check-distribution` compares the
+    /// file with the Fleet-free baseline process's trace: preserve-timing must match it exactly.
+    func testRecordHostingTraceForBaselineComparison() async throws {
+        let events = await HostingTraceScenario.run()
+        XCTAssertTrue(events.contains("dismiss.completion"), "\(events)")
+        try HostingTraceScenario.record(events, as: Fleet.hostingPolicy.rawValue)
+    }
+
     /// Modal completions run after presentation and dismissal; preserve-timing requires waiting for them.
     func testPresentationAndDismissalCompletionsFollowTheActivePolicy() async throws {
         let log = ConsumerTraceLog()
