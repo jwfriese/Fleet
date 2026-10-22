@@ -26,7 +26,25 @@ class RuntimeHooksSpec: XCTestCase {
         expect(controller.viewDidLoadCallCount).to(equal(1))
     }
 
-    func test_presentAndDismissHooks_completeSynchronouslyEvenWhenAnimationIsRequested() {
+    func test_hostingPolicy_isExposedAndMatchesProcessStartEnvironment() {
+        let requested = ProcessInfo.processInfo.environment["FLEET_HOSTING_POLICY"]
+        expect(Fleet.hostingPolicy.rawValue).to(equal(requested?.isEmpty == false ? requested : "legacy"))
+    }
+
+    func test_preserveTiming_doesNotForceNonanimatedNavigationOrLoadPushedViews() throws {
+        try XCTSkipUnless(Fleet.hostingPolicy == .preserveTiming, "Runs only in a process launched with FLEET_HOSTING_POLICY=preserve-timing")
+        let root = UIViewController()
+        let second = UIViewController()
+        let navigation = Fleet.setInAppWindowRootNavigation(root)
+
+        navigation.pushViewController(second, animated: true)
+        expect(navigation.transitionCoordinator).toNot(beNil())
+        expect(navigation.viewControllers).to(equal([root, second]))
+        expect(second.isViewLoaded).toEventually(beTrue())
+    }
+
+    func test_presentAndDismissHooks_completeSynchronouslyEvenWhenAnimationIsRequested() throws {
+        try XCTSkipUnless(Fleet.hostingPolicy == .legacy, "Timing hooks are installed only by the legacy policy")
         let root = UIViewController()
         Fleet.setAsAppWindowRoot(root)
         let presented = UIViewController()
@@ -38,7 +56,8 @@ class RuntimeHooksSpec: XCTestCase {
         expect(root.presentedViewController).toEventually(beNil())
     }
 
-    func test_navigationHooks_pushAndPopSynchronouslyWithoutAnimation() {
+    func test_navigationHooks_pushAndPopSynchronouslyWithoutAnimation() throws {
+        try XCTSkipUnless(Fleet.hostingPolicy == .legacy, "Timing hooks are installed only by the legacy policy")
         let root = UIViewController()
         let second = UIViewController()
         let third = UIViewController()

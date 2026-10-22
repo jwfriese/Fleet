@@ -245,7 +245,8 @@ class FleetTestContextSpec: XCTestCase {
     }
 
     private func assertNoTransitionInFlight(_ context: FleetTestContext, file: StaticString = #filePath, line: UInt = #line) {
-        for controller in allControllers(from: context.window.rootViewController) {
+        // Controllers off screen (deselected tabs) are not advanced by UIKit and not awaited by the wait.
+        for controller in allControllers(from: context.window.rootViewController) where controller.viewIfLoaded?.window != nil {
             XCTAssertNil(controller.transitionCoordinator, "\(type(of: controller)) still transitioning after wait", file: file, line: line)
         }
     }
@@ -271,6 +272,13 @@ class FleetTestContextSpec: XCTestCase {
             XCTAssertTrue(second.topViewController === pushedSecond)
             XCTAssertTrue(tabs.selectedViewController === second)
             XCTAssertTrue(context.screen.topmostViewController === pushedSecond)
+
+            // The deselected tab's transition completes once it returns on screen.
+            tabs.selectedIndex = 0
+            try await context.waitForTransitionsToFinish()
+            self.assertNoTransitionInFlight(context)
+            XCTAssertNil(first.transitionCoordinator)
+            tabs.selectedIndex = 1
 
             second.popViewController(animated: true)
             try await context.waitForTransitionsToFinish()

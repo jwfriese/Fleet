@@ -1,6 +1,27 @@
 import UIKit
+#if SWIFT_PACKAGE
+import FleetRuntime
+#endif
 
 public class Fleet {
+    /**
+     The process-start hosting policy. It is resolved once, from the `FLEET_HOSTING_POLICY`
+     environment variable of the launched process, before Fleet selects which Objective-C hooks to install,
+     and never changes afterwards. Set the variable in the test plan, scheme or launch environment, not per test.
+     See `Documentation/RuntimeHooks.md`.
+     */
+    public enum HostingPolicy: String, Sendable, CaseIterable {
+        /// Default. Presentation, dismissal, push and pop calls are forced nonanimated, and pushed views load eagerly.
+        case legacy = "legacy"
+        /// Production presentation and navigation calls keep UIKit's animated arguments, timing and lazy view loading.
+        case preserveTiming = "preserve-timing"
+    }
+
+    /// The active process-start policy. An invalid `FLEET_HOSTING_POLICY` value already failed at load with a descriptive exception.
+    public static var hostingPolicy: HostingPolicy {
+        HostingPolicy(rawValue: FleetObjC._hostingPolicyName()) ?? .legacy
+    }
+
     /**
      Provides a quick way of getting at the "main" application window in test.
 

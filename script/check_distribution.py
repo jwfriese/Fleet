@@ -40,9 +40,28 @@ def successful_test_count(output):
     return int(summaries[-1][0])
 
 
-def logged_run(root, log_path, args):
+def compare_traces(baseline, legacy, preserve):
+    """Check recorded UIKit traces from fresh processes: the no-Fleet baseline, legacy and preserve-timing Fleet."""
+    if not baseline or not any(event.endswith("animated: true)") for event in baseline):
+        raise DistributionError("The no-Fleet baseline did not exercise animated UIKit transitions.")
+    if "offscreen.hiddenViewLoaded=false" not in baseline:
+        raise DistributionError("The no-Fleet baseline did not leave an offscreen pushed view unloaded.")
+    if preserve != baseline:
+        difference = next((f"{index}: baseline {a!r} vs preserve-timing {b!r}"
+                           for index, (a, b) in enumerate(zip(baseline + [None], preserve + [None])) if a != b), "length")
+        raise DistributionError(f"preserve-timing trace differs from the no-Fleet baseline at {difference}.")
+    # Legacy keeps its documented contract: nonanimated, eagerly loaded, same callbacks otherwise.
+    if any("animated: true" in event for event in legacy) or "offscreen.hiddenViewLoaded=true" not in legacy:
+        raise DistributionError("legacy trace no longer forces nonanimated, eager navigation.")
+    for marker in ("push.returned", "pop.returned", "present.completion", "dismiss.completion", "delegate.didShow(detail, animated: false)"):
+        if marker not in legacy:
+            raise DistributionError(f"legacy trace is missing {marker}.")
+
+
+def logged_run(root, log_path, args, extra_env=None):
     print("Consumer command: " + " ".join(map(str, args)), flush=True)
-    with log_path.open("w") as log, subprocess.Popen(list(map(str, args)), cwd=root,
+    environment = {**os.environ, **(extra_env or {})}
+    with log_path.open("w") as log, subprocess.Popen(list(map(str, args)), cwd=root, env=environment,
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True) as process:
         lines = []
         for line in process.stdout:
@@ -94,6 +113,7 @@ def check(root, platform="all", allow_dirty=False, viewinspector=False):
     project = create_project(run / "Consumer", root / "Integration/PackageConsumer", package_url, revision, inspector)
     packages = run / "SourcePackages"
     counts = {}
+    policy_counts = {}
     platforms = ("ios", "tvos") if platform == "all" else (platform,)
     for selected in platforms:
         directory = run / selected
@@ -116,22 +136,44 @@ def check(root, platform="all", allow_dirty=False, viewinspector=False):
             sdk_version = subprocess.check_output(["xcrun", "--sdk", sdk, "--show-sdk-version"], text=True).strip()
             devices = json.loads(subprocess.check_output(["xcrun", "simctl", "list", "devices", "available", "--json"], text=True))
             destination = "id=" + selector.select_device(devices["devices"], selected, sdk_version)
-        output = logged_run(root, directory / "xcodebuild.log", [*base, "test",
-            "-destination", destination, "-destination-timeout", "60",
-            "-derivedDataPath", run / "DerivedData" / selected,
-            "-resultBundlePath", directory / "TestResults.xcresult",
-            "-onlyUsePackageVersionsFromResolvedFile", "-parallel-testing-enabled", "NO",
-            "-test-timeouts-enabled", "YES", "-default-test-execution-time-allowance", "30",
-            "-maximum-test-execution-time-allowance", "60", "CODE_SIGNING_ALLOWED=NO"])
-        counts[selected] = successful_test_count(output)
+        trace_dir = directory / "traces"
+        trace_dir.mkdir()
+        trace_env = {"TEST_RUNNER_FLEET_TRACE_OUT": str(trace_dir)}
+        test_arguments = ["test",
+                "-destination", destination, "-destination-timeout", "60",
+                "-derivedDataPath", run / "DerivedData" / selected,
+                "-onlyUsePackageVersionsFromResolvedFile", "-parallel-testing-enabled", "NO",
+                "-test-timeouts-enabled", "YES", "-default-test-execution-time-allowance", "30",
+                "-maximum-test-execution-time-allowance", "60", "CODE_SIGNING_ALLOWED=NO"]
+        # The baseline is a separate bundle that does not link Fleet, run in its own fresh host process.
+        baseline_base = ["xcodebuild", "-project", project, "-scheme", "Baseline-" + selected,
+                         "-clonedSourcePackagesDirPath", packages]
+        successful_test_count(logged_run(root, directory / "xcodebuild-baseline.log", [*baseline_base, *test_arguments,
+            "-resultBundlePath", directory / "TestResults-baseline.xcresult"], trace_env))
+        # Each policy is a fresh test-host process: the hosting policy is fixed at process start, so the
+        # preserve-timing run launches the consumer with FLEET_HOSTING_POLICY set, never per test.
+        for policy, suffix, extra_env in (("legacy", "", None),
+                                          ("preserve-timing", "-preserve-timing", {"TEST_RUNNER_FLEET_HOSTING_POLICY": "preserve-timing"})):
+            output = logged_run(root, directory / f"xcodebuild{suffix}.log", [*base, *test_arguments,
+                "-resultBundlePath", directory / f"TestResults{suffix}.xcresult"], {**trace_env, **(extra_env or {})})
+            count = successful_test_count(output)
+            if policy == "legacy":
+                counts[selected] = count
+            else:
+                policy_counts[selected] = count
+        try:
+            traces = [json.loads((trace_dir / f"{name}.json").read_text()) for name in ("baseline", "legacy", "preserve-timing")]
+        except (OSError, ValueError) as error:
+            raise DistributionError(f"Missing recorded UIKit trace for {selected}.") from error
+        compare_traces(*traces)
     if git(root, "rev-parse", "HEAD") != commit or (not allow_dirty and git(root, "status", "--porcelain")):
         raise DistributionError("The source checkout changed during consumer validation.")
     evidence = {"schema": 1, "source_commit": commit, "package_revision": revision,
-                "development_snapshot": allow_dirty, "tests": counts,
+                "development_snapshot": allow_dirty, "tests": counts, "preserve_timing_tests": policy_counts,
                 "viewinspector_revision": VIEWINSPECTOR_REVISION if viewinspector else None,
                 "validated_at": datetime.now(timezone.utc).isoformat()}
     (run / "validation.json").write_text(json.dumps(evidence, indent=2) + "\n")
-    print(f"Fleet: external consumer tests passed: {counts}. Evidence: {run / 'validation.json'}")
+    print(f"Fleet: external consumer tests passed: legacy {counts}, preserve-timing {policy_counts}. Evidence: {run / 'validation.json'}")
 
 
 def main():

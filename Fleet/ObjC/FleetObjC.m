@@ -1,6 +1,7 @@
 #import "FleetObjC.h"
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
+#import "FleetSwizzle.h"
 
 IMP createViewDidLoadImpl(void) {
     id block = ^(id self, SEL _cmd) {};
@@ -53,6 +54,10 @@ const char * getViewDidDisappearTypes(Class klass) {
 }
 
 @implementation FleetObjC
+
++ (NSString *)_hostingPolicyName {
+    return FleetResolvedHostingPolicyName();
+}
 
 + (id)_mockFor:(Class)klass {
     NSString *originalClassName = [NSString stringWithCString:class_getName(klass) encoding:NSUTF8StringEncoding];

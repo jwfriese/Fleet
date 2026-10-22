@@ -53,6 +53,8 @@ def create_project(destination, fixtures, package_url, revision, viewinspector=N
         test_file = file("PackageConsumerTests.swift", "sourcecode.swift")
         swift_testing_file = file("SwiftTestingConsumerTests.swift", "sourcecode.swift")
         proof_file = file("ViewInspector/ViewInspectorProofTests.swift", "sourcecode.swift") if inspector else None
+        scenario_file = file("HostingTraceScenario.swift", "sourcecode.swift")
+        baseline_file = file("BaselineTraceTests.swift", "sourcecode.swift")
         storyboard = file(platform + "/Consumer.storyboard", "file.storyboard")
         app_product = add(platform + "app-product", "PBXFileReference", explicitFileType="wrapper.application",
                           path="ConsumerHost-" + platform + ".app", sourceTree="BUILT_PRODUCTS_DIR")
@@ -70,7 +72,13 @@ def create_project(destination, fixtures, package_url, revision, viewinspector=N
         resources = phase("app-resources", "PBXResourcesBuildPhase", files=[build_file("storyboard-build-file", storyboard)])
         test_sources = phase("test-sources", "PBXSourcesBuildPhase", files=[build_file("test-build-file", test_file),
                                                                   build_file("swift-testing-build-file", swift_testing_file),
-                                                                  *([build_file("proof-build-file", proof_file)] if inspector else [])])
+                                                                  *([build_file("proof-build-file", proof_file)] if inspector else []),
+                                                                  build_file("scenario-build-file", scenario_file)])
+        baseline_sources = phase("baseline-sources", "PBXSourcesBuildPhase", files=[
+            build_file("baseline-test-build-file", baseline_file), build_file("baseline-scenario-build-file", scenario_file)])
+        baseline_product = add(platform + "baseline-product", "PBXFileReference", explicitFileType="wrapper.cfbundle",
+                               path="BaselineTests.xctest", sourceTree="BUILT_PRODUCTS_DIR")
+        objects[products]["children"].append(baseline_product)
         test_resources = phase("test-resources", "PBXResourcesBuildPhase", files=[])
         script = phase("metadata", "PBXShellScriptBuildPhase", files=[], alwaysOutOfDate="1",
                        inputPaths=["$(SRCROOT)/Sources/CopyStoryboardMetadata.sh"],
@@ -112,25 +120,40 @@ def create_project(destination, fixtures, package_url, revision, viewinspector=N
                        "BUNDLE_LOADER": "$(TEST_HOST)"}),
                    buildPhases=[test_sources, test_frameworks, test_resources, script], buildRules=[],
                    dependencies=[dependency], packageProductDependencies=test_dependency)
-        targets.extend([app, test])
+        # The baseline bundle links no package product, so its process never loads Fleet or its runtime hooks.
+        baseline = add(platform + "baseline", "PBXNativeTarget", name="BaselineTests-" + platform,
+                       productName="BaselineTests", productReference=baseline_product,
+                       productType="com.apple.product-type.bundle.unit-test",
+                       buildConfigurationList=configurations(platform + "baseline", {**settings,
+                           "PRODUCT_NAME": "BaselineTests", "PRODUCT_MODULE_NAME": "BaselineTests",
+                           "PRODUCT_BUNDLE_IDENTIFIER": "org.fleet.consumer.baseline." + platform,
+                           "TEST_HOST": "$(BUILT_PRODUCTS_DIR)/ConsumerHost-" + platform + ".app/ConsumerHost-" + platform,
+                           "BUNDLE_LOADER": "$(TEST_HOST)"}),
+                       buildPhases=[baseline_sources, phase("baseline-frameworks", "PBXFrameworksBuildPhase", files=[])],
+                       buildRules=[], dependencies=[dependency], packageProductDependencies=[])
+        targets.extend([app, test, baseline])
 
         def reference(identifier, product, name):
             return f'<BuildableReference BuildableIdentifier="primary" BlueprintIdentifier="{identifier}" BuildableName="{product}" BlueprintName="{name}" ReferencedContainer="container:Consumer.xcodeproj"/>'
 
         app_ref = reference(app, "ConsumerHost-" + platform + ".app", app_name)
         test_ref = reference(test, "ConsumerTests.xctest", "ConsumerTests-" + platform)
-        scheme = f'''<?xml version="1.0" encoding="UTF-8"?>
+        baseline_ref = reference(baseline, "BaselineTests.xctest", "BaselineTests-" + platform)
+
+        def scheme_xml(tests):
+            return f'''<?xml version="1.0" encoding="UTF-8"?>
 <Scheme LastUpgradeVersion="2660" version="1.3">
   <BuildAction parallelizeBuildables="YES" buildImplicitDependencies="YES"><BuildActionEntries>
     <BuildActionEntry buildForTesting="YES" buildForRunning="YES" buildForProfiling="NO" buildForArchiving="NO" buildForAnalyzing="YES">{app_ref}</BuildActionEntry>
-    <BuildActionEntry buildForTesting="YES" buildForRunning="NO" buildForProfiling="NO" buildForArchiving="NO" buildForAnalyzing="YES">{test_ref}</BuildActionEntry>
+    <BuildActionEntry buildForTesting="YES" buildForRunning="NO" buildForProfiling="NO" buildForArchiving="NO" buildForAnalyzing="YES">{tests}</BuildActionEntry>
   </BuildActionEntries></BuildAction>
-  <TestAction buildConfiguration="Debug" selectedDebuggerIdentifier="Xcode.DebuggerFoundation.Debugger.LLDB" selectedLauncherIdentifier="Xcode.IDEFoundation.Launcher.LLDB" shouldUseLaunchSchemeArgsEnv="YES"><Testables><TestableReference skipped="NO" parallelizable="NO">{test_ref}</TestableReference></Testables><MacroExpansion>{app_ref}</MacroExpansion></TestAction>
+  <TestAction buildConfiguration="Debug" selectedDebuggerIdentifier="Xcode.DebuggerFoundation.Debugger.LLDB" selectedLauncherIdentifier="Xcode.IDEFoundation.Launcher.LLDB" shouldUseLaunchSchemeArgsEnv="YES"><Testables><TestableReference skipped="NO" parallelizable="NO">{tests}</TestableReference></Testables><MacroExpansion>{app_ref}</MacroExpansion></TestAction>
   <LaunchAction buildConfiguration="Debug" selectedDebuggerIdentifier="Xcode.DebuggerFoundation.Debugger.LLDB" selectedLauncherIdentifier="Xcode.IDEFoundation.Launcher.LLDB" launchStyle="0" useCustomWorkingDirectory="NO" ignoresPersistentStateOnLaunch="NO" debugDocumentVersioning="YES" allowLocationSimulation="YES"><BuildableProductRunnable runnableDebuggingMode="0">{app_ref}</BuildableProductRunnable></LaunchAction>
   <AnalyzeAction buildConfiguration="Debug"/><ArchiveAction buildConfiguration="Release" revealArchiveInOrganizer="YES"/>
 </Scheme>
 '''
-        (schemes / ("Consumer-" + platform + ".xcscheme")).write_text(scheme)
+        (schemes / ("Consumer-" + platform + ".xcscheme")).write_text(scheme_xml(test_ref))
+        (schemes / ("Baseline-" + platform + ".xcscheme")).write_text(scheme_xml(baseline_ref))
 
     root = add("project", "PBXProject", attributes={"LastUpgradeCheck": "2660"},
                buildConfigurationList=configurations("project", {}), compatibilityVersion="Xcode 14.0",
