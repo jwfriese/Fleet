@@ -119,7 +119,7 @@ def create_project(destination, fixtures, package_url, revision, viewinspector=N
                        "TEST_HOST": "$(BUILT_PRODUCTS_DIR)/ConsumerHost-" + platform + ".app/ConsumerHost-" + platform,
                        "BUNDLE_LOADER": "$(TEST_HOST)"}),
                    buildPhases=[test_sources, test_frameworks, test_resources, script], buildRules=[],
-                   dependencies=[dependency], packageProductDependencies=[test_dependency])
+                   dependencies=[dependency], packageProductDependencies=test_dependency)
         # The baseline bundle links no package product, so its process never loads Fleet or its runtime hooks.
         baseline = add(platform + "baseline", "PBXNativeTarget", name="BaselineTests-" + platform,
                        productName="BaselineTests", productReference=baseline_product,
