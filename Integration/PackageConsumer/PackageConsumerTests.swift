@@ -402,6 +402,25 @@ final class PackageConsumerTests: XCTestCase {
         XCTAssertEqual(count, 1)
     }
 
+    func testStrictAlertTapReportsCaptureEvidence() async throws {
+        let root = UIViewController()
+        Fleet.setAsAppWindowRoot(root)
+        let alert = UIAlertController(title: "Strict", message: nil, preferredStyle: .alert)
+        var count = 0
+        alert.addAction(UIAlertAction(title: "Run", style: .default) { _ in count += 1 })
+        let presented = expectation(description: "Alert presented")
+        root.present(alert, animated: false) { presented.fulfill() }
+        await fulfillment(of: [presented], timeout: 5)
+        XCTAssertEqual(alert.alertHandlerCapture(forActionWithTitle: "Run"), .observedHandler)
+        XCTAssertThrowsError(try alert.tapAlertActionStrictlyOrThrow(withTitle: "Missing")) { error in
+            XCTAssertEqual((error as? FleetFailure)?.kind, .invalidInput)
+        }
+        XCTAssertEqual(try alert.tapAlertActionStrictlyOrThrow(withTitle: "Run"), .handlerInvoked)
+        let deadline = Date().addingTimeInterval(5)
+        while count == 0 && Date() < deadline { try await Task.sleep(nanoseconds: 20_000_000) }
+        XCTAssertEqual(count, 1)
+    }
+
 #if os(iOS)
     func testContextualActionLeadingAndTrailingReplacements() {
         let source = SwipeSource()
