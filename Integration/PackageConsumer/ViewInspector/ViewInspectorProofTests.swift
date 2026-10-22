@@ -205,20 +205,20 @@ struct ViewInspectorOwnershipTests {
         let model = CounterModel()
         let seam = InspectionSeam<CounterScreen>()
         let view = CounterScreen(seam: seam).environmentObject(model)
-        // ViewInspector caches its window in a static property, so it may already be attached (hidden)
-        // from an earlier run in this process; compare visible foreign windows, not window identities.
-        func visibleForeignWindows() -> [UIWindow] {
-            scene.windows.filter { $0 !== host && !$0.isHidden }
+        // ViewInspector caches its window in a static property and only shows it when first created, so on
+        // a repeated run it is already attached (and hidden by the cleanup below). Assert on attachment to
+        // the scene, not visibility, and hide it again afterwards.
+        func foreignWindows() -> [UIWindow] {
+            scene.windows.filter { $0 !== host }
         }
-        defer { visibleForeignWindows().forEach { $0.isHidden = true } }
-        #expect(visibleForeignWindows().isEmpty)
+        defer { foreignWindows().forEach { $0.isHidden = true } }
         try await Fleet.withContext(window: host) { _ in
             ViewHosting.host(view: view)
             defer { ViewHosting.expel() }
-            #expect(!visibleForeignWindows().isEmpty, "ViewHosting.host shows its own window")
+            #expect(!foreignWindows().isEmpty, "ViewHosting.host uses its own window, not the Fleet host")
         }
         // Observed with 0.10.5: `expel()` does not detach ViewInspector's window from the scene.
-        #expect(!visibleForeignWindows().isEmpty)
+        #expect(!foreignWindows().isEmpty)
     }
 }
 
