@@ -24,6 +24,37 @@ private class LifecycleSpy: UIViewController {
 }
 
 @MainActor
+private final class ConsumerTraceLog {
+    var events: [String] = []
+}
+
+private final class ConsumerTracingController: UIViewController {
+    let name: String
+    let log: ConsumerTraceLog
+    init(name: String, log: ConsumerTraceLog) {
+        self.name = name
+        self.log = log
+        super.init(nibName: nil, bundle: nil)
+    }
+    required init?(coder: NSCoder) { fatalError("unused") }
+    override func viewWillAppear(_ animated: Bool) { super.viewWillAppear(animated); log.events.append("\(name).viewWillAppear(animated: \(animated))") }
+    override func viewDidAppear(_ animated: Bool) { super.viewDidAppear(animated); log.events.append("\(name).viewDidAppear(animated: \(animated))") }
+    override func viewWillDisappear(_ animated: Bool) { super.viewWillDisappear(animated); log.events.append("\(name).viewWillDisappear(animated: \(animated))") }
+}
+
+@MainActor
+private final class ConsumerTracingDelegate: NSObject, UINavigationControllerDelegate {
+    let log: ConsumerTraceLog
+    init(log: ConsumerTraceLog) { self.log = log }
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        log.events.append("delegate.willShow(\((viewController as? ConsumerTracingController)?.name ?? "?"), animated: \(animated))")
+    }
+    func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
+        log.events.append("delegate.didShow(\((viewController as? ConsumerTracingController)?.name ?? "?"), animated: \(animated))")
+    }
+}
+
+@MainActor
 private final class ConsumerFlag {
     var value = false
 }
@@ -136,16 +167,80 @@ final class PackageConsumerTests: XCTestCase {
         XCTAssertEqual(target.count, 1)
     }
 
-    func testHostedNavigationPushAndPop() {
+    func testHostedNavigationPushAndPop() async throws {
         let root = UIViewController()
         let navigation = Fleet.setInAppWindowRootNavigation(root)
         XCTAssertTrue(window.rootViewController === navigation)
         XCTAssertNotNil(Fleet.getApplicationScreen())
         let detail = UIViewController()
         navigation.pushViewController(detail, animated: true)
+        // Legacy completes synchronously; preserve-timing keeps UIKit's animated transition, so wait for it.
+        try await waitUntilSettled { navigation.transitionCoordinator == nil && navigation.topViewController === detail }
         XCTAssertTrue(navigation.topViewController === detail)
-        XCTAssertTrue(navigation.popViewController(animated: true) === detail)
+        let popped = navigation.popViewController(animated: true)
+        XCTAssertTrue(popped === detail)
+        try await waitUntilSettled { navigation.transitionCoordinator == nil && navigation.topViewController === root }
         XCTAssertTrue(navigation.topViewController === root)
+    }
+
+    func testActiveHostingPolicyMatchesProcessStartConfiguration() {
+        let requested = ProcessInfo.processInfo.environment["FLEET_HOSTING_POLICY"]
+        let expected = (requested?.isEmpty == false) ? requested : "legacy"
+        XCTAssertEqual(Fleet.hostingPolicy.rawValue, expected)
+    }
+
+    /// Records UIKit-observable ordering and animated arguments for an animated offscreen push followed by
+    /// an onscreen push. Legacy forces nonanimated eager navigation; preserve-timing leaves UIKit's behavior.
+    func testNavigationOrderingAndAnimatedArgumentsFollowTheActivePolicy() async throws {
+        let log = ConsumerTraceLog()
+        let root = ConsumerTracingController(name: "root", log: log)
+        let delegate = ConsumerTracingDelegate(log: log)
+        let offscreen = UINavigationController(rootViewController: root)
+        offscreen.delegate = delegate
+        let hidden = ConsumerTracingController(name: "hidden", log: log)
+        offscreen.pushViewController(hidden, animated: true)
+        switch Fleet.hostingPolicy {
+        case .preserveTiming:
+            XCTAssertFalse(hidden.isViewLoaded, "preserve-timing must not eagerly load a pushed controller of an offscreen navigation controller")
+        case .legacy:
+            XCTAssertTrue(hidden.isViewLoaded, "legacy loads pushed views eagerly")
+        }
+
+        let visibleRoot = ConsumerTracingController(name: "visibleRoot", log: log)
+        let visible = Fleet.setInAppWindowRootNavigation(visibleRoot)
+        visible.delegate = delegate
+        let detail = ConsumerTracingController(name: "detail", log: log)
+        visible.pushViewController(detail, animated: true)
+        try await waitUntilSettled { log.events.contains { $0.hasPrefix("delegate.didShow(detail") } && visible.transitionCoordinator == nil }
+
+        let expectedAnimated = Fleet.hostingPolicy == .preserveTiming
+        XCTAssertTrue(log.events.contains("delegate.willShow(detail, animated: \(expectedAnimated))"), "\(log.events)")
+        XCTAssertTrue(log.events.contains("delegate.didShow(detail, animated: \(expectedAnimated))"), "\(log.events)")
+        // Relative ordering holds under both policies.
+        withExtendedLifetime(delegate) {}
+        XCTAssertLessThan(try XCTUnwrap(log.events.firstIndex(of: "detail.viewWillAppear(animated: \(expectedAnimated))")),
+                          try XCTUnwrap(log.events.firstIndex(of: "detail.viewDidAppear(animated: \(expectedAnimated))")))
+        XCTAssertLessThan(try XCTUnwrap(log.events.firstIndex(of: "delegate.willShow(detail, animated: \(expectedAnimated))")),
+                          try XCTUnwrap(log.events.firstIndex(of: "delegate.didShow(detail, animated: \(expectedAnimated))")))
+    }
+
+    /// Modal completions run after presentation and dismissal; preserve-timing requires waiting for them.
+    func testPresentationAndDismissalCompletionsFollowTheActivePolicy() async throws {
+        let log = ConsumerTraceLog()
+        let root = ConsumerTracingController(name: "root", log: log)
+        Fleet.setAsAppWindowRoot(root)
+        let modal = ConsumerTracingController(name: "modal", log: log)
+        root.present(modal, animated: true) { log.events.append("present.completion") }
+        try await waitUntilSettled { log.events.contains("present.completion") }
+        XCTAssertTrue(root.presentedViewController === modal)
+        let expectedAnimated = Fleet.hostingPolicy == .preserveTiming
+        XCTAssertTrue(log.events.contains("modal.viewWillAppear(animated: \(expectedAnimated))"), "\(log.events)")
+        root.dismiss(animated: true) { log.events.append("dismiss.completion") }
+        try await waitUntilSettled { log.events.contains("dismiss.completion") }
+        XCTAssertNil(root.presentedViewController)
+        XCTAssertTrue(log.events.contains("modal.viewWillDisappear(animated: \(expectedAnimated))"), "\(log.events)")
+        XCTAssertLessThan(try XCTUnwrap(log.events.firstIndex(of: "modal.viewWillAppear(animated: \(expectedAnimated))")),
+                          try XCTUnwrap(log.events.firstIndex(of: "present.completion")))
     }
 
     func testEmptyAndRootOnlyNavigationPopsPreserveTheRoot() {

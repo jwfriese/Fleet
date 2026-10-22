@@ -29,6 +29,11 @@ class UINavigationController_FleetSpec: XCTestCase {
         try await super.tearDown()
     }
 
+    /// These tests pin the legacy contract: nonanimated, synchronous navigation with eagerly loaded pushed views.
+    private func requireLegacyHostingPolicy() throws {
+        try XCTSkipUnless(Fleet.hostingPolicy == .legacy, "Legacy-only contract; preserve-timing keeps UIKit's animated navigation timing")
+    }
+
     func test_pushViewController_immediatelySetsTheViewControllerAsTheTopController() {
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
@@ -41,7 +46,8 @@ class UINavigationController_FleetSpec: XCTestCase {
         expect(navigationController.topViewController).to(beIdenticalTo(controllerToPush))
     }
 
-    func test_pushViewController_immediatelyLoadsThePushedViewController() {
+    func test_pushViewController_immediatelyLoadsThePushedViewController() throws {
+        try requireLegacyHostingPolicy()
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
         let window = fixture.makeKeyWindow(root: navigationController)
@@ -89,7 +95,8 @@ class UINavigationController_FleetSpec: XCTestCase {
         expect(poppedViewController).to(beIdenticalTo(controllerToPushThenPop))
     }
 
-    func test_popViewController_immediatelySetsTheNextViewControllerInStackAsTopViewController() {
+    func test_popViewController_immediatelySetsTheNextViewControllerInStackAsTopViewController() throws {
+        try requireLegacyHostingPolicy()
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
         let window = fixture.makeKeyWindow(root: navigationController)
@@ -102,7 +109,8 @@ class UINavigationController_FleetSpec: XCTestCase {
         expect(navigationController.topViewController).to(beIdenticalTo(root))
     }
 
-    func test_popToViewController_immediatelySetsTheGivenViewControllerAsTopViewController() {
+    func test_popToViewController_immediatelySetsTheGivenViewControllerAsTopViewController() throws {
+        try requireLegacyHostingPolicy()
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
         let window = fixture.makeKeyWindow(root: navigationController)
@@ -120,7 +128,8 @@ class UINavigationController_FleetSpec: XCTestCase {
         expect(navigationController.topViewController).to(beIdenticalTo(controllerOne))
     }
 
-    func test_popToViewController_whenTheNavigationControllerIsInVisibleWindow_returnsThePoppedViewControllers() {
+    func test_popToViewController_whenTheNavigationControllerIsInVisibleWindow_returnsThePoppedViewControllers() throws {
+        try requireLegacyHostingPolicy()
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
         let window = fixture.makeKeyWindow(root: navigationController)
@@ -144,7 +153,8 @@ class UINavigationController_FleetSpec: XCTestCase {
         }
     }
 
-    func test_popToViewController_whenTheNavigationControllerNotInVisibleWindow_returnsPoppedControllers() {
+    func test_popToViewController_whenTheNavigationControllerNotInVisibleWindow_returnsPoppedControllers() throws {
+        try requireLegacyHostingPolicy()
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
         let window = fixture.adopt(UIWindow())
@@ -183,7 +193,8 @@ class UINavigationController_FleetSpec: XCTestCase {
         expect(navigationController.topViewController).to(beIdenticalTo(root))
     }
 
-    func test_popToRootViewController_whenTheNavigationControllerIsInVisibleWindow_returnsThePoppedViewControllers() {
+    func test_popToRootViewController_whenTheNavigationControllerIsInVisibleWindow_returnsThePoppedViewControllers() throws {
+        try requireLegacyHostingPolicy()
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
         let window = fixture.makeKeyWindow(root: navigationController)
@@ -205,7 +216,8 @@ class UINavigationController_FleetSpec: XCTestCase {
         }
     }
 
-    func test_popToRootViewController_whenTheNavigationControllerIsNotInVisibleWindow_returnsPoppedControllers() {
+    func test_popToRootViewController_whenTheNavigationControllerIsNotInVisibleWindow_returnsPoppedControllers() throws {
+        try requireLegacyHostingPolicy()
         let root = UIViewController()
         let navigationController = UINavigationController(rootViewController: root)
         let window = fixture.adopt(UIWindow())
@@ -248,7 +260,8 @@ class UINavigationController_FleetSpec: XCTestCase {
         expect(delegate.events).toEventually(equal(["willShow", "didShow"]))
     }
 
-    func test_popViewController_notifiesDelegateInOrder() {
+    func test_popViewController_notifiesDelegateInOrder() throws {
+        try requireLegacyHostingPolicy()
         let navigationController = UINavigationController(rootViewController: UIViewController())
         let window = fixture.makeKeyWindow(root: navigationController)
         navigationController.pushViewController(UIViewController(), animated: false)
@@ -465,7 +478,37 @@ class UINavigationController_FleetSpec: XCTestCase {
         return results + trace.events
     }
 
-    func test_navigationTrace_matchesUnhookedUIKitReference() async {
+    /// Preserve-timing installs no navigation hooks: the delegate sees the caller's animated argument.
+    func test_preserveTiming_forwardsAnimatedArgumentsAndLeavesPushedViewUnloaded() async throws {
+        try XCTSkipUnless(Fleet.hostingPolicy == .preserveTiming, "Runs only under FLEET_HOSTING_POLICY=preserve-timing")
+        let trace = TraceLog()
+        let root = TracingViewController(name: "root", trace: trace)
+        let navigation = UINavigationController(rootViewController: root)
+        let window = fixture.makeKeyWindow(root: navigation)
+        let delegate = TracingDelegate(trace: trace)
+        navigation.delegate = delegate
+        defer { withExtendedLifetime(delegate) {}; window.isHidden = true }
+        let a = TracingViewController(name: "a", trace: trace)
+
+        // UIKit itself downgrades a push issued while the root's first appearance is still pending, so settle first.
+        let appeared = Date().addingTimeInterval(5)
+        while Date() < appeared, !trace.events.contains("root.viewDidAppear") {
+            try await Task.sleep(nanoseconds: 20_000_000)
+        }
+        expect(trace.events).to(contain("root.viewDidAppear"))
+        navigation.pushViewController(a, animated: true)
+        expect(a.isViewLoaded).to(beFalse())
+        let deadline = Date().addingTimeInterval(5)
+        while Date() < deadline, !trace.events.contains("delegate.didShow(a, animated: true)") {
+            try await Task.sleep(nanoseconds: 20_000_000)
+        }
+        expect(trace.events).to(contain("delegate.willShow(a, animated: true)"))
+        expect(trace.events).to(contain("delegate.didShow(a, animated: true)"))
+        expect(trace.events).toNot(contain("delegate.willShow(a, animated: false)"))
+    }
+
+    func test_navigationTrace_matchesUnhookedUIKitReference() async throws {
+        try XCTSkipUnless(Fleet.hostingPolicy == .legacy, "The fleet_ selectors hold UIKit's code only when the legacy policy installs the navigation hooks")
         let reference = await runScenario(.reference)
         let fleet = await runScenario(.fleet)
 
@@ -510,7 +553,8 @@ class UINavigationController_FleetSpec: XCTestCase {
         return trace.events
     }
 
-    func test_spacedPushAndPopTo_deliverDelegateAndLifecycleCallbacksLikeUnhookedUIKitReference() async {
+    func test_spacedPushAndPopTo_deliverDelegateAndLifecycleCallbacksLikeUnhookedUIKitReference() async throws {
+        try XCTSkipUnless(Fleet.hostingPolicy == .legacy, "The fleet_ selectors hold UIKit's code only when the legacy policy installs the navigation hooks")
         let reference = await runSpacedScenario(.reference)
         let fleet = await runSpacedScenario(.fleet)
 
@@ -519,7 +563,8 @@ class UINavigationController_FleetSpec: XCTestCase {
         expect(fleet).to(equal(reference))
     }
 
-    func test_navigationReturnValues_matchUnhookedUIKitReference() async {
+    func test_navigationReturnValues_matchUnhookedUIKitReference() async throws {
+        try XCTSkipUnless(Fleet.hostingPolicy == .legacy, "The fleet_ selectors hold UIKit's code only when the legacy policy installs the navigation hooks")
         let reference = await runScenario(.reference)
         let fleet = await runScenario(.fleet)
         let returns = { (trace: [String]) in trace.filter { $0.contains("->") } }
