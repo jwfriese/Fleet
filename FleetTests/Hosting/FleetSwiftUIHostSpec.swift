@@ -57,6 +57,22 @@ private struct DisappearScreen: View {
     }
 }
 
+private final class SlowCleanup {
+    var finished = false
+}
+
+private struct SlowCleanupScreen: View {
+    let cleanup: SlowCleanup
+    var body: some View {
+        Text("slow").fleetObservedTask("slow") {
+            while !Task.isCancelled { try? await Task.sleep(nanoseconds: 5_000_000) }
+            // Acknowledges cancellation, then takes longer than the teardown bound to finish.
+            await Task { try? await Task.sleep(nanoseconds: 3_000_000_000) }.value
+            cleanup.finished = true
+        }
+    }
+}
+
 private struct HostError: Error {}
 
 @MainActor
@@ -236,6 +252,37 @@ class FleetSwiftUIHostSpec: XCTestCase {
         } catch let failure as FleetFailure {
             XCTAssertEqual(failure.kind, .invalidSetup)
             XCTAssertEqual(failure.source?.line, UInt(endedLine))
+        }
+    }
+
+    func test_immediateMount_cannotStartObservedWorkAfterScope() async throws {
+        let work = FakeWork()
+        let model = HostedModel()
+        try await Fleet.withContext(window: hostWindow) { context in
+            _ = try context.mount(HostedScreen(work: work, taskID: 0).environmentObject(model))
+        }
+        try await Fleet.withContext(window: hostWindow) { context in
+            try? await context.waitUntil("run-loop turns to pass", timeout: 0.3) { false }
+        }
+        XCTAssertEqual(work.started, 0, "work must not start after its scope ended")
+    }
+
+    func test_teardownDeadline_reportsTypedTimeout() async throws {
+        let cleanup = SlowCleanup()
+        do {
+            try await Fleet.withHostedView(SlowCleanupScreen(cleanup: cleanup), window: hostWindow) { handle in
+                try await handle.waitForTaskStart("slow")
+            }
+            XCTFail("expected a cleanup timeout")
+        } catch let failure as FleetFailure {
+            XCTAssertEqual(failure.kind, .timedOut)
+            XCTAssertEqual(failure.action, "tear down hosted view")
+            XCTAssertNotNil(failure.source)
+        }
+        XCTAssertFalse(cleanup.finished)
+        // Let the slow fake finish so it cannot affect the next test.
+        try await Fleet.withContext(window: hostWindow) { context in
+            try await context.waitUntil("slow cleanup to finish", timeout: 5) { cleanup.finished }
         }
     }
 }

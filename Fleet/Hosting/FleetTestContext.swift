@@ -37,7 +37,7 @@ public final class FleetTestContext {
     }
 
     private var cleanups: [@MainActor () -> Void] = []
-    private var asyncCleanups: [@MainActor () async -> Void] = []
+    private var asyncCleanups: [@MainActor () async throws -> Void] = []
     private var adoptedBindings: [WeakStoryboardBinding] = []
 
     /// Arranges for this context's registrations on `binding` to be removed when the scope ends.
@@ -66,7 +66,8 @@ public final class FleetTestContext {
 
     /// As `addCleanup`, for bounded asynchronous teardown. These run after the synchronous
     /// cleanups, last registered first, before the window is restored and the lease released.
-    func addAsyncCleanup(_ cleanup: @escaping @MainActor () async -> Void) throws {
+    /// A cleanup that throws is reported after every cleanup has run, unless the body already threw.
+    func addAsyncCleanup(_ cleanup: @escaping @MainActor () async throws -> Void) throws {
         guard isActive else { throw Self.contextEnded }
         asyncCleanups.append(cleanup)
     }
@@ -206,13 +207,16 @@ public final class FleetTestContext {
         }
     }
 
-    func tearDown() async {
+    func tearDown() async -> Error? {
+        var cleanupError: Error?
         isActive = false
         let id = ObjectIdentifier(self)
         for adopted in adoptedBindings { adopted.value?.removeRegistrations(ownedBy: id) }
         adoptedBindings.removeAll()
         while let cleanup = cleanups.popLast() { cleanup() }
-        while let cleanup = asyncCleanups.popLast() { await cleanup() }
+        while let cleanup = asyncCleanups.popLast() {
+            do { try await cleanup() } catch { cleanupError = cleanupError ?? error }
+        }
         window.endEditing(true)
         if let root = window.rootViewController, root.presentedViewController != nil {
             await dismissPresented(of: root)
@@ -234,6 +238,7 @@ public final class FleetTestContext {
         previousRoot = nil
         previousKeyWindow = nil
         cleanups.removeAll()
+        return cleanupError
     }
 
     /// Dismisses without animation and waits (bounded, immune to task cancellation) for completion.
@@ -319,17 +324,19 @@ extension Fleet {
         try await coordinator.acquire()
         let context = makeContext()
         context.setUp()
+        let value: T
         do {
-            let value = try await FleetTestContext.$current.withValue(context) {
+            value = try await FleetTestContext.$current.withValue(context) {
                 try await body(context)
             }
-            await context.tearDown()
-            coordinator.release()
-            return value
         } catch {
-            await context.tearDown()
+            _ = await context.tearDown()
             coordinator.release()
             throw error
         }
+        let cleanupError = await context.tearDown()
+        coordinator.release()
+        if let cleanupError { throw cleanupError }
+        return value
     }
 }
