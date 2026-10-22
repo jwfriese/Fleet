@@ -69,6 +69,7 @@ else:
         self.assertEqual(evidence["source_commit"], revision)
         self.assertEqual(evidence["package_revision"], revision)
         self.assertEqual(evidence["tests"], {"ios": 8})
+        self.assertEqual(evidence["preserve_timing_tests"], {"ios": 8})
         self.assertFalse(evidence["development_snapshot"])
 
     def test_dirty_checkout_is_rejected_before_running_consumers(self):

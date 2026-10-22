@@ -132,9 +132,11 @@ public final class FleetTestContext {
 
     /// Waits until no view controller in the window's presentation/navigation chain reports an
     /// in-flight transition (`transitionCoordinator`). This observes UIKit transitions only.
+    /// Controllers whose views are not in a window (for example a deselected tab's navigation stack) are
+    /// not awaited: UIKit does not advance their animated transitions until they return on screen.
     public func waitForTransitionsToFinish(timeout: TimeInterval = 5) async throws {
         try await waitUntil("view controller transitions to finish", timeout: timeout) {
-            self.transitionControllers().allSatisfy { $0.transitionCoordinator == nil }
+            self.transitionControllers().allSatisfy { $0.transitionCoordinator == nil || $0.viewIfLoaded?.window == nil }
         }
     }
 
@@ -142,13 +144,29 @@ public final class FleetTestContext {
         var result: [UIViewController] = []
         var current = window.rootViewController
         while let controller = current {
-            result.append(controller)
-            if let navigation = controller as? UINavigationController {
-                result.append(contentsOf: navigation.viewControllers)
-            }
+            collectTransitionControllers(in: controller, into: &result)
             current = controller.presentedViewController
         }
         return result
+    }
+
+    /// Visits a controller and its contained children (tabs, navigation stacks, other containers),
+    /// so a navigation controller nested in a non-selected or selected tab is observed too.
+    private func collectTransitionControllers(in controller: UIViewController, into result: inout [UIViewController]) {
+        result.append(controller)
+        for child in controller.children {
+            collectTransitionControllers(in: child, into: &result)
+        }
+        if let navigation = controller as? UINavigationController {
+            for pushed in navigation.viewControllers where !result.contains(pushed) {
+                collectTransitionControllers(in: pushed, into: &result)
+            }
+        }
+        if let tabs = controller as? UITabBarController {
+            for tab in tabs.viewControllers ?? [] where !result.contains(tab) {
+                collectTransitionControllers(in: tab, into: &result)
+            }
+        }
     }
 
     func snapshot() -> String {
