@@ -293,6 +293,17 @@ class FleetSwiftUIHostSpec: XCTestCase {
         XCTAssertEqual(appearances, atReturn, "removed screen's onAppear must not run in a later scope")
     }
 
+    func test_immediateRemove_deliversAppearAndDisappearBeforeReturning() async throws {
+        var events: [String] = []
+        try await Fleet.withContext(window: hostWindow) { context in
+            let host = try context.mount(Text("removed at once")
+                .onAppear { events.append("appeared") }
+                .onDisappear { events.append("disappeared") })
+            try await host.remove()
+            XCTAssertEqual(events, ["appeared", "disappeared"])
+        }
+    }
+
     func test_escapedHandle_layoutIfNeeded_throwsInvalidSetup() async throws {
         var escaped: FleetHostedView?
         try await Fleet.withHostedView(Text("scoped"), window: hostWindow) { escaped = $0 }
