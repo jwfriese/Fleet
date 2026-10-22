@@ -53,6 +53,7 @@ def create_project(destination, fixtures, package_url, revision, viewinspector=N
         test_file = file("PackageConsumerTests.swift", "sourcecode.swift")
         swift_testing_file = file("SwiftTestingConsumerTests.swift", "sourcecode.swift")
         proof_file = file("ViewInspector/ViewInspectorProofTests.swift", "sourcecode.swift") if inspector else None
+        swiftui_file = file("SwiftUIHostingConsumerTests.swift", "sourcecode.swift")
         scenario_file = file("HostingTraceScenario.swift", "sourcecode.swift")
         baseline_file = file("BaselineTraceTests.swift", "sourcecode.swift")
         storyboard = file(platform + "/Consumer.storyboard", "file.storyboard")
@@ -72,6 +73,7 @@ def create_project(destination, fixtures, package_url, revision, viewinspector=N
         resources = phase("app-resources", "PBXResourcesBuildPhase", files=[build_file("storyboard-build-file", storyboard)])
         test_sources = phase("test-sources", "PBXSourcesBuildPhase", files=[build_file("test-build-file", test_file),
                                                                   build_file("swift-testing-build-file", swift_testing_file),
+                                                                  build_file("swiftui-build-file", swiftui_file),
                                                                   *([build_file("proof-build-file", proof_file)] if inspector else []),
                                                                   build_file("scenario-build-file", scenario_file)])
         baseline_sources = phase("baseline-sources", "PBXSourcesBuildPhase", files=[
