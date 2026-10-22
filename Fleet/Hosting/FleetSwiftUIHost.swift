@@ -158,7 +158,12 @@ public final class FleetHostedView {
     }
 
     /// Lower-level step: runs a layout pass on the window. Never called implicitly by `mount`.
-    public func layoutIfNeeded() {
+    public func layoutIfNeeded(fileID: String = #fileID, line: UInt = #line) throws {
+        do {
+            try requireActive("lay out hosted view")
+        } catch let failure as FleetFailure {
+            throw failure.attributed(to: FleetSourceLocation(fileID: fileID, line: line))
+        }
         context.window.layoutIfNeeded()
     }
 
@@ -245,13 +250,16 @@ public final class FleetHostedView {
     /// the deadline; Fleet does not force-cancel it.
     func dismantle(drainTimeout: TimeInterval = 2) async throws {
         lifecycle.close()
-        if !isRemoved, !lifecycle.isAppeared {
-            // An immediate mount may still owe SwiftUI's `onAppear`. Deliver it now (bounded)
-            // so the matching `onDisappear` follows removal inside this scope, not the next one.
-            hostingController.view.setNeedsLayout()
-            context.window.layoutIfNeeded()
+        if lifecycle.count(of: .appeared) == 0 {
+            // An immediate mount (or one removed right away) may still owe SwiftUI's `onAppear`.
+            // Deliver it now (bounded) so the matching `onDisappear` follows removal inside this
+            // scope, not the next one.
+            if !isRemoved {
+                hostingController.view.setNeedsLayout()
+                context.window.layoutIfNeeded()
+            }
             let appearDeadline = Date().addingTimeInterval(0.5)
-            while !lifecycle.isAppeared, appearDeadline.timeIntervalSinceNow > 0 {
+            while lifecycle.count(of: .appeared) == 0, appearDeadline.timeIntervalSinceNow > 0 {
                 await Task { @MainActor in try? await Task.sleep(nanoseconds: 10_000_000) }.value
             }
         }
