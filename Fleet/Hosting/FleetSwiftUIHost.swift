@@ -245,6 +245,16 @@ public final class FleetHostedView {
     /// the deadline; Fleet does not force-cancel it.
     func dismantle(drainTimeout: TimeInterval = 2) async throws {
         lifecycle.close()
+        if !isRemoved, !lifecycle.isAppeared {
+            // An immediate mount may still owe SwiftUI's `onAppear`. Deliver it now (bounded)
+            // so the matching `onDisappear` follows removal inside this scope, not the next one.
+            hostingController.view.setNeedsLayout()
+            context.window.layoutIfNeeded()
+            let appearDeadline = Date().addingTimeInterval(0.5)
+            while !lifecycle.isAppeared, appearDeadline.timeIntervalSinceNow > 0 {
+                await Task { @MainActor in try? await Task.sleep(nanoseconds: 10_000_000) }.value
+            }
+        }
         removeFromWindow()
         let deadline = Date().addingTimeInterval(drainTimeout)
         func tasksRunning() -> Bool {
