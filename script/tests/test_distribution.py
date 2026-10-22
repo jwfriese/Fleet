@@ -48,6 +48,18 @@ if '-resolvePackageDependencies' in sys.argv:
     lock.parent.mkdir(parents=True, exist_ok=True)
     lock.write_text(json.dumps({'pins': [{'state': {'revision': revision}}]}))
 else:
+    out = os.environ.get('TEST_RUNNER_FLEET_TRACE_OUT')
+    if out:
+        scheme = sys.argv[sys.argv.index('-scheme') + 1]
+        policy = os.environ.get('TEST_RUNNER_FLEET_HOSTING_POLICY', 'legacy')
+        animated = 'false' if policy == 'legacy' and not scheme.startswith('Baseline') else 'true'
+        loaded = 'true' if animated == 'false' else 'false'
+        trace = ['offscreen.hiddenViewLoaded=' + loaded, 'push.returned', 'delegate.didShow(detail, animated: ' + animated + ')',
+                 'pop.returned', 'present.completion', 'dismiss.completion']
+        if os.environ.get('FLEET_FAKE_TRACE_DRIFT') and policy == 'preserve-timing':
+            trace.reverse()
+        name = 'baseline' if scheme.startswith('Baseline') else policy
+        pathlib.Path(out, name + '.json').write_text(json.dumps(trace))
     print(os.environ.get('FLEET_FAKE_TEST_OUTPUT', 'Executed 8 tests, with 0 failures\\n** TEST SUCCEEDED **'))
     sys.exit(int(os.environ.get('FLEET_FAKE_TEST_EXIT', '0')))
 ''')
@@ -94,6 +106,12 @@ else:
     def test_failed_consumer_command_cannot_produce_evidence(self):
         self.environment["FLEET_FAKE_TEST_EXIT"] = "65"
         with self.assertRaisesRegex(checker.DistributionError, "failed \\(65\\)"):
+            self.check()
+        self.assertEqual(self.evidence(), [])
+
+    def test_preserve_timing_trace_differing_from_the_baseline_cannot_produce_evidence(self):
+        self.environment["FLEET_FAKE_TRACE_DRIFT"] = "1"
+        with self.assertRaisesRegex(checker.DistributionError, "differs from the no-Fleet baseline"):
             self.check()
         self.assertEqual(self.evidence(), [])
 
