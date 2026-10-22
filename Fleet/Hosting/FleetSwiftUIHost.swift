@@ -23,10 +23,13 @@ public final class FleetLifecycleRecorder {
     public private(set) var events: [FleetLifecycleEvent] = []
     /// Number of times the hosted content has been told to refresh since mounting.
     public private(set) var updateCount = 0
+    /// Set once the screen is being torn down; observed tasks that have not yet started will not run.
+    private(set) var isClosed = false
 
     public init() {}
 
     func record(_ event: FleetLifecycleEvent) { events.append(event) }
+    func close() { isClosed = true }
     func recordUpdate() { updateCount += 1 }
 
     public func count(of event: FleetLifecycleEvent) -> Int { events.filter { $0 == event }.count }
@@ -53,6 +56,8 @@ private struct FleetObservedTask<ID: Equatable & Sendable>: ViewModifier {
 
     func body(content: Content) -> some View {
         content.task(id: id) { @MainActor in
+            // A start SwiftUI delivers after teardown began must not enter application code.
+            if recorder?.isClosed == true { return }
             recorder?.record(.taskStarted(name: name))
             await action()
             recorder?.record(Task.isCancelled ? .taskCancelled(name: name) : .taskFinished(name: name))
@@ -119,8 +124,10 @@ public final class FleetHostedView {
     public let hostingController: UIHostingController<AnyView>
     public let lifecycle: FleetLifecycleRecorder
     private(set) var isRemoved = false
+    private let source: FleetSourceLocation?
 
-    init(context: FleetTestContext, hostingController: UIHostingController<AnyView>, lifecycle: FleetLifecycleRecorder) {
+    init(context: FleetTestContext, hostingController: UIHostingController<AnyView>, lifecycle: FleetLifecycleRecorder, source: FleetSourceLocation? = nil) {
+        self.source = source
         self.context = context
         self.hostingController = hostingController
         self.lifecycle = lifecycle
@@ -233,8 +240,11 @@ public final class FleetHostedView {
 
     /// Cleanup: removes the screen, then gives SwiftUI's `onDisappear` and observed-task
     /// cancellation a bounded, cancellation-immune chance to be delivered, so no hosted work or
-    /// application cleanup leaks into the next scope. The two are awaited independently.
-    func dismantle(drainTimeout: TimeInterval = 2) async {
+    /// application cleanup leaks into the next scope. Observed tasks SwiftUI has not started yet
+    /// are prevented from starting. Throws `.timedOut` if the outstanding work is still alive at
+    /// the deadline; Fleet does not force-cancel it.
+    func dismantle(drainTimeout: TimeInterval = 2) async throws {
+        lifecycle.close()
         removeFromWindow()
         let deadline = Date().addingTimeInterval(drainTimeout)
         func tasksRunning() -> Bool {
@@ -245,8 +255,21 @@ public final class FleetHostedView {
             return ended < started
         }
         // Only a screen that actually appeared is owed a disappearance.
-        while (lifecycle.isAppeared || tasksRunning()), deadline.timeIntervalSinceNow > 0 {
+        while lifecycle.isAppeared || tasksRunning(), deadline.timeIntervalSinceNow > 0 {
             await Task { @MainActor in try? await Task.sleep(nanoseconds: 10_000_000) }.value
+        }
+        var outstanding: [String] = []
+        if lifecycle.isAppeared { outstanding.append("onDisappear was not delivered") }
+        if tasksRunning() { outstanding.append("observed task(s) had not finished after cancellation") }
+        guard outstanding.isEmpty else {
+            throw FleetFailure(
+                kind: .timedOut,
+                action: "tear down hosted view",
+                target: "FleetHostedView",
+                state: "\(outstanding.joined(separator: "; ")) within \(drainTimeout)s. \(context.snapshot())",
+                reason: "Make observed task bodies return promptly on cancellation, or finish application cleanup before the scope ends.",
+                source: source
+            )
         }
     }
 }
@@ -261,12 +284,12 @@ extension FleetTestContext {
         guard isActive else { throw Self.contextEnded.attributed(to: FleetSourceLocation(fileID: fileID, line: line)) }
         let recorder = FleetLifecycleRecorder()
         let controller = UIHostingController(rootView: AnyView(FleetProbeRoot(recorder: recorder, content: AnyView(view))))
-        let handle = FleetHostedView(context: self, hostingController: controller, lifecycle: recorder)
+        let handle = FleetHostedView(context: self, hostingController: controller, lifecycle: recorder, source: FleetSourceLocation(fileID: fileID, line: line))
         window.endEditing(true)
         window.rootViewController = controller
         // Scope end removes the screen and drains disappearance and observed-task cancellation,
         // on every route (`host`, `mount`, `withHostedView`) and every exit.
-        try addAsyncCleanup { await handle.dismantle() }
+        try addAsyncCleanup { try await handle.dismantle() }
         return handle
     }
 
