@@ -6,7 +6,7 @@ import plistlib
 import shutil
 
 
-def create_project(destination, fixtures, package_url, revision):
+def create_project(destination, fixtures, package_url, revision, viewinspector=None):
     destination = Path(destination)
     shutil.copytree(fixtures, destination / "Sources")
     project = destination / "Consumer.xcodeproj"
@@ -21,6 +21,10 @@ def create_project(destination, fixtures, package_url, revision):
 
     package = add("package", "XCRemoteSwiftPackageReference", repositoryURL=package_url,
                   requirement={"kind": "revision", "revision": revision})
+    inspector = None
+    if viewinspector:
+        inspector = add("viewinspector", "XCRemoteSwiftPackageReference", repositoryURL=viewinspector[0],
+                        requirement={"kind": "revision", "revision": viewinspector[1]})
     products = add("products", "PBXGroup", children=[], name="Products", sourceTree="<group>")
     main = add("main", "PBXGroup", children=[products], sourceTree="<group>")
     targets = []
@@ -48,6 +52,7 @@ def create_project(destination, fixtures, package_url, revision):
         app_file = file("AppDelegate.swift", "sourcecode.swift")
         test_file = file("PackageConsumerTests.swift", "sourcecode.swift")
         swift_testing_file = file("SwiftTestingConsumerTests.swift", "sourcecode.swift")
+        proof_file = file("ViewInspector/ViewInspectorProofTests.swift", "sourcecode.swift") if inspector else None
         storyboard = file(platform + "/Consumer.storyboard", "file.storyboard")
         app_product = add(platform + "app-product", "PBXFileReference", explicitFileType="wrapper.application",
                           path="ConsumerHost-" + platform + ".app", sourceTree="BUILT_PRODUCTS_DIR")
@@ -64,7 +69,8 @@ def create_project(destination, fixtures, package_url, revision):
         app_sources = phase("app-sources", "PBXSourcesBuildPhase", files=[build_file("app-build-file", app_file)])
         resources = phase("app-resources", "PBXResourcesBuildPhase", files=[build_file("storyboard-build-file", storyboard)])
         test_sources = phase("test-sources", "PBXSourcesBuildPhase", files=[build_file("test-build-file", test_file),
-                                                                  build_file("swift-testing-build-file", swift_testing_file)])
+                                                                  build_file("swift-testing-build-file", swift_testing_file),
+                                                                  *([build_file("proof-build-file", proof_file)] if inspector else [])])
         test_resources = phase("test-resources", "PBXResourcesBuildPhase", files=[])
         script = phase("metadata", "PBXShellScriptBuildPhase", files=[], alwaysOutOfDate="1",
                        inputPaths=["$(SRCROOT)/Sources/CopyStoryboardMetadata.sh"],
@@ -76,7 +82,13 @@ def create_project(destination, fixtures, package_url, revision):
             dependency = add(platform + name + "dependency", "XCSwiftPackageProductDependency",
                              package=package, productName="Fleet")
             link = add(platform + name + "link", "PBXBuildFile", productRef=dependency)
-            return dependency, phase(name + "frameworks", "PBXFrameworksBuildPhase", files=[link])
+            dependencies, links = [dependency], [link]
+            if inspector:
+                extra = add(platform + name + "viewinspector-dependency", "XCSwiftPackageProductDependency",
+                            package=inspector, productName="ViewInspector")
+                dependencies.append(extra)
+                links.append(add(platform + name + "viewinspector-link", "PBXBuildFile", productRef=extra))
+            return dependencies, phase(name + "frameworks", "PBXFrameworksBuildPhase", files=links)
 
         app_frameworks = phase("app-frameworks", "PBXFrameworksBuildPhase", files=[])
         test_dependency, test_frameworks = frameworks("test")
@@ -99,7 +111,7 @@ def create_project(destination, fixtures, package_url, revision):
                        "TEST_HOST": "$(BUILT_PRODUCTS_DIR)/ConsumerHost-" + platform + ".app/ConsumerHost-" + platform,
                        "BUNDLE_LOADER": "$(TEST_HOST)"}),
                    buildPhases=[test_sources, test_frameworks, test_resources, script], buildRules=[],
-                   dependencies=[dependency], packageProductDependencies=[test_dependency])
+                   dependencies=[dependency], packageProductDependencies=test_dependency)
         targets.extend([app, test])
 
         def reference(identifier, product, name):
@@ -124,7 +136,7 @@ def create_project(destination, fixtures, package_url, revision):
                buildConfigurationList=configurations("project", {}), compatibilityVersion="Xcode 14.0",
                developmentRegion="en", knownRegions=["en", "Base"], mainGroup=main,
                productRefGroup=products, projectDirPath="", projectRoot="", targets=targets,
-               packageReferences=[package])
+               packageReferences=[package] + ([inspector] if inspector else []))
     (project / "project.pbxproj").write_bytes(plistlib.dumps({"archiveVersion": "1", "classes": {},
         "objectVersion": "56", "objects": objects, "rootObject": root}, sort_keys=False))
     return project

@@ -68,7 +68,12 @@ def snapshot(root, destination):
     return destination.as_uri(), git(destination, "rev-parse", "HEAD")
 
 
-def check(root, platform="all", allow_dirty=False):
+VIEWINSPECTOR_URL = "https://github.com/nalexn/ViewInspector"
+# Release 0.10.5 (not the 0.10.6 default branch).
+VIEWINSPECTOR_REVISION = "2dacb6e514be19379c605a5a11564d0f3fea89d9"
+
+
+def check(root, platform="all", allow_dirty=False, viewinspector=False):
     if not (root / "Package.swift").is_file():
         raise DistributionError("Fleet Package.swift is missing; no distributed consumer can be validated.")
     commit = git(root, "rev-parse", "HEAD")
@@ -85,7 +90,8 @@ def check(root, platform="all", allow_dirty=False):
     if allow_dirty:
         package_url, revision = snapshot(root, run / "DevelopmentPackage")
         print("Development snapshot only; this run cannot certify a release.", flush=True)
-    project = create_project(run / "Consumer", root / "Integration/PackageConsumer", package_url, revision)
+    inspector = (VIEWINSPECTOR_URL, VIEWINSPECTOR_REVISION) if viewinspector else None
+    project = create_project(run / "Consumer", root / "Integration/PackageConsumer", package_url, revision, inspector)
     packages = run / "SourcePackages"
     counts = {}
     platforms = ("ios", "tvos") if platform == "all" else (platform,)
@@ -99,7 +105,8 @@ def check(root, platform="all", allow_dirty=False):
         lockfile = project / "project.xcworkspace/xcshareddata/swiftpm/Package.resolved"
         try:
             pins = json.loads(lockfile.read_text())["pins"]
-            if len(pins) != 1 or pins[0]["state"]["revision"] != revision:
+            revisions = sorted(pin["state"]["revision"] for pin in pins)
+            if revisions != sorted([revision] + ([VIEWINSPECTOR_REVISION] if viewinspector else [])):
                 raise DistributionError("Consumer resolution did not pin the exact package revision.")
         except (OSError, KeyError, ValueError) as error:
             raise DistributionError("Missing or invalid consumer package lockfile.") from error
@@ -121,6 +128,7 @@ def check(root, platform="all", allow_dirty=False):
         raise DistributionError("The source checkout changed during consumer validation.")
     evidence = {"schema": 1, "source_commit": commit, "package_revision": revision,
                 "development_snapshot": allow_dirty, "tests": counts,
+                "viewinspector_revision": VIEWINSPECTOR_REVISION if viewinspector else None,
                 "validated_at": datetime.now(timezone.utc).isoformat()}
     (run / "validation.json").write_text(json.dumps(evidence, indent=2) + "\n")
     print(f"Fleet: external consumer tests passed: {counts}. Evidence: {run / 'validation.json'}")
@@ -130,9 +138,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("platform", nargs="?", choices=("ios", "tvos", "all"), default="all")
     parser.add_argument("--allow-dirty", action="store_true", help="Test a development snapshot; does not certify a release")
+    parser.add_argument("--with-viewinspector", action="store_true",
+                        help="Also compile the optional ViewInspector compatibility proof into the consumer test target")
     args = parser.parse_args()
     try:
-        check(ROOT, args.platform, args.allow_dirty)
+        check(ROOT, args.platform, args.allow_dirty, args.with_viewinspector)
     except (DistributionError, ValueError, subprocess.SubprocessError, OSError) as error:
         print(f"Fleet distribution validation failed: {error}", file=sys.stderr)
         return 1
