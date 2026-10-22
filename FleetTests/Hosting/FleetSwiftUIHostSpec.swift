@@ -50,6 +50,13 @@ private struct SheetScreen: View {
     }
 }
 
+private struct DisappearScreen: View {
+    let model: HostedModel
+    var body: some View {
+        Text("bye").onDisappear { model.loads += 1 }
+    }
+}
+
 private struct HostError: Error {}
 
 @MainActor
@@ -175,6 +182,60 @@ class FleetSwiftUIHostSpec: XCTestCase {
             try await host.waitForUpdate("sheet content on screen") {
                 model.loads == 1 && host.hostingController.presentedViewController?.view.window === self.hostWindow
             }
+        }
+    }
+
+    func test_contextHost_drainsObservedWorkBeforeScopeReturns() async throws {
+        let work = FakeWork()
+        try await Fleet.withContext(window: hostWindow) { context in
+            let host = try await context.host(HostedScreen(work: work, taskID: 1).environmentObject(HostedModel()))
+            try await host.waitForTaskStart("load")
+        }
+        XCTAssertEqual(work.cancelled, 1, "context.host handles drain observed work before the lease is released")
+    }
+
+    func test_contextMount_drainsObservedWorkOnThrow() async throws {
+        let work = FakeWork()
+        do {
+            try await Fleet.withContext(window: hostWindow) { context in
+                let host = try context.mount(HostedScreen(work: work, taskID: 1).environmentObject(HostedModel()))
+                host.layoutIfNeeded()
+                try await host.waitForTaskStart("load")
+                throw HostError()
+            }
+            XCTFail("expected throw")
+        } catch is HostError {}
+        XCTAssertEqual(work.cancelled, 1)
+    }
+
+    func test_taskFreeScope_deliversDisappearanceBeforeReturning() async throws {
+        let model = HostedModel()
+        try await Fleet.withHostedView(DisappearScreen(model: model), window: hostWindow) { _ in }
+        XCTAssertEqual(model.loads, 1, "application onDisappear ran inside the scope that hosted it")
+    }
+
+    func test_failures_carryCallerSource() async throws {
+        let model = HostedModel()
+        var escaped: FleetHostedView?
+        let timeoutLine = #line + 4
+        do {
+            try await Fleet.withHostedView(DisappearScreen(model: model), window: hostWindow) { host in
+                escaped = host
+                try await host.waitForUpdate("never", timeout: 0.05) { false }
+            }
+            XCTFail("expected timeout")
+        } catch let failure as FleetFailure {
+            XCTAssertEqual(failure.source?.line, UInt(timeoutLine))
+            XCTAssertTrue(failure.source?.fileID.hasSuffix("FleetSwiftUIHostSpec.swift") ?? false)
+            XCTAssertTrue(failure.description.contains("called at"))
+        }
+        let endedLine = #line + 2
+        do {
+            try await escaped?.waitForAppearance(timeout: 0.05)
+            XCTFail("expected invalid scope")
+        } catch let failure as FleetFailure {
+            XCTAssertEqual(failure.kind, .invalidSetup)
+            XCTAssertEqual(failure.source?.line, UInt(endedLine))
         }
     }
 }

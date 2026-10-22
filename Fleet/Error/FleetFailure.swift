@@ -1,5 +1,16 @@
 import Foundation
 
+/// A caller's file and line, captured at a public Fleet entry point.
+public struct FleetSourceLocation: Sendable, Equatable {
+    public let fileID: String
+    public let line: UInt
+
+    public init(fileID: String, line: UInt) {
+        self.fileID = fileID
+        self.line = line
+    }
+}
+
 /**
  A recoverable, typed Swift error describing why a Fleet helper could not perform an action.
 
@@ -37,8 +48,11 @@ public struct FleetFailure: Error, Sendable, Equatable {
     public let state: String
     /// What to change so the action succeeds.
     public let reason: String
+    /// The test call site that invoked the failing Fleet entry point, when the entry point captures it.
+    public let source: FleetSourceLocation?
 
-    public init(kind: Kind, action: String, target: String, state: String, reason: String) {
+    public init(kind: Kind, action: String, target: String, state: String, reason: String, source: FleetSourceLocation? = nil) {
+        self.source = source
         self.kind = kind
         self.action = action
         self.target = target
@@ -49,7 +63,15 @@ public struct FleetFailure: Error, Sendable, Equatable {
 
 extension FleetFailure: CustomStringConvertible, LocalizedError {
     public var description: String {
-        "Fleet could not \(action) on \(target) (\(kind.rawValue)): \(state). \(reason)"
+        let base = "Fleet could not \(action) on \(target) (\(kind.rawValue)): \(state). \(reason)"
+        guard let source else { return base }
+        return "\(base) [called at \(source.fileID):\(source.line)]"
+    }
+
+    /// A copy of this failure attributed to `source` unless it already has one.
+    func attributed(to source: FleetSourceLocation) -> FleetFailure {
+        guard self.source == nil else { return self }
+        return FleetFailure(kind: kind, action: action, target: target, state: state, reason: reason, source: source)
     }
 
     public var errorDescription: String? { description }

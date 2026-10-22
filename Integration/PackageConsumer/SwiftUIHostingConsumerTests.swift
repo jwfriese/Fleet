@@ -1,3 +1,4 @@
+import Combine
 import SwiftUI
 import Testing
 import UIKit
@@ -8,20 +9,46 @@ import Fleet
 @MainActor
 final class FakeGreetingService: ObservableObject {
     @Published var greeting = "none"
+    /// What the screen's `Text` last rendered, reported when the rendered text appears.
+    var displayed = "none"
+    var sheetContent: String?
     func load() { greeting = "hello" }
 }
 
+/// Requests the test sends to the *mounted* screen. The screen's button and this seam call the
+/// same screen action, so the test operates the screen's own code, not the fake directly. A
+/// ViewInspector tap of the real button is shown in the optional ViewInspector proof.
+enum GreetingRequest { case load, show }
+
 struct GreetingScreen: View {
     @EnvironmentObject var service: FakeGreetingService
+    @State private var shown = "none"
     @State private var presented = false
+    let requests: PassthroughSubject<GreetingRequest, Never>
+
+    private func load() {
+        service.load()
+        shown = service.greeting
+    }
 
     var body: some View {
         VStack {
-            Text(service.greeting)
-            Button("Load") { service.load() }
+            // A changed identity makes the rendered text appear again, reporting what was rendered.
+            Text(shown)
+                .onAppear { service.displayed = shown }
+                .id(shown)
+            Button("Load") { load() }
             Button("Show") { presented = true }
         }
-        .sheet(isPresented: $presented) { Text("sheet content") }
+        .onReceive(requests) { request in
+            switch request {
+            case .load: load()
+            case .show: presented = true
+            }
+        }
+        .sheet(isPresented: $presented) {
+            Text("sheet content").onAppear { service.sheetContent = "sheet content" }
+        }
     }
 }
 
@@ -42,11 +69,29 @@ final class SwiftUIHostingXCTestStarter: XCTestCase {
     func test_screenAction_updatesObservableState() async throws {
         let window = try XCTUnwrap(UIApplication.shared.keyWindow)
         let service = FakeGreetingService()
-        try await Fleet.withHostedView(GreetingScreen().environmentObject(service), window: window) { host in
+        let requests = PassthroughSubject<GreetingRequest, Never>()
+        try await Fleet.withHostedView(GreetingScreen(requests: requests).environmentObject(service), window: window) { host in
             XCTAssertTrue(host.isReady)
-            service.load()  // stands in for the screen action; ViewInspector may tap the real button
-            try await host.waitForUpdate("greeting shown") { service.greeting == "hello" }
-            XCTAssertEqual(host.lifecycle.count(of: .appeared), 1)
+            XCTAssertEqual(service.displayed, "none")
+            // The mounted screen runs its own (idempotent) load action. The request is repeated
+            // inside the bounded wait until the screen's subscription has answered it.
+            try await host.waitForUpdate("greeting rendered") {
+                requests.send(.load)
+                return service.displayed == "hello"
+            }
+            XCTAssertEqual(host.lifecycle.count(of: .appeared), 1, "the same mounted host, not a second one")
+        }
+    }
+
+    func test_screenSheet_presentsLiveContent() async throws {
+        let window = try XCTUnwrap(UIApplication.shared.keyWindow)
+        let service = FakeGreetingService()
+        let requests = PassthroughSubject<GreetingRequest, Never>()
+        try await Fleet.withHostedView(GreetingScreen(requests: requests).environmentObject(service), window: window) { host in
+            try await host.waitForUpdate("screen's sheet content on screen") {
+                requests.send(.show)  // idempotent; repeated until the mounted screen answers
+                return service.sheetContent == "sheet content" && host.hostingController.presentedViewController?.view.window === window
+            }
         }
     }
 
@@ -67,13 +112,28 @@ final class SwiftUIHostingXCTestStarter: XCTestCase {
 @MainActor
 @Suite("SwiftUI hosting starter")
 struct SwiftUIHostingSwiftTestingStarter {
+    @Test func screenActionUpdatesRenderedState() async throws {
+        let window = try #require(UIApplication.shared.keyWindow)
+        let service = FakeGreetingService()
+        let requests = PassthroughSubject<GreetingRequest, Never>()
+        try await Fleet.withHostedView(GreetingScreen(requests: requests).environmentObject(service), window: window) { host in
+            try await host.waitForUpdate("greeting rendered") {
+                requests.send(.load)  // idempotent; repeated until the mounted screen answers
+                return service.displayed == "hello"
+            }
+            #expect(host.lifecycle.count(of: .appeared) == 1)
+        }
+    }
+
     @Test func presentedSheetIsLive() async throws {
         let window = try #require(UIApplication.shared.keyWindow)
-        try await Fleet.withHostedView(GreetingScreen().environmentObject(FakeGreetingService()), window: window) { host in
-            let sheet = UIHostingController(rootView: Text("sheet content"))
-            host.hostingController.present(sheet, animated: false)
-            try await host.waitForUpdate("sheet in window") { sheet.view.window === window }
-            #expect(host.hostingController.presentedViewController === sheet)
+        let service = FakeGreetingService()
+        let requests = PassthroughSubject<GreetingRequest, Never>()
+        try await Fleet.withHostedView(GreetingScreen(requests: requests).environmentObject(service), window: window) { host in
+            try await host.waitForUpdate("screen's sheet content on screen") {
+                requests.send(.show)  // idempotent; repeated until the mounted screen answers
+                return service.sheetContent == "sheet content" && host.hostingController.presentedViewController?.view.window === window
+            }
         }
     }
 

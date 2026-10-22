@@ -107,6 +107,19 @@ struct ViewInspectorOwnershipTests {
         try #require(UIApplication.shared.keyWindow)
     }
 
+    @Test func scopedHandle_realButtonTapUpdatesTheSameMountedScreen() async throws {
+        let model = CounterModel()
+        let seam = InspectionSeam<CounterScreen>()
+        try await Fleet.withHostedView(CounterScreen(seam: seam).environmentObject(model), window: try hostWindow()) { host in
+            try await inspectMounted(seam, in: host.context) { try $0.vStack().button(2).tap() }
+            #expect(model.taps == 1)
+            try await host.waitForUpdate("re-rendered text is inspectable") {
+                currentTexts(seam) == ["tapped", "taps: 1"]
+            }
+            #expect(host.lifecycle.count(of: .appeared) == 1)
+        }
+    }
+
     @Test func actionAndUpdateHappenOnTheSameMountedInstanceInFleetsWindow() async throws {
         let host = try hostWindow()
         let scene = try #require(host.windowScene)
@@ -234,6 +247,20 @@ private func currentTexts(_ seam: InspectionSeam<CounterScreen>) -> [String]? {
 
 @MainActor
 final class ViewInspectorOwnershipXCTests: XCTestCase {
+    func test_scopedHandle_realButtonTapUpdatesTheSameMountedScreen() async throws {
+        let host = try XCTUnwrap(UIApplication.shared.keyWindow)
+        let model = CounterModel()
+        let seam = InspectionSeam<CounterScreen>()
+        try await Fleet.withHostedView(CounterScreen(seam: seam).environmentObject(model), window: host) { handle in
+            try await inspectMounted(seam, in: handle.context) { try $0.vStack().button(2).tap() }
+            XCTAssertEqual(model.taps, 1)
+            try await handle.waitForUpdate("re-rendered text is inspectable") {
+                currentTexts(seam) == ["tapped", "taps: 1"]
+            }
+            XCTAssertEqual(handle.lifecycle.count(of: .appeared), 1)
+        }
+    }
+
     func test_timeoutErrorAndCancellationPropagateAndReleaseTheRequest() async throws {
         let host = try XCTUnwrap(UIApplication.shared.keyWindow)
         let seam = InspectionSeam<CounterScreen>()
