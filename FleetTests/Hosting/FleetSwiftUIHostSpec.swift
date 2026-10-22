@@ -267,6 +267,19 @@ class FleetSwiftUIHostSpec: XCTestCase {
         XCTAssertEqual(work.started, 0, "work must not start after its scope ended")
     }
 
+    func test_immediateMount_doesNotDeliverAppearanceInNextScope() async throws {
+        let model = HostedModel()
+        var appearances = 0
+        try await Fleet.withContext(window: hostWindow) { context in
+            _ = try context.mount(Text("immediate").onAppear { appearances += 1 }.environmentObject(model))
+        }
+        let atReturn = appearances
+        try await Fleet.withContext(window: hostWindow) { context in
+            try? await context.waitUntil("run-loop turns to pass", timeout: 0.3) { false }
+        }
+        XCTAssertEqual(appearances, atReturn, "previous screen's onAppear must not run in a later scope")
+    }
+
     func test_teardownDeadline_reportsTypedTimeout() async throws {
         let cleanup = SlowCleanup()
         do {
