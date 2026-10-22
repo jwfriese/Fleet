@@ -183,7 +183,7 @@ class FleetSwiftUIHostSpec: XCTestCase {
         try await Fleet.withContext(window: hostWindow) { context in
             let host = try context.mount(Text("low level"))
             XCTAssertEqual(host.lifecycle.count(of: .appeared), 0, "mount does not wait for or force appearance")
-            host.layoutIfNeeded()
+            try host.layoutIfNeeded()
             try await host.waitUntilMounted()
             try await host.waitUntilReady()
             try await host.waitForAppearance()
@@ -215,7 +215,7 @@ class FleetSwiftUIHostSpec: XCTestCase {
         do {
             try await Fleet.withContext(window: hostWindow) { context in
                 let host = try context.mount(HostedScreen(work: work, taskID: 1).environmentObject(HostedModel()))
-                host.layoutIfNeeded()
+                try host.layoutIfNeeded()
                 try await host.waitForTaskStart("load")
                 throw HostError()
             }
@@ -278,6 +278,31 @@ class FleetSwiftUIHostSpec: XCTestCase {
             try? await context.waitUntil("run-loop turns to pass", timeout: 0.3) { false }
         }
         XCTAssertEqual(appearances, atReturn, "previous screen's onAppear must not run in a later scope")
+    }
+
+    func test_immediateExplicitRemoval_doesNotDeliverAppearanceInNextScope() async throws {
+        var appearances = 0
+        try await Fleet.withContext(window: hostWindow) { context in
+            let host = try context.mount(Text("removed at once").onAppear { appearances += 1 })
+            try await host.remove()
+        }
+        let atReturn = appearances
+        try await Fleet.withContext(window: hostWindow) { context in
+            try? await context.waitUntil("run-loop turns to pass", timeout: 0.3) { false }
+        }
+        XCTAssertEqual(appearances, atReturn, "removed screen's onAppear must not run in a later scope")
+    }
+
+    func test_escapedHandle_layoutIfNeeded_throwsInvalidSetup() async throws {
+        var escaped: FleetHostedView?
+        try await Fleet.withHostedView(Text("scoped"), window: hostWindow) { escaped = $0 }
+        do {
+            try escaped?.layoutIfNeeded()
+            XCTFail("expected invalidSetup")
+        } catch let failure as FleetFailure {
+            XCTAssertEqual(failure.kind, .invalidSetup)
+            XCTAssertNotNil(failure.source)
+        }
     }
 
     func test_teardownDeadline_reportsTypedTimeout() async throws {
