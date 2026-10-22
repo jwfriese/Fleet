@@ -230,6 +230,16 @@ public final class FleetHostedView {
     public func remove(timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
         try await fleetAttributing(fileID, line) {
             try requireActive("remove hosted view")
+            if lifecycle.count(of: .appeared) == 0 && !isRemoved {
+                // SwiftUI may still owe the first `onAppear`; deliver it (bounded) so the
+                // disappearance wait below covers the full appear/disappear pair.
+                hostingController.view.setNeedsLayout()
+                context.window.layoutIfNeeded()
+                let appearDeadline = Date().addingTimeInterval(min(timeout, 0.5))
+                while lifecycle.count(of: .appeared) == 0, appearDeadline.timeIntervalSinceNow > 0 {
+                    await Task { @MainActor in try? await Task.sleep(nanoseconds: 10_000_000) }.value
+                }
+            }
             removeFromWindow()
             try await context.waitUntil("hosted SwiftUI view to disappear", timeout: timeout) { !self.lifecycle.isAppeared }
         }
