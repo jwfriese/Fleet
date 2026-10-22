@@ -94,6 +94,20 @@ private struct FleetProbeRoot: View {
     }
 }
 
+/// Runs `body`, attributing any `FleetFailure` it throws to the caller's source location.
+@MainActor
+func fleetAttributing<T>(
+    _ fileID: String,
+    _ line: UInt,
+    _ body: @MainActor () async throws -> T
+) async throws -> T {
+    do {
+        return try await body()
+    } catch let failure as FleetFailure {
+        throw failure.attributed(to: FleetSourceLocation(fileID: fileID, line: line))
+    }
+}
+
 /// A scoped handle to one SwiftUI screen mounted by Fleet in a context's window.
 ///
 /// The handle is valid only inside the `withHostedView` / `FleetTestContext.mount` scope that
@@ -142,55 +156,71 @@ public final class FleetHostedView {
     }
 
     /// Waits (bounded) until the hosting view is in the window.
-    public func waitUntilMounted(timeout: TimeInterval = 5) async throws {
-        try requireActive("wait for hosted view to mount")
-        try await context.waitUntil("hosted SwiftUI view to be mounted", timeout: timeout) { self.isMounted }
+    public func waitUntilMounted(timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
+        try await fleetAttributing(fileID, line) {
+            try requireActive("wait for hosted view to mount")
+            try await context.waitUntil("hosted SwiftUI view to be mounted", timeout: timeout) { self.isMounted }
+        }
     }
 
     /// Waits (bounded) until the hosting view is mounted with positive size.
-    public func waitUntilReady(timeout: TimeInterval = 5) async throws {
-        try requireActive("wait for hosted view readiness")
-        try await context.waitUntil("hosted SwiftUI view to be ready (mounted, positive size)", timeout: timeout) { self.isReady }
+    public func waitUntilReady(timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
+        try await fleetAttributing(fileID, line) {
+            try requireActive("wait for hosted view readiness")
+            try await context.waitUntil("hosted SwiftUI view to be ready (mounted, positive size)", timeout: timeout) { self.isReady }
+        }
     }
 
     /// Waits (bounded) for SwiftUI's `onAppear` on the hosted root: a distinct event from mounting.
-    public func waitForAppearance(timeout: TimeInterval = 5) async throws {
-        try requireActive("wait for hosted view appearance")
-        try await context.waitUntil("hosted SwiftUI view to appear", timeout: timeout) { self.lifecycle.isAppeared }
+    public func waitForAppearance(timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
+        try await fleetAttributing(fileID, line) {
+            try requireActive("wait for hosted view appearance")
+            try await context.waitUntil("hosted SwiftUI view to appear", timeout: timeout) { self.lifecycle.isAppeared }
+        }
     }
 
     /// Waits (bounded) for `condition`, evaluated against live application state after an update.
     public func waitForUpdate(
         _ description: String,
         timeout: TimeInterval = 5,
+        fileID: String = #fileID,
+        line: UInt = #line,
         condition: @MainActor () -> Bool
     ) async throws {
-        try requireActive("wait for hosted view update")
-        try await context.waitUntil(description, timeout: timeout, condition: condition)
+        try await fleetAttributing(fileID, line) {
+            try requireActive("wait for hosted view update")
+            try await context.waitUntil(description, timeout: timeout, condition: condition)
+        }
     }
 
     /// Waits (bounded) until the named observed task has started `count` times in total.
-    public func waitForTaskStart(_ name: String, count: Int = 1, timeout: TimeInterval = 5) async throws {
-        try requireActive("wait for task start")
-        try await context.waitUntil("observed task '\(name)' to start \(count) time(s)", timeout: timeout) {
-            self.lifecycle.count(of: .taskStarted(name: name)) >= count
+    public func waitForTaskStart(_ name: String, count: Int = 1, timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
+        try await fleetAttributing(fileID, line) {
+            try requireActive("wait for task start")
+            try await context.waitUntil("observed task '\(name)' to start \(count) time(s)", timeout: timeout) {
+                self.lifecycle.count(of: .taskStarted(name: name)) >= count
+            }
         }
     }
 
     /// Waits (bounded) until the named observed task has been cancelled `count` times in total.
-    public func waitForTaskCancellation(_ name: String, count: Int = 1, timeout: TimeInterval = 5) async throws {
-        try requireActive("wait for task cancellation")
-        try await context.waitUntil("observed task '\(name)' to be cancelled \(count) time(s)", timeout: timeout) {
-            self.lifecycle.count(of: .taskCancelled(name: name)) >= count
+    public func waitForTaskCancellation(_ name: String, count: Int = 1, timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
+        try await fleetAttributing(fileID, line) {
+            try requireActive("wait for task cancellation")
+            try await context.waitUntil("observed task '\(name)' to be cancelled \(count) time(s)", timeout: timeout) {
+                self.lifecycle.count(of: .taskCancelled(name: name)) >= count
+            }
         }
     }
 
     /// Removes the hosted screen from the window (dismissal/removal), then waits (bounded) for
     /// SwiftUI's `onDisappear`. Removal and disappearance are separate observations.
-    public func remove(timeout: TimeInterval = 5) async throws {
-        try requireActive("remove hosted view")
-        removeFromWindow()
-        try await context.waitUntil("hosted SwiftUI view to disappear", timeout: timeout) { !self.lifecycle.isAppeared }
+    public func remove(timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
+        try await fleetAttributing(fileID, line) {
+            try requireActive("remove hosted view")
+            removeFromWindow()
+            try await context.waitUntil("hosted SwiftUI view to disappear", timeout: timeout) { !self.lifecycle.isAppeared }
+        }
     }
 
     func removeFromWindow() {
@@ -201,19 +231,21 @@ public final class FleetHostedView {
         }
     }
 
-    /// Cleanup: removes the screen, then gives cancellation a bounded, cancellation-immune chance
-    /// to be delivered so no hosted work leaks into the next test.
+    /// Cleanup: removes the screen, then gives SwiftUI's `onDisappear` and observed-task
+    /// cancellation a bounded, cancellation-immune chance to be delivered, so no hosted work or
+    /// application cleanup leaks into the next scope. The two are awaited independently.
     func dismantle(drainTimeout: TimeInterval = 2) async {
         removeFromWindow()
         let deadline = Date().addingTimeInterval(drainTimeout)
-        func running() -> Bool {
+        func tasksRunning() -> Bool {
             let started = lifecycle.events.filter { if case .taskStarted = $0 { return true }; return false }.count
             let ended = lifecycle.events.filter {
                 switch $0 { case .taskCancelled, .taskFinished: return true; default: return false }
             }.count
             return ended < started
         }
-        while running(), deadline.timeIntervalSinceNow > 0 {
+        // Only a screen that actually appeared is owed a disappearance.
+        while (lifecycle.isAppeared || tasksRunning()), deadline.timeIntervalSinceNow > 0 {
             await Task { @MainActor in try? await Task.sleep(nanoseconds: 10_000_000) }.value
         }
     }
@@ -225,24 +257,31 @@ extension FleetTestContext {
     /// zero-size sequence, then call `layoutIfNeeded()` and the wait methods explicitly. The
     /// handle's mounted state is dismantled at scope end by `Fleet.withHostedView`; if you mount
     /// directly in `withContext`, call `remove()` or rely on the context restoring the window.
-    public func mount<Content: View>(_ view: Content) throws -> FleetHostedView {
-        guard isActive else { throw Self.contextEnded }
+    public func mount<Content: View>(_ view: Content, fileID: String = #fileID, line: UInt = #line) throws -> FleetHostedView {
+        guard isActive else { throw Self.contextEnded.attributed(to: FleetSourceLocation(fileID: fileID, line: line)) }
         let recorder = FleetLifecycleRecorder()
         let controller = UIHostingController(rootView: AnyView(FleetProbeRoot(recorder: recorder, content: AnyView(view))))
         let handle = FleetHostedView(context: self, hostingController: controller, lifecycle: recorder)
         window.endEditing(true)
         window.rootViewController = controller
-        try addCleanup { handle.removeFromWindow() }
+        // Scope end removes the screen and drains disappearance and observed-task cancellation,
+        // on every route (`host`, `mount`, `withHostedView`) and every exit.
+        try addAsyncCleanup { await handle.dismantle() }
         return handle
     }
 
     /// Convenience route: `mount`, then waits (bounded) for mounting, readiness and appearance.
-    public func host<Content: View>(_ view: Content, timeout: TimeInterval = 5) async throws -> FleetHostedView {
-        let handle = try mount(view)
+    public func host<Content: View>(
+        _ view: Content,
+        timeout: TimeInterval = 5,
+        fileID: String = #fileID,
+        line: UInt = #line
+    ) async throws -> FleetHostedView {
+        let handle = try mount(view, fileID: fileID, line: line)
         window.layoutIfNeeded()
-        try await handle.waitUntilMounted(timeout: timeout)
-        try await handle.waitUntilReady(timeout: timeout)
-        try await handle.waitForAppearance(timeout: timeout)
+        try await handle.waitUntilMounted(timeout: timeout, fileID: fileID, line: line)
+        try await handle.waitUntilReady(timeout: timeout, fileID: fileID, line: line)
+        try await handle.waitForAppearance(timeout: timeout, fileID: fileID, line: line)
         return handle
     }
 }
@@ -256,10 +295,12 @@ extension Fleet {
     public static func withHostedView<Content: View, T>(
         _ view: Content,
         window: UIWindow,
+        fileID: String = #fileID,
+        line: UInt = #line,
         _ body: @MainActor (FleetHostedView) async throws -> T
     ) async throws -> T {
         try await withContext(window: window) { context in
-            try await hosted(view, in: context, body)
+            try await hosted(view, in: context, fileID: fileID, line: line, body)
         }
     }
 
@@ -268,10 +309,12 @@ extension Fleet {
     public static func withHostedView<Content: View, T>(
         _ view: Content,
         scene: UIWindowScene,
+        fileID: String = #fileID,
+        line: UInt = #line,
         _ body: @MainActor (FleetHostedView) async throws -> T
     ) async throws -> T {
         try await withContext(scene: scene) { context in
-            try await hosted(view, in: context, body)
+            try await hosted(view, in: context, fileID: fileID, line: line, body)
         }
     }
 
@@ -279,20 +322,15 @@ extension Fleet {
     private static func hosted<Content: View, T>(
         _ view: Content,
         in context: FleetTestContext,
+        fileID: String,
+        line: UInt,
         _ body: @MainActor (FleetHostedView) async throws -> T
     ) async throws -> T {
-        let handle = try context.mount(view)
-        do {
-            try await handle.waitUntilMounted()
-            context.window.layoutIfNeeded()
-            try await handle.waitUntilReady()
-            try await handle.waitForAppearance()
-            let value = try await body(handle)
-            await handle.dismantle()
-            return value
-        } catch {
-            await handle.dismantle()
-            throw error
-        }
+        let handle = try context.mount(view, fileID: fileID, line: line)
+        try await handle.waitUntilMounted(fileID: fileID, line: line)
+        context.window.layoutIfNeeded()
+        try await handle.waitUntilReady(fileID: fileID, line: line)
+        try await handle.waitForAppearance(fileID: fileID, line: line)
+        return try await body(handle)
     }
 }

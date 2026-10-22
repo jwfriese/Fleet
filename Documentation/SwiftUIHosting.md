@@ -8,7 +8,7 @@ try await Fleet.withHostedView(Screen().environmentObject(fake), window: window)
 }
 ```
 
-`withHostedView(_:window:_:)` borrows a window; `withHostedView(_:scene:_:)` creates and removes one for an explicit scene. Normal return, a thrown error, a failed wait and task cancellation all remove the screen, give observed tasks a bounded chance to observe cancellation, and restore the window. A handle used after its scope throws `FleetFailure(.invalidSetup)`.
+`withHostedView(_:window:_:)` borrows a window; `withHostedView(_:scene:_:)` creates and removes one for an explicit scene. Normal return, a thrown error, a failed wait and task cancellation all remove the screen, wait (bounded, independently) for SwiftUI's `onDisappear` and for observed tasks to observe cancellation, and restore the window. The same teardown runs for handles from `context.host` and `context.mount`, before the context releases its lease. A handle used after its scope throws `FleetFailure(.invalidSetup)`.
 
 ## Distinct observations
 
@@ -21,7 +21,7 @@ try await Fleet.withHostedView(Screen().environmentObject(fake), window: window)
 | Removed / disappeared | `remove()` | root removed, then SwiftUI delivered `onDisappear` |
 | Task started / cancelled | `waitForTaskStart`, `waitForTaskCancellation` | `fleetObservedTask` reports the real SwiftUI task start and the cooperative return after cancellation; `fleetObservedTask(_:id:)` covers `task(id:)` replacement |
 
-Every wait is bounded and fails with a `FleetFailure(.timedOut)` carrying the operation, target, state and resolved window environment. Callbacks are never invoked manually as proof. Fleet cannot see or cancel arbitrary `Task`s your code creates, and does not flush all work; cancellation is observed only if the task body returns on cancellation.
+Every wait is bounded and fails with a `FleetFailure(.timedOut)` carrying the operation, target, state, resolved window environment and the caller's file and line (`FleetFailure.source`). Callbacks are never invoked manually as proof. Fleet cannot see or cancel arbitrary `Task`s your code creates, and does not flush all work; cancellation is observed only if the task body returns on cancellation.
 
 ## Lower-level route
 

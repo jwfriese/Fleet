@@ -37,6 +37,7 @@ public final class FleetTestContext {
     }
 
     private var cleanups: [@MainActor () -> Void] = []
+    private var asyncCleanups: [@MainActor () async -> Void] = []
     private var adoptedBindings: [WeakStoryboardBinding] = []
 
     /// Arranges for this context's registrations on `binding` to be removed when the scope ends.
@@ -61,6 +62,13 @@ public final class FleetTestContext {
     public func addCleanup(_ cleanup: @escaping @MainActor () -> Void) throws {
         guard isActive else { throw Self.contextEnded }
         cleanups.append(cleanup)
+    }
+
+    /// As `addCleanup`, for bounded asynchronous teardown. These run after the synchronous
+    /// cleanups, last registered first, before the window is restored and the lease released.
+    func addAsyncCleanup(_ cleanup: @escaping @MainActor () async -> Void) throws {
+        guard isActive else { throw Self.contextEnded }
+        asyncCleanups.append(cleanup)
     }
 
     /// Installs `viewController` as this window's root, finishing any editing session first,
@@ -204,6 +212,7 @@ public final class FleetTestContext {
         for adopted in adoptedBindings { adopted.value?.removeRegistrations(ownedBy: id) }
         adoptedBindings.removeAll()
         while let cleanup = cleanups.popLast() { cleanup() }
+        while let cleanup = asyncCleanups.popLast() { await cleanup() }
         window.endEditing(true)
         if let root = window.rootViewController, root.presentedViewController != nil {
             await dismissPresented(of: root)
