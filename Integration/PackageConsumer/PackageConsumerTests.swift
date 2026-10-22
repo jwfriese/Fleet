@@ -412,12 +412,14 @@ final class PackageConsumerTests: XCTestCase {
         root.present(alert, animated: false) { presented.fulfill() }
         await fulfillment(of: [presented], timeout: 5)
         XCTAssertEqual(alert.alertHandlerCapture(forActionWithTitle: "Run"), .observedHandler)
-        XCTAssertThrowsError(try alert.tapAlertActionStrictlyOrThrow(withTitle: "Missing")) { error in
+        do {
+            _ = try await alert.tapAlertActionStrictly(withTitle: "Missing")
+            XCTFail("Expected a typed failure")
+        } catch {
             XCTAssertEqual((error as? FleetFailure)?.kind, .invalidInput)
         }
-        XCTAssertEqual(try alert.tapAlertActionStrictlyOrThrow(withTitle: "Run"), .handlerInvoked)
-        let deadline = Date().addingTimeInterval(5)
-        while count == 0 && Date() < deadline { try await Task.sleep(nanoseconds: 20_000_000) }
+        let outcome = try await alert.tapAlertActionStrictly(withTitle: "Run")
+        XCTAssertEqual(outcome, .handlerInvoked)
         XCTAssertEqual(count, 1)
     }
 

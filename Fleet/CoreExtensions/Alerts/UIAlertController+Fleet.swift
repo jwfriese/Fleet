@@ -42,12 +42,12 @@ extension Fleet {
         case unavailable
     }
 
-    /// What `tapAlertActionStrictlyOrThrow(withTitle:)` did. It dismisses the presentation;
+    /// What `tapAlertActionStrictly(withTitle:)` did. It dismisses the presentation;
     /// it does not prove physical hit testing or accessibility.
     public enum AlertTapOutcome: Sendable, Equatable {
-        /// The alert was dismissed and the observed handler was invoked exactly once.
+        /// The alert was dismissed and the observed handler returned; it ran exactly once.
         case handlerInvoked
-        /// The alert was dismissed; the action was observed to have no handler, so none ran.
+        /// The alert was dismissed (the dismissal completed); the action was observed to have no handler, so none ran.
         case dismissedWithoutHandler
     }
 }
@@ -71,6 +71,10 @@ extension UIAlertController {
      rather than silently reporting that a handler ran. An action observed to have no handler is
      dismissed and reported as `.dismissedWithoutHandler`.
 
+     This is asynchronous: it returns only after UIKit's dismissal completion has run, so the
+     returned outcome is evidence that the handler already returned (or, for `.dismissedWithoutHandler`,
+     that the dismissal completed). Handler effects can be inspected immediately afterwards.
+
      For behavior this interception cannot establish, invoke an application-owned command
      directly or use an XCUITest.
 
@@ -78,7 +82,7 @@ extension UIAlertController {
        when capture evidence is missing.
      */
     @discardableResult
-    public func tapAlertActionStrictlyOrThrow(withTitle title: String) throws -> Fleet.AlertTapOutcome {
+    public func tapAlertActionStrictly(withTitle title: String) async throws -> Fleet.AlertTapOutcome {
         let target = "UIAlertController action '\(title)'"
         if let action = actions.first(where: { $0.title == title }), actions.filter({ $0.title == title }).count == 1,
            action.isEnabled, presentingViewController != nil {
@@ -92,14 +96,24 @@ extension UIAlertController {
                     state: "Fleet never observed this action's handler being set, so it cannot tell a missing handler from an uncaptured one",
                     reason: "Invoke the handler through an application-owned command, or use an XCUITest. Nothing was dismissed or run.")
             case .observedNil:
-                try tapAlertActionOrThrow(withTitle: title)
+                try await completedTap(withTitle: title)
                 return .dismissedWithoutHandler
             case .observedHandler:
                 break
             }
         }
-        try tapAlertActionOrThrow(withTitle: title)
+        try await completedTap(withTitle: title)
         return .handlerInvoked
+    }
+
+    private func completedTap(withTitle title: String) async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            do {
+                try tapAlertActionOrThrow(withTitle: title, completion: { continuation.resume() })
+            } catch {
+                continuation.resume(throwing: error)
+            }
+        }
     }
 
     /**
@@ -110,7 +124,7 @@ extension UIAlertController {
      if it has one, runs in the dismissal completion, so it observes the
      presenting controller as the topmost controller. An action created
      without a handler, or whose handler Fleet could not capture, is dismissed without
-     further effect and without any indication; use `tapAlertActionStrictlyOrThrow(withTitle:)`
+     further effect and without any indication; use `tapAlertActionStrictly(withTitle:)`
      to distinguish those cases. This dismisses the presentation and invokes a captured handler;
      it does not prove physical interaction.
 
@@ -140,8 +154,12 @@ extension UIAlertController {
      it silently dismisses an action whose handler was not captured.
      */
     public func tapAlertActionOrThrow(withTitle title: String) throws {
+        try tapAlertActionOrThrow(withTitle: title, completion: nil)
+    }
+
+    private func tapAlertActionOrThrow(withTitle title: String, completion: (() -> Void)?) throws {
         do {
-            try performTap(withTitle: title)
+            try performTap(withTitle: title, completion: completion)
         } catch let error as Fleet.AlertError {
             let kind: FleetFailure.Kind
             switch error {
@@ -152,7 +170,7 @@ extension UIAlertController {
         }
     }
 
-    private func performTap(withTitle title: String) throws(Fleet.AlertError) {
+    private func performTap(withTitle title: String, completion: (() -> Void)? = nil) throws(Fleet.AlertError) {
         let matchingActions = actions.filter { $0.title == title }
 
         guard let actionWithTitle = matchingActions.first else {
@@ -171,11 +189,10 @@ extension UIAlertController {
             throw .notPresented(title: title)
         }
 
-        var completionHandler: (() -> ())?
-        if let handler = actionWithTitle.handler {
-            completionHandler = {
-                handler(actionWithTitle)
-            }
+        let handler = actionWithTitle.handler
+        let completionHandler: (() -> ())? = (handler == nil && completion == nil) ? nil : {
+            handler?(actionWithTitle)
+            completion?()
         }
 
         presenter.dismiss(animated: false, completion: completionHandler)
