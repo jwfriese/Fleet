@@ -2,7 +2,7 @@
 
 `Integration/PackageConsumer/CropQueueConsumerTests.swift` is a Fleet-owned, representative mixed SwiftUI/UIKit scenario. It is compiled by the external package consumer (public APIs only) and run by `script/check-distribution`. It uses fake in-memory assets, a `UIViewControllerRepresentable` crop controller with a coordinator, and a SwiftUI parent that gates the controller's size from zero to non-zero.
 
-**It is not Reciplan's code and does not certify Reciplan's regressions.** No Reciplan repository or original fixes were supplied. Unknown and therefore assumed: the real candidate/identity contract (here: one controller is reused across candidate changes; `makeUIViewController` runs once), the real layout trigger for the toolbar-only screen (here: a first layout pass consumed at zero bounds), and the real crop-box geometry rules (here: aspect-fit image, crop box inset 12 pt). Validation against the real app remains separate.
+**It is not any downstream application's code and does not certify that application's regressions.** No downstream repository or original fixes were supplied. Unknown and therefore assumed: the real candidate/identity contract (here: one controller is reused across candidate changes; `makeUIViewController` runs once), the real layout trigger for the toolbar-only screen (here: a first layout pass consumed at zero bounds), and the real crop-box geometry rules (here: aspect-fit image, crop box inset 12 pt). Validation against a real app remains separate.
 
 ## What it demonstrates
 

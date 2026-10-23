@@ -6,7 +6,7 @@ import XCTest
 import Fleet
 
 // A Fleet-owned, representative mixed SwiftUI/UIKit crop queue. It uses fake in-memory assets (no camera or network)
-// and only public Fleet APIs. It is NOT Reciplan's code: see Documentation/CropQueueFixture.md for what is unknown.
+// and only public Fleet APIs. It is NOT a downstream application's code: see Documentation/CropQueueFixture.md for what is unknown.
 
 // MARK: Fake assets and application-owned model
 
