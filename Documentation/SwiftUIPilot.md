@@ -14,7 +14,7 @@ Add Fleet as a SwiftPM dependency of a hosted unit-test target only (never of th
 | Optimistic-deletion starter (`fleetElement`, `perform`, pending-response cleanup) | Supported; consumer-verified | Supported; consumer-verified |
 | Sheet and `NavigationStack` content observation | Supported (`NavigationStack` requires iOS 16; skipped below) | Not claimed |
 | `UIViewControllerRepresentable` crop fixture (zero to non-zero layout) | Supported; consumer-verified | Not applicable (uses `UIToolbar`) |
-| Optional ViewInspector integration | Consumer-verified (`--viewinspector`) | Consumer-verified (`--viewinspector`) |
+| Optional ViewInspector integration | Consumer-verified (`--with-viewinspector`) | Consumer-verified (`--with-viewinspector`) |
 | `preserve-timing` and legacy policies | Separate test-host processes, with a no-Fleet baseline for the timing claim | Same |
 
 ## What the consumers cover

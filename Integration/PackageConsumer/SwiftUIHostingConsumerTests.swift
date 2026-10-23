@@ -456,28 +456,59 @@ final class FailureIsolationTests: XCTestCase {
         }
     }
 
-    func test_cancelledScopeReleasesPendingRequest() async throws {
+    func test_cancelledScopeReleasesPendingRequestAndLeavesCleanSuccessor() async throws {
         let window = try XCTUnwrap(UIApplication.shared.keyWindow)
+        let originalRoot = window.rootViewController
+        weak var weakModel: IngredientsModel?
+        weak var weakService: FakeIngredientService?
+        do {
+            let service = FakeIngredientService()
+            let model = IngredientsModel(service: service)
+            weakModel = model
+            weakService = service
+            let task = Task { @MainActor in
+                try await Fleet.withHostedView(IngredientsScreen(model: model), window: window) { host in
+                    try host.context.addCleanup { model.shutdown() }
+                    try await host.waitForElement("ingredient.milk")
+                    try host.perform("Delete", onElement: "ingredient.milk")
+                    try await host.waitForUpdate("request pending") { service.isPending("milk") }
+                    // Held until cancelled: the scope must end through cancellation, not a timeout.
+                    try await host.waitForUpdate("never true", timeout: 30) { false }
+                }
+            }
+            // Bounded condition poll outside the scope (a second context would wait for the first one's lifetime).
+            let deadline = Date().addingTimeInterval(10)
+            while !service.isPending("milk") && Date() < deadline { await Task.yield() }
+            XCTAssertTrue(service.isPending("milk"))
+            task.cancel()
+            let result = await task.result
+            switch result {
+            case .success:
+                XCTFail("cancelled scope should not complete")
+            case .failure(let error):
+                XCTAssertTrue(error is CancellationError, "unexpected error: \(error)")
+            }
+            XCTAssertFalse(service.isPending("milk"))
+            XCTAssertNil(model.confirmation)
+            XCTAssertNil(model.errorMessage)
+        }
+        // Bounded release check: the cancelled task's captures may drop on a later main-actor turn.
+        let releaseDeadline = Date().addingTimeInterval(5)
+        while (weakModel != nil || weakService != nil) && Date() < releaseDeadline { await Task.yield() }
+        XCTAssertNil(weakModel)
+        XCTAssertNil(weakService)
+        XCTAssertTrue(window.rootViewController === originalRoot)
+
+        // Successor: a fresh screen mounts all rows and no stale error/confirmation appears.
         let service = FakeIngredientService()
         let model = IngredientsModel(service: service)
-        let task = Task { @MainActor in
-            try await Fleet.withHostedView(IngredientsScreen(model: model), window: window) { host in
-                try host.context.addCleanup { model.shutdown() }
-                try await host.waitForElement("ingredient.milk")
-                try host.perform("Delete", onElement: "ingredient.milk")
-                try await host.waitForUpdate("request pending") { service.isPending("milk") }
-                // Held until cancelled: the scope must end through cancellation, not a timeout.
-                try await host.waitForUpdate("never true", timeout: 30) { false }
-            }
+        try await Fleet.withHostedView(IngredientsScreen(model: model), window: window) { host in
+            try host.context.addCleanup { model.shutdown() }
+            try await host.waitForElement("ingredient.milk")
+            XCTAssertEqual(host.mountedElementIDs, allIngredientIDs)
+            XCTAssertTrue(service.started.isEmpty)
+            XCTAssertNil(model.confirmation)
+            XCTAssertNil(model.errorMessage)
         }
-        // Bounded condition poll outside the scope (a second context would wait for the first one's lifetime).
-        let deadline = Date().addingTimeInterval(10)
-        while !service.isPending("milk") && Date() < deadline { await Task.yield() }
-        XCTAssertTrue(service.isPending("milk"))
-        task.cancel()
-        _ = await task.result
-        XCTAssertFalse(service.isPending("milk"))
-        XCTAssertNil(model.confirmation)
-        XCTAssertNil(model.errorMessage)
     }
 }
