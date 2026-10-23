@@ -49,7 +49,7 @@ A model's path or presentation flag does not prove what is on screen. Fleet ther
 | Scoped host, lifecycle events, observed tasks, sheet content | Covered by native and consumer tests | Native tests compile and run; not separately advertised |
 | Minimum OS | iOS/tvOS 15 (unchanged) | |
 
-The starters are compiled in `Integration/PackageConsumer/SwiftUIHostingConsumerTests.swift` (XCTest and Swift Testing) and run by `script/check-distribution`.
+See the [adoption pilot](SwiftUIPilot.md) for setup, certification and limits. The starters are compiled in `Integration/PackageConsumer/SwiftUIHostingConsumerTests.swift` (XCTest and Swift Testing) and run by `script/check-distribution`.
 
 ## Operating and observing mounted elements (optimistic updates)
 
