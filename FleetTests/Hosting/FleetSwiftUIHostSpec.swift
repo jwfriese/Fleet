@@ -75,6 +75,45 @@ private struct SlowCleanupScreen: View {
 
 private struct HostError: Error {}
 
+private struct NativeButton: UIViewRepresentable {
+    let title: String
+    let action: @MainActor () -> Void
+
+    func makeUIView(context: Context) -> UIButton {
+        let button = UIButton(type: .system)
+        button.setTitle(title, for: .normal)
+        button.accessibilityLabel = title
+        button.addAction(UIAction { _ in MainActor.assumeIsolated { self.action() } }, for: .touchUpInside)
+        return button
+    }
+
+    func updateUIView(_ button: UIButton, context: Context) {}
+}
+
+private struct NativeLabel: UIViewRepresentable {
+    let text: String
+    func makeUIView(context: Context) -> UILabel {
+        let label = UILabel()
+        label.text = text
+        return label
+    }
+    func updateUIView(_ label: UILabel, context: Context) { label.text = text }
+}
+
+/// A small edit/delete screen: items are listed, "Edit" reveals "Delete", which removes an item.
+private struct ItemsScreen: View {
+    @ObservedObject var model: HostedModel
+    var body: some View {
+        VStack {
+            NativeLabel(text: "items: \(model.count)")
+            NativeButton(title: "Edit") { model.loads = 1 }
+            NativeButton(title: "Delete") { model.count -= 1 }.disabled(model.count == 0)
+            NativeButton(title: "Archive") {}
+            NativeButton(title: "Archive") {}
+        }
+    }
+}
+
 @MainActor
 class FleetSwiftUIHostSpec: XCTestCase {
     private var hostWindow: UIWindow!
@@ -333,5 +372,104 @@ class FleetSwiftUIHostSpec: XCTestCase {
         try await Fleet.withContext(window: hostWindow) { context in
             try await context.waitUntil("slow cleanup to finish", timeout: 5) { cleanup.finished }
         }
+    }
+
+    // MARK: Failure diagnostics
+
+    private func failure(_ body: () async throws -> Void, file: StaticString = #filePath, line: UInt = #line) async -> FleetFailure? {
+        do { try await body() } catch let failure as FleetFailure { return failure } catch { XCTFail("unexpected \(error)", file: file, line: line) }
+        XCTFail("expected a FleetFailure", file: file, line: line)
+        return nil
+    }
+
+    func test_queryFailures_areDistinguishableAndCarryDiagnostics() async throws {
+        let model = HostedModel()
+        try await Fleet.withHostedView(ItemsScreen(model: model), window: hostWindow) { host in
+            try await host.waitForUpdate("buttons present") { !host.matchingViews(label: "Edit", identifier: nil).isEmpty }
+            @MainActor func tapFailure(_ label: String) -> FleetFailure? {
+                do { try host.tap(label: label) } catch let failure as FleetFailure { return failure } catch {}
+                return nil
+            }
+            let missing = try XCTUnwrap(tapFailure("Nope"))
+            XCTAssertEqual(missing.kind, .notFound)
+            XCTAssertEqual(missing.diagnostics?.matchCount, 0)
+
+            let ambiguous = try XCTUnwrap(tapFailure("Archive"))
+            XCTAssertEqual(ambiguous.kind, .ambiguous)
+            XCTAssertEqual(ambiguous.diagnostics?.matchCount, 2)
+            XCTAssertEqual(ambiguous.diagnostics?.candidates.count, 2)
+
+            let disabled = try XCTUnwrap(tapFailure("Delete"))
+            XCTAssertEqual(disabled.kind, .unavailableInteraction)
+
+            let unsupported = try XCTUnwrap(tapFailure("items: 0"))
+            XCTAssertEqual(unsupported.kind, .unsupported)
+
+            let diagnostics = try XCTUnwrap(disabled.diagnostics)
+            XCTAssertEqual(diagnostics.lastAction, "tap label == \"Delete\"")
+            XCTAssertEqual(diagnostics.query, "label == \"Delete\"")
+            XCTAssertTrue(diagnostics.hierarchy.contains("UIButton label=\"Delete\" enabled=false"), diagnostics.hierarchy)
+            XCTAssertTrue(diagnostics.environment.contains("Resolved environment"))
+            XCTAssertTrue(diagnostics.lifecycle.contains("mounted=true"))
+            if case .captured(let png) = diagnostics.screenshot { XCTAssertFalse(png.isEmpty) } else { XCTFail("expected a screenshot: \(diagnostics.screenshot)") }
+            XCTAssertEqual(diagnostics.attachments.map(\.uniformTypeIdentifier), ["public.plain-text", "public.png"])
+            XCTAssertTrue(disabled.detailedDescription.contains("Last action"))
+        }
+    }
+
+    func test_timeout_pointsAtCallingTestAndCarriesLastAction() async throws {
+        let model = HostedModel()
+        var expectedLine: UInt = 0
+        let caught = await failure {
+            try await Fleet.withHostedView(ItemsScreen(model: model), window: self.hostWindow) { host in
+                host.recordAction("press save")
+                expectedLine = #line + 1
+                try await host.waitForUpdate("never", timeout: 0.1) { false }
+            }
+        }
+        let timeout = try XCTUnwrap(caught)
+        XCTAssertEqual(timeout.kind, .timedOut)
+        XCTAssertEqual(timeout.source?.line, expectedLine)
+        XCTAssertEqual(timeout.diagnostics?.lastAction, "press save")
+        XCTAssertFalse(timeout.diagnostics?.hierarchy.isEmpty ?? true)
+    }
+
+    func test_unavailableScreenshot_isReportedExplicitly() async throws {
+        var escaped: FleetHostedView?
+        try await Fleet.withHostedView(Text("x"), window: hostWindow) { escaped = $0 }
+        let diagnostics = try XCTUnwrap(escaped).diagnostics()
+        XCTAssertEqual(diagnostics.screenshot, .unavailable(reason: "the hosting scope has ended"))
+        XCTAssertTrue(diagnostics.report.contains("Screenshot: unavailable"))
+    }
+
+    func test_tracing_isOptInBounded_andShowsEditDeleteScenario() async throws {
+        let model = HostedModel()
+        model.count = 1
+        var untraced: FleetHostedView?
+        try await Fleet.withHostedView(ItemsScreen(model: model), window: hostWindow) { host in
+            untraced = host
+            XCTAssertNil(host.trace)
+            try host.tap(label: "Edit")
+        }
+        XCTAssertNil(untraced?.diagnostics().trace.first, "tracing stays off unless enabled")
+
+        model.count = 1
+        let caught = await failure {
+            try await Fleet.withHostedView(ItemsScreen(model: model), window: self.hostWindow) { host in
+                host.enableTracing(limit: 4)
+                try host.tap(label: "Edit")
+                try host.tap(label: "Delete")
+                try await host.waitForUpdate("item removed and Delete disabled", timeout: 2) {
+                    model.count == 0 && (host.matchingViews(label: "Delete", identifier: nil).first as? UIControl)?.isEnabled == false
+                }
+                try host.tap(label: "Delete")  // now disabled: the scenario's failure
+            }
+        }
+        let diagnostics = try XCTUnwrap(caught?.diagnostics)
+        XCTAssertEqual(caught?.kind, .unavailableInteraction)
+        XCTAssertEqual(diagnostics.trace.count, 4, "bounded to the limit")
+        XCTAssertGreaterThan(diagnostics.traceDroppedCount, 0)
+        XCTAssertEqual(diagnostics.trace.last, "action: tap label == \"Delete\"")
+        XCTAssertTrue(diagnostics.trace.contains("performed tap label == \"Delete\""))
     }
 }
