@@ -19,3 +19,7 @@ The mutations are runtime switches in `CropFixtureOptions`, so nothing is edited
 ## Controls used
 
 Only public APIs: `Fleet.withHostedView`, `FleetHostedView.layoutIfNeeded()`, `waitUntilReady`, `waitForUpdate`, `hostingController` (for typed discovery by walking `children`), and `fleetObservedTask`. `FleetEnvironment` still rejects non-positive sizes and the controller's frame is never forced; the zero size comes from SwiftUI laying out a `.frame(width: 0, height: 0)` parent. Discovery is fixture-owned (marker plus typed cast), not a Fleet API.
+
+## Platform
+
+The fixture is iOS-only (it uses UIToolbar); the file compiles to nothing in the tvOS consumer target. The throw path retains the observed prefetch task state outside the throwing scope and asserts it observed cancellation.

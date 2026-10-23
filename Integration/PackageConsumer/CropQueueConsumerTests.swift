@@ -1,3 +1,4 @@
+#if os(iOS)
 import Combine
 import SwiftUI
 import UIKit
@@ -250,12 +251,11 @@ enum CropScenario {
     ]
 
     /// Mounts the container at zero size, verifies the toolbar-only state, opens the gate, then changes candidate.
-    static func run(options: CropFixtureOptions, observeTask: Bool = true, afterAssertions: (@MainActor (FleetHostedView, CropQueueModel) async throws -> Void)? = nil) async throws -> (CropQueueModel, Int) {
+    static func run(options: CropFixtureOptions, counter: CancelCounter = CancelCounter(), afterAssertions: (@MainActor (FleetHostedView, CropQueueModel) async throws -> Void)? = nil) async throws -> (CropQueueModel, Int) {
         let window = try XCTUnwrap(UIApplication.shared.keyWindow)
         let model = CropQueueModel(candidates: candidates, options: options)
         let gate = SizeGate()
         var cancelled = 0
-        let counter = CancelCounter()
         try await Fleet.withHostedView(GatedCropContainer(model: model, gate: gate, onPrefetchCancel: { counter.count += 1 }), window: window) { host in
             // Lower-level sequence: the controller exists but SwiftUI has laid it out at zero size.
             try host.layoutIfNeeded()
@@ -363,12 +363,18 @@ final class CropQueueFixtureTests: XCTestCase {
     func test_teardownAfterThrow() async throws {
         struct Boom: Error {}
         let captured = ModelBox()
+        let counter = CancelCounter()
         do {
-            _ = try await CropScenario.run(options: .init()) { _, model in captured.model = model; throw Boom() }
+            _ = try await CropScenario.run(options: .init(), counter: counter) { host, model in
+                captured.model = model
+                try await host.waitForTaskStart("prefetch")
+                throw Boom()
+            }
             XCTFail("expected the body to throw")
         } catch is Boom {}
         let model = try XCTUnwrap(captured.model)
-        try await assertTornDown(model, cancelled: nil)
+        try await poll("observed prefetch task finished after throw") { counter.count == 1 }
+        try await assertTornDown(model, cancelled: counter.count)
     }
 
     func test_teardownAfterCancellation() async throws {
@@ -425,3 +431,5 @@ final class CropQueueFixtureTests: XCTestCase {
 
 @MainActor final class ModelBox { var model: CropQueueModel? }
 @MainActor final class ReadyFlag { var value = false }
+
+#endif
