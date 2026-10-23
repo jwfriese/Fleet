@@ -2,7 +2,7 @@
 
 Fleet owns the hosted screen, its lifecycle and the restoration of window-scoped settings. An established library, [SnapshotTesting](https://github.com/pointfreeco/swift-snapshot-testing), may compare images. It stays out of Fleet's package, framework and native targets and is compiled only into an external consumer's test target. The direct oracle below needs no snapshot library.
 
-Sources: `Integration/PackageConsumer/EnvironmentCasesConsumerTests.swift` (driver and direct oracle, always compiled) and `Integration/PackageConsumer/SnapshotTesting/SnapshotEnvironmentTests.swift` (adapter, only with the flag). Reproduce with `script/check-distribution --allow-dirty --with-snapshottesting [ios|tvos]`.
+Sources: `Integration/PackageConsumer/EnvironmentCasesConsumerTests.swift` (driver and direct oracle, always compiled) and `Integration/PackageConsumer/SnapshotTesting/SnapshotEnvironmentTests.swift` (adapter, compiled by default by `script/check-distribution`, including hosted CI, unless `--without-snapshottesting` is passed). Reproduce with `script/check-distribution --allow-dirty [ios|tvos]`; the mismatch images are attachments in the result bundles.
 
 ## The named-case driver (a recipe, not API)
 

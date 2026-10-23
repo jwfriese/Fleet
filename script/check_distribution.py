@@ -194,10 +194,13 @@ def main():
     parser.add_argument("--with-viewinspector", action="store_true",
                         help="Also compile the optional ViewInspector compatibility proof into the consumer test target")
     parser.add_argument("--with-snapshottesting", action="store_true",
-                        help="Also compile the optional SnapshotTesting adapter and named-environment snapshot tests into the consumer test target")
+                        help="Compile the optional SnapshotTesting adapter and named-environment snapshot tests into the consumer test target (default; kept for compatibility)")
+    parser.add_argument("--without-snapshottesting", action="store_true",
+                        help="Skip the optional SnapshotTesting adapter and snapshot tests, so the consumer does not resolve that package")
     args = parser.parse_args()
     try:
-        check(ROOT, args.platform, args.allow_dirty, args.with_viewinspector, args.with_snapshottesting)
+        check(ROOT, args.platform, args.allow_dirty, args.with_viewinspector,
+              args.with_snapshottesting or not args.without_snapshottesting)
     except (DistributionError, ValueError, subprocess.SubprocessError, OSError) as error:
         print(f"Fleet distribution validation failed: {error}", file=sys.stderr)
         return 1
