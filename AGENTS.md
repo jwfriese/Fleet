@@ -56,3 +56,5 @@ Keep public API docs and platform exclusions in sync with changes. Do not add ge
 Release preparation requires a clean checkout and leaves an unstaged diff for review; do not commit unrelated work to satisfy it. Full release checks also require validated packaging and external consumers. `check --tests-only` cannot produce publication evidence. Never bypass the packaging gate with an empty or always-successful checker.
 
 Run publication only when the user explicitly requests publishing the selected version. `script/release publish` writes a Git tag and GitHub release; it is not a validation command. Use `--dry-run` for its local plan. The old Go publisher is removed. Preserve conflicting or partially published tags rather than moving/deleting them to get a command to pass.
+
+Do not name specific downstream applications or services in public code, fixtures, tests, or documentation. Describe fixtures generically (for example, "a recipe-shaped fixture") and state that they do not certify any downstream application.
