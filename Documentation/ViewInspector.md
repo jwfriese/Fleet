@@ -50,7 +50,7 @@ Do not substitute body reflection for rendered evidence.
 
 - **Scopes.** `container(_:)` descends into the single view with an `accessibilityIdentifier` (use stable model identifiers, not positions). Controls are then matched by label/title inside that scope only, so "Remove" in different ingredient rows is unambiguous.
 - **Exact-one.** Every singular lookup requires exactly one match. `ScopedQueryFailure` keeps `absent`, `ambiguous` (with count), `disabled` and `unsupported` distinct, each naming the target and scope; none takes a first match.
-- **Evidence level.** ViewInspector reports *declaration content of the mounted instance*. It does not report layout, offscreen/lazy realization or visibility: a declared lazy or offscreen child is found, a conditional branch that is not currently declared is absent. Use `fleetElement` frames, the hosting view or a snapshot for rendered claims. Handles snapshot the value they were read from; re-query inside a fresh inspection after state changes (a handle read earlier keeps its earlier value).
+- **Evidence level.** ViewInspector reports *declaration content of the mounted instance*. It does not report layout, offscreen/lazy realization or visibility: a declared lazy or offscreen child is found (tested with a 44-point `ScrollView` containing a `LazyVStack`; finding it is not evidence of realization or visibility, which `ScopedInspector.unsupported("visibility")` reports as unsupported), a conditional branch that is not currently declared is absent. Use `fleetElement` frames, the hosting view or a snapshot for rendered claims. Handles are not immutable snapshots: a retained text-field handle's `input()` reads the live binding and returns the current value after state changes (tested), and a handle is only meaningful inside the inspection that produced it. Re-query inside a fresh inspection after state changes.
 
 | Control | Operation | What it does (never a physical touch) |
 | --- | --- | --- |
@@ -62,7 +62,7 @@ Do not substitute body reflection for rendered evidence.
 
 Disabled controls fail with `.disabled` before acting. Anything else (swipe actions, context menus, gestures, rendered text or visibility) returns `ScopedQueryFailure.unsupported` with a recommendation: an explicit `fleetElement` action, a frame/snapshot observation, or an XCUITest. Nothing is simulated through private hooks.
 
-Compiled through the public consumer with ViewInspector 0.10.5 on iOS/tvOS 26.5 (Swift Testing, 4 tests; the table above is limited to what those tests exercise).
+Compiled through the public consumer with ViewInspector 0.10.5 on iOS/tvOS 26.5 (Swift Testing, 5 tests; the table above is limited to what those tests exercise).
 
 ## Limits
 

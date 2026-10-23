@@ -39,7 +39,9 @@ enum ScopedActionKind: String, Equatable {
 /// (`body` evaluated for the live `self`). That is neither proof of layout nor of visibility:
 /// a lazily declared or offscreen child is found if it is declared, and a branch that is not
 /// currently declared is absent. Handles are valid only inside the inspection body that produced
-/// them; they snapshot the value they were read from and go stale when state changes.
+/// them. A retained handle is not an immutable snapshot: binding-backed reads (such as a text
+/// field's `input()`) go through the live binding and return the current value, while the handle's
+/// position in the declaration tree is whatever it was when read. Re-query inside a fresh inspection.
 @MainActor
 struct ScopedInspector {
     typealias Root = InspectableView<ViewType.ClassifiedView>
@@ -193,6 +195,14 @@ struct ScopedPantryScreen: View {
                 Text("Metric").tag("metric")
                 Text("Imperial").tag("imperial")
             }
+            ScrollView {
+                LazyVStack {
+                    ForEach(0..<40, id: \.self) { index in
+                        Text("Lazy \(index)").accessibilityIdentifier("lazy-\(index)")
+                    }
+                }
+            }
+            .frame(height: 44)
             if model.showsNotes {
                 Button("Remove") { model.removed.append("notes") }
                     .accessibilityIdentifier("notes")
@@ -300,10 +310,11 @@ struct ScopedInspectionTests {
             try await inspectPantry(seam, in: context) { screen in
                 expectFailure(.absent(target: "container 'notes'", scope: "screen")) { _ = try screen.container("notes") }
             }
-            // A handle read now describes the value it was read from.
-            var staleAmount: String?
+            // Retain the actual handle (not a copied value) before the state changes.
+            var retained: InspectableView<ViewType.TextField>?
             try await inspectPantry(seam, in: context) { screen in
-                staleAmount = try screen.container("row-flour").textField("Amount").input()
+                retained = try screen.container("row-flour").textField("Amount")
+                #expect(try retained?.input() == "500 g")
             }
             model.showsNotes = true
             model.items[0].amount = "750 g"
@@ -314,10 +325,29 @@ struct ScopedInspectionTests {
             }
             try await inspectPantry(seam, in: context) { screen in
                 _ = try screen.container("notes")
-                // Re-querying sees the live declaration; the earlier read stays what it was.
+                // Re-querying sees the live declaration.
                 #expect(try screen.container("row-flour").textField("Amount").input() == "750 g")
             }
-            #expect(staleAmount == "500 g")
+            // A retained handle is not an immutable snapshot: binding-backed reads return the live value.
+            #expect(try retained?.input() == "750 g")
+        }
+    }
+
+    @Test func lazyOffscreenContentIsFoundAsDeclarationAndRenderedClaimsAreUnsupported() async throws {
+        let model = ScopedPantryModel()
+        let seam = InspectionSeam<ScopedPantryScreen>()
+        try await host(model, seam) { context in
+            try await inspectPantry(seam, in: context) { screen in
+                // The scroll view is 44 points tall, so "lazy-39" is far offscreen. Finding it only
+                // shows it is declared in the mounted instance, not that it is realized or visible.
+                _ = try screen.container("lazy-39")
+                _ = try screen.container("lazy-0")
+                expectFailure(.absent(target: "container 'lazy-40'", scope: "screen")) { _ = try screen.container("lazy-40") }
+                let visibility = ScopedInspector.unsupported("visibility")
+                guard case let .unsupported(_, reason, recommendation) = visibility else { Issue.record("expected unsupported"); return }
+                #expect(reason.contains("not rendered"))
+                #expect(recommendation.contains("snapshot"))
+            }
         }
     }
 }
