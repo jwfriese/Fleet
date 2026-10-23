@@ -30,7 +30,7 @@ public final class FleetLifecycleRecorder {
 
     private struct ContentEntry {
         let instance: Int
-        let identity: String
+        var identity: String
         var values: [String: String]
         weak var view: UIView?
     }
@@ -46,8 +46,13 @@ public final class FleetLifecycleRecorder {
         return instance
     }
 
-    func updateContent(instance: Int, values: [String: String]) {
+    func updateContent(instance: Int, identity: String, values: [String: String]) {
         guard let index = contentEntries.firstIndex(where: { $0.instance == instance }) else { return }
+        // SwiftUI may reuse the probe in place while the content now stands for a different identity.
+        if contentEntries[index].identity != identity {
+            contentEntries[index].identity = identity
+            mountCounts[identity, default: 0] += 1
+        }
         contentEntries[index].values = values
     }
 
@@ -160,7 +165,7 @@ private struct FleetContentProbe: UIViewRepresentable {
         let coordinator = context.coordinator
         coordinator.recorder = recorder
         if let instance = coordinator.instance {
-            recorder.updateContent(instance: instance, values: values)
+            recorder.updateContent(instance: instance, identity: identity, values: values)
         } else {
             coordinator.instance = recorder.registerContent(identity: identity, values: values, view: view)
         }
@@ -504,12 +509,28 @@ extension FleetHostedView {
         return "displayed content: " + all.map { "\($0.identity)#\($0.instance) \($0.values.sorted { $0.key < $1.key }.map { "\($0.key)=\($0.value)" }.joined(separator: ", "))" }.joined(separator: "; ")
     }
 
+    /// `waitUntil` whose timeout failure names the content displayed at the deadline, not at wait entry.
+    private func waitForContentCondition(_ description: String, timeout: TimeInterval, condition: @MainActor () -> Bool) async throws {
+        do {
+            try await context.waitUntil(description, timeout: timeout, condition: condition)
+        } catch let failure as FleetFailure where failure.kind == .timedOut {
+            throw FleetFailure(
+                kind: failure.kind,
+                action: "wait for \(description); currently \(describeContent())",
+                target: failure.target,
+                state: failure.state,
+                reason: failure.reason,
+                source: failure.source
+            )
+        }
+    }
+
     /// Waits (bounded) until content with `identity` is displayed, the `count`th time it has been
     /// mounted (use `count: 2` to observe a repeated presentation). This establishes presentation only.
     public func waitForContentPresented(_ identity: String, count: Int = 1, timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
         try await fleetAttributing(fileID, line) {
             try requireActive("wait for content presentation")
-            try await context.waitUntil("content '\(identity)' to be presented (mounting \(count)); currently \(self.describeContent())", timeout: timeout) {
+            try await waitForContentCondition("content '\(identity)' to be presented (mounting \(count))", timeout: timeout) {
                 self.lifecycle.mountCount(of: identity) >= count && self.currentContent(identity) != nil
             }
         }
@@ -522,7 +543,7 @@ extension FleetHostedView {
         try await fleetAttributing(fileID, line) {
             try requireActive("wait for content values")
             let expected = values.sorted { $0.key < $1.key }.map { "\($0.key)=\($0.value)" }.joined(separator: ", ")
-            try await context.waitUntil("content '\(identity)' to display \(expected); currently \(self.describeContent())", timeout: timeout) {
+            try await waitForContentCondition("content '\(identity)' to display \(expected)", timeout: timeout) {
                 guard let current = self.currentContent(identity) else { return false }
                 return values.allSatisfy { current.values[$0.key] == $0.value }
             }
@@ -533,7 +554,7 @@ extension FleetHostedView {
     public func waitForContentDismissed(_ identity: String, timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
         try await fleetAttributing(fileID, line) {
             try requireActive("wait for content dismissal")
-            try await context.waitUntil("content '\(identity)' to be dismissed; currently \(self.describeContent())", timeout: timeout) {
+            try await waitForContentCondition("content '\(identity)' to be dismissed", timeout: timeout) {
                 self.lifecycle.displayedContent.allSatisfy { $0.identity != identity }
                     && !self.lifecycle.hasRegisteredContent(identity: identity)
             }

@@ -79,6 +79,42 @@ import XCTest
             }
         }
 
+        func test_changedSemanticIdentity_tracksCurrentIdentity() async throws {
+            let model = ContentModel()
+            struct Screen: View {
+                @ObservedObject var model: ContentModel
+                var body: some View {
+                    Text(model.name).fleetObservedContent(model.name, ["name": model.name])
+                }
+            }
+            try await Fleet.withHostedView(Screen(model: model), window: hostWindow) { host in
+                try await host.waitForContent("Soup", values: ["name": "Soup"])
+                model.name = "Salad"
+                try await host.waitForContent("Salad", values: ["name": "Salad"])
+                try await host.waitForContentDismissed("Soup")
+                XCTAssertNil(host.currentContent("Soup"))
+                XCTAssertEqual(host.presentationCount(of: "Salad"), 1)
+            }
+        }
+
+        func test_timeout_reportsContentAtDeadline() async throws {
+            let model = ContentModel()
+            do {
+                try await Fleet.withHostedView(ContentScreen(model: model), window: hostWindow) { host in
+                    try await host.waitForContent("detail", values: ["name": "Soup"])
+                    Task { @MainActor in
+                        try? await Task.sleep(nanoseconds: 50_000_000)
+                        model.name = "Salad"
+                    }
+                    try await host.waitForContent("detail", values: ["name": "Missing"], timeout: 0.4)
+                }
+                XCTFail("expected timeout")
+            } catch let failure as FleetFailure {
+                XCTAssertEqual(failure.kind, .timedOut)
+                XCTAssertTrue(failure.action.contains("name=Salad"), failure.action)
+            }
+        }
+
         func test_modifierOutsideFleetHost_doesNothing() async throws {
             let originalRoot = hostWindow.rootViewController
             defer { hostWindow.rootViewController = originalRoot }
