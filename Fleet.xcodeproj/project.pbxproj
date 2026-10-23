@@ -12,7 +12,6 @@
 		F1EE7000000000000000A006 /* FleetSwiftUIHostSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE7000000000000000A004 /* FleetSwiftUIHostSpec.swift */; };
 		F1EE7000000000000000B002 /* FleetPresentedContentSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE7000000000000000B003 /* FleetPresentedContentSpec.swift */; };
 		F1EE7000000000000000A105 /* OptimisticDeletionSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE7000000000000000A104 /* OptimisticDeletionSpec.swift */; };
-		F1EE7000000000000000A006 /* FleetSwiftUIHostSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE7000000000000000A004 /* FleetSwiftUIHostSpec.swift */; };
 		F1EE7000000000000000A106 /* OptimisticDeletionSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE7000000000000000A104 /* OptimisticDeletionSpec.swift */; };
 		F1EE7000000000000000A002 /* FleetSwiftUIHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE7000000000000000A001 /* FleetSwiftUIHost.swift */; };
 		F1EE7000000000000000A102 /* FleetElements.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE7000000000000000A101 /* FleetElements.swift */; };
