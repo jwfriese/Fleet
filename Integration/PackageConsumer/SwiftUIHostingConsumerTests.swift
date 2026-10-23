@@ -146,7 +146,7 @@ struct SwiftUIHostingSwiftTestingStarter {
 }
 // swiftui-starter-swift-testing:end
 
-// MARK: - Optimistic deletion example (Reciplan-shaped public fixture)
+// MARK: - Optimistic deletion example (public fixture)
 
 /// Application-owned fake with explicit checkpoints: nothing resolves until the test releases it,
 /// and `shutdown()` (also run on cancellation) releases every pending continuation.
