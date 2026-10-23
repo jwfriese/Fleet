@@ -191,10 +191,12 @@ extension View {
 
 private struct FleetProbeRoot: View {
     let recorder: FleetLifecycleRecorder
+    let elements: FleetElementRegistry
     let content: AnyView
 
     var body: some View {
         content
+            .modifier(FleetElementReporting(registry: elements))
             .environment(\.fleetLifecycleRecorder, recorder)
             .onAppear { recorder.record(.appeared) }
             .onDisappear { recorder.record(.disappeared) }
@@ -225,17 +227,19 @@ public final class FleetHostedView {
     /// The single hosting controller for this screen. It is the window's root until removal.
     public let hostingController: UIHostingController<AnyView>
     public let lifecycle: FleetLifecycleRecorder
+    let elements: FleetElementRegistry
     private(set) var isRemoved = false
     private let source: FleetSourceLocation?
 
-    init(context: FleetTestContext, hostingController: UIHostingController<AnyView>, lifecycle: FleetLifecycleRecorder, source: FleetSourceLocation? = nil) {
+    init(context: FleetTestContext, hostingController: UIHostingController<AnyView>, lifecycle: FleetLifecycleRecorder, elements: FleetElementRegistry = FleetElementRegistry(), source: FleetSourceLocation? = nil) {
+        self.elements = elements
         self.source = source
         self.context = context
         self.hostingController = hostingController
         self.lifecycle = lifecycle
     }
 
-    private func requireActive(_ action: String) throws {
+    func requireActive(_ action: String) throws {
         guard context.isActive else {
             throw FleetFailure(
                 kind: .invalidSetup,
@@ -350,6 +354,7 @@ public final class FleetHostedView {
     func removeFromWindow() {
         guard !isRemoved else { return }
         isRemoved = true
+        elements.close()
         if context.window.rootViewController === hostingController {
             context.window.rootViewController = nil
         }
@@ -362,6 +367,7 @@ public final class FleetHostedView {
     /// the deadline; Fleet does not force-cancel it.
     func dismantle(drainTimeout: TimeInterval = 2) async throws {
         lifecycle.close()
+        defer { elements.close() }
         if lifecycle.count(of: .appeared) == 0 {
             // An immediate mount (or one removed right away) may still owe SwiftUI's `onAppear`.
             // Deliver it now (bounded) so the matching `onDisappear` follows removal inside this
@@ -414,8 +420,9 @@ extension FleetTestContext {
     public func mount<Content: View>(_ view: Content, fileID: String = #fileID, line: UInt = #line) throws -> FleetHostedView {
         guard isActive else { throw Self.contextEnded.attributed(to: FleetSourceLocation(fileID: fileID, line: line)) }
         let recorder = FleetLifecycleRecorder()
-        let controller = UIHostingController(rootView: AnyView(FleetProbeRoot(recorder: recorder, content: AnyView(view))))
-        let handle = FleetHostedView(context: self, hostingController: controller, lifecycle: recorder, source: FleetSourceLocation(fileID: fileID, line: line))
+        let elements = FleetElementRegistry()
+        let controller = UIHostingController(rootView: AnyView(FleetProbeRoot(recorder: recorder, elements: elements, content: AnyView(view))))
+        let handle = FleetHostedView(context: self, hostingController: controller, lifecycle: recorder, elements: elements, source: FleetSourceLocation(fileID: fileID, line: line))
         window.endEditing(true)
         window.rootViewController = controller
         // Scope end removes the screen and drains disappearance and observed-task cancellation,

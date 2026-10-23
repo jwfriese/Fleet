@@ -145,3 +145,199 @@ struct SwiftUIHostingSwiftTestingStarter {
     }
 }
 // swiftui-starter-swift-testing:end
+
+// MARK: - Optimistic deletion example (Reciplan-shaped public fixture)
+
+/// Application-owned fake with explicit checkpoints: nothing resolves until the test releases it,
+/// and `shutdown()` (also run on cancellation) releases every pending continuation.
+@MainActor
+final class FakeIngredientService {
+    struct ServiceError: Error {}
+    private(set) var started: [String] = []
+    private var pending: [String: CheckedContinuation<Void, Error>] = [:]
+
+    func delete(_ id: String) async throws {
+        started.append(id)
+        try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { pending[id] = $0 }
+        } onCancel: {
+            Task { @MainActor in self.release(id, with: CancellationError()) }
+        }
+    }
+
+    func isPending(_ id: String) -> Bool { pending[id] != nil }
+    func releaseSuccess(_ id: String) { pending.removeValue(forKey: id)?.resume() }
+    func releaseFailure(_ id: String) { release(id, with: ServiceError()) }
+    func shutdown() { for id in Array(pending.keys) { release(id, with: CancellationError()) } }
+    private func release(_ id: String, with error: Error) { pending.removeValue(forKey: id)?.resume(throwing: error) }
+}
+
+struct Ingredient: Sendable, Equatable, Identifiable {
+    let id: String
+    let name: String
+}
+
+@MainActor
+final class IngredientsModel: ObservableObject {
+    @Published var ingredients = [
+        Ingredient(id: "flour", name: "Flour"),
+        Ingredient(id: "eggs", name: "Eggs"),
+        Ingredient(id: "milk", name: "Milk"),
+    ]
+    @Published var errorMessage: String?
+    @Published var deleting: Set<String> = []
+    let service: FakeIngredientService
+    private var generation = 0
+    private var tasks: [Task<Void, Never>] = []
+
+    init(service: FakeIngredientService) { self.service = service }
+
+    /// Optimistic: the row leaves immediately; a failed response restores it at its original index.
+    func delete(_ ingredient: Ingredient) {
+        guard let index = ingredients.firstIndex(of: ingredient), !deleting.contains(ingredient.id) else { return }
+        errorMessage = nil
+        deleting.insert(ingredient.id)
+        ingredients.remove(at: index)
+        let current = generation
+        tasks.append(Task { [weak self] in
+            guard let self else { return }
+            do {
+                try await service.delete(ingredient.id)
+            } catch {
+                guard current == generation, !Task.isCancelled else { return }
+                ingredients.insert(ingredient, at: min(index, ingredients.count))
+                errorMessage = "Could not delete \(ingredient.name)"
+            }
+            if current == generation { deleting.remove(ingredient.id) }
+        })
+    }
+
+    /// Ends this screen's work: later results are ignored and pending fake requests are released.
+    func shutdown() {
+        generation += 1
+        tasks.forEach { $0.cancel() }
+        tasks = []
+        service.shutdown()
+    }
+}
+
+struct IngredientsScreen: View {
+    @ObservedObject var model: IngredientsModel
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            if let message = model.errorMessage {
+                Text(message).fleetElement("error", text: message)
+            }
+            ForEach(model.ingredients) { ingredient in
+                // The Delete button and Fleet's action run the same closure.
+                let delete: @MainActor @Sendable () -> Void = { [model] in model.delete(ingredient) }
+                HStack {
+                    Text(ingredient.name)
+                    Spacer()
+                    Button("Delete", action: delete)
+                }
+                .frame(height: 44)
+                .fleetElement("ingredient.\(ingredient.id)", text: ingredient.name, actions: [
+                    FleetElementAction("Delete", isEnabled: !model.deleting.contains(ingredient.id), perform: delete)
+                ])
+            }
+            Spacer()
+        }
+    }
+}
+
+private let allIngredientIDs = ["ingredient.flour", "ingredient.eggs", "ingredient.milk"]
+
+// optimistic-deletion-xctest:begin
+@MainActor
+final class OptimisticDeletionXCTestStarter: XCTestCase {
+    func test_failedDeletion_restoresRowInPlaceWithVisibleError() async throws {
+        let window = try XCTUnwrap(UIApplication.shared.keyWindow)
+        let service = FakeIngredientService()
+        let model = IngredientsModel(service: service)
+        try await Fleet.withHostedView(IngredientsScreen(model: model), window: window) { host in
+            try host.context.addCleanup { model.shutdown() }
+            try await host.waitForElement("ingredient.milk")
+            XCTAssertEqual(host.mountedElementIDs, allIngredientIDs)
+
+            // The second row's Delete, found by identity (every row's label is "Delete").
+            try host.perform("Delete", onElement: "ingredient.eggs")
+            try await host.waitForUpdate("delete request started") { service.started == ["eggs"] }
+            try await host.waitForElementRemoval("ingredient.eggs")  // local change, response still held
+            XCTAssertTrue(service.isPending("eggs"))
+            XCTAssertEqual(host.mountedElementIDs, ["ingredient.flour", "ingredient.milk"])
+
+            service.releaseFailure("eggs")
+            try await host.waitForElement("ingredient.eggs")
+            try await host.waitForElement("error")
+            XCTAssertEqual(host.mountedElementIDs.filter { $0.hasPrefix("ingredient.") }, allIngredientIDs)
+            let error = try host.element("error")
+            XCTAssertEqual(error.text, "Could not delete Eggs")
+            XCTAssertGreaterThan(error.frame.height, 0)
+        }
+    }
+
+    func test_successfulDeletion_leavesRowRemoved_andBadRequestsFailRecoverably() async throws {
+        let window = try XCTUnwrap(UIApplication.shared.keyWindow)
+        let service = FakeIngredientService()
+        let model = IngredientsModel(service: service)
+        try await Fleet.withHostedView(IngredientsScreen(model: model), window: window) { host in
+            try host.context.addCleanup { model.shutdown() }
+            try await host.waitForElement("ingredient.milk")
+            XCTAssertThrowsError(try host.perform("Delete", onElement: "ingredient.sugar")) { error in
+                XCTAssertEqual((error as? FleetFailure)?.kind, .invalidInput)
+                XCTAssertTrue((error as? FleetFailure)?.target.contains("ingredient.sugar") == true)
+            }
+            XCTAssertThrowsError(try host.perform("Archive", onElement: "ingredient.milk"))
+            try host.perform("Delete", onElement: "ingredient.milk")
+            try await host.waitForElementRemoval("ingredient.milk")
+            service.releaseSuccess("milk")
+            try await host.waitForUpdate("response consumed") { !service.isPending("milk") }
+            XCTAssertEqual(host.mountedElementIDs, ["ingredient.flour", "ingredient.eggs"])
+        }
+        XCTAssertFalse(service.isPending("milk"))
+    }
+}
+// optimistic-deletion-xctest:end
+
+// optimistic-deletion-swift-testing:begin
+@MainActor
+@Suite("Optimistic deletion starter")
+struct OptimisticDeletionSwiftTestingStarter {
+    @Test func failedDeletionRestoresRowInPlace() async throws {
+        let window = try #require(UIApplication.shared.keyWindow)
+        let service = FakeIngredientService()
+        let model = IngredientsModel(service: service)
+        try await Fleet.withHostedView(IngredientsScreen(model: model), window: window) { host in
+            try host.context.addCleanup { model.shutdown() }
+            try await host.waitForElement("ingredient.milk")
+            try host.perform("Delete", onElement: "ingredient.eggs")
+            try await host.waitForElementRemoval("ingredient.eggs")
+            #expect(service.isPending("eggs"))
+            service.releaseFailure("eggs")
+            try await host.waitForElement("ingredient.eggs")
+            try await host.waitForElement("error")
+            #expect(host.mountedElementIDs.filter { $0.hasPrefix("ingredient.") } == allIngredientIDs)
+        }
+    }
+
+    @Test func successKeepsRowRemovedAndScopeEndReleasesPendingRequest() async throws {
+        let window = try #require(UIApplication.shared.keyWindow)
+        let service = FakeIngredientService()
+        let model = IngredientsModel(service: service)
+        try await Fleet.withHostedView(IngredientsScreen(model: model), window: window) { host in
+            try host.context.addCleanup { model.shutdown() }
+            try await host.waitForElement("ingredient.milk")
+            try host.perform("Delete", onElement: "ingredient.flour")
+            try await host.waitForElementRemoval("ingredient.flour")
+            service.releaseSuccess("flour")
+            try await host.waitForUpdate("response consumed") { !service.isPending("flour") }
+            #expect(host.mountedElementIDs == ["ingredient.eggs", "ingredient.milk"])
+            try host.perform("Delete", onElement: "ingredient.milk")  // left pending at scope end
+            try await host.waitForUpdate("request started") { service.isPending("milk") }
+        }
+        #expect(!service.isPending("milk"))
+    }
+}
+// optimistic-deletion-swift-testing:end

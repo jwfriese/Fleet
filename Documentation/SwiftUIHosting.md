@@ -50,3 +50,24 @@ A model's path or presentation flag does not prove what is on screen. Fleet ther
 | Minimum OS | iOS/tvOS 15 (unchanged) | |
 
 The starters are compiled in `Integration/PackageConsumer/SwiftUIHostingConsumerTests.swift` (XCTest and Swift Testing) and run by `script/check-distribution`.
+
+## Operating and observing mounted elements (optimistic updates)
+
+Mark the screen's rows with `fleetElement(_:text:actions:)`, using a stable model identity, and give each `FleetElementAction` the same closure the row's control runs:
+
+```swift
+let delete = { model.delete(ingredient) }
+HStack { Text(ingredient.name); Button("Delete", action: delete) }
+    .fleetElement("ingredient.\(ingredient.id)", text: ingredient.name,
+                  actions: [FleetElementAction("Delete", isEnabled: !model.deleting.contains(ingredient.id), perform: delete)])
+```
+
+| API | Meaning |
+| --- | --- |
+| `host.perform("Delete", onElement:)` | invokes that one row's action; never "the first Delete" |
+| `host.mountedElementIDs`, `host.element(_:)` | identities in visual order; text, window-coordinate frame and action state of one element |
+| `host.waitForElement(_:)`, `host.waitForElementRemoval(_:)` | bounded waits on the laid-out SwiftUI hierarchy |
+
+The rendered observation is the mounted SwiftUI hierarchy as reported by layout (identity, text, geometry), not view-model arrays and not ViewInspector declaration inspection. It does not prove physical hit testing, accessibility labels or pixels; add a snapshot or accessibility check separately if you need those. A request fails with `FleetFailure`: `.invalidInput` for a missing element, an ambiguous identity (several mounted elements share it) or an action the element does not offer; `.unavailableInteraction` for a disabled action. Each names the element identity and action, and the caller's file and line.
+
+The maintained example in `SwiftUIHostingConsumerTests.swift` (`IngredientsScreen` with `FakeIngredientService`) holds the request at explicit checkpoints, asserts the row is already gone while the response is pending, then releases failure (row restored at its original position with a visible error) or success. The fake, its continuations and the model's tasks are application-owned: register `model.shutdown()` with `host.context.addCleanup` so cancellation or an early failure releases pending continuations and ignores late results. Fleet does not provide a networking or service abstraction. Actual Reciplan behavior is not certified by this fixture.
