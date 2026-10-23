@@ -1,4 +1,5 @@
 import Combine
+import Foundation
 import SwiftUI
 import Testing
 import UIKit
@@ -541,6 +542,81 @@ struct ContextualRowsScreen: View {
     }
 }
 
+
+// diagnostics-adapters:begin
+/// A native button the screen under test cannot activate: it is disabled by the screen.
+struct DisabledDeleteScreen: View {
+    var body: some View {
+        DeleteButton().disabled(true)
+    }
+
+    struct DeleteButton: UIViewRepresentable {
+        func makeUIView(context: Context) -> UIButton {
+            let button = UIButton(type: .system)
+            button.setTitle("Delete", for: .normal)
+            button.accessibilityLabel = "Delete"
+            return button
+        }
+        func updateUIView(_ button: UIButton, context: Context) {}
+    }
+}
+
+/// The failure's line when it was raised from this file, else `fallback`: keeps the report on the calling test.
+private func fleetCallerLine(_ failure: FleetFailure, fileID: String, fallback: UInt) -> UInt {
+    failure.source.flatMap { $0.fileID == fileID ? $0.line : nil } ?? fallback
+}
+
+extension XCTestCase {
+    /// Reports `failure` as one XCTest failure at the calling test and retains its diagnostics
+    /// (text report, screenshot when captured) as attachments that outlive the run in the result bundle.
+    func reportFleetFailure(_ failure: FleetFailure, fileID: String = #fileID, filePath: StaticString = #filePath, line: UInt = #line) {
+        for attachment in failure.diagnostics?.attachments ?? [] {
+            let item = XCTAttachment(data: attachment.data, uniformTypeIdentifier: attachment.uniformTypeIdentifier)
+            item.name = attachment.name
+            item.lifetime = .keepAlways
+            add(item)
+        }
+        XCTFail(failure.detailedDescription, file: filePath, line: fleetCallerLine(failure, fileID: fileID, fallback: line))
+    }
+}
+
+/// Swift Testing counterpart: records an issue at the calling test and attaches the diagnostics.
+func reportFleetFailure(_ failure: FleetFailure, fileID: String = #fileID, filePath: String = #filePath, line: Int = #line) {
+    let location = SourceLocation(fileID: fileID, filePath: filePath, line: fleetCallerLine(failure, fileID: fileID, fallback: UInt(line)).asInt, column: 1)
+    for attachment in failure.diagnostics?.attachments ?? [] {
+        Attachment.record(Attachment(attachment.data, named: attachment.name), sourceLocation: location)
+    }
+    Issue.record(Comment(rawValue: failure.detailedDescription), sourceLocation: location)
+}
+
+private extension UInt { var asInt: Int { Int(self) } }
+
+@MainActor
+final class SwiftUIHostingDiagnosticsXCTestStarter: XCTestCase {
+    func test_disabledRequest_carriesDiagnosticsAndAttachments() async throws {
+        let window = try XCTUnwrap(UIApplication.shared.keyWindow)
+        try await Fleet.withHostedView(DisabledDeleteScreen(), window: window) { host in
+            try await host.waitForUpdate("Delete shown") { host.diagnostics().hierarchy.contains("Delete") }
+            host.enableTracing()
+            do {
+                try host.tap(label: "Delete")
+                XCTFail("expected a disabled failure")
+            } catch let failure as FleetFailure {
+                XCTAssertEqual(failure.kind, .unavailableInteraction)
+                XCTAssertEqual(failure.diagnostics?.lastAction, "tap label == \"Delete\"")
+                XCTAssertEqual(failure.diagnostics?.matchCount, 1)
+                XCTAssertFalse(failure.diagnostics?.trace.isEmpty ?? true)
+                XCTAssertEqual(failure.diagnostics?.attachments.first?.name, "Fleet diagnostics")
+                XCTAssertEqual(failure.source?.fileID.hasSuffix("SwiftUIHostingConsumerTests.swift"), true)
+                // The adapter records a real XCTest failure at this file and attaches the diagnostics;
+                // it is expected here so the demonstration passes.
+                XCTExpectFailure("demonstrating the adapter") { self.reportFleetFailure(failure) }
+            }
+        }
+    }
+}
+
+
 @MainActor
 @Suite("Contextual action dispatch")
 struct ContextualActionSwiftTestingStarter {
@@ -561,3 +637,26 @@ struct ContextualActionSwiftTestingStarter {
         }
     }
 }
+
+@MainActor
+@Suite("SwiftUI hosting diagnostics starter")
+struct SwiftUIHostingDiagnosticsSwiftTestingStarter {
+    @Test func missingRequestAndTimeoutCarryDiagnostics() async throws {
+        let window = try #require(UIApplication.shared.keyWindow)
+        try await Fleet.withHostedView(DisabledDeleteScreen(), window: window) { host in
+            let missing = #expect(throws: FleetFailure.self) { try host.tap(label: "Nope") }
+            #expect(missing?.kind == .notFound)
+            #expect(missing?.diagnostics?.matchCount == 0)
+            let timeout = await #expect(throws: FleetFailure.self) {
+                try await host.waitForUpdate("never", timeout: 0.1) { false }
+            }
+            #expect(timeout?.kind == .timedOut)
+            #expect(timeout?.diagnostics?.lastAction == "tap label == \"Nope\"")
+            if let timeout {
+                // The adapter records an issue at this test's location and attaches the diagnostics.
+                withKnownIssue("demonstrating the adapter") { reportFleetFailure(timeout) }
+            }
+        }
+    }
+}
+// diagnostics-adapters:end

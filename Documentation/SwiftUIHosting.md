@@ -38,6 +38,16 @@ A model's path or presentation flag does not prove what is on screen. Fleet ther
 
 `NavigationStack` requires iOS 16; the examples in `Integration/PackageConsumer/PresentedContentConsumerTests.swift` are availability-gated and skip below it, leaving the iOS/tvOS 15 minimum unchanged. Sheet and navigation examples run on iOS only; tvOS behavior is not claimed.
 
+## Failure diagnostics
+
+A failed hosted request or wait throws a `FleetFailure` whose `diagnostics` (a `FleetDiagnostics`, no assertion-framework types) holds: the last action attempted through the handle, the scoped query with match count and candidates, a bounded controller/view hierarchy (depth 8, 150 nodes, 10 candidates), the resolved window environment, lifecycle and presentation state, and a screenshot of the current hosted window. When no screenshot can be produced (scope ended, view not mounted, zero-size window) the evidence is `.unavailable(reason:)`; Fleet never remounts a copy or creates a window to make one.
+
+`host.tap(label:identifier:)` is the first scoped query: it matches the screen's UIKit hierarchy (including controllers it presents), resolving a `UIButton` title to the button. Failures are distinguishable by kind: `.notFound`, `.ambiguous`, `.unsupported` (not a `UIControl`), `.unavailableInteraction` (disabled) and `.timedOut` for waits. Programmatic dispatch does not prove hit testing. SwiftUI-only controls that publish no UIKit view are not matched; use your screen's own action seam and `host.recordAction(_:)` for them.
+
+Tracing is opt-in: `host.enableTracing(limit:)` records actions and observed lifecycle transitions into a bounded `FleetActionTrace` (oldest entries are dropped and counted). Diagnostics collection runs synchronously on the main actor, never waits, and never replaces the original failure or cancellation.
+
+Reporting stays in your test target so Fleet's core does not depend on XCTest or Swift Testing. `Integration/PackageConsumer/SwiftUIHostingConsumerTests.swift` (between `diagnostics-adapters` markers) contains compiled, exercised adapters: `XCTestCase.reportFleetFailure(_:)` (`XCTFail` plus keep-always `XCTAttachment`s) and a Swift Testing `reportFleetFailure(_:)` (`Issue.record` plus `Attachment.record`). `FleetFailure.source` carries `#fileID` and line only; the adapters reuse it when it is in the reporting file and otherwise fall back to the adapter's caller, so the location is the calling test.
+
 ## Lower-level route
 
 `context.mount(view)` installs the root and returns immediately: no layout pass, no waits. Call `layoutIfNeeded()` and the wait methods in the order you want to exercise, for example an initial zero-size sequence. `context.host(view)` is the convenience equivalent. Neither alters `FleetEnvironment`, which still rejects non-positive sizes.
