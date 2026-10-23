@@ -441,6 +441,9 @@ final class FailureIsolationTests: XCTestCase {
             service = nil
             model = nil
         }
+        // Bounded release check: captured references may drop on a later main-actor turn.
+        let releaseDeadline = Date().addingTimeInterval(5)
+        while (weakModel != nil || weakService != nil) && Date() < releaseDeadline { try await Task.sleep(nanoseconds: 10_000_000) }
         XCTAssertNil(weakModel)
         XCTAssertNil(weakService)
         XCTAssertTrue(window.rootViewController === originalRoot)
@@ -494,7 +497,7 @@ final class FailureIsolationTests: XCTestCase {
         }
         // Bounded release check: the cancelled task's captures may drop on a later main-actor turn.
         let releaseDeadline = Date().addingTimeInterval(5)
-        while (weakModel != nil || weakService != nil) && Date() < releaseDeadline { await Task.yield() }
+        while (weakModel != nil || weakService != nil) && Date() < releaseDeadline { try await Task.sleep(nanoseconds: 10_000_000) }
         XCTAssertNil(weakModel)
         XCTAssertNil(weakService)
         XCTAssertTrue(window.rootViewController === originalRoot)
