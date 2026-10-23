@@ -47,6 +47,8 @@ private final class IngredientsModel: ObservableObject {
         Ingredient(id: "milk", name: "Milk"),
     ]
     @Published var errorMessage: String?
+    /// Application-owned response-handled checkpoint: set only after a successful response is consumed.
+    @Published var confirmation: String?
     @Published var deleting: Set<String> = []
     let service: FakeIngredientService
     let mode: DeletionMode
@@ -61,6 +63,7 @@ private final class IngredientsModel: ObservableObject {
     func delete(_ ingredient: Ingredient) {
         guard let index = ingredients.firstIndex(of: ingredient), !deleting.contains(ingredient.id) else { return }
         errorMessage = nil
+        confirmation = nil
         deleting.insert(ingredient.id)
         if mode != .deferLocalUpdate { ingredients.remove(at: index) }
         let current = generation
@@ -70,6 +73,7 @@ private final class IngredientsModel: ObservableObject {
                 try await service.delete(ingredient.id)
                 guard current == generation else { return }
                 if mode == .deferLocalUpdate, let now = ingredients.firstIndex(of: ingredient) { ingredients.remove(at: now) }
+                confirmation = "Deleted \(ingredient.name)"
             } catch {
                 guard current == generation, !Task.isCancelled else { return }
                 if mode != .noRollback { ingredients.insert(ingredient, at: min(index, ingredients.count)) }
@@ -95,6 +99,9 @@ private struct IngredientsScreen: View {
         VStack(alignment: .leading) {
             if let message = model.errorMessage {
                 Text(message).fleetElement("error", text: message)
+            }
+            if let message = model.confirmation {
+                Text(message).fleetElement("confirmation", text: message)
             }
             ForEach(model.ingredients) { ingredient in
                 let delete: @MainActor @Sendable () -> Void = { [model] in model.delete(ingredient) }
@@ -151,7 +158,7 @@ final class OptimisticDeletionSpec: XCTestCase {
     }
 
     func test_deletion_removesRowBeforeResponse_thenSuccessKeepsItRemoved() async throws {
-        try await run { host, _, service in
+        try await run { host, model, service in
             XCTAssertEqual(ingredientIDs(host), original)
             let eggsBefore = try host.element("ingredient.eggs")
             XCTAssertEqual(eggsBefore.actions, ["Delete": true])
@@ -161,8 +168,10 @@ final class OptimisticDeletionSpec: XCTestCase {
             XCTAssertTrue(service.isPending("eggs"), "response still unresolved while the row is gone")
             XCTAssertEqual(ingredientIDs(host), ["ingredient.flour", "ingredient.milk"])
             service.releaseSuccess("eggs")
-            try await host.waitForUpdate("settled") { !service.isPending("eggs") }
-            try await host.waitForUpdate("still removed") { self.ingredientIDs(host) == ["ingredient.flour", "ingredient.milk"] }
+            try await host.waitForElement("confirmation")  // rendered only after the response was handled
+            XCTAssertEqual(try host.element("confirmation").text, "Deleted Eggs")
+            XCTAssertFalse(model.deleting.contains("eggs"))
+            XCTAssertEqual(ingredientIDs(host), ["ingredient.flour", "ingredient.milk"])
             XCTAssertThrowsError(try host.element("error"))
         }
     }
@@ -282,7 +291,10 @@ final class OptimisticDeletionSpec: XCTestCase {
     func test_cancellation_releasesPendingRequestAndObservers() async throws {
         let service = FakeIngredientService()
         let model = IngredientsModel(service: service)
+        struct StartupTimeout: Error {}
+        var finished = false
         let task = Task { @MainActor in
+            defer { finished = true }
             try await Fleet.withHostedView(IngredientsScreen(model: model), window: window) { host in
                 try host.context.addCleanup { model.shutdown() }
                 try await host.waitForElement("ingredient.eggs")
@@ -291,7 +303,25 @@ final class OptimisticDeletionSpec: XCTestCase {
                 try await host.waitForUpdate("never", timeout: 30) { false }
             }
         }
-        while !service.started.contains("eggs") { await Task.yield() }
+        // Bounded wait for the request to start; a startup failure in the child surfaces here
+        // instead of looping, and the child is always cancelled and awaited.
+        let deadline = Date().addingTimeInterval(10)
+        var startupFailure: Error?
+        while !service.started.contains("eggs") {
+            if Date() >= deadline { startupFailure = StartupTimeout(); break }
+            if finished {
+                do { try await task.value } catch { startupFailure = error }
+                if startupFailure == nil { startupFailure = StartupTimeout() }
+                break
+            }
+            await Task.yield()
+        }
+        if let startupFailure {
+            task.cancel()
+            _ = await task.result
+            XCTFail("request never started: \(startupFailure)")
+            return
+        }
         task.cancel()
         do { try await task.value; XCTFail("expected cancellation") } catch is CancellationError {}
         XCTAssertFalse(service.isPending("eggs"))

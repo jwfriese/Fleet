@@ -185,6 +185,8 @@ final class IngredientsModel: ObservableObject {
         Ingredient(id: "milk", name: "Milk"),
     ]
     @Published var errorMessage: String?
+    /// Response-handled checkpoint: set only after a successful response is consumed.
+    @Published var confirmation: String?
     @Published var deleting: Set<String> = []
     let service: FakeIngredientService
     private var generation = 0
@@ -196,6 +198,7 @@ final class IngredientsModel: ObservableObject {
     func delete(_ ingredient: Ingredient) {
         guard let index = ingredients.firstIndex(of: ingredient), !deleting.contains(ingredient.id) else { return }
         errorMessage = nil
+        confirmation = nil
         deleting.insert(ingredient.id)
         ingredients.remove(at: index)
         let current = generation
@@ -203,6 +206,7 @@ final class IngredientsModel: ObservableObject {
             guard let self else { return }
             do {
                 try await service.delete(ingredient.id)
+                if current == generation { confirmation = "Deleted \(ingredient.name)" }
             } catch {
                 guard current == generation, !Task.isCancelled else { return }
                 ingredients.insert(ingredient, at: min(index, ingredients.count))
@@ -228,6 +232,9 @@ struct IngredientsScreen: View {
         VStack(alignment: .leading) {
             if let message = model.errorMessage {
                 Text(message).fleetElement("error", text: message)
+            }
+            if let message = model.confirmation {
+                Text(message).fleetElement("confirmation", text: message)
             }
             ForEach(model.ingredients) { ingredient in
                 // The Delete button and Fleet's action run the same closure.
@@ -293,8 +300,9 @@ final class OptimisticDeletionXCTestStarter: XCTestCase {
             try host.perform("Delete", onElement: "ingredient.milk")
             try await host.waitForElementRemoval("ingredient.milk")
             service.releaseSuccess("milk")
-            try await host.waitForUpdate("response consumed") { !service.isPending("milk") }
-            XCTAssertEqual(host.mountedElementIDs, ["ingredient.flour", "ingredient.eggs"])
+            try await host.waitForElement("confirmation")  // rendered only after the response was handled
+            XCTAssertEqual(try host.element("confirmation").text, "Deleted Milk")
+            XCTAssertEqual(host.mountedElementIDs.filter { $0.hasPrefix("ingredient.") }, ["ingredient.flour", "ingredient.eggs"])
         }
         XCTAssertFalse(service.isPending("milk"))
     }
@@ -332,8 +340,8 @@ struct OptimisticDeletionSwiftTestingStarter {
             try host.perform("Delete", onElement: "ingredient.flour")
             try await host.waitForElementRemoval("ingredient.flour")
             service.releaseSuccess("flour")
-            try await host.waitForUpdate("response consumed") { !service.isPending("flour") }
-            #expect(host.mountedElementIDs == ["ingredient.eggs", "ingredient.milk"])
+            try await host.waitForElement("confirmation")  // rendered only after the response was handled
+            #expect(host.mountedElementIDs.filter { $0.hasPrefix("ingredient.") } == ["ingredient.eggs", "ingredient.milk"])
             try host.perform("Delete", onElement: "ingredient.milk")  // left pending at scope end
             try await host.waitForUpdate("request started") { service.isPending("milk") }
         }
