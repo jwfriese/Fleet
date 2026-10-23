@@ -453,6 +453,25 @@ class FleetSwiftUIHostSpec: XCTestCase {
         XCTAssertFalse(timeout.diagnostics?.hierarchy.isEmpty ?? true)
     }
 
+    func test_contentWaitTimeouts_carryDiagnostics() async throws {
+        let model = HostedModel()
+        var failures: [FleetFailure] = []
+        try await Fleet.withHostedView(ItemsScreen(model: model), window: hostWindow) { host in
+            host.recordAction("open detail")
+            for wait in [
+                { try await host.waitForContentPresented("missing", timeout: 0.1) },
+                { try await host.waitForContent("missing", values: ["a": "b"], timeout: 0.1) }
+            ] as [() async throws -> Void] {
+                do { try await wait() } catch let failure as FleetFailure { failures.append(failure) }
+            }
+        }
+        XCTAssertEqual(failures.count, 2)
+        for failure in failures {
+            XCTAssertEqual(failure.kind, .timedOut)
+            XCTAssertEqual(failure.diagnostics?.lastAction, "open detail")
+        }
+    }
+
     func test_unavailableScreenshot_isReportedExplicitly() async throws {
         var escaped: FleetHostedView?
         try await Fleet.withHostedView(Text("x"), window: hostWindow) { escaped = $0 }
