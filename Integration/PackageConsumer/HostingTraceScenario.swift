@@ -57,7 +57,7 @@ enum HostingTraceScenario {
         navigation.delegate = delegate
         window.rootViewController = navigation
         window.makeKeyAndVisible()
-        await settle { navigation.transitionCoordinator == nil && visibleRoot.view.window != nil }
+        await settle { navigation.transitionCoordinator == nil && visibleRoot.view.window != nil && log.events.contains { $0.hasPrefix("visibleRoot.viewDidAppear") } }
         log.events.append("--- push")
 
         let detail = TraceController(name: "detail", log: log)

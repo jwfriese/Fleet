@@ -28,6 +28,52 @@ public final class FleetLifecycleRecorder {
 
     public init() {}
 
+    private struct ContentEntry {
+        let instance: Int
+        var identity: String
+        var values: [String: String]
+        weak var view: UIView?
+    }
+    private var contentEntries: [ContentEntry] = []
+    private var nextContentInstance = 1
+    private var mountCounts: [String: Int] = [:]
+
+    func registerContent(identity: String, values: [String: String], view: UIView) -> Int {
+        let instance = nextContentInstance
+        nextContentInstance += 1
+        mountCounts[identity, default: 0] += 1
+        contentEntries.append(ContentEntry(instance: instance, identity: identity, values: values, view: view))
+        return instance
+    }
+
+    func updateContent(instance: Int, identity: String, values: [String: String]) {
+        guard let index = contentEntries.firstIndex(where: { $0.instance == instance }) else { return }
+        // SwiftUI may reuse the probe in place while the content now stands for a different identity.
+        if contentEntries[index].identity != identity {
+            contentEntries[index].identity = identity
+            mountCounts[identity, default: 0] += 1
+        }
+        contentEntries[index].values = values
+    }
+
+    func unregisterContent(instance: Int) {
+        contentEntries.removeAll { $0.instance == instance }
+    }
+
+    /// Content whose probe is still registered with SwiftUI, whether or not it is currently in the window.
+    var hasRegisteredContent: Bool { !contentEntries.isEmpty }
+    func hasRegisteredContent(identity: String) -> Bool { contentEntries.contains { $0.identity == identity } }
+
+    /// Content currently displayed: registered and in the window, in presentation order.
+    var displayedContent: [FleetObservedContent] {
+        contentEntries.compactMap { entry in
+            guard entry.view?.window != nil else { return nil }
+            return FleetObservedContent(identity: entry.identity, values: entry.values, instance: entry.instance)
+        }
+    }
+
+    func mountCount(of identity: String) -> Int { mountCounts[identity] ?? 0 }
+
     func record(_ event: FleetLifecycleEvent) { events.append(event) }
     func close() { isClosed = true }
     func recordUpdate() { updateCount += 1 }
@@ -84,6 +130,62 @@ extension View {
         _ action: @escaping @MainActor @Sendable () async -> Void
     ) -> some View {
         modifier(FleetObservedTask(name: name, id: 0, action: action))
+    }
+}
+
+/// One piece of application content that is actually displayed, as reported by the content itself.
+public struct FleetObservedContent: Sendable, Equatable {
+    /// The identity the content reported through `fleetObservedContent(_:_:)`, such as "recipe-detail".
+    public let identity: String
+    /// The values the content reported it is displaying, such as `["recipe": "Soup", "image": "soup.png"]`.
+    public let values: [String: String]
+    /// Distinguishes one mounting of this content from the next; a new presentation gets a new instance.
+    public let instance: Int
+}
+
+private struct FleetContentProbe: UIViewRepresentable {
+    let identity: String
+    let values: [String: String]
+
+    final class Coordinator {
+        var recorder: FleetLifecycleRecorder?
+        var instance: Int?
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator() }
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        view.isUserInteractionEnabled = false
+        view.isAccessibilityElement = false
+        return view
+    }
+
+    func updateUIView(_ view: UIView, context: Context) {
+        guard let recorder = context.environment.fleetLifecycleRecorder else { return }
+        let coordinator = context.coordinator
+        coordinator.recorder = recorder
+        if let instance = coordinator.instance {
+            recorder.updateContent(instance: instance, identity: identity, values: values)
+        } else {
+            coordinator.instance = recorder.registerContent(identity: identity, values: values, view: view)
+        }
+    }
+
+    static func dismantleUIView(_ view: UIView, coordinator: Coordinator) {
+        guard let instance = coordinator.instance else { return }
+        coordinator.recorder?.unregisterContent(instance: instance)
+        coordinator.instance = nil
+    }
+}
+
+extension View {
+    /// Reports the content this view is displaying to the enclosing Fleet host: a stable `identity`
+    /// and the `values` it actually renders (for example the recipe name and image it was given).
+    /// Attach it inside the destination or sheet content, using the same values the content draws,
+    /// not the model's presentation flag. It is a supported semantic seam: Fleet never inspects
+    /// private SwiftUI controllers. Outside a Fleet host it does nothing.
+    public func fleetObservedContent(_ identity: String, _ values: [String: String] = [:]) -> some View {
+        background(FleetContentProbe(identity: identity, values: values).frame(width: 0, height: 0).allowsHitTesting(false))
     }
 }
 
@@ -283,12 +385,13 @@ public final class FleetHostedView {
             return ended < started
         }
         // Only a screen that actually appeared is owed a disappearance.
-        while lifecycle.isAppeared || tasksRunning(), deadline.timeIntervalSinceNow > 0 {
+        while lifecycle.isAppeared || tasksRunning() || !lifecycle.displayedContent.isEmpty, deadline.timeIntervalSinceNow > 0 {
             await Task { @MainActor in try? await Task.sleep(nanoseconds: 10_000_000) }.value
         }
         var outstanding: [String] = []
         if lifecycle.isAppeared { outstanding.append("onDisappear was not delivered") }
         if tasksRunning() { outstanding.append("observed task(s) had not finished after cancellation") }
+        if !lifecycle.displayedContent.isEmpty { outstanding.append("observed content was still displayed") }
         guard outstanding.isEmpty else {
             throw FleetFailure(
                 kind: .timedOut,
@@ -383,5 +486,89 @@ extension Fleet {
         try await handle.waitUntilReady(fileID: fileID, line: line)
         try await handle.waitForAppearance(fileID: fileID, line: line)
         return try await body(handle)
+    }
+}
+
+// MARK: Presented content observation
+
+extension FleetHostedView {
+    /// Content currently displayed (registered by `fleetObservedContent` and in the window), oldest first.
+    public var observedContent: [FleetObservedContent] { lifecycle.displayedContent }
+
+    /// The most recently presented displayed content with `identity`, if any.
+    public func currentContent(_ identity: String) -> FleetObservedContent? {
+        lifecycle.displayedContent.last { $0.identity == identity }
+    }
+
+    /// How many times content with `identity` has been mounted since the screen was hosted.
+    public func presentationCount(of identity: String) -> Int { lifecycle.mountCount(of: identity) }
+
+    private func describeContent() -> String {
+        let all = lifecycle.displayedContent
+        if all.isEmpty { return "no observed content is displayed" }
+        return "displayed content: " + all.map { "\($0.identity)#\($0.instance) \($0.values.sorted { $0.key < $1.key }.map { "\($0.key)=\($0.value)" }.joined(separator: ", "))" }.joined(separator: "; ")
+    }
+
+    /// `waitUntil` whose timeout failure names the content displayed at the deadline, not at wait entry.
+    private func waitForContentCondition(_ description: String, timeout: TimeInterval, condition: @MainActor () -> Bool) async throws {
+        do {
+            try await context.waitUntil(description, timeout: timeout, condition: condition)
+        } catch let failure as FleetFailure where failure.kind == .timedOut {
+            throw FleetFailure(
+                kind: failure.kind,
+                action: "wait for \(description); currently \(describeContent())",
+                target: failure.target,
+                state: failure.state,
+                reason: failure.reason,
+                source: failure.source
+            )
+        }
+    }
+
+    /// Waits (bounded) until content with `identity` is displayed, the `count`th time it has been
+    /// mounted (use `count: 2` to observe a repeated presentation). This establishes presentation only.
+    public func waitForContentPresented(_ identity: String, count: Int = 1, timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
+        try await fleetAttributing(fileID, line) {
+            try requireActive("wait for content presentation")
+            try await waitForContentCondition("content '\(identity)' to be presented (mounting \(count))", timeout: timeout) {
+                self.lifecycle.mountCount(of: identity) >= count && self.currentContent(identity) != nil
+            }
+        }
+    }
+
+    /// Waits (bounded) until the displayed content with `identity` reports every entry of `values`.
+    /// This is content readiness, distinct from presentation: stale values keep it from completing,
+    /// and the timeout names what was actually displayed.
+    public func waitForContent(_ identity: String, values: [String: String], timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
+        try await fleetAttributing(fileID, line) {
+            try requireActive("wait for content values")
+            let expected = values.sorted { $0.key < $1.key }.map { "\($0.key)=\($0.value)" }.joined(separator: ", ")
+            try await waitForContentCondition("content '\(identity)' to display \(expected)", timeout: timeout) {
+                guard let current = self.currentContent(identity) else { return false }
+                return values.allSatisfy { current.values[$0.key] == $0.value }
+            }
+        }
+    }
+
+    /// Waits (bounded) until no content with `identity` remains displayed or registered: completed dismissal.
+    public func waitForContentDismissed(_ identity: String, timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
+        try await fleetAttributing(fileID, line) {
+            try requireActive("wait for content dismissal")
+            try await waitForContentCondition("content '\(identity)' to be dismissed", timeout: timeout) {
+                self.lifecycle.displayedContent.allSatisfy { $0.identity != identity }
+                    && !self.lifecycle.hasRegisteredContent(identity: identity)
+            }
+        }
+    }
+
+    /// Waits (bounded) until the hosting controller presents no UIKit modal (a completed sheet dismissal).
+    /// Sheets only: navigation pushes are not modal presentations.
+    public func waitForModalDismissal(timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
+        try await fleetAttributing(fileID, line) {
+            try requireActive("wait for modal dismissal")
+            try await context.waitUntil("hosted view to present no modal controller", timeout: timeout) {
+                self.hostingController.presentedViewController == nil
+            }
+        }
     }
 }

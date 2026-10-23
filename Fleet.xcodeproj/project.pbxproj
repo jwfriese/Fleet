@@ -8,7 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		F1EE7000000000000000A005 /* FleetSwiftUIHostSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE7000000000000000A004 /* FleetSwiftUIHostSpec.swift */; };
+		F1EE7000000000000000B001 /* FleetPresentedContentSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE7000000000000000B003 /* FleetPresentedContentSpec.swift */; };
 		F1EE7000000000000000A006 /* FleetSwiftUIHostSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE7000000000000000A004 /* FleetSwiftUIHostSpec.swift */; };
+		F1EE7000000000000000B002 /* FleetPresentedContentSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE7000000000000000B003 /* FleetPresentedContentSpec.swift */; };
 		F1EE7000000000000000A002 /* FleetSwiftUIHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE7000000000000000A001 /* FleetSwiftUIHost.swift */; };
 		F1EE7000000000000000A003 /* FleetSwiftUIHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1EE7000000000000000A001 /* FleetSwiftUIHost.swift */; };
 		829A34FAF5F9F10B436680ED /* RuntimeHooksSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF8E9E25F9838E375E97D25 /* RuntimeHooksSpec.swift */; };
@@ -260,6 +262,7 @@
 
 /* Begin PBXFileReference section */
 		F1EE7000000000000000A004 /* FleetSwiftUIHostSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FleetSwiftUIHostSpec.swift; sourceTree = "<group>"; };
+		F1EE7000000000000000B003 /* FleetPresentedContentSpec.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FleetPresentedContentSpec.swift; sourceTree = "<group>"; };
 		F1EE7000000000000000A001 /* FleetSwiftUIHost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FleetSwiftUIHost.swift; sourceTree = "<group>"; };
 		5DF8E9E25F9838E375E97D25 /* RuntimeHooksSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RuntimeHooksSpec.swift; sourceTree = "<group>"; };
 		4EC820F0C51682AB437523BE /* UINavigationBar+FleetSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UINavigationBar+FleetSpec.swift"; sourceTree = "<group>"; };
@@ -958,6 +961,7 @@
 			children = (
 				F1EE7000000000000000006F /* FleetTestContextSpec.swift */,
 				F1EE7000000000000000A004 /* FleetSwiftUIHostSpec.swift */,
+				F1EE7000000000000000B003 /* FleetPresentedContentSpec.swift */,
 				F1EE700000000000000000A4 /* FleetEnvironmentSpec.swift */,
 			);
 			path = Hosting;
@@ -1315,6 +1319,7 @@
 			files = (
 				F1EE70000000000000000070 /* FleetTestContextSpec.swift in Sources */,
 				F1EE7000000000000000A005 /* FleetSwiftUIHostSpec.swift in Sources */,
+				F1EE7000000000000000B001 /* FleetPresentedContentSpec.swift in Sources */,
 				F1EE700000000000000000A3 /* FleetEnvironmentSpec.swift in Sources */,
 				51B8AF774775B7B893F7E499 /* UICollectionView+FetchCellSpec.swift in Sources */,
 				5EF9C83B6DEB9FFACEBA82C9 /* UICollectionView+SelectItemSpec.swift in Sources */,
@@ -1450,6 +1455,7 @@
 			files = (
 				F1EE70000000000000000071 /* FleetTestContextSpec.swift in Sources */,
 				F1EE7000000000000000A006 /* FleetSwiftUIHostSpec.swift in Sources */,
+				F1EE7000000000000000B002 /* FleetPresentedContentSpec.swift in Sources */,
 				F1EE700000000000000000A5 /* FleetEnvironmentSpec.swift in Sources */,
 				B6AC703746498EF7C7B0F79B /* UICollectionView+FetchCellSpec.swift in Sources */,
 				87B1E06ABE036012A5AE2C60 /* UICollectionView+SelectItemSpec.swift in Sources */,
