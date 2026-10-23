@@ -677,10 +677,28 @@ extension FleetHostedView {
         guard window.bounds.width > 0, window.bounds.height > 0 else { return .unavailable(reason: "the window has zero size") }
         var drawn = false
         let image = UIGraphicsImageRenderer(bounds: window.bounds).image { _ in
-            drawn = window.drawHierarchy(in: window.bounds, afterScreenUpdates: false)
+            drawn = window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
         }
         guard drawn, let png = image.pngData() else { return .unavailable(reason: "UIKit could not render the current window") }
+        guard Self.hasVisiblePixels(image) else { return .unavailable(reason: "the rendered window image contained no visible pixels") }
         return .captured(png: png)
+    }
+
+    private static func hasVisiblePixels(_ image: UIImage) -> Bool {
+        guard let cg = image.cgImage, cg.width > 0, cg.height > 0 else { return false }
+        let width = min(cg.width, 64), height = min(cg.height, 64)
+        var data = [UInt8](repeating: 0, count: width * height * 4)
+        let drew = data.withUnsafeMutableBytes { buffer -> Bool in
+            guard let ctx = CGContext(
+                data: buffer.baseAddress, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4,
+                space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+            ) else { return false }
+            ctx.interpolationQuality = .low
+            ctx.draw(cg, in: CGRect(x: 0, y: 0, width: width, height: height))
+            return true
+        }
+        guard drew else { return false }
+        return stride(from: 3, to: data.count, by: 4).contains { data[$0] != 0 }
     }
 
     private var rootViews: [UIView] {
@@ -799,7 +817,15 @@ extension FleetHostedView {
         guard control.isEnabled else {
             throw fail(.unavailableInteraction, "the control is disabled", "Enable the control (or satisfy the condition that enables it) before tapping.", matches: matches)
         }
-        control.sendActions(for: .touchUpInside)
+        if let button = control as? UIButton {
+            do {
+                try button.tapOrThrow()
+            } catch let failure as FleetFailure {
+                throw fail(.unavailableInteraction, failure.state, failure.reason, matches: matches)
+            }
+        } else {
+            control.sendActions(for: .touchUpInside)
+        }
         trace?.append("performed \(action)")
     }
 }

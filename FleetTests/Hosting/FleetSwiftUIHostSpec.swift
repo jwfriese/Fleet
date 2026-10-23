@@ -382,6 +382,25 @@ class FleetSwiftUIHostSpec: XCTestCase {
         return nil
     }
 
+    func test_tap_rejectsHiddenAndNoninteractiveButtonsWithoutInvokingThem() async throws {
+        let model = HostedModel()
+        try await Fleet.withHostedView(ItemsScreen(model: model), window: hostWindow) { host in
+            try await host.waitForUpdate("buttons present") { !host.matchingViews(label: "Edit", identifier: nil).isEmpty }
+            let edit = try XCTUnwrap(host.matchingViews(label: "Edit", identifier: nil).first as? UIButton)
+            for disable in [{ edit.isUserInteractionEnabled = false }, { edit.isUserInteractionEnabled = true; edit.isHidden = true }] {
+                disable()
+                do {
+                    try host.tap(label: "Edit")
+                    XCTFail("expected an unavailable-interaction failure")
+                } catch let failure as FleetFailure {
+                    XCTAssertEqual(failure.kind, .unavailableInteraction)
+                    XCTAssertNotNil(failure.diagnostics)
+                }
+            }
+            XCTAssertEqual(model.loads, 0)
+        }
+    }
+
     func test_queryFailures_areDistinguishableAndCarryDiagnostics() async throws {
         let model = HostedModel()
         try await Fleet.withHostedView(ItemsScreen(model: model), window: hostWindow) { host in
