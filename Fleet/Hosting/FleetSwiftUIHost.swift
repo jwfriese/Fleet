@@ -592,7 +592,7 @@ extension FleetHostedView {
     /// Waits (bounded) until content with `identity` is displayed, the `count`th time it has been
     /// mounted (use `count: 2` to observe a repeated presentation). This establishes presentation only.
     public func waitForContentPresented(_ identity: String, count: Int = 1, timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
-        try await fleetAttributing(fileID, line) {
+        try await attributing(fileID, line) {
             try requireActive("wait for content presentation")
             try await waitForContentCondition("content '\(identity)' to be presented (mounting \(count))", timeout: timeout) {
                 self.lifecycle.mountCount(of: identity) >= count && self.currentContent(identity) != nil
@@ -604,7 +604,7 @@ extension FleetHostedView {
     /// This is content readiness, distinct from presentation: stale values keep it from completing,
     /// and the timeout names what was actually displayed.
     public func waitForContent(_ identity: String, values: [String: String], timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
-        try await fleetAttributing(fileID, line) {
+        try await attributing(fileID, line) {
             try requireActive("wait for content values")
             let expected = values.sorted { $0.key < $1.key }.map { "\($0.key)=\($0.value)" }.joined(separator: ", ")
             try await waitForContentCondition("content '\(identity)' to display \(expected)", timeout: timeout) {
@@ -616,7 +616,7 @@ extension FleetHostedView {
 
     /// Waits (bounded) until no content with `identity` remains displayed or registered: completed dismissal.
     public func waitForContentDismissed(_ identity: String, timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
-        try await fleetAttributing(fileID, line) {
+        try await attributing(fileID, line) {
             try requireActive("wait for content dismissal")
             try await waitForContentCondition("content '\(identity)' to be dismissed", timeout: timeout) {
                 self.lifecycle.displayedContent.allSatisfy { $0.identity != identity }
@@ -628,7 +628,7 @@ extension FleetHostedView {
     /// Waits (bounded) until the hosting controller presents no UIKit modal (a completed sheet dismissal).
     /// Sheets only: navigation pushes are not modal presentations.
     public func waitForModalDismissal(timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
-        try await fleetAttributing(fileID, line) {
+        try await attributing(fileID, line) {
             try requireActive("wait for modal dismissal")
             try await context.waitUntil("hosted view to present no modal controller", timeout: timeout) {
                 self.hostingController.presentedViewController == nil
