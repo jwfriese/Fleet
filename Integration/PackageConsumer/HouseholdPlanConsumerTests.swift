@@ -215,14 +215,17 @@ struct HouseholdPlanScreen: View {
 }
 
 enum HouseholdFixture {
-    /// 2026-10-25 23:30 in the given zone: the last half hour of a Sunday; weeks start on Monday.
+    /// The fixed instant 2026-10-25 23:30 America/Los_Angeles (06:30 UTC on Monday the 26th), rendered
+    /// with a calendar in the given zone; weeks start on Monday.
     @MainActor
     static func makeClock(zone: String = "America/Los_Angeles") -> PlanClock {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = TimeZone(identifier: zone)!
         calendar.firstWeekday = 2
         calendar.minimumDaysInFirstWeek = 4
-        let now = calendar.date(from: DateComponents(year: 2026, month: 10, day: 25, hour: 23, minute: 30))!
+        var instantCalendar = Calendar(identifier: .gregorian)
+        instantCalendar.timeZone = TimeZone(identifier: "America/Los_Angeles")!
+        let now = instantCalendar.date(from: DateComponents(year: 2026, month: 10, day: 25, hour: 23, minute: 30))!
         return PlanClock(now: now, calendar: calendar)
     }
 
@@ -266,7 +269,8 @@ final class HouseholdPlanXCTestStarter: XCTestCase {
         let utcModel = HouseholdPlanModel(clock: HouseholdFixture.makeClock(zone: "UTC"), events: HouseholdEventStream(), service: FakeMealService())
         try await Fleet.withHostedView(HouseholdPlanScreen(model: utcModel), window: window) { host in
             try host.context.addCleanup { utcModel.shutdown() }
-            try await HouseholdFixture.waitForText(host, "today", "Today: 2026-10-25 Sunday")
+            try await HouseholdFixture.waitForText(host, "today", "Today: 2026-10-26 Monday")
+            XCTAssertEqual(try host.element("week").text, "Week of 2026-10-26")
         }
         XCTAssertEqual(TimeZone.current, processZone)
         XCTAssertEqual(NSTimeZone.default, defaultZone)
