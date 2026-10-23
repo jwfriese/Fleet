@@ -134,8 +134,15 @@ final class SnapshotEnvironmentTests: XCTestCase {
         let diffing = Snapshotting<UIImage, UIImage>.image(scale: 1).diffing
         let (_, attachments) = try XCTUnwrap(diffing.diff(expected, actual))
         XCTAssertEqual(attachments.compactMap(\.name).sorted(), ["difference", "failure", "reference"])
-        for attachment in attachments { add(attachment) }
-        add(XCTAttachment(string: message))
+        // The mismatch is the expected outcome, so the test passes; keep the evidence anyway
+        // (XCTest deletes attachments of passing tests by default).
+        for attachment in attachments {
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+        let report = XCTAttachment(string: message)
+        report.lifetime = .keepAlways
+        add(report)
 
         // The failing actual image is also written under SNAPSHOT_ARTIFACTS (set by
         // script/check-distribution so CI retains it) or the temporary directory.
