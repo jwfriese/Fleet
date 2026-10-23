@@ -74,12 +74,38 @@ public final class FleetLifecycleRecorder {
 
     func mountCount(of identity: String) -> Int { mountCounts[identity] ?? 0 }
 
-    func record(_ event: FleetLifecycleEvent) { events.append(event) }
+
+    /// Set by `FleetHostedView.enableTracing`; observed transitions are then appended to it.
+    weak var trace: FleetActionTrace?
+
+    func record(_ event: FleetLifecycleEvent) {
+        events.append(event)
+        trace?.append("observed \(event)")
+    }
     func close() { isClosed = true }
     func recordUpdate() { updateCount += 1 }
 
     public func count(of event: FleetLifecycleEvent) -> Int { events.filter { $0 == event }.count }
     public var isAppeared: Bool { count(of: .appeared) > count(of: .disappeared) }
+}
+
+/// An opt-in, size-bounded log of actions and observed transitions for multi-step screens.
+/// When full, the oldest entries are dropped and counted.
+@MainActor
+public final class FleetActionTrace {
+    public let limit: Int
+    public private(set) var entries: [String] = []
+    public private(set) var droppedCount = 0
+
+    public init(limit: Int = 100) { self.limit = max(1, limit) }
+
+    func append(_ entry: String) {
+        entries.append(String(entry.prefix(200)))
+        if entries.count > limit {
+            entries.removeFirst(entries.count - limit)
+            droppedCount += 1
+        }
+    }
 }
 
 private struct FleetLifecycleRecorderKey: EnvironmentKey {
@@ -230,6 +256,10 @@ public final class FleetHostedView {
     let elements: FleetElementRegistry
     private(set) var isRemoved = false
     private let source: FleetSourceLocation?
+    /// The most recent action attempted through this handle (always kept; cheap).
+    public private(set) var lastAction: String?
+    /// The opt-in trace, or `nil` while tracing is off.
+    public private(set) var trace: FleetActionTrace?
 
     init(context: FleetTestContext, hostingController: UIHostingController<AnyView>, lifecycle: FleetLifecycleRecorder, elements: FleetElementRegistry = FleetElementRegistry(), source: FleetSourceLocation? = nil) {
         self.elements = elements
@@ -237,6 +267,31 @@ public final class FleetHostedView {
         self.context = context
         self.hostingController = hostingController
         self.lifecycle = lifecycle
+    }
+
+    /// Turns on bounded action/transition tracing for this handle. Off by default.
+    @discardableResult
+    public func enableTracing(limit: Int = 100) -> FleetActionTrace {
+        let trace = FleetActionTrace(limit: limit)
+        self.trace = trace
+        lifecycle.trace = trace
+        return trace
+    }
+
+    /// Records a named step (for example one your own helper performed) as the last action and in the trace.
+    public func recordAction(_ description: String) {
+        lastAction = description
+        trace?.append("action: \(description)")
+    }
+
+    /// Runs `body`, attributing a thrown `FleetFailure` to the caller and attaching diagnostics
+    /// collected from the live hosted interface. Cancellation and other errors pass through.
+    private func attributing<T>(_ fileID: String, _ line: UInt, _ body: @MainActor () async throws -> T) async throws -> T {
+        do {
+            return try await body()
+        } catch let failure as FleetFailure {
+            throw failure.attributed(to: FleetSourceLocation(fileID: fileID, line: line)).with(diagnostics: diagnostics())
+        }
     }
 
     func requireActive(_ action: String) throws {
@@ -275,7 +330,7 @@ public final class FleetHostedView {
 
     /// Waits (bounded) until the hosting view is in the window.
     public func waitUntilMounted(timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
-        try await fleetAttributing(fileID, line) {
+        try await attributing(fileID, line) {
             try requireActive("wait for hosted view to mount")
             try await context.waitUntil("hosted SwiftUI view to be mounted", timeout: timeout) { self.isMounted }
         }
@@ -283,7 +338,7 @@ public final class FleetHostedView {
 
     /// Waits (bounded) until the hosting view is mounted with positive size.
     public func waitUntilReady(timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
-        try await fleetAttributing(fileID, line) {
+        try await attributing(fileID, line) {
             try requireActive("wait for hosted view readiness")
             try await context.waitUntil("hosted SwiftUI view to be ready (mounted, positive size)", timeout: timeout) { self.isReady }
         }
@@ -291,7 +346,7 @@ public final class FleetHostedView {
 
     /// Waits (bounded) for SwiftUI's `onAppear` on the hosted root: a distinct event from mounting.
     public func waitForAppearance(timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
-        try await fleetAttributing(fileID, line) {
+        try await attributing(fileID, line) {
             try requireActive("wait for hosted view appearance")
             try await context.waitUntil("hosted SwiftUI view to appear", timeout: timeout) { self.lifecycle.isAppeared }
         }
@@ -305,7 +360,7 @@ public final class FleetHostedView {
         line: UInt = #line,
         condition: @MainActor () -> Bool
     ) async throws {
-        try await fleetAttributing(fileID, line) {
+        try await attributing(fileID, line) {
             try requireActive("wait for hosted view update")
             try await context.waitUntil(description, timeout: timeout, condition: condition)
         }
@@ -313,7 +368,7 @@ public final class FleetHostedView {
 
     /// Waits (bounded) until the named observed task has started `count` times in total.
     public func waitForTaskStart(_ name: String, count: Int = 1, timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
-        try await fleetAttributing(fileID, line) {
+        try await attributing(fileID, line) {
             try requireActive("wait for task start")
             try await context.waitUntil("observed task '\(name)' to start \(count) time(s)", timeout: timeout) {
                 self.lifecycle.count(of: .taskStarted(name: name)) >= count
@@ -323,7 +378,7 @@ public final class FleetHostedView {
 
     /// Waits (bounded) until the named observed task has been cancelled `count` times in total.
     public func waitForTaskCancellation(_ name: String, count: Int = 1, timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
-        try await fleetAttributing(fileID, line) {
+        try await attributing(fileID, line) {
             try requireActive("wait for task cancellation")
             try await context.waitUntil("observed task '\(name)' to be cancelled \(count) time(s)", timeout: timeout) {
                 self.lifecycle.count(of: .taskCancelled(name: name)) >= count
@@ -334,7 +389,7 @@ public final class FleetHostedView {
     /// Removes the hosted screen from the window (dismissal/removal), then waits (bounded) for
     /// SwiftUI's `onDisappear`. Removal and disappearance are separate observations.
     public func remove(timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
-        try await fleetAttributing(fileID, line) {
+        try await attributing(fileID, line) {
             try requireActive("remove hosted view")
             if lifecycle.count(of: .appeared) == 0 && !isRemoved {
                 // SwiftUI may still owe the first `onAppear`; deliver it (bounded) so the
@@ -352,6 +407,7 @@ public final class FleetHostedView {
     }
 
     func removeFromWindow() {
+        if !isRemoved { trace?.append("removed hosted view from window") }
         guard !isRemoved else { return }
         isRemoved = true
         elements.close()
@@ -405,7 +461,8 @@ public final class FleetHostedView {
                 target: "FleetHostedView",
                 state: "\(outstanding.joined(separator: "; ")) within \(drainTimeout)s. \(context.snapshot())",
                 reason: "Make observed task bodies return promptly on cancellation, or finish application cleanup before the scope ends.",
-                source: source
+                source: source,
+                diagnostics: diagnostics(screenshotUnavailable: "the hosted view was already removed for teardown")
             )
         }
     }
@@ -535,7 +592,7 @@ extension FleetHostedView {
     /// Waits (bounded) until content with `identity` is displayed, the `count`th time it has been
     /// mounted (use `count: 2` to observe a repeated presentation). This establishes presentation only.
     public func waitForContentPresented(_ identity: String, count: Int = 1, timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
-        try await fleetAttributing(fileID, line) {
+        try await attributing(fileID, line) {
             try requireActive("wait for content presentation")
             try await waitForContentCondition("content '\(identity)' to be presented (mounting \(count))", timeout: timeout) {
                 self.lifecycle.mountCount(of: identity) >= count && self.currentContent(identity) != nil
@@ -547,7 +604,7 @@ extension FleetHostedView {
     /// This is content readiness, distinct from presentation: stale values keep it from completing,
     /// and the timeout names what was actually displayed.
     public func waitForContent(_ identity: String, values: [String: String], timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
-        try await fleetAttributing(fileID, line) {
+        try await attributing(fileID, line) {
             try requireActive("wait for content values")
             let expected = values.sorted { $0.key < $1.key }.map { "\($0.key)=\($0.value)" }.joined(separator: ", ")
             try await waitForContentCondition("content '\(identity)' to display \(expected)", timeout: timeout) {
@@ -559,7 +616,7 @@ extension FleetHostedView {
 
     /// Waits (bounded) until no content with `identity` remains displayed or registered: completed dismissal.
     public func waitForContentDismissed(_ identity: String, timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
-        try await fleetAttributing(fileID, line) {
+        try await attributing(fileID, line) {
             try requireActive("wait for content dismissal")
             try await waitForContentCondition("content '\(identity)' to be dismissed", timeout: timeout) {
                 self.lifecycle.displayedContent.allSatisfy { $0.identity != identity }
@@ -571,11 +628,204 @@ extension FleetHostedView {
     /// Waits (bounded) until the hosting controller presents no UIKit modal (a completed sheet dismissal).
     /// Sheets only: navigation pushes are not modal presentations.
     public func waitForModalDismissal(timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
-        try await fleetAttributing(fileID, line) {
+        try await attributing(fileID, line) {
             try requireActive("wait for modal dismissal")
             try await context.waitUntil("hosted view to present no modal controller", timeout: timeout) {
                 self.hostingController.presentedViewController == nil
             }
         }
+    }
+}
+
+// MARK: Scoped queries and diagnostics
+
+extension FleetHostedView {
+    /// Collects bounded diagnostics now. Screenshot capture uses the current hosted window only
+    /// (no remount, no new window); when that is not possible the reason is reported instead.
+    public func diagnostics() -> FleetDiagnostics {
+        makeDiagnostics(screenshot: captureScreenshot())
+    }
+
+    func diagnostics(screenshotUnavailable reason: String) -> FleetDiagnostics {
+        makeDiagnostics(screenshot: .unavailable(reason: reason))
+    }
+
+    private func makeDiagnostics(screenshot: FleetScreenshotEvidence, query: String? = nil, matchCount: Int? = nil, candidates: [String] = []) -> FleetDiagnostics {
+        var result = FleetDiagnostics()
+        result.lastAction = lastAction
+        result.query = query
+        result.matchCount = matchCount
+        result.candidates = Array(candidates.prefix(FleetDiagnostics.maxCandidates))
+        result.hierarchy = describeHierarchy()
+        result.environment = context.snapshot()
+        let events = lifecycle.events.suffix(20).map { "\($0)" }.joined(separator: ", ")
+        let presented = hostingController.presentedViewController.map { String(describing: type(of: $0)) } ?? "none"
+        result.lifecycle = "mounted=\(isMounted), ready=\(isReady), appeared=\(lifecycle.isAppeared), removed=\(isRemoved), "
+            + "scopeActive=\(context.isActive), presented=\(presented), events=[\(events)]"
+        if let trace {
+            result.trace = trace.entries
+            result.traceDroppedCount = trace.droppedCount
+        }
+        result.screenshot = screenshot
+        return result
+    }
+
+    private func captureScreenshot() -> FleetScreenshotEvidence {
+        guard context.isActive else { return .unavailable(reason: "the hosting scope has ended") }
+        guard isMounted else { return .unavailable(reason: "the hosted view is not in the window") }
+        let window = context.window
+        guard window.bounds.width > 0, window.bounds.height > 0 else { return .unavailable(reason: "the window has zero size") }
+        var drawn = false
+        let image = UIGraphicsImageRenderer(bounds: window.bounds).image { _ in
+            drawn = window.drawHierarchy(in: window.bounds, afterScreenUpdates: true)
+        }
+        guard drawn, let png = image.pngData() else { return .unavailable(reason: "UIKit could not render the current window") }
+        guard Self.hasVisiblePixels(image) else { return .unavailable(reason: "the rendered window image contained no visible pixels") }
+        return .captured(png: png)
+    }
+
+    private static func hasVisiblePixels(_ image: UIImage) -> Bool {
+        guard let cg = image.cgImage, cg.width > 0, cg.height > 0 else { return false }
+        let width = min(cg.width, 64), height = min(cg.height, 64)
+        var data = [UInt8](repeating: 0, count: width * height * 4)
+        let drew = data.withUnsafeMutableBytes { buffer -> Bool in
+            guard let ctx = CGContext(
+                data: buffer.baseAddress, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4,
+                space: CGColorSpaceCreateDeviceRGB(), bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+            ) else { return false }
+            ctx.interpolationQuality = .low
+            ctx.draw(cg, in: CGRect(x: 0, y: 0, width: width, height: height))
+            return true
+        }
+        guard drew else { return false }
+        return stride(from: 3, to: data.count, by: 4).contains { data[$0] != 0 }
+    }
+
+    private var rootViews: [UIView] {
+        var views: [UIView] = []
+        var controller: UIViewController? = hostingController
+        while let current = controller {
+            if current.isViewLoaded { views.append(current.view) }
+            controller = current.presentedViewController
+        }
+        return views
+    }
+
+    private func describe(_ view: UIView) -> String {
+        var parts = [String(describing: type(of: view))]
+        if let label = view.accessibilityLabel, !label.isEmpty { parts.append("label=\"\(label)\"") }
+        if let identifier = view.accessibilityIdentifier, !identifier.isEmpty { parts.append("id=\"\(identifier)\"") }
+        if let control = view as? UIControl { parts.append("enabled=\(control.isEnabled)") }
+        if view.isHidden { parts.append("hidden") }
+        return parts.joined(separator: " ")
+    }
+
+    private func describeHierarchy() -> String {
+        var lines: [String] = []
+        var nodes = 0
+        func visit(_ view: UIView, depth: Int) {
+            guard nodes < FleetDiagnostics.maxHierarchyNodes else { return }
+            nodes += 1
+            lines.append(String(repeating: "  ", count: depth) + describe(view))
+            if depth + 1 >= FleetDiagnostics.maxHierarchyDepth {
+                if !view.subviews.isEmpty { lines.append(String(repeating: "  ", count: depth + 1) + "… \(view.subviews.count) subview(s) beyond depth limit") }
+                return
+            }
+            for subview in view.subviews { visit(subview, depth: depth + 1) }
+        }
+        var controller: UIViewController? = hostingController
+        while let current = controller {
+            lines.append("controller \(type(of: current))\(current.isViewLoaded ? "" : " (view not loaded)")")
+            if current.isViewLoaded { visit(current.view, depth: 1) }
+            controller = current.presentedViewController
+        }
+        if nodes >= FleetDiagnostics.maxHierarchyNodes { lines.append("… truncated at \(FleetDiagnostics.maxHierarchyNodes) nodes") }
+        return lines.joined(separator: "\n")
+    }
+
+    /// Views in the hosted screen (and controllers it presents) matching `label` and/or `identifier`.
+    /// The label matches the accessibility label, falling back to a `UILabel`'s text or a `UIButton`'s title.
+    func matchingViews(label: String?, identifier: String?) -> [UIView] {
+        var result: [UIView] = []
+        var visited = 0
+        func matches(_ view: UIView) -> Bool {
+            if let label {
+                let text = view.accessibilityLabel ?? (view as? UILabel)?.text ?? (view as? UIButton)?.currentTitle
+                if text != label { return false }
+            }
+            if let identifier, view.accessibilityIdentifier != identifier { return false }
+            return true
+        }
+        func visit(_ view: UIView) {
+            guard visited < 2000 else { return }
+            visited += 1
+            if matches(view) { result.append(view) }
+            for subview in view.subviews { visit(subview) }
+        }
+        for root in rootViews { visit(root) }
+        // A label inside a `UIButton` (its title) resolves to the button; then SwiftUI wrapper views that mirror a
+        // child's accessibility label are dropped so only the innermost element is reported.
+        var resolved: [UIView] = []
+        for view in result {
+            var target = view
+            if !(view is UIControl) {
+                var ancestor = view.superview
+                while let candidate = ancestor, !(candidate is UIButton) { ancestor = candidate.superview }
+                if let button = ancestor, button.isDescendant(of: view.window ?? button) { target = button }
+            }
+            if !resolved.contains(where: { $0 === target }) { resolved.append(target) }
+        }
+        return resolved.filter { outer in !resolved.contains { $0 !== outer && $0.isDescendant(of: outer) } }
+    }
+
+    private func queryDescription(label: String?, identifier: String?) -> String {
+        [label.map { "label == \"\($0)\"" }, identifier.map { "identifier == \"\($0)\"" }].compactMap { $0 }.joined(separator: " && ")
+    }
+
+    /// Activates the single control matching `label` and/or `identifier` in this screen's UIKit
+    /// hierarchy (including controllers it presents) by sending `.touchUpInside`. This programmatic
+    /// dispatch does not prove hit testing or accessibility. Throws a distinguishable
+    /// `FleetFailure` with diagnostics: `.notFound` (no match), `.ambiguous` (several matches),
+    /// `.unsupported` (the match is not a `UIControl`), `.unavailableInteraction` (disabled).
+    public func tap(label: String? = nil, identifier: String? = nil, fileID: String = #fileID, line: UInt = #line) throws {
+        let location = FleetSourceLocation(fileID: fileID, line: line)
+        let query = queryDescription(label: label, identifier: identifier)
+        let action = "tap \(query.isEmpty ? "(empty query)" : query)"
+        recordAction(action)
+        func fail(_ kind: FleetFailure.Kind, _ state: String, _ reason: String, matches: [UIView]) -> FleetFailure {
+            FleetFailure(
+                kind: kind, action: "tap", target: "hosted view matching \(query)", state: state, reason: reason, source: location,
+                diagnostics: makeDiagnostics(screenshot: captureScreenshot(), query: query, matchCount: matches.count, candidates: matches.map(describe))
+            )
+        }
+        guard context.isActive else {
+            throw FleetFailure(kind: .invalidSetup, action: "tap", target: "FleetHostedView", state: "its hosting scope has already ended", reason: "Use the handle only inside the scope that produced it.", source: location)
+        }
+        guard label != nil || identifier != nil else {
+            throw fail(.invalidInput, "no label or identifier was given", "Pass a label and/or identifier.", matches: [])
+        }
+        let matches = matchingViews(label: label, identifier: identifier)
+        guard let view = matches.first else {
+            throw fail(.notFound, "0 elements matched", "Check the label/identifier against the hierarchy in the diagnostics, or wait for the screen to show it.", matches: matches)
+        }
+        guard matches.count == 1 else {
+            throw fail(.ambiguous, "\(matches.count) elements matched", "Add an identifier or a more specific label so exactly one element matches.", matches: matches)
+        }
+        guard let control = view as? UIControl else {
+            throw fail(.unsupported, "\(type(of: view)) is not a UIControl", "Fleet taps UIControls only; drive other elements through your screen's own action.", matches: matches)
+        }
+        guard control.isEnabled else {
+            throw fail(.unavailableInteraction, "the control is disabled", "Enable the control (or satisfy the condition that enables it) before tapping.", matches: matches)
+        }
+        if let button = control as? UIButton {
+            do {
+                try button.tapOrThrow()
+            } catch let failure as FleetFailure {
+                throw fail(.unavailableInteraction, failure.state, failure.reason, matches: matches)
+            }
+        } else {
+            control.sendActions(for: .touchUpInside)
+        }
+        trace?.append("performed \(action)")
     }
 }
