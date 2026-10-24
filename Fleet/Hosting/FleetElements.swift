@@ -1,6 +1,20 @@
 import SwiftUI
 import UIKit
 
+/// Where a declared action is offered. This is the bounded matrix of contextual surfaces Fleet
+/// can address; anything else (long-press previews, drag, custom gestures) is not representable.
+///
+/// Selecting a surface selects a declared handler only. It does not present or observe a menu,
+/// reveal a swipe row, or deliver a gesture.
+public enum FleetActionSurface: String, Sendable, Equatable, CaseIterable {
+    /// A control in the row itself, such as a trailing "Delete" button.
+    case control
+    /// A `swipeActions` entry on the row.
+    case swipeAction
+    /// A `contextMenu` command on the row.
+    case contextMenu
+}
+
 /// A named action a mounted element offers, for example a row's "Delete".
 ///
 /// `perform` should be the very closure the element's own control runs, so a request through
@@ -9,13 +23,30 @@ import UIKit
 public struct FleetElementAction: Sendable {
     public let name: String
     public let isEnabled: Bool
+    /// The surface the screen offers this action on. Defaults to `.control`.
+    public let surface: FleetActionSurface
+    /// Whether the screen declares the action as destructive (for example `role: .destructive`).
+    public let isDestructive: Bool
     let perform: @MainActor @Sendable () -> Void
 
-    public init(_ name: String, isEnabled: Bool = true, perform: @escaping @MainActor @Sendable () -> Void) {
+    public init(
+        _ name: String, surface: FleetActionSurface = .control, isDestructive: Bool = false, isEnabled: Bool = true,
+        perform: @escaping @MainActor @Sendable () -> Void
+    ) {
         self.name = name
+        self.surface = surface
+        self.isDestructive = isDestructive
         self.isEnabled = isEnabled
         self.perform = perform
     }
+}
+
+/// One declared action as observed on a mounted element.
+public struct FleetActionObservation: Sendable, Equatable {
+    public let name: String
+    public let surface: FleetActionSurface
+    public let isEnabled: Bool
+    public let isDestructive: Bool
 }
 
 /// What Fleet observed for one mounted, identified element of the hosted screen.
@@ -27,6 +58,8 @@ public struct FleetElementObservation: Sendable, Equatable {
     public let frame: CGRect
     /// Offered action names mapped to whether each is enabled.
     public let actions: [String: Bool]
+    /// Every declared action with its surface, availability and destructive flag, in declaration order.
+    public let declaredActions: [FleetActionObservation]
 }
 
 struct FleetElementRecord: Sendable {
@@ -37,7 +70,8 @@ struct FleetElementRecord: Sendable {
     let actions: [FleetElementAction]
 
     var observation: FleetElementObservation {
-        FleetElementObservation(id: id, text: text, frame: frame, actions: Dictionary(actions.map { ($0.name, $0.isEnabled) }, uniquingKeysWith: { first, _ in first }))
+        FleetElementObservation(id: id, text: text, frame: frame, actions: Dictionary(actions.map { ($0.name, $0.isEnabled) }, uniquingKeysWith: { first, _ in first }),
+            declaredActions: actions.map { FleetActionObservation(name: $0.name, surface: $0.surface, isEnabled: $0.isEnabled, isDestructive: $0.isDestructive) })
     }
 }
 
@@ -149,22 +183,39 @@ extension FleetHostedView {
 
     /// Invokes the named action of the single mounted element `id`.
     ///
-    /// Throws `FleetFailure` (recoverable, naming the element identity and action):
-    /// `.invalidInput` when the element is not mounted, is ambiguous, or does not offer the
-    /// action; `.unavailableInteraction` when the action is currently disabled. The action runs
-    /// the screen's own closure; it does not prove physical hit testing or accessibility.
-    public func perform(_ actionName: String, onElement id: String, fileID: String = #fileID, line: UInt = #line) throws {
-        let action = "perform '\(actionName)'"
+    /// With `surface` omitted the name must be offered on exactly one surface of that element; pass
+    /// `surface` to choose between, say, a row's "Delete" control and its "Delete" swipe action.
+    ///
+    /// Throws `FleetFailure` (recoverable, naming the element identity, action and surface):
+    /// `.invalidInput` when the element is not mounted, is ambiguous, or does not offer exactly one
+    /// matching action; `.unavailableInteraction` when the action is currently disabled. The action
+    /// runs the declared closure exactly once. That is handler dispatch only: it does not present or
+    /// observe a menu, reveal a swipe row, or prove hit testing, accessibility or gesture delivery.
+    public func perform(
+        _ actionName: String, onElement id: String, via surface: FleetActionSurface? = nil,
+        fileID: String = #fileID, line: UInt = #line
+    ) throws {
+        let action = "perform '\(actionName)'" + (surface.map { " via \($0.rawValue)" } ?? "")
         do {
             try requireActive(action)
             let record = try resolve(id, action: action)
-            guard let found = record.actions.first(where: { $0.name == actionName }) else {
+            let matches = record.actions.filter { $0.name == actionName && (surface == nil || $0.surface == surface) }
+            guard let found = matches.first else {
                 throw FleetFailure(
                     kind: .invalidInput,
                     action: action,
                     target: "element '\(id)'",
-                    state: "it offers actions \(record.actions.map(\.name)) but not '\(actionName)'",
-                    reason: "Request an action the element declares with fleetElement(_:text:actions:)."
+                    state: "it offers actions \(record.actions.map { "\($0.name) (\($0.surface.rawValue))" }) but no match",
+                    reason: "Request an action (and surface) the element declares with fleetElement(_:text:actions:)."
+                )
+            }
+            guard matches.count == 1 else {
+                throw FleetFailure(
+                    kind: .invalidInput,
+                    action: action,
+                    target: "element '\(id)'",
+                    state: "\(matches.count) declared actions match, on surfaces \(matches.map(\.surface.rawValue))",
+                    reason: "Pass via: to choose one surface, and declare each name once per surface."
                 )
             }
             guard found.isEnabled else {
@@ -172,7 +223,7 @@ extension FleetHostedView {
                     kind: .unavailableInteraction,
                     action: action,
                     target: "element '\(id)'",
-                    state: "the action is disabled",
+                    state: "the \(found.surface.rawValue) action is disabled",
                     reason: "Wait for the screen to enable the action, or assert it stays disabled."
                 )
             }

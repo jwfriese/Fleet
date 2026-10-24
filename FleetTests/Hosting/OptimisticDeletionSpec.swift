@@ -329,6 +329,92 @@ final class OptimisticDeletionSpec: XCTestCase {
     }
 }
 
+/// Recipe-shaped rows that declare the same "Delete" on a control, a swipe action and a context
+/// menu. Handlers record which row and surface ran; the fixture certifies no downstream application.
+@MainActor
+private final class ContextualRowsModel: ObservableObject {
+    @Published var rows = ["a", "b", "c"]
+    @Published var lockedRows: Set<String> = ["c"]
+    var invocations: [String] = []
+    func run(_ id: String, _ surface: String) { invocations.append("\(id):\(surface)"); rows.removeAll { $0 == id } }
+}
+
+private struct ContextualRowsScreen: View {
+    @ObservedObject var model: ContextualRowsModel
+    var body: some View {
+        VStack {
+            ForEach(model.rows, id: \.self) { id in
+                Text("Item").fleetElement("row.\(id)", text: "Item", actions: [
+                    FleetElementAction("Delete", surface: .swipeAction, isDestructive: true, isEnabled: !model.lockedRows.contains(id)) { model.run(id, "swipe") },
+                    FleetElementAction("Delete", surface: .contextMenu, isDestructive: true) { model.run(id, "menu") },
+                    FleetElementAction("Pin", surface: .contextMenu) { model.run(id, "pin") },
+                ])
+            }
+        }
+    }
+}
+
+@MainActor
+final class ContextualActionSpec: XCTestCase {
+    private var window: UIWindow!
+
+    override func setUp() async throws {
+        try await super.setUp()
+        window = try XCTUnwrap(UIApplication.shared.keyWindow)
+    }
+
+    override func tearDown() async throws {
+        window = nil
+        try await super.tearDown()
+    }
+
+    func test_requestedRowAndSurfaceRunExactlyOnce_andIdenticalLabelsElsewhereDoNot() async throws {
+        let model = ContextualRowsModel()
+        try await Fleet.withHostedView(ContextualRowsScreen(model: model), window: window) { host in
+            try await host.waitForElement("row.b")
+            let observed = try host.element("row.b").declaredActions
+            XCTAssertEqual(observed.map(\.surface), [.swipeAction, .contextMenu, .contextMenu])
+            XCTAssertEqual(observed.filter(\.isDestructive).count, 2)
+            try host.perform("Delete", onElement: "row.b", via: .contextMenu)
+            XCTAssertEqual(model.invocations, ["b:menu"])
+            try await host.waitForElementRemoval("row.b")
+            try host.perform("Delete", onElement: "row.a", via: .swipeAction)
+            XCTAssertEqual(model.invocations, ["b:menu", "a:swipe"])
+            try await host.waitForElementRemoval("row.a")
+            XCTAssertEqual(host.mountedElementIDs, ["row.c"])
+        }
+    }
+
+    func test_ambiguousMissingDisabledAndUnsupportedSurfacesCarryContext() async throws {
+        let model = ContextualRowsModel()
+        try await Fleet.withHostedView(ContextualRowsScreen(model: model), window: window) { host in
+            try await host.waitForElement("row.a")
+            @MainActor func failure(_ name: String, _ id: String, _ surface: FleetActionSurface?) -> FleetFailure? {
+                do { try host.perform(name, onElement: id, via: surface) } catch let error as FleetFailure { return error } catch {}
+                XCTFail("expected '\(name)' on '\(id)' to fail")
+                return nil
+            }
+            // Same name on two surfaces without choosing one is ambiguous, never "the first".
+            let ambiguous = failure("Delete", "row.a", nil)
+            XCTAssertEqual(ambiguous?.kind, .invalidInput)
+            XCTAssertTrue(ambiguous?.state.contains("2 declared actions") == true)
+            // A name declared on another surface only is a missing action.
+            let wrongSurface = failure("Pin", "row.a", .swipeAction)
+            XCTAssertEqual(wrongSurface?.kind, .invalidInput)
+            XCTAssertTrue(wrongSurface?.state.contains("Pin (contextMenu)") == true)
+            XCTAssertTrue(wrongSurface?.action.contains("swipeAction") == true)
+            // Disabled swipe action on a locked row; its menu command stays available.
+            let disabled = failure("Delete", "row.c", .swipeAction)
+            XCTAssertEqual(disabled?.kind, .unavailableInteraction)
+            XCTAssertTrue(disabled?.target.contains("row.c") == true)
+            XCTAssertEqual(try host.element("row.c").declaredActions.first?.isEnabled, false)
+            XCTAssertEqual(failure("Delete", "row.zzz", .contextMenu)?.kind, .invalidInput)
+            XCTAssertTrue(model.invocations.isEmpty)
+            XCTAssertEqual(FleetActionSurface.allCases, [.control, .swipeAction, .contextMenu])
+        }
+    }
+}
+
 @MainActor
 private extension FleetHostedView {
     /// Bounded wait for the fake service to have received the request.
