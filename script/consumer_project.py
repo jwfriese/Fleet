@@ -6,7 +6,7 @@ import plistlib
 import shutil
 
 
-def create_project(destination, fixtures, package_url, revision, viewinspector=None):
+def create_project(destination, fixtures, package_url, revision, viewinspector=None, snapshot=None):
     destination = Path(destination)
     shutil.copytree(fixtures, destination / "Sources")
     project = destination / "Consumer.xcodeproj"
@@ -25,6 +25,10 @@ def create_project(destination, fixtures, package_url, revision, viewinspector=N
     if viewinspector:
         inspector = add("viewinspector", "XCRemoteSwiftPackageReference", repositoryURL=viewinspector[0],
                         requirement={"kind": "revision", "revision": viewinspector[1]})
+    snapshotting = None
+    if snapshot:
+        snapshotting = add("snapshottesting", "XCRemoteSwiftPackageReference", repositoryURL=snapshot[0],
+                           requirement={"kind": "revision", "revision": snapshot[1]})
     products = add("products", "PBXGroup", children=[], name="Products", sourceTree="<group>")
     main = add("main", "PBXGroup", children=[products], sourceTree="<group>")
     targets = []
@@ -54,6 +58,8 @@ def create_project(destination, fixtures, package_url, revision, viewinspector=N
         swift_testing_file = file("SwiftTestingConsumerTests.swift", "sourcecode.swift")
         proof_file = file("ViewInspector/ViewInspectorProofTests.swift", "sourcecode.swift") if inspector else None
         scoped_file = file("ViewInspector/ScopedInspectionTests.swift", "sourcecode.swift") if inspector else None
+        snapshot_file = file("SnapshotTesting/SnapshotEnvironmentTests.swift", "sourcecode.swift") if snapshotting else None
+        cases_file = file("EnvironmentCasesConsumerTests.swift", "sourcecode.swift")
         swiftui_file = file("SwiftUIHostingConsumerTests.swift", "sourcecode.swift")
         crop_file = file("CropQueueConsumerTests.swift", "sourcecode.swift")
         household_file = file("HouseholdPlanConsumerTests.swift", "sourcecode.swift")
@@ -81,8 +87,10 @@ def create_project(destination, fixtures, package_url, revision, viewinspector=N
                                                                   build_file("crop-queue-build-file", crop_file),
                                                                   build_file("household-plan-build-file", household_file),
                                                                   build_file("presented-content-build-file", presented_file),
+                                                                  build_file("cases-build-file", cases_file),
                                                                   *([build_file("proof-build-file", proof_file),
                                                                      build_file("scoped-build-file", scoped_file)] if inspector else []),
+                                                                  *([build_file("snapshot-build-file", snapshot_file)] if snapshotting else []),
                                                                   build_file("scenario-build-file", scenario_file)])
         baseline_sources = phase("baseline-sources", "PBXSourcesBuildPhase", files=[
             build_file("baseline-test-build-file", baseline_file), build_file("baseline-scenario-build-file", scenario_file)])
@@ -106,6 +114,11 @@ def create_project(destination, fixtures, package_url, revision, viewinspector=N
                             package=inspector, productName="ViewInspector")
                 dependencies.append(extra)
                 links.append(add(platform + name + "viewinspector-link", "PBXBuildFile", productRef=extra))
+            if snapshotting:
+                extra = add(platform + name + "snapshottesting-dependency", "XCSwiftPackageProductDependency",
+                            package=snapshotting, productName="SnapshotTesting")
+                dependencies.append(extra)
+                links.append(add(platform + name + "snapshottesting-link", "PBXBuildFile", productRef=extra))
             return dependencies, phase(name + "frameworks", "PBXFrameworksBuildPhase", files=links)
 
         app_frameworks = phase("app-frameworks", "PBXFrameworksBuildPhase", files=[])
@@ -169,7 +182,7 @@ def create_project(destination, fixtures, package_url, revision, viewinspector=N
                buildConfigurationList=configurations("project", {}), compatibilityVersion="Xcode 14.0",
                developmentRegion="en", knownRegions=["en", "Base"], mainGroup=main,
                productRefGroup=products, projectDirPath="", projectRoot="", targets=targets,
-               packageReferences=[package] + ([inspector] if inspector else []))
+               packageReferences=[package] + ([inspector] if inspector else []) + ([snapshotting] if snapshotting else []))
     (project / "project.pbxproj").write_bytes(plistlib.dumps({"archiveVersion": "1", "classes": {},
         "objectVersion": "56", "objects": objects, "rootObject": root}, sort_keys=False))
     return project

@@ -91,8 +91,12 @@ VIEWINSPECTOR_URL = "https://github.com/nalexn/ViewInspector"
 # Release 0.10.5 (not the 0.10.6 default branch).
 VIEWINSPECTOR_REVISION = "2dacb6e514be19379c605a5a11564d0f3fea89d9"
 
+SNAPSHOTTESTING_URL = "https://github.com/pointfreeco/swift-snapshot-testing"
+# Release 1.12.0: the last release without swift-syntax or other transitive packages.
+SNAPSHOTTESTING_REVISION = "26ed3a2b4a2df47917ca9b790a57f91285b923fb"
 
-def check(root, platform="all", allow_dirty=False, viewinspector=False):
+
+def check(root, platform="all", allow_dirty=False, viewinspector=False, snapshottesting=False):
     if not (root / "Package.swift").is_file():
         raise DistributionError("Fleet Package.swift is missing; no distributed consumer can be validated.")
     commit = git(root, "rev-parse", "HEAD")
@@ -110,7 +114,8 @@ def check(root, platform="all", allow_dirty=False, viewinspector=False):
         package_url, revision = snapshot(root, run / "DevelopmentPackage")
         print("Development snapshot only; this run cannot certify a release.", flush=True)
     inspector = (VIEWINSPECTOR_URL, VIEWINSPECTOR_REVISION) if viewinspector else None
-    project = create_project(run / "Consumer", root / "Integration/PackageConsumer", package_url, revision, inspector)
+    snapshot_package = (SNAPSHOTTESTING_URL, SNAPSHOTTESTING_REVISION) if snapshottesting else None
+    project = create_project(run / "Consumer", root / "Integration/PackageConsumer", package_url, revision, inspector, snapshot_package)
     packages = run / "SourcePackages"
     counts = {}
     policy_counts = {}
@@ -126,7 +131,7 @@ def check(root, platform="all", allow_dirty=False, viewinspector=False):
         try:
             pins = json.loads(lockfile.read_text())["pins"]
             revisions = sorted(pin["state"]["revision"] for pin in pins)
-            if revisions != sorted([revision] + ([VIEWINSPECTOR_REVISION] if viewinspector else [])):
+            if revisions != sorted([revision] + ([VIEWINSPECTOR_REVISION] if viewinspector else []) + ([SNAPSHOTTESTING_REVISION] if snapshottesting else [])):
                 raise DistributionError("Consumer resolution did not pin the exact package revision.")
         except (OSError, KeyError, ValueError) as error:
             raise DistributionError("Missing or invalid consumer package lockfile.") from error
@@ -139,6 +144,11 @@ def check(root, platform="all", allow_dirty=False, viewinspector=False):
         trace_dir = directory / "traces"
         trace_dir.mkdir()
         trace_env = {"TEST_RUNNER_FLEET_TRACE_OUT": str(trace_dir)}
+        if snapshottesting:
+            # Failure images (actual) land beside the result bundle so local and CI runs retain them.
+            snapshot_dir = directory / "snapshot-artifacts"
+            snapshot_dir.mkdir()
+            trace_env["TEST_RUNNER_SNAPSHOT_ARTIFACTS"] = str(snapshot_dir)
         test_arguments = ["test",
                 "-destination", destination, "-destination-timeout", "60",
                 "-derivedDataPath", run / "DerivedData" / selected,
@@ -171,6 +181,7 @@ def check(root, platform="all", allow_dirty=False, viewinspector=False):
     evidence = {"schema": 1, "source_commit": commit, "package_revision": revision,
                 "development_snapshot": allow_dirty, "tests": counts, "preserve_timing_tests": policy_counts,
                 "viewinspector_revision": VIEWINSPECTOR_REVISION if viewinspector else None,
+                "snapshottesting_revision": SNAPSHOTTESTING_REVISION if snapshottesting else None,
                 "validated_at": datetime.now(timezone.utc).isoformat()}
     (run / "validation.json").write_text(json.dumps(evidence, indent=2) + "\n")
     print(f"Fleet: external consumer tests passed: legacy {counts}, preserve-timing {policy_counts}. Evidence: {run / 'validation.json'}")
@@ -182,9 +193,14 @@ def main():
     parser.add_argument("--allow-dirty", action="store_true", help="Test a development snapshot; does not certify a release")
     parser.add_argument("--with-viewinspector", action="store_true",
                         help="Also compile the optional ViewInspector compatibility proof into the consumer test target")
+    parser.add_argument("--with-snapshottesting", action="store_true",
+                        help="Compile the optional SnapshotTesting adapter and named-environment snapshot tests into the consumer test target (default; kept for compatibility)")
+    parser.add_argument("--without-snapshottesting", action="store_true",
+                        help="Skip the optional SnapshotTesting adapter and snapshot tests, so the consumer does not resolve that package")
     args = parser.parse_args()
     try:
-        check(ROOT, args.platform, args.allow_dirty, args.with_viewinspector)
+        check(ROOT, args.platform, args.allow_dirty, args.with_viewinspector,
+              args.with_snapshottesting or not args.without_snapshottesting)
     except (DistributionError, ValueError, subprocess.SubprocessError, OSError) as error:
         print(f"Fleet distribution validation failed: {error}", file=sys.stderr)
         return 1

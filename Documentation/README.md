@@ -9,6 +9,7 @@
 | [Scoped hosting](Hosting.md) | iOS, tvOS | `Fleet.withContext(window:)` / `withContext(scene:)`: whole-lifetime exclusion, bounded waits, cleanup, storyboard binding ownership, and `FleetEnvironment` (size, appearance; Dynamic Type on 17+). |
 | [SwiftUI hosting](SwiftUIHosting.md) | iOS, tvOS | `Fleet.withHostedView`: scoped SwiftUI host, distinct appearance/update/removal and observed-task events, lower-level `mount`. |
 | [ViewInspector compatibility](ViewInspector.md) | iOS, tvOS | Executable proof (optional, consumer test target only) of inspecting the SwiftUI screen a Fleet context owns; pinned matrix, required seam and evidence levels. |
+| [Named environments and snapshots](SnapshotTesting.md) | iOS, tvOS | Recipe (optional, consumer test target only) running named environment cases in sequential hosted scopes, with an adapter that compares the mounted screen through SnapshotTesting. |
 | [Runtime hooks](RuntimeHooks.md) | iOS, tvOS | Inventory of process-wide Objective-C hooks. |
 
 ## Reference
