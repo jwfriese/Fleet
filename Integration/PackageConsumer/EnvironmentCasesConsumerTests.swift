@@ -78,7 +78,34 @@ struct CaseReport {
     let features: String
 
     /// A stable prefix for assertion messages, snapshot names and artifact file names.
-    var label: String { "[case \(name) | resolved \(resolved) | features \(features)]" }
+    var label: String { "[case \(name) | resolved \(Self.describe(resolved)) | features \(features)]" }
+
+    /// Explicit field values: reflection of imported UIKit enums prints only their type names.
+    static func describe(_ environment: FleetEnvironment) -> String {
+        func style(_ value: UIUserInterfaceStyle?) -> String {
+            switch value {
+            case nil: return "nil"
+            case .some(.light): return "light"
+            case .some(.dark): return "dark"
+            case .some(.unspecified): return "unspecified"
+            case .some: return "unknown"
+            }
+        }
+        func sizeClass(_ value: UIUserInterfaceSizeClass?) -> String {
+            switch value {
+            case nil: return "nil"
+            case .some(.compact): return "compact"
+            case .some(.regular): return "regular"
+            case .some(.unspecified): return "unspecified"
+            case .some: return "unknown"
+            }
+        }
+        let size = environment.size.map { "\($0.width)x\($0.height)" } ?? "nil"
+        let category = environment.contentSizeCategory?.rawValue ?? "nil"
+        return "size: \(size), userInterfaceStyle: \(style(environment.userInterfaceStyle)), "
+            + "contentSizeCategory: \(category), horizontalSizeClass: \(sizeClass(environment.horizontalSizeClass)), "
+            + "verticalSizeClass: \(sizeClass(environment.verticalSizeClass))"
+    }
     var artifactName: String {
         String(name.map { $0.isLetter || $0.isNumber ? $0 : "-" })
     }
@@ -283,5 +310,16 @@ final class EnvironmentCasesConsumerTests: XCTestCase {
             XCTAssertEqual(failure.underlying.kind, .invalidInput)
             XCTAssertTrue(failure.description.contains("bad size"))
         }
+    }
+
+    func test_caseReportNamesConcreteResolvedTraitValues() {
+        let dark = CaseReport.describe(FleetEnvironment(userInterfaceStyle: .dark, horizontalSizeClass: .compact, verticalSizeClass: .regular))
+        let light = CaseReport.describe(FleetEnvironment(userInterfaceStyle: .light, horizontalSizeClass: .regular, verticalSizeClass: .compact))
+        XCTAssertTrue(dark.contains("userInterfaceStyle: dark"), dark)
+        XCTAssertTrue(dark.contains("horizontalSizeClass: compact"), dark)
+        XCTAssertTrue(dark.contains("verticalSizeClass: regular"), dark)
+        XCTAssertTrue(light.contains("userInterfaceStyle: light"), light)
+        XCTAssertNotEqual(dark, light)
+        XCTAssertFalse(dark.contains("__C"), dark)
     }
 }
