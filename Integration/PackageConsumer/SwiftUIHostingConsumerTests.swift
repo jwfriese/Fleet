@@ -189,6 +189,9 @@ final class IngredientsModel: ObservableObject {
     @Published var confirmation: String?
     @Published var deleting: Set<String> = []
     let service: FakeIngredientService
+    /// Runtime-selected mutations for the fixture's own mutation tests; each breaks one intended behavior.
+    enum Mutation { case deferRemovalUntilResponse, skipRollback }
+    var mutation: Mutation?
     private var generation = 0
     private var tasks: [Task<Void, Never>] = []
 
@@ -200,16 +203,19 @@ final class IngredientsModel: ObservableObject {
         errorMessage = nil
         confirmation = nil
         deleting.insert(ingredient.id)
-        ingredients.remove(at: index)
+        if mutation != .deferRemovalUntilResponse { ingredients.remove(at: index) }
         let current = generation
         tasks.append(Task { [weak self] in
             guard let self else { return }
             do {
                 try await service.delete(ingredient.id)
-                if current == generation { confirmation = "Deleted \(ingredient.name)" }
+                if current == generation {
+                    if mutation == .deferRemovalUntilResponse { ingredients.removeAll { $0 == ingredient } }
+                    confirmation = "Deleted \(ingredient.name)"
+                }
             } catch {
                 guard current == generation, !Task.isCancelled else { return }
-                ingredients.insert(ingredient, at: min(index, ingredients.count))
+                if mutation != .skipRollback { ingredients.insert(ingredient, at: min(index, ingredients.count)) }
                 errorMessage = "Could not delete \(ingredient.name)"
             }
             if current == generation { deleting.remove(ingredient.id) }
@@ -349,3 +355,163 @@ struct OptimisticDeletionSwiftTestingStarter {
     }
 }
 // optimistic-deletion-swift-testing:end
+
+/// Which intended assertion a mutated deletion flow failed; any other error fails the mutation test.
+enum DeletionAssertion: Error, Equatable { case notOptimistic, notRestored }
+
+/// Runs the delete-then-fail flow with condition-based waits on the model's own checkpoints, so a
+/// mutant fails its named assertion directly instead of by timeout.
+@MainActor
+private func runFailedDeletionFlow(mutation: IngredientsModel.Mutation?) async throws {
+    let window = try XCTUnwrap(UIApplication.shared.keyWindow)
+    let service = FakeIngredientService()
+    let model = IngredientsModel(service: service)
+    model.mutation = mutation
+    try await Fleet.withHostedView(IngredientsScreen(model: model), window: window) { host in
+        try host.context.addCleanup { model.shutdown() }
+        try await host.waitForElement("ingredient.milk")
+        try host.perform("Delete", onElement: "ingredient.eggs")
+        try await host.waitForUpdate("delete request started") { service.started == ["eggs"] }
+        // Optimistic stage: the row must already be gone while the response is held.
+        if model.ingredients.contains(where: { $0.id == "eggs" }) { throw DeletionAssertion.notOptimistic }
+        try await host.waitForElementRemoval("ingredient.eggs")
+        service.releaseFailure("eggs")
+        try await host.waitForUpdate("failure handled") { !model.deleting.contains("eggs") }
+        // Rollback: the failed row returns at its original position.
+        if model.ingredients.map(\.id) != ["flour", "eggs", "milk"] { throw DeletionAssertion.notRestored }
+        try await host.waitForElement("ingredient.eggs")
+        XCTAssertEqual(host.mountedElementIDs.filter { $0.hasPrefix("ingredient.") }, allIngredientIDs)
+    }
+}
+
+@MainActor
+final class OptimisticDeletionMutationTests: XCTestCase {
+    func test_correctedFixture_passesStageAndRollback() async throws {
+        try await runFailedDeletionFlow(mutation: nil)
+    }
+
+    func test_deferredRemoval_failsOptimisticStageAssertion() async throws {
+        do {
+            try await runFailedDeletionFlow(mutation: .deferRemovalUntilResponse)
+            XCTFail("mutant unexpectedly passed")
+        } catch let failure as DeletionAssertion {
+            XCTAssertEqual(failure, .notOptimistic)
+        }
+    }
+
+    func test_skippedRollback_failsRollbackAssertion() async throws {
+        do {
+            try await runFailedDeletionFlow(mutation: .skipRollback)
+            XCTFail("mutant unexpectedly passed")
+        } catch let failure as DeletionAssertion {
+            XCTAssertEqual(failure, .notRestored)
+        }
+    }
+}
+
+/// A failed or cancelled test must leave nothing behind for the next one: no pending continuation,
+/// retained model or service, mounted element or changed window root.
+@MainActor
+final class FailureIsolationTests: XCTestCase {
+    private struct Planned: Error {}
+
+    func test_throwingBodyReleasesPendingRequestAndModel_andSuccessorStartsClean() async throws {
+        let window = try XCTUnwrap(UIApplication.shared.keyWindow)
+        let originalRoot = window.rootViewController
+        weak var weakModel: IngredientsModel?
+        weak var weakService: FakeIngredientService?
+        do {
+            var service: FakeIngredientService? = FakeIngredientService()
+            var model: IngredientsModel? = IngredientsModel(service: service!)
+            weakModel = model
+            weakService = service
+            let held = service!
+            let screenModel = model!
+            do {
+                try await Fleet.withHostedView(IngredientsScreen(model: screenModel), window: window) { host in
+                    try host.context.addCleanup { screenModel.shutdown() }
+                    try await host.waitForElement("ingredient.milk")
+                    try host.perform("Delete", onElement: "ingredient.flour")
+                    try await host.waitForUpdate("request pending") { held.isPending("flour") }
+                    throw Planned()
+                }
+                XCTFail("scope should rethrow")
+            } catch is Planned {}
+            XCTAssertFalse(held.isPending("flour"))
+            service = nil
+            model = nil
+        }
+        // Bounded release check: captured references may drop on a later main-actor turn.
+        let releaseDeadline = Date().addingTimeInterval(5)
+        while (weakModel != nil || weakService != nil) && Date() < releaseDeadline { try await Task.sleep(nanoseconds: 10_000_000) }
+        XCTAssertNil(weakModel)
+        XCTAssertNil(weakService)
+        XCTAssertTrue(window.rootViewController === originalRoot)
+
+        // Successor: a fresh screen mounts all rows and no stale error/confirmation appears.
+        let service = FakeIngredientService()
+        let model = IngredientsModel(service: service)
+        try await Fleet.withHostedView(IngredientsScreen(model: model), window: window) { host in
+            try host.context.addCleanup { model.shutdown() }
+            try await host.waitForElement("ingredient.milk")
+            XCTAssertEqual(host.mountedElementIDs, allIngredientIDs)
+            XCTAssertTrue(service.started.isEmpty)
+        }
+    }
+
+    func test_cancelledScopeReleasesPendingRequestAndLeavesCleanSuccessor() async throws {
+        let window = try XCTUnwrap(UIApplication.shared.keyWindow)
+        let originalRoot = window.rootViewController
+        weak var weakModel: IngredientsModel?
+        weak var weakService: FakeIngredientService?
+        do {
+            let service = FakeIngredientService()
+            let model = IngredientsModel(service: service)
+            weakModel = model
+            weakService = service
+            let task = Task { @MainActor in
+                try await Fleet.withHostedView(IngredientsScreen(model: model), window: window) { host in
+                    try host.context.addCleanup { model.shutdown() }
+                    try await host.waitForElement("ingredient.milk")
+                    try host.perform("Delete", onElement: "ingredient.milk")
+                    try await host.waitForUpdate("request pending") { service.isPending("milk") }
+                    // Held until cancelled: the scope must end through cancellation, not a timeout.
+                    try await host.waitForUpdate("never true", timeout: 30) { false }
+                }
+            }
+            // Bounded condition poll outside the scope (a second context would wait for the first one's lifetime).
+            let deadline = Date().addingTimeInterval(10)
+            while !service.isPending("milk") && Date() < deadline { await Task.yield() }
+            XCTAssertTrue(service.isPending("milk"))
+            task.cancel()
+            let result = await task.result
+            switch result {
+            case .success:
+                XCTFail("cancelled scope should not complete")
+            case .failure(let error):
+                XCTAssertTrue(error is CancellationError, "unexpected error: \(error)")
+            }
+            XCTAssertFalse(service.isPending("milk"))
+            XCTAssertNil(model.confirmation)
+            XCTAssertNil(model.errorMessage)
+        }
+        // Bounded release check: the cancelled task's captures may drop on a later main-actor turn.
+        let releaseDeadline = Date().addingTimeInterval(5)
+        while (weakModel != nil || weakService != nil) && Date() < releaseDeadline { try await Task.sleep(nanoseconds: 10_000_000) }
+        XCTAssertNil(weakModel)
+        XCTAssertNil(weakService)
+        XCTAssertTrue(window.rootViewController === originalRoot)
+
+        // Successor: a fresh screen mounts all rows and no stale error/confirmation appears.
+        let service = FakeIngredientService()
+        let model = IngredientsModel(service: service)
+        try await Fleet.withHostedView(IngredientsScreen(model: model), window: window) { host in
+            try host.context.addCleanup { model.shutdown() }
+            try await host.waitForElement("ingredient.milk")
+            XCTAssertEqual(host.mountedElementIDs, allIngredientIDs)
+            XCTAssertTrue(service.started.isEmpty)
+            XCTAssertNil(model.confirmation)
+            XCTAssertNil(model.errorMessage)
+        }
+    }
+}
