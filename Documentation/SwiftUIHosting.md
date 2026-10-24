@@ -64,7 +64,7 @@ HStack { Text(ingredient.name); Button("Delete", action: delete) }
 
 | API | Meaning |
 | --- | --- |
-| `host.perform("Delete", onElement:)` | invokes that one row's action; never "the first Delete" |
+| `host.perform("Delete", onElement:via:)` | invokes that one row's action (optionally on a `.swipeAction`/`.contextMenu` surface, see [ContextualActions.md](ContextualActions.md)); never "the first Delete" |
 | `host.mountedElementIDs`, `host.element(_:)` | identities in visual order; text, window-coordinate frame and action state of one element |
 | `host.waitForElement(_:)`, `host.waitForElementRemoval(_:)` | bounded waits on the laid-out SwiftUI hierarchy |
 
