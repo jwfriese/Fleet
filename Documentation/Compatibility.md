@@ -17,6 +17,19 @@ The framework, test targets, host applications, project defaults, and historical
 
 The SwiftPM tools version controls manifest features and the minimum tools capable of reading the package. It is distinct from the language mode used to compile Fleet; see the [SwiftPM manifest documentation](https://docs.swift.org/package-manager/PackageDescription/PackageDescription.html). This checkout separately selects Swift 6 language mode for Fleet; dependencies retain their own declared modes.
 
+## Tested dependency revisions
+
+Only the combinations below were exercised; arbitrary upstream compatibility is not promised.
+
+| Component | Tested revision | Where it is checked |
+| --- | --- | --- |
+| Fleet | the exact committed revision under test | `script/check-distribution` |
+| Nimble | the revision pinned in `Package.resolved` | `script/test` |
+| ViewInspector (optional) | release 0.10.5, `2dacb6e514be19379c605a5a11564d0f3fea89d9` | `script/check-distribution --with-viewinspector` |
+| Toolchain and runtimes | Xcode 26.6, Swift 6.3.3, iOS and tvOS 26.5 simulators | `script/test all` |
+
+SwiftUI scoped hosting is verified on those runtimes; `NavigationStack` observation requires iOS 16 and is iOS only. See the [pilot support matrix](SwiftUIPilot.md#per-platform-support-matrix).
+
 ## Availability by layer
 
 The three notions below are different and must not be conflated:
