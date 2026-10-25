@@ -286,9 +286,18 @@ public final class FleetHostedView {
 
     /// Runs `body`, attributing a thrown `FleetFailure` to the caller and attaching diagnostics
     /// collected from the live hosted interface. Cancellation and other errors pass through.
-    private func attributing<T>(_ fileID: String, _ line: UInt, _ body: @MainActor () async throws -> T) async throws -> T {
+    func attributing<T>(_ fileID: String, _ line: UInt, _ body: @MainActor () async throws -> T) async throws -> T {
         do {
             return try await body()
+        } catch let failure as FleetFailure {
+            throw failure.attributed(to: FleetSourceLocation(fileID: fileID, line: line)).with(diagnostics: diagnostics())
+        }
+    }
+
+    /// Synchronous counterpart of `attributing`, for immediate requests.
+    func attributingSync<T>(_ fileID: String, _ line: UInt, _ body: () throws -> T) throws -> T {
+        do {
+            return try body()
         } catch let failure as FleetFailure {
             throw failure.attributed(to: FleetSourceLocation(fileID: fileID, line: line)).with(diagnostics: diagnostics())
         }

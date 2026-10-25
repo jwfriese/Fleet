@@ -472,6 +472,37 @@ class FleetSwiftUIHostSpec: XCTestCase {
         }
     }
 
+    func test_elementAPIs_recordLastActionAndCarryDiagnostics() async throws {
+        let view = VStack {
+            Text("row").fleetElement("row", actions: [
+                FleetElementAction("Edit") {},
+                FleetElementAction("Delete", isEnabled: false) {}
+            ])
+        }
+        var failures: [FleetFailure] = []
+        try await Fleet.withHostedView(view, window: hostWindow) { host in
+            host.enableTracing()
+            host.recordAction("open detail")
+            try await host.waitForElement("row")
+            try host.perform("Edit", onElement: "row")
+            let requests: [() async throws -> Void] = [
+                { try host.perform("Delete", onElement: "row") },
+                { _ = try host.element("missing") },
+                { try await host.waitForElement("missing", timeout: 0.1) },
+                { try await host.waitForElementRemoval("row", timeout: 0.1) }
+            ]
+            for request in requests {
+                do { try await request() } catch let failure as FleetFailure { failures.append(failure) }
+            }
+        }
+        XCTAssertEqual(failures.map(\.kind), [.unavailableInteraction, .invalidInput, .timedOut, .timedOut])
+        for failure in failures {
+            XCTAssertNotNil(failure.diagnostics)
+            XCTAssertTrue(failure.diagnostics?.lastAction?.contains("perform 'Delete'") == true || failure.diagnostics?.lastAction?.contains("Edit") == true)
+            XCTAssertTrue(failure.diagnostics?.trace.contains { $0.contains("Edit") } == true)
+        }
+    }
+
     func test_unavailableScreenshot_isReportedExplicitly() async throws {
         var escaped: FleetHostedView?
         try await Fleet.withHostedView(Text("x"), window: hostWindow) { escaped = $0 }
