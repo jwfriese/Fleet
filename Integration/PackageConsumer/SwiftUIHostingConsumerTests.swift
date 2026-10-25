@@ -515,3 +515,49 @@ final class FailureIsolationTests: XCTestCase {
         }
     }
 }
+
+// MARK: - Contextual (menu and swipe) action dispatch
+
+/// Rows that declare the same "Delete" as a swipe action and a context-menu command. This is a
+/// recipe-shaped fixture; it does not certify any downstream application.
+@MainActor
+final class ContextualRowsModel: ObservableObject {
+    @Published var rows = ["a", "b", "c"]
+    var invocations: [String] = []
+    func delete(_ id: String, via surface: String) { invocations.append("\(id):\(surface)"); rows.removeAll { $0 == id } }
+}
+
+struct ContextualRowsScreen: View {
+    @ObservedObject var model: ContextualRowsModel
+    var body: some View {
+        VStack {
+            ForEach(model.rows, id: \.self) { id in
+                Text("Item").fleetElement("row.\(id)", text: "Item", actions: [
+                    FleetElementAction("Delete", surface: .swipeAction, isDestructive: true, isEnabled: id != "c") { model.delete(id, via: "swipe") },
+                    FleetElementAction("Delete", surface: .contextMenu, isDestructive: true) { model.delete(id, via: "menu") },
+                ])
+            }
+        }
+    }
+}
+
+@MainActor
+@Suite("Contextual action dispatch")
+struct ContextualActionSwiftTestingStarter {
+    @Test func dispatchesTheRequestedRowAndSurfaceExactlyOnce() async throws {
+        let window = try #require(UIApplication.shared.keyWindow)
+        let model = ContextualRowsModel()
+        try await Fleet.withHostedView(ContextualRowsScreen(model: model), window: window) { host in
+            try await host.waitForElement("row.b")
+            #expect(throws: FleetFailure.self) { try host.perform("Delete", onElement: "row.b") }  // two surfaces: ambiguous
+            #expect(model.invocations.isEmpty)
+            try host.perform("Delete", onElement: "row.b", via: .swipeAction)
+            try await host.waitForElementRemoval("row.b")
+            #expect(model.invocations == ["b:swipe"])
+            #expect(throws: FleetFailure.self) { try host.perform("Delete", onElement: "row.c", via: .swipeAction) }  // disabled
+            try host.perform("Delete", onElement: "row.c", via: .contextMenu)
+            #expect(model.invocations == ["b:swipe", "c:menu"])
+            #expect(host.mountedElementIDs.contains("row.a"))
+        }
+    }
+}
