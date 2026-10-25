@@ -503,6 +503,23 @@ class FleetSwiftUIHostSpec: XCTestCase {
         }
     }
 
+    func test_fullScreenPresentation_stillCapturesScreenshot() async throws {
+        var screenshot: FleetScreenshotEvidence?
+        try await Fleet.withHostedView(Text("x"), window: hostWindow) { host in
+            let modal = UIViewController()
+            modal.view.backgroundColor = .red
+            modal.modalPresentationStyle = .fullScreen
+            host.hostingController.present(modal, animated: false)
+            try await host.waitForUpdate("presenter detached and modal attached", timeout: 2) {
+                modal.view.window === self.hostWindow && !host.isMounted
+            }
+            do { _ = try host.tap(label: "Missing modal action") } catch let failure as FleetFailure {
+                screenshot = failure.diagnostics?.screenshot
+            }
+        }
+        guard case .captured = screenshot else { return XCTFail("expected a captured screenshot, got \(String(describing: screenshot))") }
+    }
+
     func test_unavailableScreenshot_isReportedExplicitly() async throws {
         var escaped: FleetHostedView?
         try await Fleet.withHostedView(Text("x"), window: hostWindow) { escaped = $0 }

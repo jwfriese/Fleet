@@ -681,7 +681,9 @@ extension FleetHostedView {
 
     private func captureScreenshot() -> FleetScreenshotEvidence {
         guard context.isActive else { return .unavailable(reason: "the hosting scope has ended") }
-        guard isMounted else { return .unavailable(reason: "the hosted view is not in the window") }
+        // A full-screen presentation detaches the presenting view while the presented interface stays visible.
+        let showsInWindow = isMounted || (!isRemoved && rootViews.contains { $0.window === context.window })
+        guard showsInWindow else { return .unavailable(reason: "the hosted view is not in the window") }
         let window = context.window
         guard window.bounds.width > 0, window.bounds.height > 0 else { return .unavailable(reason: "the window has zero size") }
         var drawn = false
