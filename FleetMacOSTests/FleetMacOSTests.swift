@@ -50,6 +50,20 @@ struct FleetMacOSSwiftTestingTests {
         #expect(!FleetMacOSCoordinator.shared.isHeld)
     }
 
+    @Test func rawContentViewIsRestored() async throws {
+        let window = NSWindow(contentRect: .init(x: 0, y: 0, width: 100, height: 100), styleMask: [.titled], backing: .buffered, defer: false)
+        window.isReleasedWhenClosed = false
+        let original = NSView(frame: .init(x: 0, y: 0, width: 100, height: 100))
+        let button = NSButton(title: "Go", target: nil, action: nil)
+        original.addSubview(button)
+        window.contentView = original
+        try await FleetMacOS.withHostedView(Screen(model: Model()), window: window) { host in
+            try await host.waitForAppearance()
+        }
+        #expect(window.contentView === original)
+        #expect(button.window === window)
+    }
+
     @Test func errorRestoresBorrowedWindow() async throws {
         struct Boom: Error {}
         let window = NSWindow(contentRect: .init(x: 0, y: 0, width: 100, height: 100), styleMask: [.titled], backing: .buffered, defer: false)

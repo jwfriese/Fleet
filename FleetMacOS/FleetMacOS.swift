@@ -112,6 +112,7 @@ public final class FleetMacOSHost {
     private(set) var isActive = true
     private var cleanups: [@MainActor () -> Void] = []
     private var previousContent: NSViewController?
+    private var previousContentView: NSView?
     private var previousContentRect: NSRect = .zero
     private var wasVisible = false
 
@@ -240,6 +241,7 @@ public final class FleetMacOSHost {
 
     func setUp() {
         previousContent = window.contentViewController
+        previousContentView = previousContent == nil ? window.contentView : nil
         previousContentRect = window.frame
         wasVisible = window.isVisible
         window.contentViewController = hostingController
@@ -260,6 +262,10 @@ public final class FleetMacOSHost {
             window.contentViewController = nil
         } else {
             window.contentViewController = previousContent
+            if previousContent == nil, let view = previousContentView {
+                window.contentViewController = nil
+                window.contentView = view
+            }
             window.setFrame(previousContentRect, display: false)
         }
         if appeared {
@@ -283,6 +289,7 @@ public final class FleetMacOSHost {
             window.orderOut(nil)
         }
         previousContent = nil
+        previousContentView = nil
         cleanups.removeAll()
         return failure
     }
