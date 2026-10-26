@@ -64,6 +64,7 @@ def create_project(destination, fixtures, package_url, revision, viewinspector=N
         crop_file = file("CropQueueConsumerTests.swift", "sourcecode.swift")
         household_file = file("HouseholdPlanConsumerTests.swift", "sourcecode.swift")
         presented_file = file("PresentedContentConsumerTests.swift", "sourcecode.swift")
+        meal_drop_file = file("MealDropConsumerTests.swift", "sourcecode.swift")
         scenario_file = file("HostingTraceScenario.swift", "sourcecode.swift")
         baseline_file = file("BaselineTraceTests.swift", "sourcecode.swift")
         storyboard = file(platform + "/Consumer.storyboard", "file.storyboard")
@@ -87,6 +88,7 @@ def create_project(destination, fixtures, package_url, revision, viewinspector=N
                                                                   build_file("crop-queue-build-file", crop_file),
                                                                   build_file("household-plan-build-file", household_file),
                                                                   build_file("presented-content-build-file", presented_file),
+                                                                  build_file("meal-drop-build-file", meal_drop_file),
                                                                   build_file("cases-build-file", cases_file),
                                                                   *([build_file("proof-build-file", proof_file),
                                                                      build_file("scoped-build-file", scoped_file)] if inspector else []),
