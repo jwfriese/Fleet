@@ -114,6 +114,8 @@ public final class FleetMacOSHost {
     private var previousContent: NSViewController?
     private var previousContentView: NSView?
     private var previousContentRect: NSRect = .zero
+    private var previousMinSize: NSSize = .zero
+    private var previousMaxSize: NSSize = .zero
     private var wasVisible = false
 
     init<V: View>(view: V, window: NSWindow?) {
@@ -243,6 +245,8 @@ public final class FleetMacOSHost {
         previousContent = window.contentViewController
         previousContentView = previousContent == nil ? window.contentView : nil
         previousContentRect = window.frame
+        previousMinSize = window.contentMinSize
+        previousMaxSize = window.contentMaxSize
         wasVisible = window.isVisible
         window.contentViewController = hostingController
         if ownsWindow {
@@ -266,6 +270,8 @@ public final class FleetMacOSHost {
                 window.contentViewController = nil
                 window.contentView = view
             }
+            window.contentMinSize = previousMinSize
+            window.contentMaxSize = previousMaxSize
             window.setFrame(previousContentRect, display: false)
         }
         if appeared {

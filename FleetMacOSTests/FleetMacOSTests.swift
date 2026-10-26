@@ -64,6 +64,18 @@ struct FleetMacOSSwiftTestingTests {
         #expect(button.window === window)
     }
 
+    @Test func contentSizeLimitsAreRestored() async throws {
+        let window = NSWindow(contentRect: .init(x: 0, y: 0, width: 100, height: 100), styleMask: [.titled, .resizable], backing: .buffered, defer: false)
+        window.isReleasedWhenClosed = false
+        window.contentMinSize = NSSize(width: 80, height: 60)
+        window.contentMaxSize = NSSize(width: 900, height: 800)
+        try await FleetMacOS.withHostedView(Screen(model: Model()), window: window) { host in
+            try await host.waitForAppearance()
+        }
+        #expect(window.contentMinSize == NSSize(width: 80, height: 60))
+        #expect(window.contentMaxSize == NSSize(width: 900, height: 800))
+    }
+
     @Test func errorRestoresBorrowedWindow() async throws {
         struct Boom: Error {}
         let window = NSWindow(contentRect: .init(x: 0, y: 0, width: 100, height: 100), styleMask: [.titled], backing: .buffered, defer: false)
