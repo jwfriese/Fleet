@@ -51,6 +51,14 @@ Presentation, lifecycle, and focus can complete asynchronously. Wait for the sta
 
 Fleet currently installs Objective-C swizzles in `+load`. The nonisolated Swift installers touch only runtime method tables; instance hooks, associated-object storage, and storyboard bindings are main-actor isolated. Objective-C callers must honor UIKit main-thread requirements. The exception catcher executes closures synchronously on the calling actor. Changes to selectors, initialization, static/dynamic linking, or mocking need hosted integration coverage. Keep any unsafe runtime assumptions explicit and avoid unrelated API redesign during build-tool changes.
 
+Match the voice of the original documentation (`Documentation/UIButton.md`, `UIAlertController.md`, `UITableView.md`) in every new or edited page. These pages are plain, direct and detailed:
+
+- Open with the platforms, then document each method under its own heading with its exact Swift signature in a `swift` code block.
+- State precisely what the call does, in order, and every condition that raises or throws (with the `...OrThrow` failure kind). Name what it deliberately does not do or simulate.
+- Include a runnable `## Example` code block drawn from real tests or fixtures. Prefer concrete code over prose, and link related pages instead of repeating them.
+- Recipes and evidence pages must state what is covered, what is assumed, and what is not claimed, with enough detail (source files, commands, expected outcomes) to reproduce it.
+- Do not ship thin summaries, marketing language, or unverified claims; keep new pages as thorough as the older ones and list them in `Documentation/README.md`.
+
 Keep public API docs and platform exclusions in sync with changes. Do not add generated build output, simulator identifiers, or machine-specific paths to the repository.
 
 Release preparation requires a clean checkout and leaves an unstaged diff for review; do not commit unrelated work to satisfy it. Full release checks also require validated packaging and external consumers. `check --tests-only` cannot produce publication evidence. Never bypass the packaging gate with an empty or always-successful checker.

@@ -12,6 +12,20 @@ Sources: `Integration/PackageConsumer/EnvironmentCasesConsumerTests.swift` (driv
 - `CaseReport.label` is `[case <name> | resolved <FleetEnvironment> | features <availability and injected inputs>]`. The tests put it in every assertion message, and the snapshot adapter prefixes it to the library's failure and names reference and artifact files after the case. A `FleetFailure` raised inside a case is rethrown as `CaseFailure` with the case name and the unchanged underlying failure.
 - Per-feature availability: `contentSizeCategory` and size classes need iOS/tvOS 17 trait overrides (the report states `traitOverrides=`); the tests skip on older runtimes. The large-text case is iOS-only: on tvOS the override did not change the hosted content (identical fitted height and rendering), so it is not claimed there. Window size does not establish safe areas, keyboard geometry or display scale.
 
+### Example
+
+```swift
+let window = try keyWindow()
+let cases = EnvironmentCases.standard.filter { ["light", "large text"].contains($0.name) }
+try await EnvironmentCases.run(cases, window: window) { host, report, _ in
+    let fitted = host.hostingController.sizeThatFits(
+        in: CGSize(width: EnvironmentCases.phone.width, height: .greatestFiniteMagnitude))
+    XCTAssertGreaterThan(fitted.height, 0, report.label)
+}
+```
+
+Each case mounts, runs the body and is torn down before the next one starts. `report.label` in the message identifies the failing case.
+
 ## Injected localization and direction
 
 The cases inject `Locale` and `LayoutDirection` into the SwiftUI tree (`.environment(\.locale, …)`, `.environment(\.layoutDirection, …)`) and pass localized strings explicitly. Nothing changes process-wide language, region or accessibility settings. The UIKit side is **not** changed: the hosting view's `effectiveUserInterfaceLayoutDirection` stays that of the window, and UIKit text, `semanticContentAttribute` and UIKit-only screens would need their own explicit dependencies (a localized bundle or injected strings, and an explicit `semanticContentAttribute`). The examples do not claim UIKit right-to-left behavior.
