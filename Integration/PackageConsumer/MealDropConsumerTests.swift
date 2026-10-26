@@ -54,7 +54,7 @@ struct DropReport: Equatable {
 enum FakeServiceMode: Sendable { case succeed, fail, hang }
 
 @MainActor
-final class FakeMealService {
+final class FakeMealDropService {
     var mode = FakeServiceMode.succeed
     private(set) var commits = 0
     private(set) var started = 0
@@ -81,7 +81,7 @@ final class MealPlanModel: ObservableObject {
     static let daysPerWeek = 7
     @Published private(set) var plan: [MealSlot: [MealPayload]]
     @Published var visibleWeek = 0
-    let service = FakeMealService()
+    let service = FakeMealDropService()
     private(set) var mutations = 0
 
     init(plan: [MealSlot: [MealPayload]]) { self.plan = plan }
