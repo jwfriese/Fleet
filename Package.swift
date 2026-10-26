@@ -12,11 +12,13 @@ let runtimeSources = [
 
 let package = Package(
     name: "Fleet",
-    platforms: [.iOS(.v15), .tvOS(.v15)],
+    platforms: [.iOS(.v15), .tvOS(.v15), .macOS(.v13)],
     products: [
         // Retain the Objective-C categories and their existing +load activation
         // in a single dynamic product. External hosted tests verify the hooks.
         .library(name: "Fleet", type: .dynamic, targets: ["Fleet"]),
+        // Test-only macOS SwiftUI hosting. Independent of UIKit and the Objective-C runtime hooks.
+        .library(name: "FleetMacOS", targets: ["FleetMacOS"]),
     ],
     targets: [
         .target(
@@ -34,6 +36,8 @@ let package = Package(
             sources: ["Fleet.swift", "CoreExtensions", "Error", "Hosting", "Logging", "Mocking", "Screen", "ObjC/Swizzle.swift"],
             resources: [.copy("Script/copy_storyboard_info_files.sh")]
         ),
+        .target(name: "FleetMacOS", path: "FleetMacOS"),
+        .testTarget(name: "FleetMacOSTests", dependencies: ["FleetMacOS"], path: "FleetMacOSTests"),
     ],
     swiftLanguageModes: [.v6]
 )
