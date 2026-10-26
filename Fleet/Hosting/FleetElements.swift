@@ -173,11 +173,9 @@ extension FleetHostedView {
 
     /// The single mounted element with `id`. Throws `.invalidInput` if none or several are mounted.
     public func element(_ id: String, action: String = "observe element", fileID: String = #fileID, line: UInt = #line) throws -> FleetElementObservation {
-        do {
+        try attributingSync(fileID, line) {
             try requireActive(action)
             return try resolve(id, action: action).observation
-        } catch let failure as FleetFailure {
-            throw failure.attributed(to: FleetSourceLocation(fileID: fileID, line: line))
         }
     }
 
@@ -196,8 +194,9 @@ extension FleetHostedView {
         fileID: String = #fileID, line: UInt = #line
     ) throws {
         let action = "perform '\(actionName)'" + (surface.map { " via \($0.rawValue)" } ?? "")
-        do {
+        try attributingSync(fileID, line) {
             try requireActive(action)
+            recordAction(action + " on element '\(id)'")
             let record = try resolve(id, action: action)
             let matches = record.actions.filter { $0.name == actionName && (surface == nil || $0.surface == surface) }
             guard let found = matches.first else {
@@ -228,14 +227,13 @@ extension FleetHostedView {
                 )
             }
             found.perform()
-        } catch let failure as FleetFailure {
-            throw failure.attributed(to: FleetSourceLocation(fileID: fileID, line: line))
+            trace?.append("performed \(action) on element '\(id)'")
         }
     }
 
     /// Waits (bounded) until exactly the element `id` is mounted.
     public func waitForElement(_ id: String, timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
-        try await fleetAttributing(fileID, line) {
+        try await attributing(fileID, line) {
             try requireActive("wait for element")
             try await context.waitUntil("element '\(id)' to be mounted (mounted: \(self.mountedElementIDs))", timeout: timeout) {
                 self.elements.records.filter { $0.id == id }.count == 1
@@ -245,7 +243,7 @@ extension FleetHostedView {
 
     /// Waits (bounded) until no element `id` is mounted.
     public func waitForElementRemoval(_ id: String, timeout: TimeInterval = 5, fileID: String = #fileID, line: UInt = #line) async throws {
-        try await fleetAttributing(fileID, line) {
+        try await attributing(fileID, line) {
             try requireActive("wait for element removal")
             try await context.waitUntil("element '\(id)' to be removed (mounted: \(self.mountedElementIDs))", timeout: timeout) {
                 !self.elements.records.contains { $0.id == id }
