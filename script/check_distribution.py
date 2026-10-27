@@ -1,4 +1,4 @@
-"""Run real, external Git-pinned SwiftPM consumers in iOS and tvOS hosts."""
+"""Run real, external Git-pinned SwiftPM consumers: Fleet in iOS/tvOS hosts and FleetMacOS on macOS."""
 
 import argparse
 from datetime import datetime, timezone
@@ -11,7 +11,7 @@ import subprocess
 import sys
 import tempfile
 
-from consumer_project import create_project
+from consumer_project import create_macos_project, create_project
 from importlib.util import spec_from_file_location, module_from_spec
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -99,6 +99,46 @@ def verify_inspector_suites(output, required):
             "swift_testing_suites": sorted(swift_testing), "xctest_classes": sorted(xctest)}
 
 
+def framework_counts(output):
+    """Actual per-framework counts: XCTest's executed total and Swift Testing's run total, both required nonempty."""
+    xctest = re.findall(r"Executed (\d+) tests?, with (\d+) failures?", output)
+    swift_testing = re.findall(r"Test run with (\d+) tests?(?: in \d+ suites?)? passed", output)
+    if (not xctest or int(xctest[-1][0]) == 0 or any(int(failures) for _, failures in xctest)
+            or not swift_testing or int(swift_testing[-1]) == 0
+            or "** TEST SUCCEEDED **" not in output or re.search(r"Test run with \d+ tests?.* failed", output)):
+        raise DistributionError("The macOS consumer did not execute successful, nonempty XCTest and Swift Testing suites.")
+    return {"xctest": int(xctest[-1][0]), "swift_testing": int(swift_testing[-1])}
+
+
+FORBIDDEN_LINKS = ("UIKit", "libFleet", "Fleet.framework", "FleetRuntime", "Fleet.o")
+
+
+def verify_link_graph(products, bundle):
+    """FleetMacOS must stay independent of UIKit, the Fleet product and the FleetRuntime hooks.
+
+    Inspects the built test bundle's load commands and the SwiftPM intermediates for the selected build."""
+    binaries = [path for path in bundle.rglob("*") if path.is_file() and not path.is_symlink()
+                and "Contents/MacOS" in path.as_posix()]
+    if not binaries:
+        raise DistributionError("The macOS consumer bundle has no executable to inspect.")
+    for binary in binaries:
+        listing = subprocess.run(["otool", "-L", str(binary)], text=True, capture_output=True)
+        if listing.returncode:
+            raise DistributionError(f"Could not inspect load commands of {binary.name}.")
+        for forbidden in FORBIDDEN_LINKS:
+            if forbidden in listing.stdout:
+                raise DistributionError(f"The macOS consumer links {forbidden}; FleetMacOS must not.")
+        symbols = subprocess.run(["nm", "-u", str(binary)], text=True, capture_output=True).stdout
+        if "_OBJC_CLASS_$_UI" in symbols or "FleetRuntime" in symbols:
+            raise DistributionError("The macOS consumer references UIKit or FleetRuntime symbols.")
+    built = sorted(path.name for path in products.rglob("*") if path.suffix in (".o", ".swiftmodule", ".framework", ".dylib")
+                   and any(name in path.name for name in ("FleetRuntime", "Fleet.", "libFleet")) and "FleetMacOS" not in path.name)
+    if built:
+        raise DistributionError(f"The macOS consumer build produced Fleet iOS-product artifacts: {built[:3]}")
+    return sorted({line.split()[0] for binary in binaries for line in
+                   subprocess.run(["otool", "-L", str(binary)], text=True, capture_output=True).stdout.splitlines()[1:] if line.strip()})
+
+
 def compare_traces(baseline, legacy, preserve):
     """Check recorded UIKit traces from fresh processes: the no-Fleet baseline, legacy and preserve-timing Fleet."""
     if not baseline or not any(event.endswith("animated: true)") for event in baseline):
@@ -139,6 +179,10 @@ def snapshot(root, destination):
     shutil.copy2(root / "Package.swift", destination)
     shutil.copy2(root / "LICENSE", destination)
     shutil.copytree(root / "Fleet", destination / "Fleet")
+    # The manifest declares the macOS product and its test target, so their directories must exist.
+    for name in ("FleetMacOS", "FleetMacOSTests"):
+        if (root / name).is_dir():
+            shutil.copytree(root / name, destination / name)
     git(destination, "init", "-q")
     git(destination, "add", ".")
     git(destination, "-c", "user.name=Fleet consumer fixture", "-c", "user.email=fixture@example.invalid",
@@ -180,10 +224,15 @@ def check(root, platform="all", allow_dirty=False, viewinspector=False, snapshot
     policy_counts = {}
     inspector_results = {}
     required = required_inspector_suites(root) if viewinspector else None
-    platforms = ("ios", "tvos") if platform == "all" else (platform,)
+    platforms = ("ios", "tvos", "macos") if platform == "all" else (platform,)
+    macos_counts = None
+    macos_links = None
     for selected in platforms:
         directory = run / selected
         directory.mkdir()
+        if selected == "macos":
+            macos_counts, macos_links = check_macos(root, run, directory, package_url, revision)
+            continue
         scheme = "Consumer-" + selected
         base = ["xcodebuild", "-project", project, "-scheme", scheme,
                 "-clonedSourcePackagesDirPath", packages]
@@ -247,6 +296,8 @@ def check(root, platform="all", allow_dirty=False, viewinspector=False, snapshot
         raise DistributionError("The source checkout changed during consumer validation.")
     evidence = {"schema": 1, "source_commit": commit, "package_revision": revision,
                 "development_snapshot": allow_dirty, "tests": counts, "preserve_timing_tests": policy_counts,
+                "macos_tests": macos_counts, "macos_linked_libraries": macos_links,
+                "products": [name for name, ran in (("Fleet", bool(counts)), ("FleetMacOS", macos_counts is not None)) if ran],
                 "optional_integrations": [name for name, on in (("viewinspector", viewinspector), ("snapshottesting", snapshottesting)) if on],
                 "framework_results": inspector_results,
                 "resolved_revisions": {"fleet": revision, **({"viewinspector": VIEWINSPECTOR_REVISION} if viewinspector else {}),
@@ -258,9 +309,39 @@ def check(root, platform="all", allow_dirty=False, viewinspector=False, snapshot
     print(f"Fleet: external consumer tests passed: legacy {counts}, preserve-timing {policy_counts}. Evidence: {run / 'validation.json'}")
 
 
+def check_macos(root, run, directory, package_url, revision):
+    """Build and run the independent macOS consumer of the FleetMacOS product at the exact package revision."""
+    project = create_macos_project(run / "MacOSConsumer", root / "Integration/MacOSConsumer", package_url, revision)
+    packages = run / "SourcePackages-macos"
+    base = ["xcodebuild", "-project", project, "-scheme", "MacOSConsumer", "-clonedSourcePackagesDirPath", packages]
+    logged_run(root, directory / "resolve.log", [*base, "-resolvePackageDependencies"])
+    lockfile = project / "project.xcworkspace/xcshareddata/swiftpm/Package.resolved"
+    try:
+        revisions = sorted(pin["state"]["revision"] for pin in json.loads(lockfile.read_text())["pins"])
+    except (OSError, KeyError, ValueError) as error:
+        raise DistributionError("Missing or invalid macOS consumer package lockfile.") from error
+    if revisions != [revision]:
+        raise DistributionError("macOS consumer resolution did not pin the exact package revision.")
+    shutil.copy2(lockfile, directory / "Package.resolved")
+    derived = run / "DerivedData" / "macos"
+    output = logged_run(root, directory / "xcodebuild.log", [*base, "test",
+        "-destination", os.environ.get("FLEET_TEST_DESTINATION") or "platform=macOS", "-derivedDataPath", derived,
+        "-onlyUsePackageVersionsFromResolvedFile", "-parallel-testing-enabled", "NO",
+        "-test-timeouts-enabled", "YES", "-default-test-execution-time-allowance", "30",
+        "-maximum-test-execution-time-allowance", "60", "CODE_SIGNING_ALLOWED=NO",
+        "-resultBundlePath", directory / "TestResults.xcresult"])
+    counts = framework_counts(output)
+    bundles = list((derived / "Build/Products").glob("*/MacOSConsumerTests.xctest"))
+    if len(bundles) != 1:
+        raise DistributionError("Expected exactly one built macOS consumer bundle.")
+    links = verify_link_graph(derived / "Build", bundles[0])
+    (directory / "link-graph.json").write_text(json.dumps({"linked_libraries": links, "forbidden": list(FORBIDDEN_LINKS)}, indent=2) + "\n")
+    return counts, links
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("platform", nargs="?", choices=("ios", "tvos", "all"), default="all")
+    parser.add_argument("platform", nargs="?", choices=("ios", "tvos", "macos", "all"), default="all")
     parser.add_argument("--allow-dirty", action="store_true", help="Test a development snapshot; does not certify a release")
     parser.add_argument("--with-viewinspector", action="store_true",
                         help="Compile the pinned optional ViewInspector proof and scoped-control suites into the consumer test target (default; kept for compatibility)")

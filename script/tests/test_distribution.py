@@ -183,3 +183,34 @@ else:
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class MacOSFrameworkCountTests(unittest.TestCase):
+    PASSED = ("Executed 10 tests, with 0 failures (0 unexpected)\n"
+              "Test run with 4 tests in 1 suite passed after 0.5 seconds.\n** TEST SUCCEEDED **")
+
+    def test_reports_actual_counts_per_framework(self):
+        self.assertEqual(checker.framework_counts(self.PASSED), {"xctest": 10, "swift_testing": 4})
+
+    def test_each_framework_must_run_a_nonempty_successful_suite(self):
+        for output in ("** TEST SUCCEEDED **",
+                       self.PASSED.replace("Test run with 4 tests in 1 suite passed", "Test run with 0 tests in 0 suites passed"),
+                       self.PASSED.split("\n")[0] + "\n** TEST SUCCEEDED **",
+                       self.PASSED.replace("Executed 10 tests", "Executed 0 tests"),
+                       self.PASSED.replace("0 failures", "1 failure"),
+                       self.PASSED.replace("passed after", "failed after"),
+                       self.PASSED.replace("** TEST SUCCEEDED **", "")):
+            with self.subTest(output=output), self.assertRaises(checker.DistributionError):
+                checker.framework_counts(output)
+
+    def test_generated_macos_project_depends_only_on_the_fleetmacos_product(self):
+        import plistlib
+        from consumer_project import create_macos_project
+        project = create_macos_project(Path(tempfile.mkdtemp(prefix="macos consumer ")) / "Consumer",
+                                       REPO / "Integration/MacOSConsumer", "file:///package", "a" * 40)
+        objects = plistlib.loads((project / "project.pbxproj").read_bytes())["objects"].values()
+        products = [o["productName"] for o in objects if o["isa"] == "XCSwiftPackageProductDependency"]
+        self.assertEqual(products, ["FleetMacOS"])
+        settings = [o["buildSettings"] for o in objects if o["isa"] == "XCBuildConfiguration" and "SDKROOT" in o["buildSettings"]]
+        self.assertTrue(all(s["SDKROOT"] == "macosx" and s["MACOSX_DEPLOYMENT_TARGET"] == "13.0" for s in settings))
+        self.assertTrue((project / "xcshareddata/xcschemes/MacOSConsumer.xcscheme").is_file())

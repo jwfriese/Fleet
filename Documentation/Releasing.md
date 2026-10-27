@@ -4,7 +4,7 @@ Fleet releases use three separate commands: prepare a diff, validate a committed
 
 ## Current readiness
 
-`Package.swift` and the executable `script/check-distribution` are now available. The checker resolves the exact committed revision through a Git-pinned SwiftPM dependency and runs external iOS and tvOS consumers. Publication still requires a successful full release check with finished release notes, matching version metadata, and successful CI for the release commit; the framework suite alone cannot certify distribution.
+`Package.swift` and the executable `script/check-distribution` are now available. The checker resolves the exact committed revision through a Git-pinned SwiftPM dependency and runs external iOS and tvOS consumers of `Fleet` and an external macOS consumer of the `FleetMacOS` product, so both public products are covered by the receipt (`products`, `macos_tests`). `script/check-distribution ios` or `tvos` still run one platform only. Publication still requires a successful full release check with finished release notes, matching version metadata, and successful CI for the release commit; the framework suite alone cannot certify distribution.
 
 The [compatibility policy](Compatibility.md) selects iOS/tvOS 15 and SwiftPM for the next major release. CocoaPods, Carthage, and direct integration remain historical 4.x routes. CocoaPods trunk publication is not part of this workflow; the old Go publisher has been removed. The podspec's version and platform settings are still maintained so repository metadata stays consistent. [SwiftPM setup](Installation/SwiftPM.md) covers the distributed product and storyboard resources.
 

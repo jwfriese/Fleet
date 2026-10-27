@@ -188,3 +188,79 @@ def create_project(destination, fixtures, package_url, revision, viewinspector=N
     (project / "project.pbxproj").write_bytes(plistlib.dumps({"archiveVersion": "1", "classes": {},
         "objectVersion": "56", "objects": objects, "rootObject": root}, sort_keys=False))
     return project
+
+
+MACOS_SOURCES = ("MacOSFixtures.swift", "MacOSXCTestConsumerTests.swift", "MacOSSwiftTestingConsumerTests.swift")
+
+
+def create_macos_project(destination, fixtures, package_url, revision):
+    """Generate a standalone macOS test-bundle project depending only on the Git-pinned FleetMacOS product."""
+    destination = Path(destination)
+    shutil.copytree(fixtures, destination / "Sources")
+    project = destination / "MacOSConsumer.xcodeproj"
+    schemes = project / "xcshareddata/xcschemes"
+    schemes.mkdir(parents=True)
+    objects = {}
+
+    def add(identifier, isa, **fields):
+        key = hashlib.sha256(("macos" + identifier).encode()).hexdigest()[:24].upper()
+        objects[key] = {"isa": isa, **fields}
+        return key
+
+    package = add("package", "XCRemoteSwiftPackageReference", repositoryURL=package_url,
+                  requirement={"kind": "revision", "revision": revision})
+    products = add("products", "PBXGroup", children=[], name="Products", sourceTree="<group>")
+    main = add("main", "PBXGroup", children=[products], sourceTree="<group>")
+    files = []
+    for name in MACOS_SOURCES:
+        reference = add(name, "PBXFileReference", path="Sources/" + name,
+                        lastKnownFileType="sourcecode.swift", sourceTree="<group>")
+        objects[main]["children"].append(reference)
+        files.append(add(name + "-build", "PBXBuildFile", fileRef=reference))
+    product = add("test-product", "PBXFileReference", explicitFileType="wrapper.cfbundle",
+                  path="MacOSConsumerTests.xctest", sourceTree="BUILT_PRODUCTS_DIR")
+    objects[products]["children"].append(product)
+    settings = {"SWIFT_VERSION": "6.0", "SDKROOT": "macosx", "MACOSX_DEPLOYMENT_TARGET": "13.0",
+                "CODE_SIGNING_ALLOWED": "NO", "GENERATE_INFOPLIST_FILE": "YES", "SWIFT_OPTIMIZATION_LEVEL": "-Onone",
+                "ONLY_ACTIVE_ARCH": "YES", "PRODUCT_NAME": "MacOSConsumerTests",
+                "PRODUCT_MODULE_NAME": "MacOSConsumerTests", "PRODUCT_BUNDLE_IDENTIFIER": "org.fleet.consumer.tests.macos",
+                "LD_RUNPATH_SEARCH_PATHS": ["$(inherited)", "@executable_path/../Frameworks", "@loader_path/../Frameworks"]}
+
+    def configurations(name, build_settings):
+        entries = [add(name + mode, "XCBuildConfiguration", name=mode, buildSettings={**build_settings})
+                   for mode in ("Debug", "Release")]
+        return add(name + "configuration-list", "XCConfigurationList", buildConfigurations=entries,
+                   defaultConfigurationIsVisible="0", defaultConfigurationName="Debug")
+
+    def phase(identifier, isa, **fields):
+        return add(identifier, isa, buildActionMask="2147483647", runOnlyForDeploymentPostprocessing="0", **fields)
+
+    dependency = add("dependency", "XCSwiftPackageProductDependency", package=package, productName="FleetMacOS")
+    link = add("link", "PBXBuildFile", productRef=dependency)
+    test = add("test", "PBXNativeTarget", name="MacOSConsumerTests", productName="MacOSConsumerTests",
+               productReference=product, productType="com.apple.product-type.bundle.unit-test",
+               buildConfigurationList=configurations("test", settings),
+               buildPhases=[phase("sources", "PBXSourcesBuildPhase", files=files),
+                            phase("frameworks", "PBXFrameworksBuildPhase", files=[link])],
+               buildRules=[], dependencies=[], packageProductDependencies=[dependency])
+    root = add("project", "PBXProject", attributes={"LastUpgradeCheck": "2660"},
+               buildConfigurationList=configurations("project", {}), compatibilityVersion="Xcode 14.0",
+               developmentRegion="en", knownRegions=["en", "Base"], mainGroup=main,
+               productRefGroup=products, projectDirPath="", projectRoot="", targets=[test],
+               packageReferences=[package])
+    (project / "project.pbxproj").write_bytes(plistlib.dumps({"archiveVersion": "1", "classes": {},
+        "objectVersion": "56", "objects": objects, "rootObject": root}, sort_keys=False))
+    reference = (f'<BuildableReference BuildableIdentifier="primary" BlueprintIdentifier="{test}" '
+                 'BuildableName="MacOSConsumerTests.xctest" BlueprintName="MacOSConsumerTests" '
+                 'ReferencedContainer="container:MacOSConsumer.xcodeproj"/>')
+    (schemes / "MacOSConsumer.xcscheme").write_text(f'''<?xml version="1.0" encoding="UTF-8"?>
+<Scheme LastUpgradeVersion="2660" version="1.3">
+  <BuildAction parallelizeBuildables="YES" buildImplicitDependencies="YES"><BuildActionEntries>
+    <BuildActionEntry buildForTesting="YES" buildForRunning="NO" buildForProfiling="NO" buildForArchiving="NO" buildForAnalyzing="YES">{reference}</BuildActionEntry>
+  </BuildActionEntries></BuildAction>
+  <TestAction buildConfiguration="Debug" selectedDebuggerIdentifier="Xcode.DebuggerFoundation.Debugger.LLDB" selectedLauncherIdentifier="Xcode.IDEFoundation.Launcher.LLDB" shouldUseLaunchSchemeArgsEnv="YES"><Testables><TestableReference skipped="NO" parallelizable="NO">{reference}</TestableReference></Testables></TestAction>
+  <LaunchAction buildConfiguration="Debug" selectedDebuggerIdentifier="Xcode.DebuggerFoundation.Debugger.LLDB" selectedLauncherIdentifier="Xcode.IDEFoundation.Launcher.LLDB" launchStyle="0"/>
+  <AnalyzeAction buildConfiguration="Debug"/><ArchiveAction buildConfiguration="Release" revealArchiveInOrganizer="YES"/>
+</Scheme>
+''')
+    return project
