@@ -31,13 +31,72 @@ def git(root, *args):
     return result.stdout.strip()
 
 
+def xctest_summaries(output):
+    """(tests, failures) pairs from XCTest summaries, including the form with skipped tests."""
+    return re.findall(r"Executed (\d+) tests?, with (?:\d+ tests? skipped and )?(\d+) failures?", output)
+
+
 def successful_test_count(output):
-    summaries = re.findall(r"Executed (\d+) tests?, with (\d+) failures?", output)
+    summaries = xctest_summaries(output)
     if (not summaries or int(summaries[-1][0]) == 0
             or any(int(failures) for _, failures in summaries)
             or "** TEST SUCCEEDED **" not in output):
         raise DistributionError("Consumer did not execute a successful, nonempty test suite.")
     return int(summaries[-1][0])
+
+
+INSPECTOR_DIRECTORY = "Integration/PackageConsumer/ViewInspector"
+INSPECTOR_FILES = ("ViewInspectorProofTests.swift", "ScopedInspectionTests.swift")
+
+
+def required_inspector_suites(root):
+    """Named suites and test functions the optional integration must run, read from the fixture sources."""
+    swift_testing, xctest = {}, {}
+    for name in INSPECTOR_FILES:
+        text = (root / INSPECTOR_DIRECTORY / name).read_text()
+        for title, body in re.findall(r'@Suite\("([^"]+)"\)\s*struct \w+ \{(.*?)(?=\n\}\n)', text, re.S):
+            swift_testing[title] = re.findall(r"@Test func (\w+)\(", body)
+        for cls, body in re.findall(r"final class (\w+): XCTestCase \{(.*?)(?=\n\}\n)", text, re.S):
+            xctest[cls] = re.findall(r"func (test\w*)\(", body)
+    if not swift_testing or any(not tests for tests in [*swift_testing.values(), *xctest.values()]):
+        raise DistributionError("The ViewInspector fixture declares no nonempty required suites.")
+    return swift_testing, xctest
+
+
+def framework_results(output):
+    """Separate XCTest and Swift Testing results parsed from one xcodebuild log."""
+    summaries = xctest_summaries(output)
+    runs = re.findall(r"Test run with (\d+) tests?(?: in (\d+) suites?)? (passed|failed)", output)
+    return {
+        "xctest": {"tests": int(summaries[-1][0]) if summaries else 0,
+                   "failures": sum(int(failures) for _, failures in summaries)},
+        "swift_testing": {"tests": int(runs[-1][0]) if runs else 0,
+                          "suites": int(runs[-1][1] or 0) if runs else 0,
+                          "passed": bool(runs) and all(status == "passed" for *_, status in runs)},
+        "xctest_passed": set(re.findall(r"Test Case '-\[\S+?\.(\w+) (\w+)\]' passed", output)),
+        "swift_testing_passed_tests": set(re.findall(r"Test (\w+)\(\) passed", output)),
+        "swift_testing_passed_suites": set(re.findall(r'Suite "([^"]+)" passed', output)),
+    }
+
+
+def verify_inspector_suites(output, required):
+    """Fail unless every named integration suite and test passed in this log (absent, filtered or empty is a failure)."""
+    swift_testing, xctest = required
+    results = framework_results(output)
+    for title, tests in swift_testing.items():
+        if title not in results["swift_testing_passed_suites"]:
+            raise DistributionError(f"Required Swift Testing suite did not run and pass: {title}")
+        for test in tests:
+            if test not in results["swift_testing_passed_tests"]:
+                raise DistributionError(f"Required Swift Testing test did not run and pass: {title}: {test}")
+    for cls, tests in xctest.items():
+        for test in tests:
+            if (cls, test) not in results["xctest_passed"]:
+                raise DistributionError(f"Required XCTest did not run and pass: {cls}.{test}")
+    if not results["swift_testing"]["passed"] or results["swift_testing"]["tests"] < sum(map(len, swift_testing.values())):
+        raise DistributionError("Swift Testing run summary is missing, failed or smaller than the required suites.")
+    return {"swift_testing": results["swift_testing"], "xctest": results["xctest"],
+            "swift_testing_suites": sorted(swift_testing), "xctest_classes": sorted(xctest)}
 
 
 def compare_traces(baseline, legacy, preserve):
@@ -119,6 +178,8 @@ def check(root, platform="all", allow_dirty=False, viewinspector=False, snapshot
     packages = run / "SourcePackages"
     counts = {}
     policy_counts = {}
+    inspector_results = {}
+    required = required_inspector_suites(root) if viewinspector else None
     platforms = ("ios", "tvos") if platform == "all" else (platform,)
     for selected in platforms:
         directory = run / selected
@@ -167,6 +228,12 @@ def check(root, platform="all", allow_dirty=False, viewinspector=False, snapshot
             output = logged_run(root, directory / f"xcodebuild{suffix}.log", [*base, *test_arguments,
                 "-resultBundlePath", directory / f"TestResults{suffix}.xcresult"], {**trace_env, **(extra_env or {})})
             count = successful_test_count(output)
+            framework = framework_results(output)
+            if required:
+                inspector_results.setdefault(selected, {})[policy] = verify_inspector_suites(output, required)
+            else:
+                inspector_results.setdefault(selected, {})[policy] = {
+                    "swift_testing": framework["swift_testing"], "xctest": framework["xctest"]}
             if policy == "legacy":
                 counts[selected] = count
             else:
@@ -180,6 +247,10 @@ def check(root, platform="all", allow_dirty=False, viewinspector=False, snapshot
         raise DistributionError("The source checkout changed during consumer validation.")
     evidence = {"schema": 1, "source_commit": commit, "package_revision": revision,
                 "development_snapshot": allow_dirty, "tests": counts, "preserve_timing_tests": policy_counts,
+                "optional_integrations": [name for name, on in (("viewinspector", viewinspector), ("snapshottesting", snapshottesting)) if on],
+                "framework_results": inspector_results,
+                "resolved_revisions": {"fleet": revision, **({"viewinspector": VIEWINSPECTOR_REVISION} if viewinspector else {}),
+                                       **({"snapshottesting": SNAPSHOTTESTING_REVISION} if snapshottesting else {})},
                 "viewinspector_revision": VIEWINSPECTOR_REVISION if viewinspector else None,
                 "snapshottesting_revision": SNAPSHOTTESTING_REVISION if snapshottesting else None,
                 "validated_at": datetime.now(timezone.utc).isoformat()}
@@ -192,14 +263,17 @@ def main():
     parser.add_argument("platform", nargs="?", choices=("ios", "tvos", "all"), default="all")
     parser.add_argument("--allow-dirty", action="store_true", help="Test a development snapshot; does not certify a release")
     parser.add_argument("--with-viewinspector", action="store_true",
-                        help="Also compile the optional ViewInspector compatibility proof into the consumer test target")
+                        help="Compile the pinned optional ViewInspector proof and scoped-control suites into the consumer test target (default; kept for compatibility)")
+    parser.add_argument("--without-viewinspector", action="store_true",
+                        help="Skip the optional ViewInspector integration, so the consumer does not resolve that package")
     parser.add_argument("--with-snapshottesting", action="store_true",
                         help="Compile the optional SnapshotTesting adapter and named-environment snapshot tests into the consumer test target (default; kept for compatibility)")
     parser.add_argument("--without-snapshottesting", action="store_true",
                         help="Skip the optional SnapshotTesting adapter and snapshot tests, so the consumer does not resolve that package")
     args = parser.parse_args()
     try:
-        check(ROOT, args.platform, args.allow_dirty, args.with_viewinspector,
+        check(ROOT, args.platform, args.allow_dirty,
+              args.with_viewinspector or not args.without_viewinspector,
               args.with_snapshottesting or not args.without_snapshottesting)
     except (DistributionError, ValueError, subprocess.SubprocessError, OSError) as error:
         print(f"Fleet distribution validation failed: {error}", file=sys.stderr)

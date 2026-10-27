@@ -25,7 +25,7 @@ Only the combinations below were exercised; arbitrary upstream compatibility is 
 | --- | --- | --- |
 | Fleet | the exact committed revision under test | `script/check-distribution` |
 | Nimble | the revision pinned in `Package.resolved` | `script/test` |
-| ViewInspector (optional) | release 0.10.5, `2dacb6e514be19379c605a5a11564d0f3fea89d9` | `script/check-distribution --with-viewinspector` |
+| ViewInspector (optional) | release 0.10.5, `2dacb6e514be19379c605a5a11564d0f3fea89d9` | `script/check-distribution` (on by default; `--without-viewinspector` opts out) |
 | Toolchain and runtimes | Xcode 26.6, Swift 6.3.3, iOS and tvOS 26.5 simulators | `script/test all` |
 
 SwiftUI scoped hosting is verified on those runtimes; `NavigationStack` observation requires iOS 16 and is iOS only. See the [pilot support matrix](SwiftUIPilot.md#per-platform-support-matrix).

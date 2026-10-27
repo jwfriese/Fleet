@@ -40,13 +40,12 @@ import json, os, pathlib, plistlib, sys
 project = pathlib.Path(sys.argv[sys.argv.index('-project') + 1])
 if '-resolvePackageDependencies' in sys.argv:
     data = plistlib.loads((project / 'project.pbxproj').read_bytes())
-    dependency = next(o for o in data['objects'].values() if o['isa'] == 'XCRemoteSwiftPackageReference')
-    revision = dependency['requirement']['revision']
+    revisions = [o['requirement']['revision'] for o in data['objects'].values() if o['isa'] == 'XCRemoteSwiftPackageReference']
     if os.environ.get('FLEET_FAKE_WRONG_PIN'):
-        revision = '0' * 40
+        revisions = ['0' * 40]
     lock = project / 'project.xcworkspace/xcshareddata/swiftpm/Package.resolved'
     lock.parent.mkdir(parents=True, exist_ok=True)
-    lock.write_text(json.dumps({'pins': [{'state': {'revision': revision}}]}))
+    lock.write_text(json.dumps({'pins': [{'state': {'revision': r}} for r in revisions]}))
 else:
     out = os.environ.get('TEST_RUNNER_FLEET_TRACE_OUT')
     if out:
@@ -67,9 +66,21 @@ else:
         self.environment = {"PATH": str(fake_bin) + os.pathsep + os.environ["PATH"],
                             "FLEET_TEST_DESTINATION": "id=consumer-fixture"}
 
-    def check(self, allow_dirty=False):
+    def check(self, allow_dirty=False, viewinspector=False):
         with patch.dict(os.environ, self.environment), contextlib.redirect_stdout(io.StringIO()):
-            checker.check(self.root, "ios", allow_dirty)
+            checker.check(self.root, "ios", allow_dirty, viewinspector)
+
+    def inspector_log(self, skip_suite=None, skip_test=None, skip_xctest=None, run_total=12, status="passed"):
+        swift_testing, xctest = checker.required_inspector_suites(self.root)
+        lines = ["Executed 8 tests, with 0 failures"]
+        for title, tests in swift_testing.items():
+            if title != skip_suite:
+                lines += [f"\u2714 Test {t}() passed after 0.1 seconds." for t in tests if t != skip_test]
+                lines.append(f'\u2714 Suite "{title}" passed after 0.1 seconds.')
+        for cls, tests in xctest.items():
+            lines += [f"Test Case '-[Consumer.{cls} {t}]' passed (0.1 seconds)." for t in tests if t != skip_xctest]
+        lines += [f"\u2714 Test run with {run_total} tests in 3 suites {status} after 0.5 seconds.", "** TEST SUCCEEDED **"]
+        return "\n".join(lines)
 
     def evidence(self):
         return list((self.root / "build").glob("distribution-*/validation.json"))
@@ -124,6 +135,50 @@ else:
                 with self.assertRaisesRegex(checker.DistributionError, "nonempty test suite"):
                     self.check()
                 self.assertEqual(self.evidence(), [])
+
+    def test_viewinspector_run_records_each_framework_and_the_integration(self):
+        self.environment["FLEET_FAKE_TEST_OUTPUT"] = self.inspector_log()
+        self.check(viewinspector=True)
+        evidence = json.loads(self.evidence()[0].read_text())
+        self.assertEqual(evidence["optional_integrations"], ["viewinspector"])
+        self.assertEqual(evidence["resolved_revisions"]["viewinspector"], checker.VIEWINSPECTOR_REVISION)
+        recorded = evidence["framework_results"]["ios"]["legacy"]
+        self.assertEqual(recorded["xctest"], {"tests": 8, "failures": 0})
+        self.assertEqual(recorded["swift_testing"]["tests"], 12)
+        self.assertIn("Row-scoped ViewInspector queries (Swift Testing)", recorded["swift_testing_suites"])
+
+    def test_missing_filtered_or_empty_integration_suites_cannot_produce_evidence(self):
+        swift_testing, xctest = checker.required_inspector_suites(self.root)
+        suite = "Row-scoped ViewInspector queries (Swift Testing)"
+        cases = {
+            "suite absent": (self.inspector_log(skip_suite=suite), "Swift Testing suite did not run"),
+            "test filtered out": (self.inspector_log(skip_test=swift_testing[suite][0]), "Swift Testing test did not run"),
+            "xctest filtered out": (self.inspector_log(skip_xctest=next(iter(xctest.values()))[0]), "XCTest did not run"),
+            "zero swift tests": ("Executed 8 tests, with 0 failures\n** TEST SUCCEEDED **", "Swift Testing suite did not run"),
+            "summary too small": (self.inspector_log(run_total=1), "smaller than the required suites"),
+            "failed run": (self.inspector_log(status="failed"), "missing, failed or smaller"),
+        }
+        for name, (output, message) in cases.items():
+            with self.subTest(name):
+                self.environment["FLEET_FAKE_TEST_OUTPUT"] = output
+                with self.assertRaisesRegex(checker.DistributionError, message):
+                    self.check(viewinspector=True)
+                self.assertEqual(self.evidence(), [])
+
+    def test_skipped_test_summaries_report_the_aggregate_total(self):
+        log = ("Executed 1 test, with 0 failures (0 unexpected)\n"
+               "Executed 61 tests, with 1 test skipped and 0 failures (0 unexpected)\n"
+               "Test run with 31 tests in 2 suites passed\n** TEST SUCCEEDED **")
+        self.assertEqual(checker.successful_test_count(log), 61)
+        self.assertEqual(checker.framework_results(log)["xctest"], {"tests": 61, "failures": 0})
+        failing = "Executed 61 tests, with 1 test skipped and 2 failures (0 unexpected)\n** TEST SUCCEEDED **"
+        with self.assertRaises(checker.DistributionError):
+            checker.successful_test_count(failing)
+
+    def test_required_suites_come_from_the_fixture_sources(self):
+        swift_testing, xctest = checker.required_inspector_suites(REPO)
+        self.assertEqual(len(swift_testing), 2)
+        self.assertTrue(all(swift_testing.values()) and all(xctest.values()))
 
 
 if __name__ == "__main__":

@@ -12,7 +12,20 @@ Fleet offers no SwiftUI inspection API. This page records an executable proof of
 | Test frameworks | XCTest and Swift Testing, both in the same consumer test bundle |
 | Result | iOS 30 XCTest + 16 Swift Testing tests, tvOS 29 + 16, all passing (the proof adds 1 XCTest and 6 Swift Testing tests) |
 
-Reproduce with `script/check-distribution --allow-dirty --with-viewinspector [ios|tvos]` (source: `Integration/PackageConsumer/ViewInspector/ViewInspectorProofTests.swift`). The flag adds a second Git-pinned package to the consumer project; default runs are unchanged.
+Reproduce with `script/check-distribution [--allow-dirty] [ios|tvos]` (sources: `Integration/PackageConsumer/ViewInspector/ViewInspectorProofTests.swift` and `ScopedInspectionTests.swift`). The pinned package is added to the independent consumer project only, never to Fleet's package, its targets or the application. Library consumers do not resolve it. It is on by default in the consumer lane (and therefore in the Tests workflow's `distribution` job, which runs both platforms); `--without-viewinspector` opts out and `--with-viewinspector` is kept for compatibility.
+
+## Evidence expectations
+
+With the integration enabled, the checker runs both fresh processes (legacy and preserve-timing) per platform and then reads each log for the named suites. A run fails, with no `validation.json`, if:
+
+- a required Swift Testing suite (`ViewInspector inspects the Fleet-owned screen`, `Row-scoped ViewInspector queries`) or any of its `@Test` functions is absent, filtered out or did not pass;
+- a required XCTest (`ViewInspectorOwnershipXCTests`) did not pass;
+- the Swift Testing run summary is missing, failed, or counts fewer tests than the required suites (zero tests included);
+- the XCTest summary is missing or empty, any test fails or times out, or the traces differ from the baseline.
+
+The required names are read from the fixture sources, so adding a test to those files tightens the check automatically. Unrelated XCTest or Swift Testing tests passing does not satisfy it. `validation.json` records, per platform and policy, the XCTest counts and the Swift Testing counts separately, the suites and classes verified, the enabled optional integrations, the source commit, the package revision and the resolved ViewInspector and SnapshotTesting revisions. Logs, `.xcresult` bundles and `Package.resolved` stay beside it under `build/distribution-*` and CI uploads them. No retries are used. The check reads the xcodebuild console lines (`Test <name>() passed`, `Suite "<title>" passed`, `Test run with N tests`); inspect the `.xcresult` bundle for the authoritative per-test results.
+
+Not claimed: the log parser was exercised by tooling tests against synthetic logs; the first hosted CI run is the first execution of this check against real simulator output.
 
 ## The seam: do not use `ViewHosting`
 
