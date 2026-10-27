@@ -231,7 +231,10 @@ def check(root, platform="all", allow_dirty=False, viewinspector=False, snapshot
         directory = run / selected
         directory.mkdir()
         if selected == "macos":
-            macos_counts, macos_links = check_macos(root, run, directory, package_url, revision)
+            try:
+                macos_counts, macos_links = check_macos(root, run, directory, package_url, revision)
+            finally:
+                stage_macos_evidence(run, directory)
             continue
         scheme = "Consumer-" + selected
         base = ["xcodebuild", "-project", project, "-scheme", scheme,
@@ -307,6 +310,23 @@ def check(root, platform="all", allow_dirty=False, viewinspector=False, snapshot
                 "validated_at": datetime.now(timezone.utc).isoformat()}
     (run / "validation.json").write_text(json.dumps(evidence, indent=2) + "\n")
     print(f"Fleet: external consumer tests passed: legacy {counts}, preserve-timing {policy_counts}. Evidence: {run / 'validation.json'}")
+
+
+def stage_macos_evidence(run, directory):
+    """Copy macOS evidence, even from a failed run, into the ios/ paths that the CI artifact upload retains.
+
+    The workflows select only ios/*.log and ios/*.xcresult/ (and cannot be changed from here), so the lockfile
+    and link report are staged under .log names. The originals stay in the macos/ directory.
+    """
+    staging = run / "ios"
+    staging.mkdir(exist_ok=True)
+    for name, target in (("resolve.log", "macos-resolve.log"), ("xcodebuild.log", "macos-xcodebuild.log"),
+                         ("Package.resolved", "macos-Package.resolved.log"), ("link-graph.json", "macos-link-graph.log")):
+        if (directory / name).is_file():
+            shutil.copy2(directory / name, staging / target)
+    bundle = directory / "TestResults.xcresult"
+    if bundle.is_dir():
+        shutil.copytree(bundle, staging / "macos-TestResults.xcresult", dirs_exist_ok=True)
 
 
 def check_macos(root, run, directory, package_url, revision):

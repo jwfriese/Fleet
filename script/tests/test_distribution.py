@@ -203,6 +203,27 @@ class MacOSFrameworkCountTests(unittest.TestCase):
             with self.subTest(output=output), self.assertRaises(checker.DistributionError):
                 checker.framework_counts(output)
 
+    def test_macos_evidence_is_staged_under_paths_the_ci_upload_retains(self):
+        import fnmatch
+        run = Path(tempfile.mkdtemp(prefix="staging "))
+        directory = run / "macos"
+        (directory / "TestResults.xcresult").mkdir(parents=True)
+        (directory / "TestResults.xcresult/Info.plist").write_text("bundle")
+        for name in ("resolve.log", "xcodebuild.log", "Package.resolved", "link-graph.json"):
+            (directory / name).write_text(name)
+        checker.stage_macos_evidence(run, directory)
+        staged = sorted(p.relative_to(run).as_posix() for p in (run / "ios").iterdir())
+        self.assertEqual(staged, ["ios/macos-Package.resolved.log", "ios/macos-TestResults.xcresult",
+                                  "ios/macos-link-graph.log", "ios/macos-resolve.log", "ios/macos-xcodebuild.log"])
+        self.assertTrue((run / "ios/macos-TestResults.xcresult/Info.plist").is_file())
+        self.assertTrue(all(fnmatch.fnmatch(p, "ios/*.log") or fnmatch.fnmatch(p, "ios/*.xcresult") for p in staged))
+        # A failed run with only a log still stages what exists.
+        partial = Path(tempfile.mkdtemp(prefix="staging "))
+        (partial / "macos").mkdir()
+        (partial / "macos/xcodebuild.log").write_text("x")
+        checker.stage_macos_evidence(partial, partial / "macos")
+        self.assertEqual([p.name for p in (partial / "ios").iterdir()], ["macos-xcodebuild.log"])
+
     def test_generated_macos_project_depends_only_on_the_fleetmacos_product(self):
         import plistlib
         from consumer_project import create_macos_project
