@@ -259,6 +259,30 @@ final class OptimisticDeletionSpec: XCTestCase {
         }
     }
 
+    func test_perform_afterRootReplacedOrRemoved_failsBeforeRunningAction() async throws {
+        final class Counter { var count = 0 }
+        let counter = Counter()
+        let screen = Text("x").fleetElement("row", actions: [FleetElementAction("Delete") { counter.count += 1 }])
+        try await Fleet.withContext(window: window) { context in
+            let host = try await context.host(screen)
+            try await host.waitForElement("row")
+            try await context.setRoot(UIViewController())
+            XCTAssertFalse(host.isMounted)
+            XCTAssertThrowsError(try host.perform("Delete", onElement: "row")) { error in
+                XCTAssertEqual((error as? FleetFailure)?.kind, .invalidSetup)
+            }
+            XCTAssertEqual(counter.count, 0, "a replaced screen's action must not run")
+        }
+        try await Fleet.withHostedView(screen, window: window) { host in
+            try await host.waitForElement("row")
+            try await host.remove()
+            XCTAssertThrowsError(try host.perform("Delete", onElement: "row")) { error in
+                XCTAssertEqual((error as? FleetFailure)?.kind, .invalidSetup)
+            }
+            XCTAssertEqual(counter.count, 0)
+        }
+    }
+
     func test_earlyFailure_releasesPendingContinuations_andNoLateResultReachesSuccessor() async throws {
         let service = FakeIngredientService()
         let model = IngredientsModel(service: service)

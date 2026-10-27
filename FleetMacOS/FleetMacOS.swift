@@ -198,6 +198,8 @@ public final class FleetMacOSHost {
         let deadline = Date().addingTimeInterval(timeout)
         while true {
             try Task.checkCancellation()
+            // Re-checked after every suspension so a wait cannot outlive its scope.
+            guard isActive else { throw Self.scopeEnded }
             if condition() { return }
             let remaining = deadline.timeIntervalSinceNow
             if remaining <= 0 {

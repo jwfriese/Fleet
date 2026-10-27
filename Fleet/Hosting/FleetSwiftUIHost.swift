@@ -812,6 +812,9 @@ extension FleetHostedView {
         guard context.isActive else {
             throw FleetFailure(kind: .invalidSetup, action: "tap", target: "FleetHostedView", state: "its hosting scope has already ended", reason: "Use the handle only inside the scope that produced it.", source: location)
         }
+        guard !isRemoved, rootViews.contains(where: { $0.window === context.window }) else {
+            throw fail(.invalidSetup, "the hosted view was removed or is no longer in the context window", "Mount the screen again; a removed or replaced screen cannot be interacted with.", matches: [])
+        }
         guard label != nil || identifier != nil else {
             throw fail(.invalidInput, "no label or identifier was given", "Pass a label and/or identifier.", matches: [])
         }

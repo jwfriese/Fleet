@@ -124,6 +124,9 @@ public final class FleetTestContext {
         let deadline = Date().addingTimeInterval(timeout)
         while true {
             try Task.checkCancellation()
+            // Re-checked after every suspension: a wait that outlives its scope (or a handoff to
+            // another test) must not evaluate application predicates against the successor's UI.
+            guard isActive else { throw Self.contextEnded }
             if condition() { return }
             let remaining = deadline.timeIntervalSinceNow
             if remaining <= 0 {
