@@ -95,6 +95,19 @@ else:
         self.assertEqual(evidence["preserve_timing_tests"], {"ios": 8})
         self.assertFalse(evidence["development_snapshot"])
 
+    def test_macos_only_receipt_omits_integrations_it_did_not_resolve(self):
+        with patch.dict(os.environ, self.environment), contextlib.redirect_stdout(io.StringIO()), \
+                patch.object(checker, "check_macos", return_value=({"xctest": 10, "swift_testing": 4}, {})):
+            checker.check(self.root, "macos", False, True, True)
+        evidence = json.loads(self.evidence()[0].read_text())
+        revision = checker.git(self.root, "rev-parse", "HEAD")
+        self.assertEqual(evidence["products"], ["FleetMacOS"])
+        self.assertEqual(evidence["optional_integrations"], [])
+        self.assertEqual(evidence["resolved_revisions"], {"fleet": revision})
+        self.assertIsNone(evidence["viewinspector_revision"])
+        self.assertIsNone(evidence["snapshottesting_revision"])
+        self.assertEqual(evidence["framework_results"], {})
+
     def test_dirty_checkout_is_rejected_before_running_consumers(self):
         (self.root / "Fleet/Example.swift").write_text("// changed\n")
         with self.assertRaisesRegex(checker.DistributionError, "Commit the checkout"):

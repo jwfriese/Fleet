@@ -216,6 +216,9 @@ def check(root, platform="all", allow_dirty=False, viewinspector=False, snapshot
     if allow_dirty:
         package_url, revision = snapshot(root, run / "DevelopmentPackage")
         print("Development snapshot only; this run cannot certify a release.", flush=True)
+    if platform == "macos":
+        # The macOS consumer resolves only FleetMacOS; never report integrations it did not resolve.
+        viewinspector = snapshottesting = False
     inspector = (VIEWINSPECTOR_URL, VIEWINSPECTOR_REVISION) if viewinspector else None
     snapshot_package = (SNAPSHOTTESTING_URL, SNAPSHOTTESTING_REVISION) if snapshottesting else None
     project = create_project(run / "Consumer", root / "Integration/PackageConsumer", package_url, revision, inspector, snapshot_package)
