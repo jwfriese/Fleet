@@ -77,6 +77,10 @@ Disabled controls fail with `.disabled` before acting. Anything else (swipe acti
 
 Compiled through the public consumer with ViewInspector 0.10.5 on iOS/tvOS 26.5 (Swift Testing, 5 tests; the table above is limited to what those tests exercise).
 
+## Screens from a separate application module
+
+The seam above also works when the screen is imported from a separately compiled, Fleet-free framework. See [Separate application module](ExternalModuleAdoption.md) for the source split, the mounted-image oracle and mutants.
+
 ## Limits
 
 The proof covers one `@State`/`@EnvironmentObject` screen. It does not cover popovers, sheets, navigation destinations, `@StateObject` inside children, or views not at the hosting root. If a use case needs them, add a bounded adapter rather than widening this claim. Fleet does not ship a SwiftUI query API on the strength of this proof.

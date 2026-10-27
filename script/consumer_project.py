@@ -6,6 +6,10 @@ import plistlib
 import shutil
 
 
+MODULE_NAME = "PantryApp"
+MODULE_SOURCES = ("PantryModel.swift", "PantryScreen.swift")
+
+
 def create_project(destination, fixtures, package_url, revision, viewinspector=None, snapshot=None):
     destination = Path(destination)
     shutil.copytree(fixtures, destination / "Sources")
@@ -58,6 +62,8 @@ def create_project(destination, fixtures, package_url, revision, viewinspector=N
         swift_testing_file = file("SwiftTestingConsumerTests.swift", "sourcecode.swift")
         proof_file = file("ViewInspector/ViewInspectorProofTests.swift", "sourcecode.swift") if inspector else None
         scoped_file = file("ViewInspector/ScopedInspectionTests.swift", "sourcecode.swift") if inspector else None
+        module_test_file = file("ViewInspector/ExternalModuleAdoptionTests.swift", "sourcecode.swift") if inspector else None
+        module_files = [file("AppModule/" + name, "sourcecode.swift") for name in MODULE_SOURCES] if inspector else []
         snapshot_file = file("SnapshotTesting/SnapshotEnvironmentTests.swift", "sourcecode.swift") if snapshotting else None
         cases_file = file("EnvironmentCasesConsumerTests.swift", "sourcecode.swift")
         swiftui_file = file("SwiftUIHostingConsumerTests.swift", "sourcecode.swift")
@@ -91,7 +97,8 @@ def create_project(destination, fixtures, package_url, revision, viewinspector=N
                                                                   build_file("meal-drop-build-file", meal_drop_file),
                                                                   build_file("cases-build-file", cases_file),
                                                                   *([build_file("proof-build-file", proof_file),
-                                                                     build_file("scoped-build-file", scoped_file)] if inspector else []),
+                                                                     build_file("scoped-build-file", scoped_file),
+                                                                     build_file("module-test-build-file", module_test_file)] if inspector else []),
                                                                   *([build_file("snapshot-build-file", snapshot_file)] if snapshotting else []),
                                                                   build_file("scenario-build-file", scenario_file)])
         baseline_sources = phase("baseline-sources", "PBXSourcesBuildPhase", files=[
@@ -121,7 +128,29 @@ def create_project(destination, fixtures, package_url, revision, viewinspector=N
                             package=snapshotting, productName="SnapshotTesting")
                 dependencies.append(extra)
                 links.append(add(platform + name + "snapshottesting-link", "PBXBuildFile", productRef=extra))
+            if module:
+                links.append(add(platform + name + "module-link", "PBXBuildFile", fileRef=module_product))
             return dependencies, phase(name + "frameworks", "PBXFrameworksBuildPhase", files=links)
+
+        module = None
+        if inspector:
+            # A separately compiled application framework: it has no package product dependency and no
+            # Fleet or ViewInspector import. Only the test target links it.
+            module_product = add(platform + "module-product", "PBXFileReference", explicitFileType="wrapper.framework",
+                                 path=MODULE_NAME + ".framework", sourceTree="BUILT_PRODUCTS_DIR")
+            objects[products]["children"].append(module_product)
+            module = add(platform + "module", "PBXNativeTarget", name=MODULE_NAME + "-" + platform, productName=MODULE_NAME,
+                         productReference=module_product, productType="com.apple.product-type.framework",
+                         buildConfigurationList=configurations(platform + "module", {**settings,
+                             "PRODUCT_NAME": MODULE_NAME, "PRODUCT_MODULE_NAME": MODULE_NAME, "DEFINES_MODULE": "YES",
+                             "SKIP_INSTALL": "YES", "PRODUCT_BUNDLE_IDENTIFIER": "org.fleet.consumer.module." + platform,
+                             "DYLIB_INSTALL_NAME_BASE": "@rpath"}),
+                         buildPhases=[phase("module-sources", "PBXSourcesBuildPhase", files=[
+                                          build_file("module-build-file-" + str(index), reference)
+                                          for index, reference in enumerate(module_files)]),
+                                      phase("module-frameworks", "PBXFrameworksBuildPhase", files=[])],
+                         buildRules=[], dependencies=[], packageProductDependencies=[])
+            targets.append(module)
 
         app_frameworks = phase("app-frameworks", "PBXFrameworksBuildPhase", files=[])
         test_dependency, test_frameworks = frameworks("test")
@@ -135,6 +164,10 @@ def create_project(destination, fixtures, package_url, revision, viewinspector=N
                   buildPhases=[app_sources, app_frameworks, resources], buildRules=[], dependencies=[],
                   packageProductDependencies=[])
         dependency = add(platform + "host-dependency", "PBXTargetDependency", target=app)
+        module_dependencies = [add(platform + "module-dependency", "PBXTargetDependency", target=module)] if module else []
+        embed = [phase("module-embed", "PBXCopyFilesBuildPhase", dstPath="", dstSubfolderSpec="10", files=[
+            add(platform + "module-embed-file", "PBXBuildFile", fileRef=module_product,
+                settings={"ATTRIBUTES": ["RemoveHeadersOnCopy"]})])] if module else []
         test = add(platform + "test", "PBXNativeTarget", name="ConsumerTests-" + platform,
                    productName="ConsumerTests", productReference=test_product,
                    productType="com.apple.product-type.bundle.unit-test",
@@ -143,8 +176,8 @@ def create_project(destination, fixtures, package_url, revision, viewinspector=N
                        "PRODUCT_BUNDLE_IDENTIFIER": "org.fleet.consumer.tests." + platform,
                        "TEST_HOST": "$(BUILT_PRODUCTS_DIR)/ConsumerHost-" + platform + ".app/ConsumerHost-" + platform,
                        "BUNDLE_LOADER": "$(TEST_HOST)"}),
-                   buildPhases=[test_sources, test_frameworks, test_resources, script], buildRules=[],
-                   dependencies=[dependency], packageProductDependencies=test_dependency)
+                   buildPhases=[test_sources, test_frameworks, test_resources, script, *embed], buildRules=[],
+                   dependencies=[dependency, *module_dependencies], packageProductDependencies=test_dependency)
         # The baseline bundle links no package product, so its process never loads Fleet or its runtime hooks.
         baseline = add(platform + "baseline", "PBXNativeTarget", name="BaselineTests-" + platform,
                        productName="BaselineTests", productReference=baseline_product,
