@@ -52,6 +52,53 @@ extension Fleet {
     }
 }
 
+extension Fleet {
+    /// The default number of seconds `tapAlertActionStrictly` waits for UIKit's dismissal completion.
+    public static let defaultAlertDismissalTimeout: TimeInterval = 10
+}
+
+/// Resumes one waiter exactly once, from a completion, a timeout, or cancellation, whichever comes first.
+final class AlertCompletionGate: @unchecked Sendable {
+    private let lock = NSLock()
+    private var continuation: CheckedContinuation<Void, Error>?
+    private var result: Result<Void, Error>?
+    private var timer: Task<Void, Never>?
+
+    func install(_ continuation: CheckedContinuation<Void, Error>) {
+        lock.lock()
+        if let result {
+            lock.unlock()
+            continuation.resume(with: result)
+        } else {
+            self.continuation = continuation
+            lock.unlock()
+        }
+    }
+
+    func startTimer(seconds: TimeInterval, failure: @escaping @Sendable () -> Error) {
+        let task = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: UInt64(min(seconds, 86_400) * 1_000_000_000))
+            guard !Task.isCancelled else { return }
+            self?.finish(.failure(failure()))
+        }
+        lock.lock()
+        if result == nil { timer = task; lock.unlock() } else { lock.unlock(); task.cancel() }
+    }
+
+    func finish(_ outcome: Result<Void, Error>) {
+        lock.lock()
+        guard result == nil else { lock.unlock(); return }
+        result = outcome
+        let waiter = continuation
+        continuation = nil
+        let pending = timer
+        timer = nil
+        lock.unlock()
+        pending?.cancel()
+        waiter?.resume(with: outcome)
+    }
+}
+
 extension UIAlertController {
     /**
      Reports what Fleet observed about the handler of the single action with the given title,
@@ -78,12 +125,33 @@ extension UIAlertController {
      For behavior this interception cannot establish, invoke an application-owned command
      directly or use an XCUITest.
 
-     - throws: `FleetFailure` for the cases of `tapAlertActionOrThrow(withTitle:)` and `.invalidSetup`
-       when capture evidence is missing.
+     The wait is bounded by `timeout` (default `Fleet.defaultAlertDismissalTimeout`, 10 seconds).
+     A timeout that is not finite and positive throws `.invalidInput` before anything happens. If
+     completion is not observed in time it throws `.timedOut`; that does not mean the dismissal was
+     undone, and if UIKit completes it later the handler still runs (once) after the throw, so do not
+     assume it never will. Cancellation is checked before any side effect and also while waiting; it
+     throws `CancellationError`, with the same late-completion caveat. Duplicate or late completions
+     never resume the waiter again or run the handler twice. The outcome is never reported for a
+     timed-out or cancelled call.
+
+     - throws: `FleetFailure` for the cases of `tapAlertActionOrThrow(withTitle:)`, `.invalidSetup`
+       when capture evidence is missing, `.invalidInput` for an invalid timeout, and `.timedOut`.
      */
     @discardableResult
-    public func tapAlertActionStrictly(withTitle title: String) async throws -> Fleet.AlertTapOutcome {
+    public func tapAlertActionStrictly(withTitle title: String, timeout: TimeInterval = Fleet.defaultAlertDismissalTimeout) async throws -> Fleet.AlertTapOutcome {
+        try await strictTap(withTitle: title, timeout: timeout, dismiss: nil)
+    }
+
+    /// The strict tap with an injectable dismissal, so tests can withhold, delay, or repeat completion.
+    func strictTap(withTitle title: String, timeout: TimeInterval,
+                   dismiss: ((UIViewController, (() -> Void)?) -> Void)?) async throws -> Fleet.AlertTapOutcome {
         let target = "UIAlertController action '\(title)'"
+        guard timeout.isFinite, timeout > 0 else {
+            throw FleetFailure(kind: .invalidInput, action: "tap alert action", target: target,
+                state: "timeout \(timeout) is not a finite number of seconds greater than zero",
+                reason: "Pass a positive, finite timeout. Nothing was dismissed or run.")
+        }
+        try Task.checkCancellation()
         if let action = actions.first(where: { $0.title == title }), actions.filter({ $0.title == title }).count == 1,
            action.isEnabled, presentingViewController != nil {
             switch action.handlerCapture {
@@ -96,23 +164,37 @@ extension UIAlertController {
                     state: "Fleet never observed this action's handler being set, so it cannot tell a missing handler from an uncaptured one",
                     reason: "Invoke the handler through an application-owned command, or use an XCUITest. Nothing was dismissed or run.")
             case .observedNil:
-                try await completedTap(withTitle: title)
+                try await completedTap(withTitle: title, timeout: timeout, dismiss: dismiss)
                 return .dismissedWithoutHandler
             case .observedHandler:
                 break
             }
         }
-        try await completedTap(withTitle: title)
+        try await completedTap(withTitle: title, timeout: timeout, dismiss: dismiss)
         return .handlerInvoked
     }
 
-    private func completedTap(withTitle title: String) async throws {
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            do {
-                try tapAlertActionOrThrow(withTitle: title, completion: { continuation.resume() })
-            } catch {
-                continuation.resume(throwing: error)
+    private func completedTap(withTitle title: String, timeout: TimeInterval,
+                              dismiss: ((UIViewController, (() -> Void)?) -> Void)?) async throws {
+        let gate = AlertCompletionGate()
+        let target = "UIAlertController action '\(title)'"
+        try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                gate.install(continuation)
+                do {
+                    try tapAlertActionOrThrow(withTitle: title, completion: { gate.finish(.success(())) }, dismiss: dismiss)
+                } catch {
+                    gate.finish(.failure(error))
+                    return
+                }
+                gate.startTimer(seconds: timeout) {
+                    FleetFailure(kind: .timedOut, action: "tap alert action", target: target,
+                        state: "UIKit's dismissal completion was not observed within \(timeout) seconds; the dismissal may still complete and, if it does, the action's handler may still run later",
+                        reason: "The dismissal was not undone and the handler was not cancelled. Inspect the presentation state before reusing this alert, or pass a longer timeout.")
+                }
             }
+        } onCancel: {
+            gate.finish(.failure(CancellationError()))
         }
     }
 
@@ -157,9 +239,10 @@ extension UIAlertController {
         try tapAlertActionOrThrow(withTitle: title, completion: nil)
     }
 
-    private func tapAlertActionOrThrow(withTitle title: String, completion: (() -> Void)?) throws {
+    private func tapAlertActionOrThrow(withTitle title: String, completion: (() -> Void)?,
+                                       dismiss: ((UIViewController, (() -> Void)?) -> Void)? = nil) throws {
         do {
-            try performTap(withTitle: title, completion: completion)
+            try performTap(withTitle: title, completion: completion, dismiss: dismiss)
         } catch let error as Fleet.AlertError {
             let kind: FleetFailure.Kind
             switch error {
@@ -170,7 +253,8 @@ extension UIAlertController {
         }
     }
 
-    private func performTap(withTitle title: String, completion: (() -> Void)? = nil) throws(Fleet.AlertError) {
+    private func performTap(withTitle title: String, completion: (() -> Void)? = nil,
+                            dismiss: ((UIViewController, (() -> Void)?) -> Void)? = nil) throws(Fleet.AlertError) {
         let matchingActions = actions.filter { $0.title == title }
 
         guard let actionWithTitle = matchingActions.first else {
@@ -190,11 +274,19 @@ extension UIAlertController {
         }
 
         let handler = actionWithTitle.handler
+        var completed = false
         let completionHandler: (() -> ())? = (handler == nil && completion == nil) ? nil : {
+            // The handler runs at most once, even if a completion is delivered again or after a timeout.
+            guard !completed else { return }
+            completed = true
             handler?(actionWithTitle)
             completion?()
         }
 
-        presenter.dismiss(animated: false, completion: completionHandler)
+        if let dismiss {
+            dismiss(presenter, completionHandler)
+        } else {
+            presenter.dismiss(animated: false, completion: completionHandler)
+        }
     }
 }
