@@ -558,4 +558,42 @@ class FleetSwiftUIHostSpec: XCTestCase {
         XCTAssertEqual(diagnostics.trace.last, "action: tap label == \"Delete\"")
         XCTAssertTrue(diagnostics.trace.contains("performed tap label == \"Delete\""))
     }
+
+    func test_tap_afterRemove_failsBeforeDispatchingToDetachedControl() async throws {
+        let model = HostedModel()
+        try await Fleet.withHostedView(ItemsScreen(model: model), window: hostWindow) { host in
+            try await host.waitForUpdate("buttons present") { !host.matchingViews(label: "Edit", identifier: nil).isEmpty }
+            try await host.remove()
+            do {
+                try host.tap(label: "Edit")
+                XCTFail("expected a removed-screen failure")
+            } catch let failure as FleetFailure {
+                XCTAssertEqual(failure.kind, .invalidSetup)
+            }
+            XCTAssertEqual(model.loads, 0, "the detached button's action must not run")
+            try await host.waitForTaskCancellation("load", count: 0, timeout: 1)
+        }
+    }
+
+    func test_wait_outlivingItsScope_failsWithoutEvaluatingPredicateInSuccessorScope() async throws {
+        final class Probe: @unchecked Sendable { var evaluations = 0; var flag = false }
+        let probe = Probe()
+        var old: Task<FleetFailure?, Never>?
+        try await Fleet.withContext(window: hostWindow) { context in
+            old = Task { @MainActor in
+                do {
+                    try await context.waitUntil("flag", timeout: 5, pollInterval: 0.05) { probe.evaluations += 1; return probe.flag }
+                } catch let failure as FleetFailure { return failure } catch {}
+                return nil
+            }
+            while probe.evaluations == 0 { try await Task.sleep(nanoseconds: 5_000_000) }
+        }
+        let before = probe.evaluations
+        try await Fleet.withContext(window: hostWindow) { _ in
+            probe.flag = true
+            let failure = await old?.value
+            XCTAssertEqual(failure?.kind, .invalidSetup)
+        }
+        XCTAssertEqual(probe.evaluations, before, "no predicate evaluation after the owning scope ended")
+    }
 }
