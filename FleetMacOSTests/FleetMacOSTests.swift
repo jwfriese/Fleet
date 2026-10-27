@@ -150,6 +150,37 @@ struct FleetMacOSSwiftTestingTests {
 }
 
 @MainActor
+final class WaitProbe {
+    var evaluations = 0
+    var flag = false
+}
+
+@MainActor
+@Suite(.serialized)
+struct FleetMacOSWaitLifetimeTests {
+    @Test func waitOutlivingItsScopeFailsWithoutEvaluatingPredicate() async throws {
+        let probe = WaitProbe()
+        var old: Task<FleetMacOSFailure?, Never>?
+        try await FleetMacOS.withHostedView(Screen(model: Model())) { host in
+            old = Task { @MainActor in
+                do {
+                    try await host.waitUntil("flag", timeout: 5, pollInterval: 0.05) { probe.evaluations += 1; return probe.flag }
+                } catch let failure as FleetMacOSFailure { return failure } catch {}
+                return nil
+            }
+            while probe.evaluations == 0 { try await Task.sleep(nanoseconds: 5_000_000) }
+        }
+        let before = probe.evaluations
+        try await FleetMacOS.withHostedView(Screen(model: Model())) { _ in
+            probe.flag = true
+            let failure = await old?.value
+            #expect(failure?.kind == .invalidSetup)
+        }
+        #expect(probe.evaluations == before)
+    }
+}
+
+@MainActor
 final class FleetMacOSXCTests: XCTestCase {
     func test_hostsInXCTest() async throws {
         let model = Model()

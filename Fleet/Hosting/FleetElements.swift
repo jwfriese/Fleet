@@ -196,6 +196,15 @@ extension FleetHostedView {
         let action = "perform '\(actionName)'" + (surface.map { " via \($0.rawValue)" } ?? "")
         try attributingSync(fileID, line) {
             try requireActive(action)
+            guard isMounted else {
+                throw FleetFailure(
+                    kind: .invalidSetup,
+                    action: action,
+                    target: "element '\(id)'",
+                    state: "the hosted view was removed or is no longer in the context window",
+                    reason: "Mount the screen again; a removed or replaced screen cannot be interacted with."
+                )
+            }
             recordAction(action + " on element '\(id)'")
             let record = try resolve(id, action: action)
             let matches = record.actions.filter { $0.name == actionName && (surface == nil || $0.surface == surface) }
