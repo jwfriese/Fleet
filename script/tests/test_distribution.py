@@ -165,6 +165,16 @@ else:
                     self.check(viewinspector=True)
                 self.assertEqual(self.evidence(), [])
 
+    def test_skipped_test_summaries_report_the_aggregate_total(self):
+        log = ("Executed 1 test, with 0 failures (0 unexpected)\n"
+               "Executed 61 tests, with 1 test skipped and 0 failures (0 unexpected)\n"
+               "Test run with 31 tests in 2 suites passed\n** TEST SUCCEEDED **")
+        self.assertEqual(checker.successful_test_count(log), 61)
+        self.assertEqual(checker.framework_results(log)["xctest"], {"tests": 61, "failures": 0})
+        failing = "Executed 61 tests, with 1 test skipped and 2 failures (0 unexpected)\n** TEST SUCCEEDED **"
+        with self.assertRaises(checker.DistributionError):
+            checker.successful_test_count(failing)
+
     def test_required_suites_come_from_the_fixture_sources(self):
         swift_testing, xctest = checker.required_inspector_suites(REPO)
         self.assertEqual(len(swift_testing), 2)

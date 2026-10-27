@@ -31,8 +31,13 @@ def git(root, *args):
     return result.stdout.strip()
 
 
+def xctest_summaries(output):
+    """(tests, failures) pairs from XCTest summaries, including the form with skipped tests."""
+    return re.findall(r"Executed (\d+) tests?, with (?:\d+ tests? skipped and )?(\d+) failures?", output)
+
+
 def successful_test_count(output):
-    summaries = re.findall(r"Executed (\d+) tests?, with (\d+) failures?", output)
+    summaries = xctest_summaries(output)
     if (not summaries or int(summaries[-1][0]) == 0
             or any(int(failures) for _, failures in summaries)
             or "** TEST SUCCEEDED **" not in output):
@@ -60,7 +65,7 @@ def required_inspector_suites(root):
 
 def framework_results(output):
     """Separate XCTest and Swift Testing results parsed from one xcodebuild log."""
-    summaries = re.findall(r"Executed (\d+) tests?, with (\d+) failures?", output)
+    summaries = xctest_summaries(output)
     runs = re.findall(r"Test run with (\d+) tests?(?: in (\d+) suites?)? (passed|failed)", output)
     return {
         "xctest": {"tests": int(summaries[-1][0]) if summaries else 0,
