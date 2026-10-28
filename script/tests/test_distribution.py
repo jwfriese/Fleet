@@ -95,6 +95,19 @@ else:
         self.assertEqual(evidence["preserve_timing_tests"], {"ios": 8})
         self.assertFalse(evidence["development_snapshot"])
 
+    def test_macos_only_receipt_omits_integrations_it_did_not_resolve(self):
+        with patch.dict(os.environ, self.environment), contextlib.redirect_stdout(io.StringIO()), \
+                patch.object(checker, "check_macos", return_value=({"xctest": 10, "swift_testing": 4}, {})):
+            checker.check(self.root, "macos", False, True, True)
+        evidence = json.loads(self.evidence()[0].read_text())
+        revision = checker.git(self.root, "rev-parse", "HEAD")
+        self.assertEqual(evidence["products"], ["FleetMacOS"])
+        self.assertEqual(evidence["optional_integrations"], [])
+        self.assertEqual(evidence["resolved_revisions"], {"fleet": revision})
+        self.assertIsNone(evidence["viewinspector_revision"])
+        self.assertIsNone(evidence["snapshottesting_revision"])
+        self.assertEqual(evidence["framework_results"], {})
+
     def test_dirty_checkout_is_rejected_before_running_consumers(self):
         (self.root / "Fleet/Example.swift").write_text("// changed\n")
         with self.assertRaisesRegex(checker.DistributionError, "Commit the checkout"):
@@ -183,3 +196,55 @@ else:
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class MacOSFrameworkCountTests(unittest.TestCase):
+    PASSED = ("Executed 10 tests, with 0 failures (0 unexpected)\n"
+              "Test run with 4 tests in 1 suite passed after 0.5 seconds.\n** TEST SUCCEEDED **")
+
+    def test_reports_actual_counts_per_framework(self):
+        self.assertEqual(checker.framework_counts(self.PASSED), {"xctest": 10, "swift_testing": 4})
+
+    def test_each_framework_must_run_a_nonempty_successful_suite(self):
+        for output in ("** TEST SUCCEEDED **",
+                       self.PASSED.replace("Test run with 4 tests in 1 suite passed", "Test run with 0 tests in 0 suites passed"),
+                       self.PASSED.split("\n")[0] + "\n** TEST SUCCEEDED **",
+                       self.PASSED.replace("Executed 10 tests", "Executed 0 tests"),
+                       self.PASSED.replace("0 failures", "1 failure"),
+                       self.PASSED.replace("passed after", "failed after"),
+                       self.PASSED.replace("** TEST SUCCEEDED **", "")):
+            with self.subTest(output=output), self.assertRaises(checker.DistributionError):
+                checker.framework_counts(output)
+
+    def test_macos_evidence_is_staged_under_paths_the_ci_upload_retains(self):
+        import fnmatch
+        run = Path(tempfile.mkdtemp(prefix="staging "))
+        directory = run / "macos"
+        (directory / "TestResults.xcresult").mkdir(parents=True)
+        (directory / "TestResults.xcresult/Info.plist").write_text("bundle")
+        for name in ("resolve.log", "xcodebuild.log", "Package.resolved", "link-graph.json"):
+            (directory / name).write_text(name)
+        checker.stage_macos_evidence(run, directory)
+        staged = sorted(p.relative_to(run).as_posix() for p in (run / "ios").iterdir())
+        self.assertEqual(staged, ["ios/macos-Package.resolved.log", "ios/macos-TestResults.xcresult",
+                                  "ios/macos-link-graph.log", "ios/macos-resolve.log", "ios/macos-xcodebuild.log"])
+        self.assertTrue((run / "ios/macos-TestResults.xcresult/Info.plist").is_file())
+        self.assertTrue(all(fnmatch.fnmatch(p, "ios/*.log") or fnmatch.fnmatch(p, "ios/*.xcresult") for p in staged))
+        # A failed run with only a log still stages what exists.
+        partial = Path(tempfile.mkdtemp(prefix="staging "))
+        (partial / "macos").mkdir()
+        (partial / "macos/xcodebuild.log").write_text("x")
+        checker.stage_macos_evidence(partial, partial / "macos")
+        self.assertEqual([p.name for p in (partial / "ios").iterdir()], ["macos-xcodebuild.log"])
+
+    def test_generated_macos_project_depends_only_on_the_fleetmacos_product(self):
+        import plistlib
+        from consumer_project import create_macos_project
+        project = create_macos_project(Path(tempfile.mkdtemp(prefix="macos consumer ")) / "Consumer",
+                                       REPO / "Integration/MacOSConsumer", "file:///package", "a" * 40)
+        objects = plistlib.loads((project / "project.pbxproj").read_bytes())["objects"].values()
+        products = [o["productName"] for o in objects if o["isa"] == "XCSwiftPackageProductDependency"]
+        self.assertEqual(products, ["FleetMacOS"])
+        settings = [o["buildSettings"] for o in objects if o["isa"] == "XCBuildConfiguration" and "SDKROOT" in o["buildSettings"]]
+        self.assertTrue(all(s["SDKROOT"] == "macosx" and s["MACOSX_DEPLOYMENT_TARGET"] == "13.0" for s in settings))
+        self.assertTrue((project / "xcshareddata/xcschemes/MacOSConsumer.xcscheme").is_file())

@@ -1,5 +1,5 @@
 # Fleet [![Tests](https://github.com/jwfriese/Fleet/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/jwfriese/Fleet/actions/workflows/test.yml)
-Fleet is a UIKit-focused testing framework intended for use on iOS and tvOS projects written in Swift.
+Fleet is a UIKit-focused testing framework intended for use on iOS and tvOS projects written in Swift. The package also ships `FleetMacOS`, a separate test-only product for hosting SwiftUI views in an `NSWindow` on macOS 13 or later; it is hosting only and has no UIKit feature parity (see [macOS hosting](./Documentation/MacOSHosting.md)).
 
 ## Installation
 
