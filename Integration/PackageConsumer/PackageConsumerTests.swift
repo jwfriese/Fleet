@@ -412,8 +412,10 @@ final class PackageConsumerTests: XCTestCase {
         root.present(alert, animated: false) { presented.fulfill() }
         await fulfillment(of: [presented], timeout: 5)
         XCTAssertEqual(alert.alertHandlerCapture(forActionWithTitle: "Run"), .observedHandler)
+        // The original one-parameter member must remain usable as a function value.
+        let tap: (String) async throws -> Fleet.AlertTapOutcome = alert.tapAlertActionStrictly(withTitle:)
         do {
-            _ = try await alert.tapAlertActionStrictly(withTitle: "Missing")
+            _ = try await tap("Missing")
             XCTFail("Expected a typed failure")
         } catch {
             XCTAssertEqual((error as? FleetFailure)?.kind, .invalidInput)

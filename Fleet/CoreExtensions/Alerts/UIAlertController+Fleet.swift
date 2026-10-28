@@ -138,7 +138,12 @@ extension UIAlertController {
        when capture evidence is missing, `.invalidInput` for an invalid timeout, and `.timedOut`.
      */
     @discardableResult
-    public func tapAlertActionStrictly(withTitle title: String, timeout: TimeInterval = Fleet.defaultAlertDismissalTimeout) async throws -> Fleet.AlertTapOutcome {
+    public func tapAlertActionStrictly(withTitle title: String) async throws -> Fleet.AlertTapOutcome {
+        try await tapAlertActionStrictly(withTitle: title, timeout: Fleet.defaultAlertDismissalTimeout)
+    }
+
+    /// Same as `tapAlertActionStrictly(withTitle:)` with an explicit dismissal-completion deadline.
+    public func tapAlertActionStrictly(withTitle title: String, timeout: TimeInterval) async throws -> Fleet.AlertTapOutcome {
         try await strictTap(withTitle: title, timeout: timeout, dismiss: nil)
     }
 
