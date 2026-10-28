@@ -11,7 +11,7 @@
 | [Menu and swipe-row actions](ContextualActions.md) | iOS, tvOS | Surface-qualified row action dispatch (`perform(_:onElement:via:)`): handler dispatch vs menu presentation vs physical gesture; failures; XCUITest complement. |
 | [macOS SwiftUI hosting](MacOSHosting.md) | macOS 13+ | `FleetMacOS.withHostedView`: test-only scoped `NSHostingController` host in an `NSWindow`; no UIKit or runtime hooks. |
 | [ViewInspector compatibility](ViewInspector.md) | iOS, tvOS | Executable proof (optional, consumer test target only) of inspecting the SwiftUI screen a Fleet context owns; pinned matrix, required seam and evidence levels. |
-| [Separate application module](ExternalModuleAdoption.md) | iOS, tvOS | Executable proof (consumer test target only) of hosting a screen from a Fleet-free application framework, operating its mounted Button and detecting view-only mutants with a pixel oracle. |
+| [Separate application module](ExternalModuleAdoption.md) | iOS, tvOS | Test your app's screens with Fleet from the test bundle alone: the app ships without Fleet, tests tap the real Button and catch visual regressions. |
 | [Named environments and snapshots](SnapshotTesting.md) | iOS, tvOS | Recipe (optional, consumer test target only) running named environment cases in sequential hosted scopes, with an adapter that compares the mounted screen through SnapshotTesting. |
 | [Runtime hooks](RuntimeHooks.md) | iOS, tvOS | Inventory of process-wide Objective-C hooks. |
 

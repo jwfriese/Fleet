@@ -1,5 +1,7 @@
 # Test-only adoption from a separate application module
 
+**Why it matters:** your app ships without Fleet, and your tests still drive the real screen and catch visual regressions.
+
 Platforms: iOS and tvOS (consumer-verified, `--with-viewinspector`). macOS is not covered.
 
 This page records an executable proof that Fleet and ViewInspector can stay out of an application's compile and link graph while a test bundle hosts one of its screens, operates the real mounted Button, and detects regressions that only change what is drawn. The fixture is generic. It does not certify any downstream application; a private adopter needs its own source and mutations.
