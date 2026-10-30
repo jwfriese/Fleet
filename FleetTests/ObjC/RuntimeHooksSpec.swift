@@ -123,6 +123,85 @@ class RuntimeHooksSpec: XCTestCase {
         }
     }
 
+    func test_strictTap_timesOutWhenCompletionIsWithheldThenLateCallbackRunsHandlerOnce() async throws {
+        var calls = 0
+        let alert = presentedAlert(UIAlertAction(title: "go", style: .default) { _ in calls += 1 })
+        var pending: (() -> Void)?
+        do {
+            _ = try await alert.strictTap(withTitle: "go", timeout: 0.2) { _, completion in pending = completion }
+            XCTFail("expected a timeout")
+        } catch let failure as FleetFailure {
+            expect(failure.kind).to(equal(.timedOut))
+            expect(failure.target).to(contain("go"))
+            expect(failure.state).to(contain("may still run"))
+        }
+        expect(calls).to(equal(0))
+        pending?()
+        pending?()
+        expect(calls).to(equal(1))
+    }
+
+    func test_strictTap_handlesSynchronousDelayedAndDuplicateCompletion() async throws {
+        var calls = 0
+        let alert = presentedAlert(UIAlertAction(title: "go", style: .default) { _ in calls += 1 })
+        let sync = try await alert.strictTap(withTitle: "go", timeout: 5) { _, completion in completion?(); completion?() }
+        expect(sync).to(equal(.handlerInvoked))
+        expect(calls).to(equal(1))
+
+        var calls2 = 0
+        let alert2 = presentedAlert(UIAlertAction(title: "go", style: .default) { _ in calls2 += 1 })
+        let delayed = try await alert2.strictTap(withTitle: "go", timeout: 5) { _, completion in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { completion?(); completion?() }
+        }
+        expect(delayed).to(equal(.handlerInvoked))
+        expect(calls2).to(equal(1))
+    }
+
+    func test_strictTap_rejectsInvalidTimeoutBeforeDismissing() async {
+        let alert = presentedAlert(UIAlertAction(title: "go", style: .default) { _ in })
+        for bad in [0, -1, Double.nan, Double.infinity] {
+            do {
+                _ = try await alert.tapAlertActionStrictly(withTitle: "go", timeout: bad)
+                XCTFail("expected invalidInput")
+            } catch {
+                expect((error as? FleetFailure)?.kind).to(equal(.invalidInput))
+            }
+        }
+        expect(alert.presentingViewController).toNot(beNil())
+    }
+
+    func test_strictTap_preCancelledTaskHasNoSideEffects() async {
+        var calls = 0
+        let alert = presentedAlert(UIAlertAction(title: "go", style: .default) { _ in calls += 1 })
+        let task = Task { @MainActor in
+            withUnsafeCurrentTask { $0?.cancel() }
+            return try await alert.tapAlertActionStrictly(withTitle: "go")
+        }
+        do { _ = try await task.value; XCTFail("expected cancellation") } catch { expect(error is CancellationError).to(beTrue()) }
+        expect(alert.presentingViewController).toNot(beNil())
+        expect(calls).to(equal(0))
+    }
+
+    func test_strictTap_cancellationWhileWaitingThrowsOnceAndLeavesCleanSuccessor() async {
+        var calls = 0
+        let alert = presentedAlert(UIAlertAction(title: "go", style: .default) { _ in calls += 1 })
+        var pending: (() -> Void)?
+        let task = Task { @MainActor in
+            try await alert.strictTap(withTitle: "go", timeout: 30) { _, completion in pending = completion }
+        }
+        while pending == nil { await Task.yield() }
+        task.cancel()
+        do { _ = try await task.value; XCTFail("expected cancellation") } catch { expect(error is CancellationError).to(beTrue()) }
+        pending?()
+        expect(calls).to(equal(1))
+
+        var calls2 = 0
+        let next = presentedAlert(UIAlertAction(title: "again", style: .default) { _ in calls2 += 1 })
+        let outcome = try? await next.tapAlertActionStrictly(withTitle: "again")
+        expect(outcome).to(equal(.handlerInvoked))
+        expect(calls2).to(equal(1))
+    }
+
     func test_strictTap_throwsWithoutDismissingWhenCaptureEvidenceIsMissing() async {
         var calls = 0
         let action = UIAlertAction(title: "lost", style: .default) { _ in calls += 1 }
