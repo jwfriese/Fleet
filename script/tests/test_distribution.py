@@ -194,6 +194,41 @@ else:
         self.assertTrue(all(swift_testing.values()) and all(xctest.values()))
 
 
+class ApplicationModuleBoundaryTests(unittest.TestCase):
+    """The separately compiled application module must stay free of Fleet, FleetRuntime and ViewInspector."""
+
+    def generated(self, directory):
+        import plistlib
+        import consumer_project
+        project = consumer_project.create_project(
+            Path(directory) / "Consumer", REPO / "Integration/PackageConsumer", "file:///fleet", "a" * 40,
+            ("https://example.invalid/ViewInspector", "b" * 40))
+        return plistlib.loads((project / "project.pbxproj").read_bytes())["objects"]
+
+    def test_module_target_has_no_package_dependency_and_only_the_test_target_links_it(self):
+        with tempfile.TemporaryDirectory() as directory:
+            objects = self.generated(directory)
+        modules = [o for o in objects.values() if o["isa"] == "PBXNativeTarget" and o["productName"] == "PantryApp"]
+        self.assertEqual(len(modules), 2)  # iOS and tvOS
+        for module in modules:
+            self.assertEqual(module["packageProductDependencies"], [])
+            self.assertEqual(module["dependencies"], [])
+            for phase in module["buildPhases"]:
+                self.assertEqual(objects[phase]["isa"] in ("PBXSourcesBuildPhase", "PBXFrameworksBuildPhase"), True)
+                if objects[phase]["isa"] == "PBXFrameworksBuildPhase":
+                    self.assertEqual(objects[phase]["files"], [])
+        hosts = [o for o in objects.values() if o["isa"] == "PBXNativeTarget" and o["productName"] == "ConsumerHost"]
+        for host in hosts:
+            self.assertEqual(host["packageProductDependencies"], [])
+
+    def test_module_sources_import_neither_fleet_nor_viewinspector(self):
+        for source in (REPO / "Integration/PackageConsumer/AppModule").glob("*.swift"):
+            text = source.read_text()
+            for forbidden in ("Fleet", "ViewInspector"):
+                self.assertNotIn("import " + forbidden, text, source.name)
+                self.assertNotIn("#if canImport(" + forbidden, text, source.name)
+
+
 if __name__ == "__main__":
     unittest.main()
 
