@@ -224,12 +224,16 @@ def create_project(destination, fixtures, package_url, revision, viewinspector=N
 
 
 MACOS_SOURCES = ("MacOSFixtures.swift", "MacOSXCTestConsumerTests.swift", "MacOSSwiftTestingConsumerTests.swift")
+# Compiled only when the optional pinned ViewInspector dependency is added to the consumer.
+MACOS_INSPECTOR_SOURCES = ("Inspection/MacOSInspection.swift", "Inspection/MacOSControlInteractionTests.swift")
 
 
-def create_macos_project(destination, fixtures, package_url, revision):
+def create_macos_project(destination, fixtures, package_url, revision, viewinspector=None):
     """Generate a standalone macOS test-bundle project depending only on the Git-pinned FleetMacOS product."""
     destination = Path(destination)
     shutil.copytree(fixtures, destination / "Sources")
+    if not viewinspector:
+        shutil.rmtree(destination / "Sources/Inspection", ignore_errors=True)
     project = destination / "MacOSConsumer.xcodeproj"
     schemes = project / "xcshareddata/xcschemes"
     schemes.mkdir(parents=True)
@@ -242,10 +246,14 @@ def create_macos_project(destination, fixtures, package_url, revision):
 
     package = add("package", "XCRemoteSwiftPackageReference", repositoryURL=package_url,
                   requirement={"kind": "revision", "revision": revision})
+    inspector = None
+    if viewinspector:
+        inspector = add("viewinspector", "XCRemoteSwiftPackageReference", repositoryURL=viewinspector[0],
+                        requirement={"kind": "revision", "revision": viewinspector[1]})
     products = add("products", "PBXGroup", children=[], name="Products", sourceTree="<group>")
     main = add("main", "PBXGroup", children=[products], sourceTree="<group>")
     files = []
-    for name in MACOS_SOURCES:
+    for name in MACOS_SOURCES + (MACOS_INSPECTOR_SOURCES if inspector else ()):
         reference = add(name, "PBXFileReference", path="Sources/" + name,
                         lastKnownFileType="sourcecode.swift", sourceTree="<group>")
         objects[main]["children"].append(reference)
@@ -270,17 +278,22 @@ def create_macos_project(destination, fixtures, package_url, revision):
 
     dependency = add("dependency", "XCSwiftPackageProductDependency", package=package, productName="FleetMacOS")
     link = add("link", "PBXBuildFile", productRef=dependency)
+    dependencies, links = [dependency], [link]
+    if inspector:
+        extra = add("viewinspector-dependency", "XCSwiftPackageProductDependency", package=inspector, productName="ViewInspector")
+        dependencies.append(extra)
+        links.append(add("viewinspector-link", "PBXBuildFile", productRef=extra))
     test = add("test", "PBXNativeTarget", name="MacOSConsumerTests", productName="MacOSConsumerTests",
                productReference=product, productType="com.apple.product-type.bundle.unit-test",
                buildConfigurationList=configurations("test", settings),
                buildPhases=[phase("sources", "PBXSourcesBuildPhase", files=files),
-                            phase("frameworks", "PBXFrameworksBuildPhase", files=[link])],
-               buildRules=[], dependencies=[], packageProductDependencies=[dependency])
+                            phase("frameworks", "PBXFrameworksBuildPhase", files=links)],
+               buildRules=[], dependencies=[], packageProductDependencies=dependencies)
     root = add("project", "PBXProject", attributes={"LastUpgradeCheck": "2660"},
                buildConfigurationList=configurations("project", {}), compatibilityVersion="Xcode 14.0",
                developmentRegion="en", knownRegions=["en", "Base"], mainGroup=main,
                productRefGroup=products, projectDirPath="", projectRoot="", targets=[test],
-               packageReferences=[package])
+               packageReferences=[package] + ([inspector] if inspector else []))
     (project / "project.pbxproj").write_bytes(plistlib.dumps({"archiveVersion": "1", "classes": {},
         "objectVersion": "56", "objects": objects, "rootObject": root}, sort_keys=False))
     reference = (f'<BuildableReference BuildableIdentifier="primary" BlueprintIdentifier="{test}" '

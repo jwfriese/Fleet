@@ -216,8 +216,10 @@ def check(root, platform="all", allow_dirty=False, viewinspector=False, snapshot
     if allow_dirty:
         package_url, revision = snapshot(root, run / "DevelopmentPackage")
         print("Development snapshot only; this run cannot certify a release.", flush=True)
+    # The macOS lane optionally adds ViewInspector for mounted Button/TextField/SecureField interaction.
+    macos_inspector = (VIEWINSPECTOR_URL, VIEWINSPECTOR_REVISION) if viewinspector else None
     if platform == "macos":
-        # The macOS consumer resolves only FleetMacOS; never report integrations it did not resolve.
+        # The iOS/tvOS integrations are not resolved by a macOS-only run; never report them.
         viewinspector = snapshottesting = False
     inspector = (VIEWINSPECTOR_URL, VIEWINSPECTOR_REVISION) if viewinspector else None
     snapshot_package = (SNAPSHOTTESTING_URL, SNAPSHOTTESTING_REVISION) if snapshottesting else None
@@ -235,7 +237,7 @@ def check(root, platform="all", allow_dirty=False, viewinspector=False, snapshot
         directory.mkdir()
         if selected == "macos":
             try:
-                macos_counts, macos_links = check_macos(root, run, directory, package_url, revision)
+                macos_counts, macos_links = check_macos(root, run, directory, package_url, revision, macos_inspector)
             finally:
                 stage_macos_evidence(run, directory)
             continue
@@ -302,7 +304,8 @@ def check(root, platform="all", allow_dirty=False, viewinspector=False, snapshot
         raise DistributionError("The source checkout changed during consumer validation.")
     evidence = {"schema": 1, "source_commit": commit, "package_revision": revision,
                 "development_snapshot": allow_dirty, "tests": counts, "preserve_timing_tests": policy_counts,
-                "macos_tests": macos_counts, "macos_linked_libraries": macos_links,
+                "macos_tests": macos_counts, "macos_integrations": ["viewinspector"] if macos_inspector and macos_counts is not None else [],
+                "macos_viewinspector_revision": VIEWINSPECTOR_REVISION if macos_inspector and macos_counts is not None else None, "macos_linked_libraries": macos_links,
                 "products": [name for name, ran in (("Fleet", bool(counts)), ("FleetMacOS", macos_counts is not None)) if ran],
                 "optional_integrations": [name for name, on in (("viewinspector", viewinspector), ("snapshottesting", snapshottesting)) if on],
                 "framework_results": inspector_results,
@@ -332,9 +335,9 @@ def stage_macos_evidence(run, directory):
         shutil.copytree(bundle, staging / "macos-TestResults.xcresult", dirs_exist_ok=True)
 
 
-def check_macos(root, run, directory, package_url, revision):
+def check_macos(root, run, directory, package_url, revision, inspector=None):
     """Build and run the independent macOS consumer of the FleetMacOS product at the exact package revision."""
-    project = create_macos_project(run / "MacOSConsumer", root / "Integration/MacOSConsumer", package_url, revision)
+    project = create_macos_project(run / "MacOSConsumer", root / "Integration/MacOSConsumer", package_url, revision, inspector)
     packages = run / "SourcePackages-macos"
     base = ["xcodebuild", "-project", project, "-scheme", "MacOSConsumer", "-clonedSourcePackagesDirPath", packages]
     logged_run(root, directory / "resolve.log", [*base, "-resolvePackageDependencies"])
@@ -343,7 +346,7 @@ def check_macos(root, run, directory, package_url, revision):
         revisions = sorted(pin["state"]["revision"] for pin in json.loads(lockfile.read_text())["pins"])
     except (OSError, KeyError, ValueError) as error:
         raise DistributionError("Missing or invalid macOS consumer package lockfile.") from error
-    if revisions != [revision]:
+    if revisions != sorted([revision] + ([inspector[1]] if inspector else [])):
         raise DistributionError("macOS consumer resolution did not pin the exact package revision.")
     shutil.copy2(lockfile, directory / "Package.resolved")
     derived = run / "DerivedData" / "macos"
