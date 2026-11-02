@@ -230,8 +230,9 @@ extension FleetMacOSHost {
         return value!
     }
 
-    /// A synchronous, non-throwing look for use inside a wait condition. `nil` if nothing answered or the body threw.
+    /// A synchronous, non-throwing look for use inside a wait condition. `nil` if the scope has ended, nothing answered or the body threw.
     func probe<V: View, T>(_ seam: InspectionSeam<V>, _ body: @escaping @MainActor (MacOSInspector) throws -> T) -> T? {
+        guard isScopeActive else { return nil }
         var value: T?
         _ = seam.run { view in
             let session = InspectionSession()

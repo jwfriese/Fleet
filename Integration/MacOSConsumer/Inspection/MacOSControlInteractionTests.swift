@@ -67,6 +67,29 @@ private func expectFailure(_ expected: MacOSQueryFailure, _ body: () throws -> V
 @MainActor
 @Suite("Mounted macOS control interaction", .serialized)
 struct MacOSControlInteractionTests {
+    @Test func endedHostCannotProbeOrDriveItselfOrASuccessor() async throws {
+        let oldModel = UnlockModel()
+        let oldSeam = InspectionSeam<UnlockScreen>()
+        var ended: FleetMacOSHost?
+        try await FleetMacOS.withHostedView(UnlockScreen(model: oldModel, seam: oldSeam)) { host in
+            try await host.waitUntilReady()
+            ended = host
+        }
+        let retained = try #require(ended)
+        let successorModel = UnlockModel()
+        let successorSeam = InspectionSeam<UnlockScreen>()
+        try await FleetMacOS.withHostedView(UnlockScreen(model: successorModel, seam: successorSeam)) { host in
+            try await host.waitUntilReady()
+            #expect(!retained.isScopeActive)
+            let stale = retained.probe(oldSeam) { try $0.container("unlock-form").textField("Profile name").setInput("STALE") }
+            #expect(stale == nil)
+            let crossed = retained.probe(successorSeam) { try $0.container("unlock-form").textField("Profile name").setInput("STALE") }
+            #expect(crossed == nil)
+            #expect(oldModel.profileName.isEmpty)
+            #expect(successorModel.profileName.isEmpty)
+        }
+    }
+
     @Test func secureFieldAndButtonDriveTheMountedBindingsAndReplaceTheScreen() async throws {
         let model = UnlockModel()
         let seam = InspectionSeam<UnlockScreen>()

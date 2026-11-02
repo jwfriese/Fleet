@@ -110,6 +110,8 @@ public final class FleetMacOSHost {
 
     let lifecycle = FleetMacOSLifecycle()
     private(set) var isActive = true
+    /// Whether this host's `withHostedView` scope is still running. Ended hosts reject updates, waits and inspection.
+    public var isScopeActive: Bool { isActive }
     private var cleanups: [@MainActor () -> Void] = []
     private var previousContent: NSViewController?
     private var previousContentView: NSView?
