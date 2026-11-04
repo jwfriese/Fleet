@@ -10,7 +10,7 @@
 | [SwiftUI hosting](SwiftUIHosting.md) | iOS, tvOS | `Fleet.withHostedView`: scoped SwiftUI host, distinct appearance/update/removal and observed-task events, lower-level `mount`. |
 | [Menu and swipe-row actions](ContextualActions.md) | iOS, tvOS | Surface-qualified row action dispatch (`perform(_:onElement:via:)`): handler dispatch vs menu presentation vs physical gesture; failures; XCUITest complement. |
 | [macOS SwiftUI hosting](MacOSHosting.md) | macOS 13+ | `FleetMacOS.withHostedView`: test-only scoped `NSHostingController` host in an `NSWindow`; no UIKit or runtime hooks. |
-| [macOS control interaction](MacOSControlInteraction.md) | macOS 13+ | Optional ViewInspector adapter: exact-one, secret-safe Button, TextField and SecureField dispatch on a mounted `FleetMacOS` screen. |
+| [macOS control interaction](MacOSControlInteraction.md) | macOS 13+ | Optional ViewInspector adapter: exact-one, secret-safe Button, TextField, SecureField and multiline TextEditor dispatch on a mounted `FleetMacOS` screen. |
 | [ViewInspector compatibility](ViewInspector.md) | iOS, tvOS | Executable proof (optional, consumer test target only) of inspecting the SwiftUI screen a Fleet context owns; pinned matrix, required seam and evidence levels. |
 | [Separate application module](ExternalModuleAdoption.md) | iOS, tvOS | Test your app's screens with Fleet from the test bundle alone: the app ships without Fleet, tests tap the real Button and catch visual regressions. |
 | [Named environments and snapshots](SnapshotTesting.md) | iOS, tvOS | Recipe (optional, consumer test target only) running named environment cases in sequential hosted scopes, with an adapter that compares the mounted screen through SnapshotTesting. |
