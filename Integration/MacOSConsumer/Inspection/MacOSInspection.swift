@@ -3,7 +3,8 @@ import FleetMacOS
 import SwiftUI
 import ViewInspector
 
-// A test-side adapter for driving mounted macOS SwiftUI Button, TextField and SecureField controls.
+// A test-side adapter for driving mounted macOS SwiftUI Button, TextField, SecureField and
+// multiline TextEditor controls.
 // ViewInspector is compiled into this consumer's test target only; neither FleetMacOS nor the
 // application target imports it.
 
@@ -119,6 +120,42 @@ struct TextInputHandle {
     }
 }
 
+/// A mounted multiline `TextEditor` located by accessibility identifier. Reads and writes go through
+/// the editor's actual `String` binding; newlines are preserved exactly. Neither is physical typing.
+@MainActor
+struct TextEditorHandle {
+    fileprivate let view: InspectableView<ViewType.TextEditor>
+    fileprivate let session: InspectionSession
+    let target: String
+    let scope: String
+
+    var isEnabled: Bool { !view.isDisabled() }
+
+    /// The value currently held by the mounted instance's binding. Requery after a state change.
+    func text() throws -> String {
+        try session.requireValid(target)
+        return try unsupportedIfUnreadable { try view.input() }
+    }
+
+    /// Replaces the whole bound string (use `""` to clear). Throws `.disabled` before writing.
+    @discardableResult
+    func setText(_ value: String) throws -> MacOSActionKind {
+        try session.requireValid(target)
+        if view.isDisabled() { throw MacOSQueryFailure.disabled(target: target, scope: scope) }
+        session.record("write binding of \(target) (value withheld)")
+        try unsupportedIfUnreadable { try view.setInput(value) }
+        return .writesBinding
+    }
+
+    private func unsupportedIfUnreadable<T>(_ body: () throws -> T) throws -> T {
+        do { return try body() } catch {
+            throw MacOSQueryFailure.unsupported(
+                control: target, reason: "the editor's binding could not be read or written as a plain String",
+                recommendation: "write the model the editor binds to, or use an XCUITest")
+        }
+    }
+}
+
 extension InspectionSession {
     fileprivate func requireValid(_ target: String) throws {
         if !isValid { throw MacOSQueryFailure.obsolete(target: target) }
@@ -180,11 +217,19 @@ struct MacOSInspector {
                                session: session, target: target, scope: scope, isSecure: true)
     }
 
+    /// Finds exactly one `TextEditor` in scope whose accessibility identifier is `identifier`.
+    func textEditor(identifier: String) throws -> TextEditorHandle {
+        let target = "text editor '\(identifier)'"
+        try session.requireValid(target)
+        let view = try exactlyOne(ViewType.TextEditor.self, target) { try $0.accessibilityIdentifier() == identifier }
+        return TextEditorHandle(view: view, session: session, target: target, scope: scope)
+    }
+
     /// Controls outside the tested matrix fail explicitly instead of being simulated.
     static func unsupported(_ control: String) -> MacOSQueryFailure {
         switch control {
         case "toggle", "picker", "menu", "gesture", "swipeAction":
-            .unsupported(control: control, reason: "it is outside the macOS control matrix (Button, TextField, SecureField)",
+            .unsupported(control: control, reason: "it is outside the macOS control matrix (Button, TextField, SecureField, TextEditor)",
                          recommendation: "write the model the control binds to, or use an XCUITest for physical interaction")
         case "renderedText", "visibility", "keyEvent":
             .unsupported(control: control, reason: "inspection reports declaration content of the mounted instance, not rendered or physical input",

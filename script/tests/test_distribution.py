@@ -288,6 +288,7 @@ class MacOSFrameworkCountTests(unittest.TestCase):
         self.assertEqual(names, ["FleetMacOS", "ViewInspector"])
         paths = sorted(o["path"] for o in objects.values() if o["isa"] == "PBXFileReference" and o.get("path", "").endswith(".swift"))
         self.assertIn("Sources/Inspection/MacOSControlInteractionTests.swift", paths)
+        self.assertIn("Sources/Inspection/MacOSTextEditorInteractionTests.swift", paths)
 
     def test_generated_macos_project_depends_only_on_the_fleetmacos_product(self):
         import plistlib
