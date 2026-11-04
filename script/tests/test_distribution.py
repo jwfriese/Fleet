@@ -272,6 +272,23 @@ class MacOSFrameworkCountTests(unittest.TestCase):
         checker.stage_macos_evidence(partial, partial / "macos")
         self.assertEqual([p.name for p in (partial / "ios").iterdir()], ["macos-xcodebuild.log"])
 
+    def test_generated_macos_project_adds_viewinspector_only_when_requested(self):
+        import plistlib
+        from consumer_project import create_macos_project
+        fixtures = REPO / "Integration/MacOSConsumer"
+        def products(project):
+            objects = plistlib.loads((project / "project.pbxproj").read_bytes())["objects"]
+            return sorted(o["productName"] for o in objects.values() if o["isa"] == "XCSwiftPackageProductDependency"), objects
+        plain, _ = products(create_macos_project(Path(tempfile.mkdtemp(prefix="macos consumer ")) / "Consumer",
+                                                 fixtures, "file:///package", "a" * 40))
+        self.assertEqual(plain, ["FleetMacOS"])
+        project = create_macos_project(Path(tempfile.mkdtemp(prefix="macos consumer ")) / "Consumer", fixtures,
+                                       "file:///package", "a" * 40, ("https://example.invalid/vi", "b" * 40))
+        names, objects = products(project)
+        self.assertEqual(names, ["FleetMacOS", "ViewInspector"])
+        paths = sorted(o["path"] for o in objects.values() if o["isa"] == "PBXFileReference" and o.get("path", "").endswith(".swift"))
+        self.assertIn("Sources/Inspection/MacOSControlInteractionTests.swift", paths)
+
     def test_generated_macos_project_depends_only_on_the_fleetmacos_product(self):
         import plistlib
         from consumer_project import create_macos_project

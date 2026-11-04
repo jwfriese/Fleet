@@ -25,13 +25,13 @@ import FleetMacOS
 
 ## Limits
 
-Fleet observes the mounted hierarchy and the application state you name. It does not send physical input, prove hit testing or accessibility, drive AppKit controls, or exercise OS authentication, Keychain or biometrics: inject a fake service, and cover real OS authentication with a separate signed integration check. Interactions with controls require another inspection tool (for example ViewInspector) or calling the same closure the control runs. The iOS/tvOS `Fleet` product and its validation are unchanged. Plain `swift test` on the full manifest also tries to build the UIKit `Fleet` target, so it is not the validation route.
+Fleet observes the mounted hierarchy and the application state you name. It does not send physical input, prove hit testing or accessibility, drive AppKit controls, or exercise OS authentication, Keychain or biometrics: inject a fake service, and cover real OS authentication with a separate signed integration check. Driving Button, TextField and SecureField on the mounted screen uses the optional ViewInspector adapter in [MacOSControlInteraction.md](MacOSControlInteraction.md); `FleetMacOS` itself still only hosts. The iOS/tvOS `Fleet` product and its validation are unchanged. Plain `swift test` on the full manifest also tries to build the UIKit `Fleet` target, so it is not the validation route.
 
 ## Support and validation
 
 - **Minimum deployment:** macOS 13, set in `Package.swift`. It is the lowest version the manifest declares; it is not a statement that macOS 13 through 25 were run.
 - **Actually tested:** one host and toolchain at a time, as recorded in the receipt: the Xcode 26.6 / Swift 6.3.3 baseline on the macOS version of the machine that ran the check (the `macos-26` GitHub-hosted runner in CI). No other macOS version has been run.
-- **Not provided:** AppKit control interaction, gesture breadth, accessibility or hit-testing proof, and any UIKit `Fleet` feature. `FleetMacOS` is hosting only; it does not mirror `Fleet.withContext`, `FleetEnvironment` or the `UI*` pages.
+- **Not provided by `FleetMacOS` itself:** control interaction (see the adapter page), gesture breadth, accessibility or hit-testing proof, and any UIKit `Fleet` feature. `FleetMacOS` is hosting only; it does not mirror `Fleet.withContext`, `FleetEnvironment` or the `UI*` pages.
 
 ## Reproducing the external-consumer check
 
