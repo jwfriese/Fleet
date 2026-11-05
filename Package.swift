@@ -19,6 +19,12 @@ let package = Package(
         .library(name: "Fleet", type: .dynamic, targets: ["Fleet"]),
         // Test-only macOS SwiftUI hosting. Independent of UIKit and the Objective-C runtime hooks.
         .library(name: "FleetMacOS", targets: ["FleetMacOS"]),
+        // Optional, test-only interaction adapter for FleetMacOS-hosted Button/TextField/SecureField/TextEditor.
+        // ViewInspector is an implementation dependency; hosting-only consumers do not link it.
+        .library(name: "FleetMacOSInspection", targets: ["FleetMacOSInspection"]),
+    ],
+    dependencies: [
+        .package(url: "https://github.com/nalexn/ViewInspector", exact: "0.10.5"),
     ],
     targets: [
         .target(
@@ -37,6 +43,11 @@ let package = Package(
             resources: [.copy("Script/copy_storyboard_info_files.sh")]
         ),
         .target(name: "FleetMacOS", path: "FleetMacOS"),
+        .target(
+            name: "FleetMacOSInspection",
+            dependencies: ["FleetMacOS", .product(name: "ViewInspector", package: "ViewInspector")],
+            path: "FleetMacOSInspection"
+        ),
         .testTarget(name: "FleetMacOSTests", dependencies: ["FleetMacOS"], path: "FleetMacOSTests"),
     ],
     swiftLanguageModes: [.v6]

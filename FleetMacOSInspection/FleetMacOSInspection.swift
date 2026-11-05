@@ -1,44 +1,16 @@
-import Combine
 import FleetMacOS
 import SwiftUI
 import ViewInspector
 
-// A test-side adapter for driving mounted macOS SwiftUI Button, TextField, SecureField and
-// multiline TextEditor controls.
-// ViewInspector is compiled into this consumer's test target only; neither FleetMacOS nor the
-// application target imports it.
-
-// MARK: - Application seam (Combine only; no testing import)
-
-/// A main-actor, single-slot rendezvous. The screen subscribes with
-/// `.onReceive(seam.notice) { seam.visit(self) }`; the test delivers one request to the mounted
-/// instance. The request is cleared when `run` returns, whether or not an instance answered.
-@MainActor
-final class InspectionSeam<V: View> {
-    let notice = PassthroughSubject<Void, Never>()
-    private var pending: (@MainActor (V) -> Void)?
-    var hasPendingRequest: Bool { pending != nil }
-
-    func visit(_ view: V) {
-        let request = pending
-        pending = nil
-        request?(view)
-    }
-
-    func run(_ request: @escaping @MainActor (V) -> Void) -> Bool {
-        var answered = false
-        pending = { view in answered = true; request(view) }
-        notice.send()
-        pending = nil
-        return answered
-    }
-}
+// FleetMacOSInspection: a test-only adapter for driving mounted macOS SwiftUI Button, TextField,
+// SecureField and multiline TextEditor controls. ViewInspector is an implementation dependency of
+// this product; FleetMacOS and application targets do not import it.
 
 // MARK: - Failures
 
 /// Distinct, recoverable outcomes. None is resolved by taking a first match, and no case carries
 /// a typed or secure value, so a description is safe to print.
-enum MacOSQueryFailure: Error, Equatable, CustomStringConvertible {
+public enum MacOSQueryFailure: Error, Equatable, CustomStringConvertible {
     case absent(target: String, scope: String)
     case ambiguous(target: String, scope: String, count: Int)
     case disabled(target: String, scope: String)
@@ -48,7 +20,7 @@ enum MacOSQueryFailure: Error, Equatable, CustomStringConvertible {
     /// No mounted instance answered the seam within the wait.
     case notMounted(screen: String)
 
-    var description: String {
+    public var description: String {
         switch self {
         case let .absent(target, scope): "\(target) is absent in \(scope)"
         case let .ambiguous(target, scope, count): "\(count) matches for \(target) in \(scope); expected exactly one"
@@ -61,7 +33,7 @@ enum MacOSQueryFailure: Error, Equatable, CustomStringConvertible {
 }
 
 /// What each operation does. None of them is physical input.
-enum MacOSActionKind: String, Equatable {
+public enum MacOSActionKind: String, Equatable {
     case invokesClosure = "invokes the button's action closure"
     case writesBinding = "writes the control's binding"
 }
@@ -72,7 +44,7 @@ enum MacOSActionKind: String, Equatable {
 /// the screen that replaced the one it was found in. The trace names actions and targets only:
 /// a value written to a text or secure field is never recorded.
 @MainActor
-final class InspectionSession {
+final class MacOSInspectionSession {
     private(set) var isValid = true
     private(set) var trace: [String] = []
     func record(_ entry: String) { trace.append(entry) }
@@ -82,16 +54,16 @@ final class InspectionSession {
 // MARK: - Handles
 
 @MainActor
-struct ButtonHandle {
+public struct MacOSButtonHandle {
     fileprivate let view: InspectableView<ViewType.Button>
-    fileprivate let session: InspectionSession
-    let target: String
-    let scope: String
+    fileprivate let session: MacOSInspectionSession
+    public let target: String
+    public let scope: String
 
-    var isEnabled: Bool { !view.isDisabled() }
+    public var isEnabled: Bool { !view.isDisabled() }
 
     @discardableResult
-    func tap() throws -> MacOSActionKind {
+    public func tap() throws -> MacOSActionKind {
         try session.requireValid(target)
         if view.isDisabled() { throw MacOSQueryFailure.disabled(target: target, scope: scope) }
         session.record("tap \(target)")
@@ -101,17 +73,17 @@ struct ButtonHandle {
 }
 
 @MainActor
-struct TextInputHandle {
+public struct MacOSTextInputHandle {
     fileprivate let write: (String) throws -> Void
     fileprivate let isDisabled: Bool
-    fileprivate let session: InspectionSession
-    let target: String
-    let scope: String
-    let isSecure: Bool
+    fileprivate let session: MacOSInspectionSession
+    public let target: String
+    public let scope: String
+    public let isSecure: Bool
 
     /// Writes the control's binding. The value is never recorded or reported.
     @discardableResult
-    func setInput(_ value: String) throws -> MacOSActionKind {
+    public func setInput(_ value: String) throws -> MacOSActionKind {
         try session.requireValid(target)
         if isDisabled { throw MacOSQueryFailure.disabled(target: target, scope: scope) }
         session.record("write binding of \(target) (value withheld)")
@@ -123,23 +95,23 @@ struct TextInputHandle {
 /// A mounted multiline `TextEditor` located by accessibility identifier. Reads and writes go through
 /// the editor's actual `String` binding; newlines are preserved exactly. Neither is physical typing.
 @MainActor
-struct TextEditorHandle {
+public struct MacOSTextEditorHandle {
     fileprivate let view: InspectableView<ViewType.TextEditor>
-    fileprivate let session: InspectionSession
-    let target: String
-    let scope: String
+    fileprivate let session: MacOSInspectionSession
+    public let target: String
+    public let scope: String
 
-    var isEnabled: Bool { !view.isDisabled() }
+    public var isEnabled: Bool { !view.isDisabled() }
 
     /// The value currently held by the mounted instance's binding. Requery after a state change.
-    func text() throws -> String {
+    public func text() throws -> String {
         try session.requireValid(target)
         return try unsupportedIfUnreadable { try view.input() }
     }
 
     /// Replaces the whole bound string (use `""` to clear). Throws `.disabled` before writing.
     @discardableResult
-    func setText(_ value: String) throws -> MacOSActionKind {
+    public func setText(_ value: String) throws -> MacOSActionKind {
         try session.requireValid(target)
         if view.isDisabled() { throw MacOSQueryFailure.disabled(target: target, scope: scope) }
         session.record("write binding of \(target) (value withheld)")
@@ -156,7 +128,7 @@ struct TextEditorHandle {
     }
 }
 
-extension InspectionSession {
+extension MacOSInspectionSession {
     fileprivate func requireValid(_ target: String) throws {
         if !isValid { throw MacOSQueryFailure.obsolete(target: target) }
     }
@@ -170,21 +142,21 @@ extension InspectionSession {
 /// neither proof of layout or visibility nor of physical input: `tap` calls the action closure and
 /// `setInput` writes the binding, with no hit testing, key events, accessibility or OS authentication.
 @MainActor
-struct MacOSInspector {
+public struct MacOSInspector {
     typealias Root = InspectableView<ViewType.ClassifiedView>
     let root: Root
-    let scope: String
-    let session: InspectionSession
+    public let scope: String
+    let session: MacOSInspectionSession
 
-    init(_ root: Root, scope: String = "screen", session: InspectionSession = InspectionSession()) {
+    init(_ root: Root, scope: String = "screen", session: MacOSInspectionSession = MacOSInspectionSession()) {
         self.root = root
         self.scope = scope
         self.session = session
     }
 
-    var trace: [String] { session.trace }
+    public var trace: [String] { session.trace }
 
-    func container(_ identifier: String) throws -> MacOSInspector {
+    public func container(_ identifier: String) throws -> MacOSInspector {
         let target = "container '\(identifier)'"
         let matches = root.findAll(where: { try $0.accessibilityIdentifier() == identifier })
         switch matches.count {
@@ -194,39 +166,39 @@ struct MacOSInspector {
         }
     }
 
-    func button(_ label: String) throws -> ButtonHandle {
+    public func button(_ label: String) throws -> MacOSButtonHandle {
         let target = "button '\(label)'"
         try session.requireValid(target)
         let view = try exactlyOne(ViewType.Button.self, target) { try $0.labelView().text().string() == label }
-        return ButtonHandle(view: view, session: session, target: target, scope: scope)
+        return MacOSButtonHandle(view: view, session: session, target: target, scope: scope)
     }
 
-    func textField(_ title: String) throws -> TextInputHandle {
+    public func textField(_ title: String) throws -> MacOSTextInputHandle {
         let target = "text field '\(title)'"
         try session.requireValid(target)
         let view = try exactlyOne(ViewType.TextField.self, target) { try $0.labelView().text().string() == title }
-        return TextInputHandle(write: { try view.setInput($0) }, isDisabled: view.isDisabled(),
+        return MacOSTextInputHandle(write: { try view.setInput($0) }, isDisabled: view.isDisabled(),
                                session: session, target: target, scope: scope, isSecure: false)
     }
 
-    func secureField(_ title: String) throws -> TextInputHandle {
+    public func secureField(_ title: String) throws -> MacOSTextInputHandle {
         let target = "secure field '\(title)'"
         try session.requireValid(target)
         let view = try exactlyOne(ViewType.SecureField.self, target) { try $0.labelView().text().string() == title }
-        return TextInputHandle(write: { try view.setInput($0) }, isDisabled: view.isDisabled(),
+        return MacOSTextInputHandle(write: { try view.setInput($0) }, isDisabled: view.isDisabled(),
                                session: session, target: target, scope: scope, isSecure: true)
     }
 
     /// Finds exactly one `TextEditor` in scope whose accessibility identifier is `identifier`.
-    func textEditor(identifier: String) throws -> TextEditorHandle {
+    public func textEditor(identifier: String) throws -> MacOSTextEditorHandle {
         let target = "text editor '\(identifier)'"
         try session.requireValid(target)
         let view = try exactlyOne(ViewType.TextEditor.self, target) { try $0.accessibilityIdentifier() == identifier }
-        return TextEditorHandle(view: view, session: session, target: target, scope: scope)
+        return MacOSTextEditorHandle(view: view, session: session, target: target, scope: scope)
     }
 
     /// Controls outside the tested matrix fail explicitly instead of being simulated.
-    static func unsupported(_ control: String) -> MacOSQueryFailure {
+    public static func unsupported(_ control: String) -> MacOSQueryFailure {
         switch control {
         case "toggle", "picker", "menu", "gesture", "swipeAction":
             .unsupported(control: control, reason: "it is outside the macOS control matrix (Button, TextField, SecureField, TextEditor)",
@@ -252,21 +224,44 @@ struct MacOSInspector {
     }
 }
 
+// MARK: - Endpoint
+
+/// The app-owned, framework-only rendezvous a mounted screen answers. The application declares a
+/// small seam (for example a main-actor single-slot object plus a Combine subject the screen
+/// observes) and the test target conforms it to this protocol. The application imports neither
+/// Fleet nor ViewInspector.
+@MainActor
+public protocol MacOSInspectionEndpoint {
+    associatedtype Screen: View
+    /// Offers `visit` to the mounted `Screen` instance. Returns `true` if an instance ran it
+    /// synchronously, `false` if nothing answered. Must not retain `visit` after returning.
+    func deliver(_ visit: @escaping @MainActor (Screen) -> Void) -> Bool
+}
+
+/// A closure-based endpoint for seams that are not worth a conformance.
+@MainActor
+public struct MacOSInspectionBridge<Screen: View>: MacOSInspectionEndpoint {
+    private let bridge: @MainActor (@escaping @MainActor (Screen) -> Void) -> Bool
+    public init(_ deliver: @escaping @MainActor (@escaping @MainActor (Screen) -> Void) -> Bool) { bridge = deliver }
+    public func deliver(_ visit: @escaping @MainActor (Screen) -> Void) -> Bool { bridge(visit) }
+}
+
 // MARK: - Entry points on the hosted scope
 
 extension FleetMacOSHost {
-    /// Runs `body` against the mounted instance once it answers the seam, within `timeout`. The
+    /// Runs `body` against the mounted instance once it answers the endpoint, within `timeout`. The
     /// inspector's handles are invalid after `body` returns or throws. An error from `body`
-    /// propagates unchanged; no answer throws `FleetMacOSFailure(.timedOut)`; cancellation is unchanged.
-    func inspect<V: View, T>(
-        _ seam: InspectionSeam<V>, timeout: TimeInterval = 2,
+    /// propagates unchanged; no answer throws `FleetMacOSFailure(.timedOut)`; an invalid timeout throws
+    /// `.invalidInput`; cancellation is unchanged. This adds no second hosting lifecycle.
+    public func inspect<E: MacOSInspectionEndpoint, T>(
+        _ endpoint: E, timeout: TimeInterval = 2,
         _ body: @escaping @MainActor (MacOSInspector) throws -> T
     ) async throws -> T {
         var value: T?
         var failure: Error?
-        try await waitUntil("mounted \(V.self) to answer inspection", timeout: timeout) {
-            seam.run { view in
-                let session = InspectionSession()
+        try await waitUntil("mounted \(E.Screen.self) to answer inspection", timeout: timeout) {
+            endpoint.deliver { view in
+                let session = MacOSInspectionSession()
                 defer { session.end() }
                 do { value = try body(MacOSInspector(try view.inspect(), session: session)) } catch { failure = error }
             }
@@ -276,11 +271,11 @@ extension FleetMacOSHost {
     }
 
     /// A synchronous, non-throwing look for use inside a wait condition. `nil` if the scope has ended, nothing answered or the body threw.
-    func probe<V: View, T>(_ seam: InspectionSeam<V>, _ body: @escaping @MainActor (MacOSInspector) throws -> T) -> T? {
+    public func probe<E: MacOSInspectionEndpoint, T>(_ endpoint: E, _ body: @escaping @MainActor (MacOSInspector) throws -> T) -> T? {
         guard isScopeActive else { return nil }
         var value: T?
-        _ = seam.run { view in
-            let session = InspectionSession()
+        _ = endpoint.deliver { view in
+            let session = MacOSInspectionSession()
             defer { session.end() }
             value = try? body(MacOSInspector(try view.inspect(), session: session))
         }
