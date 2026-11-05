@@ -4,7 +4,7 @@ import SwiftUI
 import ViewInspector
 
 // A test-side adapter for driving mounted macOS SwiftUI Button, TextField, SecureField and
-// multiline TextEditor controls.
+// multiline TextEditor controls, and for moving a mounted Slider's numeric binding.
 // ViewInspector is compiled into this consumer's test target only; neither FleetMacOS nor the
 // application target imports it.
 
@@ -156,6 +156,55 @@ struct TextEditorHandle {
     }
 }
 
+/// A mounted `Slider` located by accessibility identifier. ViewInspector exposes the slider's binding
+/// normalized to 0...1 and does not report the declared `in:` range, so the caller states that range
+/// and the adapter converts both ways. The application's setter then runs with the chosen value in
+/// its own units. Neither read nor write is a drag.
+@MainActor
+struct SliderHandle {
+    fileprivate let view: InspectableView<ViewType.Slider>
+    fileprivate let session: InspectionSession
+    let target: String
+    let scope: String
+    let range: ClosedRange<Double>
+
+    var isEnabled: Bool { !view.isDisabled() }
+
+    /// The value the mounted instance's binding currently reports, in the declared range's units.
+    /// Requery after a state change.
+    func value() throws -> Double {
+        try session.requireValid(target)
+        let fraction = try unsupported("the slider's binding could not be read as a Double") { try view.value() }
+        return range.lowerBound + fraction * (range.upperBound - range.lowerBound)
+    }
+
+    /// Calls the slider's binding setter with `value`. Throws `.disabled` before writing, and
+    /// `.unsupported` for a value outside the declared range (SwiftUI would clamp it silently).
+    @discardableResult
+    func setValue(_ value: Double) throws -> MacOSActionKind {
+        try session.requireValid(target)
+        if view.isDisabled() { throw MacOSQueryFailure.disabled(target: target, scope: scope) }
+        let width = range.upperBound - range.lowerBound
+        guard range.contains(value), width > 0 else {
+            throw MacOSQueryFailure.unsupported(
+                control: target, reason: "\(value) is outside the declared range \(range)",
+                recommendation: "choose a value inside the range the slider declares")
+        }
+        session.record("write binding of \(target) to \(value)")
+        try unsupported("the slider's binding could not be written as a Double") {
+            try view.setValue((value - range.lowerBound) / width)
+        }
+        return .writesBinding
+    }
+
+    private func unsupported<T>(_ reason: String, _ body: () throws -> T) throws -> T {
+        do { return try body() } catch {
+            throw MacOSQueryFailure.unsupported(
+                control: target, reason: reason, recommendation: "write the model the slider binds to, or use an XCUITest")
+        }
+    }
+}
+
 extension InspectionSession {
     fileprivate func requireValid(_ target: String) throws {
         if !isValid { throw MacOSQueryFailure.obsolete(target: target) }
@@ -225,11 +274,20 @@ struct MacOSInspector {
         return TextEditorHandle(view: view, session: session, target: target, scope: scope)
     }
 
+    /// Finds exactly one `Slider` in scope whose accessibility identifier is `identifier`. `range`
+    /// must be the `in:` range the slider declares.
+    func slider(identifier: String, in range: ClosedRange<Double>) throws -> SliderHandle {
+        let target = "slider '\(identifier)'"
+        try session.requireValid(target)
+        let view = try exactlyOne(ViewType.Slider.self, target) { try $0.accessibilityIdentifier() == identifier }
+        return SliderHandle(view: view, session: session, target: target, scope: scope, range: range)
+    }
+
     /// Controls outside the tested matrix fail explicitly instead of being simulated.
     static func unsupported(_ control: String) -> MacOSQueryFailure {
         switch control {
         case "toggle", "picker", "menu", "gesture", "swipeAction":
-            .unsupported(control: control, reason: "it is outside the macOS control matrix (Button, TextField, SecureField, TextEditor)",
+            .unsupported(control: control, reason: "it is outside the macOS control matrix (Button, TextField, SecureField, TextEditor, Slider)",
                          recommendation: "write the model the control binds to, or use an XCUITest for physical interaction")
         case "renderedText", "visibility", "keyEvent":
             .unsupported(control: control, reason: "inspection reports declaration content of the mounted instance, not rendered or physical input",

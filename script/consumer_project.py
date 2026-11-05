@@ -226,7 +226,8 @@ def create_project(destination, fixtures, package_url, revision, viewinspector=N
 MACOS_SOURCES = ("MacOSFixtures.swift", "MacOSXCTestConsumerTests.swift", "MacOSSwiftTestingConsumerTests.swift")
 # Compiled only when the optional pinned ViewInspector dependency is added to the consumer.
 MACOS_INSPECTOR_SOURCES = ("Inspection/MacOSInspection.swift", "Inspection/MacOSControlInteractionTests.swift",
-                           "Inspection/MacOSTextEditorInteractionTests.swift")
+                           "Inspection/MacOSTextEditorInteractionTests.swift",
+                           "Inspection/MacOSSliderInteractionTests.swift")
 
 
 def create_macos_project(destination, fixtures, package_url, revision, viewinspector=None):
