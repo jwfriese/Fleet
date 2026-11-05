@@ -41,6 +41,7 @@ project = pathlib.Path(sys.argv[sys.argv.index('-project') + 1])
 if '-resolvePackageDependencies' in sys.argv:
     data = plistlib.loads((project / 'project.pbxproj').read_bytes())
     revisions = [o['requirement']['revision'] for o in data['objects'].values() if o['isa'] == 'XCRemoteSwiftPackageReference']
+    revisions = sorted(set(revisions) | {'2dacb6e514be19379c605a5a11564d0f3fea89d9'})
     if os.environ.get('FLEET_FAKE_WRONG_PIN'):
         revisions = ['0' * 40]
     lock = project / 'project.xcworkspace/xcshareddata/swiftpm/Package.resolved'
@@ -101,7 +102,7 @@ else:
             checker.check(self.root, "macos", False, True, True)
         evidence = json.loads(self.evidence()[0].read_text())
         revision = checker.git(self.root, "rev-parse", "HEAD")
-        self.assertEqual(evidence["products"], ["FleetMacOS"])
+        self.assertEqual(evidence["products"], ["FleetMacOS", "FleetMacOSInspection"])
         self.assertEqual(evidence["optional_integrations"], [])
         self.assertEqual(evidence["resolved_revisions"], {"fleet": revision})
         self.assertIsNone(evidence["viewinspector_revision"])
@@ -285,7 +286,7 @@ class MacOSFrameworkCountTests(unittest.TestCase):
         project = create_macos_project(Path(tempfile.mkdtemp(prefix="macos consumer ")) / "Consumer", fixtures,
                                        "file:///package", "a" * 40, ("https://example.invalid/vi", "b" * 40))
         names, objects = products(project)
-        self.assertEqual(names, ["FleetMacOS", "ViewInspector"])
+        self.assertEqual(names, ["FleetMacOS", "FleetMacOSInspection"])
         paths = sorted(o["path"] for o in objects.values() if o["isa"] == "PBXFileReference" and o.get("path", "").endswith(".swift"))
         self.assertIn("Sources/Inspection/MacOSControlInteractionTests.swift", paths)
         self.assertIn("Sources/Inspection/MacOSTextEditorInteractionTests.swift", paths)

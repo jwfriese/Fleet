@@ -25,7 +25,7 @@ import FleetMacOS
 
 ## Limits
 
-Fleet observes the mounted hierarchy and the application state you name. It does not send physical input, prove hit testing or accessibility, drive AppKit controls, or exercise OS authentication, Keychain or biometrics: inject a fake service, and cover real OS authentication with a separate signed integration check. Driving Button, TextField and SecureField on the mounted screen uses the optional ViewInspector adapter in [MacOSControlInteraction.md](MacOSControlInteraction.md); `FleetMacOS` itself still only hosts. The iOS/tvOS `Fleet` product and its validation are unchanged. Plain `swift test` on the full manifest also tries to build the UIKit `Fleet` target, so it is not the validation route.
+Fleet observes the mounted hierarchy and the application state you name. It does not send physical input, prove hit testing or accessibility, drive AppKit controls, or exercise OS authentication, Keychain or biometrics: inject a fake service, and cover real OS authentication with a separate signed integration check. Driving Button, TextField and SecureField on the mounted screen uses the optional `FleetMacOSInspection` product described in [MacOSControlInteraction.md](MacOSControlInteraction.md); `FleetMacOS` itself still only hosts. The iOS/tvOS `Fleet` product and its validation are unchanged. Plain `swift test` on the full manifest also tries to build the UIKit `Fleet` target, so it is not the validation route.
 
 ## Support and validation
 

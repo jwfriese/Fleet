@@ -1,6 +1,26 @@
 # Mounted macOS Button, TextField, SecureField and TextEditor interaction
 
-Platform: macOS 13+. This is a validated, optional inspection adapter, not a Fleet API. `FleetMacOS` hosts the screen ([MacOSHosting.md](MacOSHosting.md)); the adapter drives the mounted controls through [ViewInspector](https://github.com/nalexn/ViewInspector), which is compiled only into a test target. Neither `FleetMacOS`, `Package.swift` nor an application target depends on ViewInspector, and the application gains no runtime hook beyond the Combine seam below.
+Platform: macOS 13+. `FleetMacOSInspection` is an optional, test-only SwiftPM product. `FleetMacOS` hosts the screen ([MacOSHosting.md](MacOSHosting.md)); this product drives the mounted controls through [ViewInspector](https://github.com/nalexn/ViewInspector), which is an implementation dependency of `FleetMacOSInspection` only. `FleetMacOS` does not link it, and a test must not import it for any supported operation. The application target imports neither Fleet nor ViewInspector and gains no runtime hook beyond a small framework-only seam (below). The product does not depend on UIKit, the `Fleet` product or `FleetRuntime`.
+
+## Installation
+
+```swift
+.testTarget(
+    name: "AppUITests",
+    dependencies: [
+        "AppUI",
+        .product(name: "FleetMacOS", package: "Fleet"),
+        .product(name: "FleetMacOSInspection", package: "Fleet"),
+    ]
+)
+```
+
+```swift
+import FleetMacOS
+import FleetMacOSInspection
+```
+
+Fleet's manifest pins ViewInspector 0.10.5, so SwiftPM resolves it for any consumer of the package; only `FleetMacOSInspection` links it.
 
 A public AppKit route does not exist for Button: a SwiftUI `Button` is not an `NSButton`, and the hosting view exposes no accessibility press target for it. TextField and SecureField do render as AppKit text fields, but the adapter writes their SwiftUI binding directly so both control kinds share one exact-one query model.
 
@@ -15,9 +35,24 @@ A public AppKit route does not exist for Button: a SwiftUI `Button` is not an `N
 
 Programmatic binding and action dispatch establishes neither physical input (key events, the field editor, first responder) nor hit testing, accessibility, or OS authentication, Keychain or biometrics. Inject a fake authenticator. ViewInspector reports the declaration content of the mounted instance, not layout or visibility; observe the AppKit hierarchy (for example, the count of `NSSecureTextField` views under `host.hostingController.view`) for rendered claims.
 
-## The seam
+## The seam and the endpoint
 
-The screen takes an `InspectionSeam` and subscribes with `.onReceive(seam.notice) { seam.visit(self) }`. The seam is a main-actor, single-slot rendezvous (Combine only, no continuation, no `@unchecked Sendable`). `host.inspect(seam)` waits (bounded) until the mounted instance answers, then runs your body synchronously against that live instance. Do not use ViewInspector's `ViewHosting`; Fleet owns the window.
+The application owns a small seam with no testing import: a main-actor, single-slot rendezvous with a Combine subject. The screen subscribes with `.onReceive(seam.notice) { seam.visit(self) }`. The test target (never the application) connects it to the product by conforming it to the public protocol, or by wrapping a closure:
+
+```swift
+@MainActor
+public protocol MacOSInspectionEndpoint {
+    associatedtype Screen: View
+    func deliver(_ visit: @escaping @MainActor (Screen) -> Void) -> Bool
+}
+// or: MacOSInspectionBridge<Screen> { visit in seam.run(visit) }
+```
+
+`deliver` offers `visit` to the mounted instance, returns `true` only if an instance ran it synchronously, and must not keep `visit` afterwards. `Integration/MacOSConsumer/Inspection/InspectionSeam.swift` is the whole local support of the pinned consumer.
+
+`host.inspect(endpoint, timeout:)` waits (bounded, through `waitUntil`) until the mounted instance answers, then runs your body synchronously against that live instance. A non-finite timeout throws `FleetMacOSFailure(.invalidInput)`, no answer throws `.timedOut`, cancellation propagates unchanged, and an error from the body propagates unchanged. `host.probe(endpoint) { ... }` is the synchronous, non-throwing read for use inside a `waitForUpdate` condition (`nil` after the scope ended, with no answer, or if the body threw). The product creates no window or hosting lifecycle; Fleet owns it. Do not use ViewInspector's `ViewHosting`.
+
+Public types: `MacOSInspector` (queries: `container`, `button`, `textField`, `secureField`, `textEditor(identifier:)`), `MacOSButtonHandle`, `MacOSTextInputHandle`, `MacOSTextEditorHandle`, `MacOSQueryFailure` (`absent`, `ambiguous`, `disabled`, `unsupported`, `obsolete`, `notMounted`) and `MacOSActionKind`. Handles are valid only inside the inspection closure that produced them; requery after state changes.
 
 ## Queries
 
@@ -59,6 +94,6 @@ A value passed to `setInput` is never placed in a failure description, the actio
 
 ## Evidence
 
-Sources: `Integration/MacOSConsumer/Inspection/MacOSInspection.swift` (seam, adapter) and `MacOSControlInteractionTests.swift` (synthetic unlock fixture: a SecureField bound to `@State`, an `Unlock` button that unlocks only for `SYNTHETIC_PASSPHRASE`, then a profile screen with `Switch profile`). `MacOSTextEditorInteractionTests.swift` adds the "Mounted macOS TextEditor interaction" suite (a synthetic practice form: a TextEditor bound to `@State`, `Save answer` and `Switch project` buttons), covering newline-preserving replacement and clearing, the saved value, the cleared editor after switching, ambiguous/absent/disabled/obsolete outcomes, and a handle kept from an ended scope failing against a successor scope. Run with `script/check-distribution macos` (add `--allow-dirty` during development). The macOS consumer pins ViewInspector 0.10.5 (revision `2dacb6e514be19379c605a5a11564d0f3fea89d9`) and `--without-viewinspector` skips it. The suite "Mounted macOS control interaction" covers: a wrong passphrase reaching the real action and not unlocking, the correct passphrase unlocking, the old `NSSecureTextField` subtree disappearing, switching back, ambiguous/absent/disabled/unsupported/obsolete outcomes, secret absence from failures and traces, error and cancellation cleanup, and the bounded no-answer timeout.
+Sources: `FleetMacOSInspection/FleetMacOSInspection.swift` (the adapter), `Integration/MacOSConsumer/Inspection/InspectionSeam.swift` (the consumer's seam and endpoint conformance) and `MacOSControlInteractionTests.swift` (synthetic unlock fixture: a SecureField bound to `@State`, an `Unlock` button that unlocks only for `SYNTHETIC_PASSPHRASE`, then a profile screen with `Switch profile`). `MacOSTextEditorInteractionTests.swift` adds the "Mounted macOS TextEditor interaction" suite (a synthetic practice form: a TextEditor bound to `@State`, `Save answer` and `Switch project` buttons), covering newline-preserving replacement and clearing, the saved value, the cleared editor after switching, ambiguous/absent/disabled/obsolete outcomes, and a handle kept from an ended scope failing against a successor scope. Run with `script/check-distribution macos` (add `--allow-dirty` during development). The macOS consumer depends only on the Git-pinned `FleetMacOS` and `FleetMacOSInspection` products, imports no ViewInspector and uses no `@testable import`; the resolved lockfile pins ViewInspector 0.10.5 (revision `2dacb6e514be19379c605a5a11564d0f3fea89d9`) as the adapter's dependency, and `--without-viewinspector` leaves the inspection suites and product out. The suite "Mounted macOS control interaction" covers: a wrong passphrase reaching the real action and not unlocking, the correct passphrase unlocking, the old `NSSecureTextField` subtree disappearing, switching back, ambiguous/absent/disabled/unsupported/obsolete outcomes, secret absence from failures and traces, error and cancellation cleanup, and the bounded no-answer timeout.
 
 Not claimed: macOS versions other than the one that ran the check; Toggle, Picker, menus and gestures (unsupported); attributed-text TextEditor bindings; caret, selection and undo behavior of the TextEditor; anything physical.
