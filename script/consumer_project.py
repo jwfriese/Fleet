@@ -225,7 +225,7 @@ def create_project(destination, fixtures, package_url, revision, viewinspector=N
 
 MACOS_SOURCES = ("MacOSFixtures.swift", "MacOSXCTestConsumerTests.swift", "MacOSSwiftTestingConsumerTests.swift")
 # Compiled only when the optional pinned ViewInspector dependency is added to the consumer.
-MACOS_INSPECTOR_SOURCES = ("Inspection/MacOSInspection.swift", "Inspection/MacOSControlInteractionTests.swift",
+MACOS_INSPECTOR_SOURCES = ("Inspection/InspectionSeam.swift", "Inspection/MacOSControlInteractionTests.swift",
                            "Inspection/MacOSTextEditorInteractionTests.swift")
 
 
@@ -247,10 +247,9 @@ def create_macos_project(destination, fixtures, package_url, revision, viewinspe
 
     package = add("package", "XCRemoteSwiftPackageReference", repositoryURL=package_url,
                   requirement={"kind": "revision", "revision": revision})
-    inspector = None
-    if viewinspector:
-        inspector = add("viewinspector", "XCRemoteSwiftPackageReference", repositoryURL=viewinspector[0],
-                        requirement={"kind": "revision", "revision": viewinspector[1]})
+    # The optional adapter is the FleetMacOSInspection product of the same Git-pinned package. The consumer
+    # does not declare or import ViewInspector; SwiftPM resolves it as that product's implementation dependency.
+    inspector = bool(viewinspector)
     products = add("products", "PBXGroup", children=[], name="Products", sourceTree="<group>")
     main = add("main", "PBXGroup", children=[products], sourceTree="<group>")
     files = []
@@ -281,9 +280,9 @@ def create_macos_project(destination, fixtures, package_url, revision, viewinspe
     link = add("link", "PBXBuildFile", productRef=dependency)
     dependencies, links = [dependency], [link]
     if inspector:
-        extra = add("viewinspector-dependency", "XCSwiftPackageProductDependency", package=inspector, productName="ViewInspector")
+        extra = add("inspection-dependency", "XCSwiftPackageProductDependency", package=package, productName="FleetMacOSInspection")
         dependencies.append(extra)
-        links.append(add("viewinspector-link", "PBXBuildFile", productRef=extra))
+        links.append(add("inspection-link", "PBXBuildFile", productRef=extra))
     test = add("test", "PBXNativeTarget", name="MacOSConsumerTests", productName="MacOSConsumerTests",
                productReference=product, productType="com.apple.product-type.bundle.unit-test",
                buildConfigurationList=configurations("test", settings),
@@ -294,7 +293,7 @@ def create_macos_project(destination, fixtures, package_url, revision, viewinspe
                buildConfigurationList=configurations("project", {}), compatibilityVersion="Xcode 14.0",
                developmentRegion="en", knownRegions=["en", "Base"], mainGroup=main,
                productRefGroup=products, projectDirPath="", projectRoot="", targets=[test],
-               packageReferences=[package] + ([inspector] if inspector else []))
+               packageReferences=[package])
     (project / "project.pbxproj").write_bytes(plistlib.dumps({"archiveVersion": "1", "classes": {},
         "objectVersion": "56", "objects": objects, "rootObject": root}, sort_keys=False))
     reference = (f'<BuildableReference BuildableIdentifier="primary" BlueprintIdentifier="{test}" '

@@ -180,7 +180,7 @@ def snapshot(root, destination):
     shutil.copy2(root / "LICENSE", destination)
     shutil.copytree(root / "Fleet", destination / "Fleet")
     # The manifest declares the macOS product and its test target, so their directories must exist.
-    for name in ("FleetMacOS", "FleetMacOSTests"):
+    for name in ("FleetMacOS", "FleetMacOSInspection", "FleetMacOSTests"):
         if (root / name).is_dir():
             shutil.copytree(root / name, destination / name)
     git(destination, "init", "-q")
@@ -249,7 +249,8 @@ def check(root, platform="all", allow_dirty=False, viewinspector=False, snapshot
         try:
             pins = json.loads(lockfile.read_text())["pins"]
             revisions = sorted(pin["state"]["revision"] for pin in pins)
-            if revisions != sorted([revision] + ([VIEWINSPECTOR_REVISION] if viewinspector else []) + ([SNAPSHOTTESTING_REVISION] if snapshottesting else [])):
+            # Fleet's manifest depends on ViewInspector for FleetMacOSInspection, so it always resolves.
+            if revisions != sorted({revision, VIEWINSPECTOR_REVISION} | ({SNAPSHOTTESTING_REVISION} if snapshottesting else set())):
                 raise DistributionError("Consumer resolution did not pin the exact package revision.")
         except (OSError, KeyError, ValueError) as error:
             raise DistributionError("Missing or invalid consumer package lockfile.") from error
@@ -306,7 +307,7 @@ def check(root, platform="all", allow_dirty=False, viewinspector=False, snapshot
                 "development_snapshot": allow_dirty, "tests": counts, "preserve_timing_tests": policy_counts,
                 "macos_tests": macos_counts, "macos_integrations": ["viewinspector"] if macos_inspector and macos_counts is not None else [],
                 "macos_viewinspector_revision": VIEWINSPECTOR_REVISION if macos_inspector and macos_counts is not None else None, "macos_linked_libraries": macos_links,
-                "products": [name for name, ran in (("Fleet", bool(counts)), ("FleetMacOS", macos_counts is not None)) if ran],
+                "products": [name for name, ran in (("Fleet", bool(counts)), ("FleetMacOS", macos_counts is not None), ("FleetMacOSInspection", bool(macos_inspector) and macos_counts is not None)) if ran],
                 "optional_integrations": [name for name, on in (("viewinspector", viewinspector), ("snapshottesting", snapshottesting)) if on],
                 "framework_results": inspector_results,
                 "resolved_revisions": {"fleet": revision, **({"viewinspector": VIEWINSPECTOR_REVISION} if viewinspector else {}),
@@ -346,7 +347,7 @@ def check_macos(root, run, directory, package_url, revision, inspector=None):
         revisions = sorted(pin["state"]["revision"] for pin in json.loads(lockfile.read_text())["pins"])
     except (OSError, KeyError, ValueError) as error:
         raise DistributionError("Missing or invalid macOS consumer package lockfile.") from error
-    if revisions != sorted([revision] + ([inspector[1]] if inspector else [])):
+    if revisions != sorted({revision, VIEWINSPECTOR_REVISION}):
         raise DistributionError("macOS consumer resolution did not pin the exact package revision.")
     shutil.copy2(lockfile, directory / "Package.resolved")
     derived = run / "DerivedData" / "macos"

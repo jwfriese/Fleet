@@ -2,7 +2,7 @@ import AppKit
 import FleetMacOS
 import SwiftUI
 import Testing
-import ViewInspector
+import FleetMacOSInspection
 
 // Synthetic fixture: a multiline practice answer per project. No downstream application is modeled.
 
@@ -100,7 +100,7 @@ struct MacOSTextEditorInteractionTests {
         let lockedSeam = InspectionSeam<PracticeForm>()
         try await FleetMacOS.withHostedView(PracticeForm(model: PracticeModel(), seam: lockedSeam, lockedEditor: true)) { host in
             try await host.waitUntilReady()
-            var retained: TextEditorHandle?
+            var retained: MacOSTextEditorHandle?
             try await host.inspect(lockedSeam) { screen in
                 let editor = try screen.textEditor(identifier: "practice.answer")
                 #expect(!editor.isEnabled)
@@ -116,7 +116,7 @@ struct MacOSTextEditorInteractionTests {
 
     @Test func aHandleFromAnEarlierScreenCannotEditASuccessorScreen() async throws {
         let firstSeam = InspectionSeam<PracticeForm>()
-        var retained: TextEditorHandle?
+        var retained: MacOSTextEditorHandle?
         try await FleetMacOS.withHostedView(PracticeForm(model: PracticeModel(), seam: firstSeam)) { host in
             try await host.waitUntilReady()
             try await host.inspect(firstSeam) { retained = try $0.textEditor(identifier: "practice.answer") }

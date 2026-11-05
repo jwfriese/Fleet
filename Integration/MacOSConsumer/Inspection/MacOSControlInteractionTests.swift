@@ -2,7 +2,7 @@ import AppKit
 import FleetMacOS
 import SwiftUI
 import Testing
-import ViewInspector
+import FleetMacOSInspection
 
 // Synthetic fixture: no Keychain, biometric prompt, financial record or real secret.
 let syntheticPassphrase = "SYNTHETIC_PASSPHRASE"
@@ -134,7 +134,7 @@ struct MacOSControlInteractionTests {
         let seam = InspectionSeam<UnlockScreen>()
         try await FleetMacOS.withHostedView(UnlockScreen(model: model, seam: seam, lockedField: true)) { host in
             try await host.waitUntilReady()
-            var retained: ButtonHandle?
+            var retained: MacOSButtonHandle?
             try await host.inspect(seam) { screen in
                 let form = try screen.container("unlock-form")
                 expectFailure(.ambiguous(target: "button 'Cancel'", scope: "screen > 'unlock-form'", count: 2)) { _ = try form.button("Cancel") }
