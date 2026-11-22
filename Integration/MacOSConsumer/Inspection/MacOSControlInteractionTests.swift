@@ -36,7 +36,10 @@ struct UnlockScreen: View {
             } else {
                 VStack {
                     TextField("Profile name", text: $model.profileName)
-                    SecureField("Passphrase", text: $passphrase).disabled(lockedField)
+                        .accessibilityIdentifier("profile.name")
+                    SecureField("Passphrase", text: $passphrase)
+                        .accessibilityIdentifier("profile.passphrase")
+                        .disabled(lockedField)
                     Button("Unlock") {
                         model.unlockCalls += 1
                         if passphrase == syntheticPassphrase { model.isUnlocked = true }
@@ -47,6 +50,30 @@ struct UnlockScreen: View {
                 }
                 .accessibilityIdentifier("unlock-form")
             }
+        }
+        .frame(width: 320, height: 240)
+        .onReceive(seam.notice) { seam.visit(self) }
+    }
+}
+
+private struct PlaybackScreen: View {
+    let seam: InspectionSeam<PlaybackScreen>
+    let play: (Int) -> Void
+
+    var body: some View {
+        VStack {
+            VStack {
+                Text("First recording")
+                Button("Play") { play(1) }
+                    .accessibilityIdentifier("recording.play")
+            }
+            .accessibilityIdentifier("recording.first")
+            VStack {
+                Text("Second recording")
+                Button("Play") { play(2) }
+                    .accessibilityIdentifier("recording.play")
+            }
+            .accessibilityIdentifier("recording.second")
         }
         .frame(width: 320, height: 240)
         .onReceive(seam.notice) { seam.visit(self) }
@@ -108,7 +135,9 @@ struct MacOSControlInteractionTests {
             #expect(model.unlockCalls == 1)
             #expect(!model.isUnlocked)
 
-            try await host.inspect(seam) { try $0.container("unlock-form").secureField("Passphrase").setInput(syntheticPassphrase) }
+            try await host.inspect(seam) {
+                try $0.container("unlock-form").secureField(identifier: "profile.passphrase").setInput(syntheticPassphrase)
+            }
             try await host.inspect(seam) { screen in
                 let form = try screen.container("unlock-form")
                 let kind = try form.button("Unlock").tap()
@@ -160,6 +189,61 @@ struct MacOSControlInteractionTests {
         }
     }
 
+    @Test func buttonIdentifiersRequireExactlyOneMatchInTheSelectedContainer() async throws {
+        let seam = InspectionSeam<PlaybackScreen>()
+        var played: [Int] = []
+        try await FleetMacOS.withHostedView(PlaybackScreen(seam: seam, play: { played.append($0) })) { host in
+            try await host.waitUntilReady()
+            var retained: MacOSInspector?
+            try await host.inspect(seam) { screen in
+                retained = screen
+                expectFailure(.ambiguous(target: "button identifier 'recording.play'", scope: "screen", count: 2)) {
+                    _ = try screen.button(identifier: "recording.play")
+                }
+                let second = try screen.container("recording.second")
+                expectFailure(.absent(target: "button identifier 'recording.missing'", scope: "screen > 'recording.second'")) {
+                    _ = try second.button(identifier: "recording.missing")
+                }
+                try second.button(identifier: "recording.play").tap()
+            }
+            let expired = try #require(retained)
+            expectFailure(.obsolete(target: "container 'recording.second'")) {
+                _ = try expired.container("recording.second")
+            }
+            try await host.inspect(seam) { try $0.container("recording.first").button("Play").tap() }
+            #expect(played == [2, 1])
+        }
+    }
+
+    @Test func textInputIdentifiersSelectTheTypedBindingAndPreserveDisabledChecks() async throws {
+        let model = UnlockModel()
+        let seam = InspectionSeam<UnlockScreen>()
+        try await FleetMacOS.withHostedView(UnlockScreen(model: model, seam: seam, lockedField: true)) { host in
+            try await host.waitUntilReady()
+            try await host.inspect(seam) { screen in
+                let scope = "screen > 'unlock-form'"
+                let form = try screen.container("unlock-form")
+                let name = try form.textField(identifier: "profile.name")
+                #expect(name.isEnabled)
+                try name.setInput("Synthetic")
+
+                let passphrase = try form.secureField(identifier: "profile.passphrase")
+                #expect(!passphrase.isEnabled)
+                expectFailure(.disabled(target: "secure field identifier 'profile.passphrase'", scope: scope)) {
+                    try passphrase.setInput(syntheticPassphrase)
+                }
+                expectFailure(.absent(target: "text field identifier 'profile.passphrase'", scope: scope)) {
+                    _ = try form.textField(identifier: "profile.passphrase")
+                }
+            }
+            try await host.waitForUpdate("profile name written") { model.profileName == "Synthetic" }
+            try await host.inspect(seam) { screen in
+                let unlock = try screen.container("unlock-form").button("Unlock")
+                #expect(!unlock.isEnabled)
+            }
+        }
+    }
+
     @Test func secureValuesNeverAppearInFailuresOrTraces() async throws {
         let model = UnlockModel()
         let seam = InspectionSeam<UnlockScreen>()
@@ -204,15 +288,23 @@ struct MacOSControlInteractionTests {
         #expect(failedWindow?.isVisible == false)
         #expect(!seam.hasPendingRequest)
 
+        let unanswered = InspectionSeam<UnlockScreen>()
+        let endpoint = MacOSInspectionBridge<UnlockScreen> { visit in
+            let answered = unanswered.run(visit)
+            withUnsafeCurrentTask { $0?.cancel() }
+            return answered
+        }
+        var cancelledWindow: NSWindow?
         let cancelled = Task { @MainActor in
             try await FleetMacOS.withHostedView(UnlockScreen(model: UnlockModel(), seam: seam)) { host in
+                cancelledWindow = host.window
                 try await host.waitUntilReady()
-                try await host.waitUntil("never", timeout: 30) { false }
+                try await host.inspect(endpoint) { _ in Issue.record("expected inspection to be cancelled") }
             }
         }
-        try await Task.sleep(nanoseconds: 200_000_000)
-        cancelled.cancel()
         do { try await cancelled.value; Issue.record("expected cancellation") } catch is CancellationError {}
+        #expect(cancelledWindow?.isVisible == false)
+        #expect(!unanswered.hasPendingRequest)
         #expect(!seam.hasPendingRequest)
 
         // A successor starts clean: the lease was released and no request is pending.
@@ -222,16 +314,48 @@ struct MacOSControlInteractionTests {
         }
     }
 
-    @Test func noAnswerTimesOutBoundedly() async throws {
+    @Test func noAnswerReportsUnmountedAtTheDeadline() async throws {
         let seam = InspectionSeam<UnlockScreen>()
         // The screen is not subscribed to this seam, so nothing answers.
         try await FleetMacOS.withHostedView(UnlockScreen(model: UnlockModel(), seam: InspectionSeam<UnlockScreen>())) { host in
             try await host.waitUntilReady()
             do {
-                try await host.inspect(seam, timeout: 0.2) { _ in () }
-                Issue.record("expected timeout")
+                try await host.inspect(seam, timeout: 0.2) { _ in
+                    Issue.record("an unmounted endpoint must not run the inspection")
+                }
+                Issue.record("expected an unmounted endpoint")
+            } catch let failure as MacOSQueryFailure {
+                #expect(failure == .notMounted(screen: "UnlockScreen"))
+            }
+            #expect(!seam.hasPendingRequest)
+        }
+    }
+
+    @Test func inspectionPreservesInvalidTimeoutAndErrorsFromTheBody() async throws {
+        let seam = InspectionSeam<UnlockScreen>()
+        try await FleetMacOS.withHostedView(UnlockScreen(model: UnlockModel(), seam: seam)) { host in
+            try await host.waitUntilReady()
+            do {
+                try await host.inspect(seam, timeout: .infinity) { _ in
+                    Issue.record("an invalid timeout must not run the inspection")
+                }
+                Issue.record("expected an invalid timeout error")
             } catch let failure as FleetMacOSFailure {
-                #expect(failure.kind == .timedOut)
+                #expect(failure.kind == .invalidInput)
+            }
+
+            do {
+                try await host.waitUntil("test condition", timeout: 0) { false }
+                Issue.record("expected the test condition to time out")
+            } catch let timeout as FleetMacOSFailure {
+                #expect(timeout.kind == .timedOut)
+                do {
+                    try await host.inspect(seam) { _ in throw timeout }
+                    Issue.record("expected the body's timeout error")
+                } catch let failure as FleetMacOSFailure {
+                    #expect(failure.kind == .timedOut)
+                    #expect(failure.action == timeout.action)
+                }
             }
             #expect(!seam.hasPendingRequest)
         }

@@ -81,6 +81,8 @@ public struct MacOSTextInputHandle {
     public let scope: String
     public let isSecure: Bool
 
+    public var isEnabled: Bool { !isDisabled }
+
     /// Writes the control's binding. The value is never recorded or reported.
     @discardableResult
     public func setInput(_ value: String) throws -> MacOSActionKind {
@@ -158,6 +160,7 @@ public struct MacOSInspector {
 
     public func container(_ identifier: String) throws -> MacOSInspector {
         let target = "container '\(identifier)'"
+        try session.requireValid(target)
         let matches = root.findAll(where: { try $0.accessibilityIdentifier() == identifier })
         switch matches.count {
         case 1: return MacOSInspector(matches[0], scope: scope + " > '\(identifier)'", session: session)
@@ -167,24 +170,48 @@ public struct MacOSInspector {
     }
 
     public func button(_ label: String) throws -> MacOSButtonHandle {
-        let target = "button '\(label)'"
-        try session.requireValid(target)
-        let view = try exactlyOne(ViewType.Button.self, target) { try $0.labelView().text().string() == label }
+        try button(target: "button '\(label)'") { try $0.labelView().text().string() == label }
+    }
+
+    public func button(identifier: String) throws -> MacOSButtonHandle {
+        try button(target: "button identifier '\(identifier)'") { try $0.accessibilityIdentifier() == identifier }
+    }
+
+    private func button(
+        target: String, matching: @escaping (InspectableView<ViewType.Button>) throws -> Bool
+    ) throws -> MacOSButtonHandle {
+        let view = try exactlyOne(ViewType.Button.self, target, where: matching)
         return MacOSButtonHandle(view: view, session: session, target: target, scope: scope)
     }
 
     public func textField(_ title: String) throws -> MacOSTextInputHandle {
-        let target = "text field '\(title)'"
-        try session.requireValid(target)
-        let view = try exactlyOne(ViewType.TextField.self, target) { try $0.labelView().text().string() == title }
+        try textField(target: "text field '\(title)'") { try $0.labelView().text().string() == title }
+    }
+
+    public func textField(identifier: String) throws -> MacOSTextInputHandle {
+        try textField(target: "text field identifier '\(identifier)'") { try $0.accessibilityIdentifier() == identifier }
+    }
+
+    private func textField(
+        target: String, matching: @escaping (InspectableView<ViewType.TextField>) throws -> Bool
+    ) throws -> MacOSTextInputHandle {
+        let view = try exactlyOne(ViewType.TextField.self, target, where: matching)
         return MacOSTextInputHandle(write: { try view.setInput($0) }, isDisabled: view.isDisabled(),
                                session: session, target: target, scope: scope, isSecure: false)
     }
 
     public func secureField(_ title: String) throws -> MacOSTextInputHandle {
-        let target = "secure field '\(title)'"
-        try session.requireValid(target)
-        let view = try exactlyOne(ViewType.SecureField.self, target) { try $0.labelView().text().string() == title }
+        try secureField(target: "secure field '\(title)'") { try $0.labelView().text().string() == title }
+    }
+
+    public func secureField(identifier: String) throws -> MacOSTextInputHandle {
+        try secureField(target: "secure field identifier '\(identifier)'") { try $0.accessibilityIdentifier() == identifier }
+    }
+
+    private func secureField(
+        target: String, matching: @escaping (InspectableView<ViewType.SecureField>) throws -> Bool
+    ) throws -> MacOSTextInputHandle {
+        let view = try exactlyOne(ViewType.SecureField.self, target, where: matching)
         return MacOSTextInputHandle(write: { try view.setInput($0) }, isDisabled: view.isDisabled(),
                                session: session, target: target, scope: scope, isSecure: true)
     }
@@ -192,7 +219,6 @@ public struct MacOSInspector {
     /// Finds exactly one `TextEditor` in scope whose accessibility identifier is `identifier`.
     public func textEditor(identifier: String) throws -> MacOSTextEditorHandle {
         let target = "text editor '\(identifier)'"
-        try session.requireValid(target)
         let view = try exactlyOne(ViewType.TextEditor.self, target) { try $0.accessibilityIdentifier() == identifier }
         return MacOSTextEditorHandle(view: view, session: session, target: target, scope: scope)
     }
@@ -215,6 +241,7 @@ public struct MacOSInspector {
     private func exactlyOne<T: BaseViewType>(
         _ type: T.Type, _ target: String, where match: @escaping (InspectableView<T>) throws -> Bool
     ) throws -> InspectableView<T> {
+        try session.requireValid(target)
         let matches = root.findAll(type, where: match)
         switch matches.count {
         case 1: return matches[0]
@@ -251,23 +278,28 @@ public struct MacOSInspectionBridge<Screen: View>: MacOSInspectionEndpoint {
 extension FleetMacOSHost {
     /// Runs `body` against the mounted instance once it answers the endpoint, within `timeout`. The
     /// inspector's handles are invalid after `body` returns or throws. An error from `body`
-    /// propagates unchanged; no answer throws `FleetMacOSFailure(.timedOut)`; an invalid timeout throws
-    /// `.invalidInput`; cancellation is unchanged. This adds no second hosting lifecycle.
+    /// propagates unchanged. No answer throws `MacOSQueryFailure.notMounted`; an invalid timeout
+    /// throws `FleetMacOSFailure(.invalidInput)`. Cancellation propagates unchanged.
     public func inspect<E: MacOSInspectionEndpoint, T>(
         _ endpoint: E, timeout: TimeInterval = 2,
         _ body: @escaping @MainActor (MacOSInspector) throws -> T
     ) async throws -> T {
-        var value: T?
-        var failure: Error?
-        try await waitUntil("mounted \(E.Screen.self) to answer inspection", timeout: timeout) {
-            endpoint.deliver { view in
-                let session = MacOSInspectionSession()
-                defer { session.end() }
-                do { value = try body(MacOSInspector(try view.inspect(), session: session)) } catch { failure = error }
+        let screen = String(describing: E.Screen.self)
+        var result: Result<T, Error>?
+        do {
+            try await waitUntil("mounted \(screen) to answer inspection", timeout: timeout) {
+                _ = endpoint.deliver { view in
+                    let session = MacOSInspectionSession()
+                    defer { session.end() }
+                    result = Result { try body(MacOSInspector(try view.inspect(), session: session)) }
+                }
+                return result != nil
             }
+        } catch let failure as FleetMacOSFailure where failure.kind == .timedOut {
+            throw MacOSQueryFailure.notMounted(screen: screen)
         }
-        if let failure { throw failure }
-        return value!
+        guard let result else { throw MacOSQueryFailure.notMounted(screen: screen) }
+        return try result.get()
     }
 
     /// A synchronous, non-throwing look for use inside a wait condition. `nil` if the scope has ended, nothing answered or the body threw.
