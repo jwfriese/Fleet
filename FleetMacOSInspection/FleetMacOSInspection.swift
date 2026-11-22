@@ -135,18 +135,18 @@ public struct MacOSTextEditorHandle {
 /// and the adapter converts both ways. The application's setter then runs with the chosen value in
 /// its own units. Neither read nor write is a drag.
 @MainActor
-struct SliderHandle {
+public struct MacOSSliderHandle {
     fileprivate let view: InspectableView<ViewType.Slider>
     fileprivate let session: MacOSInspectionSession
-    let target: String
-    let scope: String
-    let range: ClosedRange<Double>
+    public let target: String
+    public let scope: String
+    public let range: ClosedRange<Double>
 
-    var isEnabled: Bool { !view.isDisabled() }
+    public var isEnabled: Bool { !view.isDisabled() }
 
     /// The value the mounted instance's binding currently reports, in the declared range's units.
     /// Requery after a state change.
-    func value() throws -> Double {
+    public func value() throws -> Double {
         try session.requireValid(target)
         let fraction = try unsupported("the slider's binding could not be read as a Double") { try view.value() }
         return range.lowerBound + fraction * (range.upperBound - range.lowerBound)
@@ -155,7 +155,7 @@ struct SliderHandle {
     /// Calls the slider's binding setter with `value`. Throws `.disabled` before writing, and
     /// `.unsupported` for a value outside the declared range (SwiftUI would clamp it silently).
     @discardableResult
-    func setValue(_ value: Double) throws -> MacOSActionKind {
+    public func setValue(_ value: Double) throws -> MacOSActionKind {
         try session.requireValid(target)
         if view.isDisabled() { throw MacOSQueryFailure.disabled(target: target, scope: scope) }
         let width = range.upperBound - range.lowerBound
@@ -274,11 +274,11 @@ public struct MacOSInspector {
 
     /// Finds exactly one `Slider` in scope whose accessibility identifier is `identifier`. `range`
     /// must be the `in:` range the slider declares.
-    func slider(identifier: String, in range: ClosedRange<Double>) throws -> SliderHandle {
+    public func slider(identifier: String, in range: ClosedRange<Double>) throws -> MacOSSliderHandle {
         let target = "slider '\(identifier)'"
         try session.requireValid(target)
         let view = try exactlyOne(ViewType.Slider.self, target) { try $0.accessibilityIdentifier() == identifier }
-        return SliderHandle(view: view, session: session, target: target, scope: scope, range: range)
+        return MacOSSliderHandle(view: view, session: session, target: target, scope: scope, range: range)
     }
 
     /// Controls outside the tested matrix fail explicitly instead of being simulated.

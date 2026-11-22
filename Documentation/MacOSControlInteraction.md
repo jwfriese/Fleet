@@ -128,10 +128,10 @@ try await FleetMacOS.withHostedView(PlaybackScreen(seam: seam, play: { played.ap
 ## Slider
 
 ```swift
-func slider(identifier: String, in range: ClosedRange<Double>) throws -> SliderHandle // on MacOSInspector
-func value() throws -> Double                                     // on SliderHandle
-func setValue(_ value: Double) throws -> MacOSActionKind          // on SliderHandle
-var isEnabled: Bool                                               // on SliderHandle
+func slider(identifier: String, in range: ClosedRange<Double>) throws -> MacOSSliderHandle // on MacOSInspector
+func value() throws -> Double                                     // on MacOSSliderHandle
+func setValue(_ value: Double) throws -> MacOSActionKind          // on MacOSSliderHandle
+var isEnabled: Bool                                               // on MacOSSliderHandle
 ```
 
 A Slider is found by `accessibilityIdentifier` and must match exactly once in the inspector's scope (`container(_:)` narrows it). `setValue` calls the slider's binding setter once with the given number, so an application binding such as `Binding(get: { player.position }, set: { player.seek(to: $0) })` runs its real seek action with that value. `value()` reads what the binding's getter reports for the mounted instance. ViewInspector reports the slider's binding normalized to 0...1 and not its declared range, so you pass the slider's `in:` range and the adapter converts both ways. A value outside that range throws `.unsupported` before the setter runs. The adapter does not enforce `step`; the application owns seek limits, so test them in the domain layer.

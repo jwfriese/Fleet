@@ -1,7 +1,7 @@
 import FleetMacOS
 import SwiftUI
 import Testing
-import ViewInspector
+import FleetMacOSInspection
 
 // Synthetic fixture: a replay transport whose slider is bound to a fake player. No downstream
 // application is modeled, and no audio is played.
@@ -103,7 +103,7 @@ struct MacOSSliderInteractionTests {
         let lockedSeam = InspectionSeam<ReplayTransport>()
         try await FleetMacOS.withHostedView(ReplayTransport(player: player, seam: lockedSeam, lockedSlider: true)) { host in
             try await host.waitUntilReady()
-            var retained: SliderHandle?
+            var retained: MacOSSliderHandle?
             try await host.inspect(lockedSeam) { screen in
                 let slider = try screen.slider(identifier: "voice.playback.position", in: 0...120)
                 #expect(!slider.isEnabled)
@@ -121,7 +121,7 @@ struct MacOSSliderInteractionTests {
 
     @Test func aHandleFromAnEarlierScreenCannotSeekASuccessorScreen() async throws {
         let firstSeam = InspectionSeam<ReplayTransport>()
-        var retained: SliderHandle?
+        var retained: MacOSSliderHandle?
         try await FleetMacOS.withHostedView(ReplayTransport(player: FakePlayer(), seam: firstSeam)) { host in
             try await host.waitUntilReady()
             try await host.inspect(firstSeam) { retained = try $0.slider(identifier: "voice.playback.position", in: 0...120) }
